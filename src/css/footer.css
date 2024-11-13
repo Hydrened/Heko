@@ -1,0 +1,98 @@
+footer {
+    display: grid;
+    grid-template-columns: 25% 1fr 25%;
+}
+footer > article {
+    padding: var(--main-boxes-padding);
+}
+footer svg * {
+    stroke: var(--font-col-1);
+}
+
+
+
+
+article.current-song-details {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.3rem;
+}
+article.current-song-details > h3 {
+    font-weight: bold;
+}
+article.current-song-details > h4 {
+    color: var(--font-col-2);
+    font-size: 0.9rem;
+}
+
+
+
+article.song-controls {
+    display: grid;
+    grid-template-rows: repeat(2, 50%);
+    gap: 0.3rem;
+}
+article.song-controls > div {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+article.song-controls > div.song-controls-buttons {
+    gap: 0.4rem;
+    overflow: visible;
+}
+article.song-controls > div.song-controls-buttons > svg {
+    width: 1.7rem;
+    cursor: pointer;
+}
+article.song-controls > div.song-controls-buttons > svg#random-button, article.song-controls > div.song-controls-buttons > svg#loop-button {
+    width: 1.3rem;
+}
+article.song-controls > div.song-controls-buttons > svg#play-button, article.song-controls > div.song-controls-buttons > svg#pause-button {
+    width: 2.3rem;
+}
+article.song-controls > div.song-controls-buttons > svg:hover * {
+    stroke: white;
+}
+article.song-controls > div.song-controls-buttons > svg#play-button:hover *, article.song-controls > div.song-controls-buttons > svg#pause-button:hover * {
+    fill: white;
+}
+article.song-controls > div.song-controls-buttons > svg.activated * {
+    stroke: var(--col-1);
+    filter: brightness(130%);
+}
+article.song-controls > div.song-controls-buttons > svg.hidden {
+    display: none;
+}
+
+article.song-controls > div.song-slider {
+    gap: 0.4rem;
+}
+article.song-controls > div.song-slider > input {
+    width: 60%;
+}
+article.song-controls > div.song-slider > p {
+    color: var(--font-col-2);
+    font-size: 0.9rem;
+}
+
+
+
+article.song-volume {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5rem;
+}
+article.song-volume > svg {
+    width: 1.4rem;
+    cursor: pointer;
+}
+article.song-volume > svg:hover * {
+    stroke: white;
+}
+article.song-volume > svg.hidden {
+    display: none;
+}

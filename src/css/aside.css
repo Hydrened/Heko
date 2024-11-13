@@ -1,0 +1,62 @@
+aside {
+    display: grid;
+    grid-template-rows: auto 1fr;
+    gap: 1rem;
+}
+aside > h2 {
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+aside > h2 > svg * {
+    stroke: var(--font-col-1);
+}
+aside > ul#playlists-container {
+    overflow-y: scroll;
+}
+aside li.playlist > div.container {
+    padding: 0.5rem;
+    display: flex;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    cursor: pointer;
+    transition: 150ms;
+}
+aside li.playlist > div.container:hover {
+    background-color: var(--bg-col-3);
+}
+aside li.playlist > div.container > div.thumbnail {
+    aspect-ratio: 1 / 1;
+    height: 3.2rem;
+    background-color: rgba(0,0,0,0.5);
+    background-size: cover;
+    background-repeat: no-repeat;
+    border-radius: 0.4rem;
+}
+aside li.playlist > div.container > div.details {
+    flex: 1;
+    margin-left: 0.7rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.15rem;
+}
+aside li.playlist > div.container > div.details > h4 {
+    font-weight: bold;
+    transition: 150ms;
+}
+aside li.playlist > div.container:hover > div.details > h4 {
+    color: var(--col-1);
+    filter: brightness(130%);
+}
+aside li.playlist > div.container > div.details > h5 {
+    color: var(--font-col-2);
+}
+aside li.playlist > ul.children-container {
+    margin-left: 1rem;
+    display: none;
+}
+aside li.playlist > ul.children-container.show {
+    display: block;
+}

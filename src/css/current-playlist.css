@@ -1,0 +1,67 @@
+section {
+    padding-left: 0;
+    display: grid;
+    grid-template-rows: 10rem 1fr;
+    gap: 2rem;
+}
+section > header {
+    display: flex;
+    gap: 1rem;
+}
+
+
+
+section > header > div#current-playlist-thumbnail {
+    aspect-ratio: 1 / 1;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 1rem;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+section > header > div.current-playlist-details {
+    padding: 0.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+section > header > div.current-playlist-details > h1#current-playlist-title {
+    flex: 1;
+    font-size: 6rem;
+    font-weight: 700;
+}
+section > header > div.current-playlist-details > h4#current-playlist-nb-song {
+    margin-left: 1rem;
+    color: var(--font-col-2);
+}
+
+
+
+section > div.current-playlist-table {
+    display: grid;
+    grid-template-rows: auto 1fr;
+}
+section > div.current-playlist-table > div.current-playlist-table-head,
+section > div.current-playlist-table > ul#current-playlist-table-body > li {
+    display: grid;
+    grid-template-columns: 8% 47% 30% 15%;
+}
+section > div.current-playlist-table > div.current-playlist-table-head > p,
+section > div.current-playlist-table > ul#current-playlist-table-body > li > p {
+    padding: 0.7rem 1rem;
+}
+section > div.current-playlist-table > div.current-playlist-table-head > p:first-of-type,
+section > div.current-playlist-table > div.current-playlist-table-head > p:last-of-type,
+section > div.current-playlist-table > ul#current-playlist-table-body > li > p:first-of-type,
+section > div.current-playlist-table > ul#current-playlist-table-body > li > p:last-of-type {
+    text-align: center;
+}
+section > div.current-playlist-table > ul#current-playlist-table-body > li {
+    transition: 150ms;
+    cursor: pointer;
+    border-radius: 0.5rem;
+}
+section > div.current-playlist-table > ul#current-playlist-table-body > li:hover {
+    background-color: var(--bg-col-3);
+}

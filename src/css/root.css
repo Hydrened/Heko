@@ -1,0 +1,15 @@
+:root {
+    --bg-col-1: rgb(30,32,34);
+    --bg-col-2: rgb(20, 22, 24);
+    --bg-col-3: rgba(0,0,0,0.15);
+
+    --font-col-1: rgba(255,255,255,0.7);
+    --font-col-2: rgba(255,255,255,0.4);
+
+    --col-1: rgb(31, 114, 198);
+
+    --frame-height: 36px;
+    --main-boxes-padding: 1.5rem;
+    --footer-height: 6rem;
+    --aside-width: 20.5rem;
+}
