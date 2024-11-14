@@ -134,19 +134,16 @@ class SongListener {
         this.playSong(this.queue.at(-1).id);
     }
 
-    async playSong(id) {
+    playSong(id) {
         const song = this.songs[id];
 
         if (song) {
-            try {
-                await fs.access(path.join(this.mainFolder, "songs", song.src));
+            if (fs.existsSync(path.join(this.mainFolder, "songs", song.src))) {
                 const audio = this.elements.audio;
                 audio.src = `${this.mainFolder}/songs/${song.src}`;
                 audio.play();
                 this.app.currentSondID = id;
-            } catch (err) {
-                this.error(`File "${song.src}" is missing`);
-            }
+            } else this.error(`File "${song.src}" is missing`);
         } else this.error(`Song ID "${id}" not found`);
     }
 
@@ -164,10 +161,6 @@ class SongListener {
 
     getCurrentSongCurrentTime() {
         return this.elements.audio.currentTime;
-    }
-
-    getCurrentSong() {
-        
     }
 
     setVolume(volume) {

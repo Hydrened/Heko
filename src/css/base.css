@@ -35,6 +35,11 @@ button {
     outline: none;
     border: none;
 }
+input {
+    outline: none;
+    border: none;
+    background-color: var(--bg-col-4);
+}
 
 
 input[type="range"] {
@@ -57,12 +62,15 @@ input[type="range"]::-webkit-slider-thumb {
     width: 8px;
 }
 ::-webkit-scrollbar-track {
-    background: rgb(60,62,64);
+    background: var(--bg-col-4);
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb {
-    background: var(--col-1);
+    background: rgb(90,92,94);
     border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--col-1);
 }
 
 

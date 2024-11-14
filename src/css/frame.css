@@ -24,6 +24,9 @@ header.frame > div.buttons-container > button {
 header.frame > div.buttons-container > button:hover {
     background-color: rgba(255,255,255,0.2);
 }
+header.frame > div.buttons-container > button:last-child:hover {
+    background-color: var(--bg-col-error);
+}
 
 
 

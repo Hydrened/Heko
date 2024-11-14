@@ -1,7 +1,7 @@
 div#error-modal {
     padding: 2rem 3rem;
     background-color: var(--bg-col-2);
-    border: 3px solid rgb(132, 34, 34);
+    border: 3px solid var(--bg-col-error);
     border-radius: 1rem;
     position: absolute;
     top: -100%;
@@ -9,10 +9,76 @@ div#error-modal {
     transform: translateX(-50%);
     transition: top 700ms ease-out, opacity 500ms;
     cursor: pointer;
+    z-index: 100;
 }
 div#error-modal.show {
     top: 5rem;
 }
 div#error-modal.closing {
     opacity: 0;
+}
+
+
+
+div.modal {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: -100vh;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: rgba(0,0,0,0.8);
+    transition: top 600ms;
+    z-index: 10;
+}
+div.modal.open {
+    top: 0;
+}
+div.modal > div {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+
+
+div.modal h2 {
+    font-size: 2rem;
+}
+div.modal input {
+    padding: 0.5rem 0.8rem;
+    font-size: 2rem;
+    border-radius: 0.6rem;
+}
+div.modal div.button-container {
+    display: flex;
+    gap: 1.5rem;
+}
+div.modal button {
+    padding: 0.4rem 0.7rem;
+    font-size: 1.5rem;
+    border-radius: 0.4rem;
+    cursor: pointer;
+    transition: filter 200ms;
+}
+div.modal button:hover {
+    filter: brightness(130%);
+}
+div.modal button.confirm {
+    background-color: var(--bg-col-success);
+}
+div.modal button.error {
+    background-color: var(--bg-col-error);
+}
+div.modal p {
+    font-size: 1.2rem;
+}
+div.modal p.success {
+    color: var(--font-col-success);
+}
+div.modal p.error {
+    color: var(--font-col-error);
 }

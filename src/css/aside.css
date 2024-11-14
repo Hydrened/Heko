@@ -23,7 +23,8 @@ aside li.playlist > div.container {
     cursor: pointer;
     transition: 150ms;
 }
-aside li.playlist > div.container:hover {
+aside li.playlist > div.container:hover,
+aside li.playlist > div.container.contextmenu-hover {
     background-color: var(--bg-col-3);
 }
 aside li.playlist > div.container > div.thumbnail {

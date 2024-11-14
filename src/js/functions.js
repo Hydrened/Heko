@@ -10,3 +10,21 @@ function formatTime(seconds) {
     const secondsStr = String(remainingSeconds).padStart(2, "0");
     return `${minutesStr}:${secondsStr}`;
 }
+async function readJSONFile(filePath) { // v1.0
+    try {
+        const data = await fs.readFile(filePath, "utf8");
+        return JSON.parse(data);
+    } catch (err) {
+        alert(`Error reading or parsing the file ${filePath}:`, err);
+        throw err;
+    }
+}
+async function writeJSONFile(filePath, data) { // v1.0
+    try {
+        const jsonData = JSON.stringify(data, null, 2);
+        await fs.writeFile(filePath, jsonData, "utf8");
+    } catch (err) {
+        alert(`Error writing the file ${filePath}:`, err);
+        throw err;
+    }
+}

@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="css/root.css">
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/frame.css">
+        <link rel="stylesheet" href="css/contextmenu.css">
         <link rel="stylesheet" href="css/main.css">
         <link rel="stylesheet" href="css/aside.css">
         <link rel="stylesheet" href="css/current-playlist.css">
@@ -14,8 +15,10 @@
         <link rel="stylesheet" href="css/modal.css">
         <script src="js/functions.js"></script>
         <script src="js/frame.js"></script>
+        <script src="js/contextmenu.js"></script>
         <script src="js/song-listener.js"></script>
         <script src="js/app.js"></script>
+        <script src="js/base.js"></script>
     </head>
     <body>
         <header class="frame">
@@ -86,21 +89,18 @@
                 </article>
             </footer>
             <div id="error-modal"></div>
+            <div class="modal" id="create-playlist-modal">
+                <div>
+                    <h2>Playlist name</h2>
+                    <input type="text" id="create-playlist-modal-input">
+                    <div class="button-container">
+                        <button class="confirm" id="create-playlist-modal-confirm-button">Create</button>
+                        <button class="error" id="create-playlist-modal-cancel-button">Cancel</button>
+                    </div>
+                    <p id="create-playlist-modal-message"></p>
+                </div>
+            </div>
             <audio id="audio" hidden></audio>
         </div>
-        <script>
-            const { ipcRenderer } = require("electron");
-            const fs = require("fs").promises;
-            const path = require("path");
-
-            window.addEventListener("load", () => {
-                const frame = new Frame();
-
-                ipcRenderer.send("get-main-folder");
-                ipcRenderer.on("send-main-folder", (e, mainFolder) => {
-                    const app = new App(mainFolder.replaceAll("\\", "/"));
-                });
-            });
-        </script>
     </body>
 </html>

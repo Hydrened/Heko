@@ -1,5 +1,3 @@
-const { cpSync } = require("original-fs");
-
 class App {
     constructor(mainFolder) {
         this.mainFolder = mainFolder;
@@ -44,9 +42,20 @@ class App {
                     duration: document.getElementById("song-duration"),
                     position: document.getElementById("song-position"),
                 },
+                details: {
+                    title: document.getElementById("current-song-name"),
+                    artist: document.getElementById("current-song-artist"),
+                },
             },
             modal: {
                 error: document.getElementById("error-modal"),
+                createPlaylist: {
+                    container: document.getElementById("create-playlist-modal"),
+                    input: document.getElementById("create-playlist-modal-input"),
+                    confirmButton: document.getElementById("create-playlist-modal-confirm-button"),
+                    cancelButton: document.getElementById("create-playlist-modal-cancel-button"),
+                    message: document.getElementById("create-playlist-modal-message"),
+                },
             },
         };
 
@@ -55,6 +64,7 @@ class App {
 
         this.initData().then(() => {
             this.songListener = new SongListener(this);
+            this.contextMenu = new Contextmenu(this);
             this.setVolume(this.saves.volume);
 
             this.handleEvents();
@@ -141,22 +151,43 @@ class App {
 
         this.elements.modal.error.addEventListener("click", () => this.closeError());
 
+        this.elements.modal.createPlaylist.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
+        this.elements.modal.createPlaylist.confirmButton.addEventListener("click", () => this.createPlaylist());
+
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
+            this.contextMenu.close();
+
+            if (e.target.closest(`#${this.elements.aside.playlistsContainer.id} > li.playlist`)) this.contextMenu.open(e, "playlists-container-playlist");
+            else if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) this.contextMenu.open(e, "playlists-container");
+        });
+
+        document.addEventListener("click", () => {
+            setTimeout(() => this.contextMenu.close(), 10);
         });
 
         window.addEventListener("keydown", (e) => {
             switch (e.key) {
                 case "Tab": e.preventDefault(); break;
+
+                case "Escape":
+                    if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.closeCreatePlaylistModal();
+                    break;
+                case "Enter":
+                    if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.createPlaylist();
+                    break;
+
+                case "ArrowLeft": this.songListener.previous(); break;
+                case "ArrowRight": this.songListener.next(); break;
+
                 case " ":
                     if (this.songListener.isPaused()) this.elements.footer.buttons.play.dispatchEvent(new Event("click"));
                     else this.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
                     break;
-                case "ArrowLeft": this.songListener.previous(); break;
-                case "ArrowRight": this.songListener.next(); break;
                 case "l": this.songListener.loop(); break;
                 case "r": this.songListener.random(); break;
-                case "q": this.songListener.setCurrentTime(151); break;
+                case "n": if (e.ctrlKey) this.openCreatePlaylistModal(); break;
+
                 default: break;
             }
         });
@@ -164,24 +195,22 @@ class App {
 
     initData() {
         let volume = 0;
-        const readSaves = fs.readFile(this.mainFolder + "/data/saves.json", "utf8").then(data => {
+        const readSaves = fsp.readFile(this.mainFolder + "/data/saves.json", "utf8").then(data => {
             const jsonData = JSON.parse(data);
             this.settings.loop = jsonData.loop;
             this.settings.random = jsonData.random;
             this.saves.volume = jsonData.volume;
-        }).catch(err => console.error("Error reading saves.json:", err));
+        }).catch(err => this.error("Error reading saves.json:", err));
 
-        const readSongs = fs.readFile(this.mainFolder + "/data/songs.json", "utf8").then(data => {
+        const readSongs = fsp.readFile(this.mainFolder + "/data/songs.json", "utf8").then(data => {
             this.songs = JSON.parse(data);
-        }).catch(err => console.error("Error reading songs.json:", err));
+        }).catch(err => this.error("Error reading songs.json:", err));
 
-        const readPlaylists = fs.readFile(this.mainFolder + "/data/playlists.json", "utf8").then(data => {
+        const readPlaylists = fsp.readFile(this.mainFolder + "/data/playlists.json", "utf8").then(data => {
             this.playlists = JSON.parse(data);
-        }).catch(err => console.error("Error reading playlists.json:", err));
+        }).catch(err => this.error("Error reading playlists.json:", err));
 
-        return Promise.all([readSaves, readSongs, readPlaylists]).then().catch(err => {
-            console.error("Erreur lors de la lecture des fichiers :", err);
-        });
+        return Promise.all([readSaves, readSongs, readPlaylists]).then().catch(err => this.error("Error reading json files :", err));
     }
 
     initPlaylists() {
@@ -234,11 +263,14 @@ class App {
         if (!this.songListener.isPaused()) {
             const currentTime = this.songListener.getCurrentSongCurrentTime();
             const duration = this.songListener.getCurrentSongDuration();
+            const currentSong = this.songs[this.currentSondID];
 
             if (!isNaN(currentTime) && !isNaN(duration)) {
                 this.elements.footer.song.position.textContent = formatTime(parseInt(currentTime));
                 this.elements.footer.song.duration.textContent = formatTime(parseInt(duration));
                 this.elements.footer.song.slider.value = currentTime / duration * 100;
+                this.elements.footer.details.title.textContent = currentSong.name;
+                this.elements.footer.details.artist.textContent = `by ${(currentSong.artist == "") ? "-" : currentSong.artist}`;
             }
         }
         
@@ -280,7 +312,7 @@ class App {
         li.appendChild(childrenContainer);
     }
 
-    async openPlaylist(id) {
+    openPlaylist(id) {
         const playlist = this.playlists[id];
 
         if (playlist != this.currentPlaylist) {
@@ -288,15 +320,7 @@ class App {
                 this.currentPlaylist = playlist;
                 this.elements.currentPlaylist.songContainer.innerHTML = "";
 
-                if (playlist.thumbnail != "") {
-                    try {
-                        await fs.access(path.join(this.mainFolder, "thumbnails", playlist.thumbnail));
-                        this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
-                    } catch (err) {
-                        this.error(`Thumbnail "${playlist.thumbnail}" is missing`);
-                    }
-                } else this.elements.currentPlaylist.thumbnail.style.backgroundImage = "";
-
+                this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
                 this.elements.currentPlaylist.title.textContent = playlist.name;
                 this.elements.currentPlaylist.nbSong.textContent = `${playlist.songs.length} songs`;
                 if (playlist.songs.length < 2) this.elements.currentPlaylist.nbSong.textContent = this.elements.currentPlaylist.nbSong.textContent.slice(0, -1);
@@ -328,6 +352,8 @@ class App {
                         li.appendChild(duration);
 
                         li.addEventListener("click", () => {
+                            this.elements.footer.buttons.pause.classList.remove("hidden");
+                            this.elements.footer.buttons.play.classList.add("hidden");
                             this.songListener.setCurrentPlaylist(playlist);
                             this.songListener.playSong(sID);
                         });
@@ -335,6 +361,60 @@ class App {
                 });
             } else this.error(`Playlist ID "${id}" not found`);
         }
+    }
+
+    openCreatePlaylistModal() {
+        const modal = this.elements.modal.createPlaylist;
+        modal.container.classList.add("open");
+        modal.input.focus();
+    }
+
+    closeCreatePlaylistModal() {
+        const modal = this.elements.modal.createPlaylist.container;
+        modal.classList.remove("open");
+    }
+
+    createPlaylist() {
+        const modal = this.elements.modal.createPlaylist;
+        const name = modal.input.value;
+        modal.message.classList.value = "";
+        modal.message.textContent = "";
+        
+        if (Object.values(this.playlists).map((p) => p.name).includes(name)) {
+            modal.message.textContent = `A playlist named "${name}" already exist.`;
+            modal.message.classList.add("error");
+            return;
+        }
+
+        const forbiddenCharacters = ['"', "'"];
+        if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) {
+            modal.message.textContent = `Playlist name can't contain the characters [", '].`;
+            modal.message.classList.add("error");
+            return;
+        }
+
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
+
+            jsonData[id] = {
+                name: name,
+                thumbnail: "",
+                songs: [],
+                parent: null,
+            };
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = `Playlist "${name}" sucessfuly created!`;
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.closeCreatePlaylistModal();
+                    setTimeout(() => window.location.href = "", 600);
+                }, 1500);
+            }).catch((readErr) => this.error("Error: cant write playlists.json"));
+        }).catch((readErr) => this.error("Error: cant read playlists.json"));
     }
 
     setVolume(volume) {

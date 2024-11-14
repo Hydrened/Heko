@@ -42,6 +42,12 @@ section > div.current-playlist-table {
     display: grid;
     grid-template-rows: auto 1fr;
 }
+section > div.current-playlist-table > div.current-playlist-table-head {
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+section > div.current-playlist-table > ul#current-playlist-table-body {
+    overflow-y: scroll;
+}
 section > div.current-playlist-table > div.current-playlist-table-head,
 section > div.current-playlist-table > ul#current-playlist-table-body > li {
     display: grid;

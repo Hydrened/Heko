@@ -1,0 +1,14 @@
+ul.contextmenu {
+    min-width: 10rem;
+    position: absolute;
+    background-color: var(--bg-col-2);
+    border-radius: 0.25rem;
+    border: 1px solid var(--bg-col-4);
+}
+ul.contextmenu > li {
+    padding: 0.4rem 0.6rem;
+    cursor: pointer;
+}
+ul.contextmenu > li:hover {
+    background-color: var(--bg-col-4);
+}
