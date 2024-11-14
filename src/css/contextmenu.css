@@ -1,14 +1,27 @@
-ul.contextmenu {
+ul.contextmenu,
+ul.contextmenu ul {
     min-width: 10rem;
     position: absolute;
     background-color: var(--bg-col-2);
     border-radius: 0.25rem;
     border: 1px solid var(--bg-col-4);
+    overflow: visible;
 }
-ul.contextmenu > li {
+ul.contextmenu ul {
+    position: absolute;
+    top: 0;
+    left: 100%;
+}
+ul.contextmenu > li,
+ul.contextmenu ul > li {
     padding: 0.4rem 0.6rem;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
     cursor: pointer;
+    overflow: visible;
 }
-ul.contextmenu > li:hover {
+ul.contextmenu > li:hover,
+ul.contextmenu ul > li:hover {
     background-color: var(--bg-col-4);
 }

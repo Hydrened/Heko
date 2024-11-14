@@ -56,6 +56,13 @@ class App {
                     cancelButton: document.getElementById("create-playlist-modal-cancel-button"),
                     message: document.getElementById("create-playlist-modal-message"),
                 },
+                confirmRemovePlaylist: {
+                    container: document.getElementById("confirm-remove-playlist-modal"),
+                    name: document.getElementById("confirm-remove-playlist-name"),
+                    confirmButton: document.getElementById("confirm-remove-playlist-confirm-button"),
+                    cancelButton: document.getElementById("confirm-remove-playlist-cancel-button"),
+                    message: document.getElementById("confirm-remove-playlist-message"),
+                },
             },
         };
 
@@ -154,12 +161,32 @@ class App {
         this.elements.modal.createPlaylist.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
         this.elements.modal.createPlaylist.confirmButton.addEventListener("click", () => this.createPlaylist());
 
+        this.elements.modal.confirmRemovePlaylist.cancelButton.addEventListener("click", () => this.closeConfirmRemovePlaylist());
+        this.elements.modal.confirmRemovePlaylist.confirmButton.addEventListener("click", () => this.removePlaylist());
+
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             this.contextMenu.close();
 
-            if (e.target.closest(`#${this.elements.aside.playlistsContainer.id} > li.playlist`)) this.contextMenu.open(e, "playlists-container-playlist");
-            else if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) this.contextMenu.open(e, "playlists-container");
+            if (e.target.closest(`#${this.elements.aside.playlistsContainer.id} > li.playlist`)) {
+                const playlistContainers = Array.from(this.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
+                const playlistElement = playlistContainers.filter((pEl) => isChildOf(pEl, e.target))[0];
+                const pID = parseInt(playlistElement.getAttribute("playlist-id"));
+                const playlist = this.playlists[pID];
+
+                const children = getChildrenByName(this.playlists, playlist.name).map((p) => p.name);
+                const removedSelf = Object.values(this.playlists).filter((p) => p.name != playlist.name);
+                const removedChildren = removedSelf.filter((p) => !children.includes(p.name));
+                const removedParent = (playlist.parent != null) ? removedChildren.filter((p) => p.name != this.playlists[playlist.parent].name) : removedChildren;
+                const mapped = removedParent.map((p) => { return { name: p.name, call: () => this.movePlaylist(pID, getPlaylistIdByName(this.playlists, p.name))}});
+                mapped.unshift({ name: "Root", call: () => this.movePlaylist(pID, null)});
+
+                this.contextMenu.open(e, playlistElement.children[0], [
+                    { name: "Rename", call: null, children: [] },
+                    { name: "Remove", call: () => this.openConfirmRemovePlaylist(pID), children: [] },
+                    { name: "Move to", call: null, children: mapped },
+                ]);
+            } else if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) this.contextMenu.open(e, null, [{ name: "Create playlist", call: () => this.openCreatePlaylistModal(), children: [] }]);
         });
 
         document.addEventListener("click", () => {
@@ -172,9 +199,11 @@ class App {
 
                 case "Escape":
                     if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.closeCreatePlaylistModal();
+                    if (this.elements.modal.confirmRemovePlaylist.container.classList.contains("open")) this.closeConfirmRemovePlaylist();
                     break;
                 case "Enter":
                     if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.createPlaylist();
+                    if (this.elements.modal.confirmRemovePlaylist.container.classList.contains("open")) this.removePlaylist();
                     break;
 
                 case "ArrowLeft": this.songListener.previous(); break;
@@ -214,41 +243,35 @@ class App {
     }
 
     initPlaylists() {
-        const writtenPlaylistIDs = [];
+        sortPlaylistsByDependencies(this.playlists).forEach((playlist) => {
+            this.appendPlaylist(getPlaylistIdByName(this.playlists, playlist.name), playlist);
+        });
 
-        for (const strID in this.playlists) {
-            const pID = parseInt(strID);
-            const playlist = this.playlists[pID];
-
-            let parent = playlist.parent;
-            while (parent != null) {
-                this.appendPlaylist(pID, playlist, parent);
-                writtenPlaylistIDs.push(pID);
-                parent = parent.parent;
-            }
-
-            if (writtenPlaylistIDs.includes(pID)) continue;
-            this.appendPlaylist(pID, playlist, null);
-            writtenPlaylistIDs.push(pID);
-        }
-
-        const writtenPlaylists = document.querySelectorAll("[playlist-id]");
-        for (let i = 0; i < writtenPlaylists.length; i++) {
-            const playlist = writtenPlaylists[i];
+        const appendPlaylists = document.querySelectorAll("[playlist-id]");
+        for (let i = 0; i < appendPlaylists.length; i++) {
+            const playlist = appendPlaylists[i];
             const playlistContainer = playlist.querySelector("div");
             const childrenContainer = playlist.querySelector("ul");
             const nbSubPlaylist = childrenContainer.children.length;
             const pID = parseInt(playlist.getAttribute("playlist-id"));
             const content = playlist.querySelector("h5");
+            let arrow = null;
 
             if (nbSubPlaylist == 0) {
                 const nbSongs = this.playlists[pID].songs.length;
                 content.textContent = `${nbSongs} song${(nbSongs < 2) ? "" : "s"}`;
-            } else content.textContent = `${nbSubPlaylist} playlist${(nbSubPlaylist < 2) ? "" : "s"}`;
+            } else {
+                arrow = document.createElement("p");
+                arrow.textContent = ">";
+                playlistContainer.appendChild(arrow);
+                content.textContent = `${nbSubPlaylist} playlist${(nbSubPlaylist < 2) ? "" : "s"}`;
+            }
 
             playlistContainer.addEventListener("click", () => {
-                if (nbSubPlaylist == 0) this.openPlaylist(pID);
-                else childrenContainer.classList.toggle("show");
+                if (nbSubPlaylist != 0) {
+                    childrenContainer.classList.toggle("show");
+                    arrow.classList.toggle("show");
+                } else this.openPlaylist(pID);
             });
         }
     }
@@ -277,13 +300,13 @@ class App {
         setTimeout(() => this.updateLoop(), 16.67);
     }
 
-    appendPlaylist(id, playlist, parentID) {
+    appendPlaylist(id, playlist) {
         const li = document.createElement("li");
         li.classList.add("playlist");
         li.setAttribute("playlist-id", id);
         
-        if (parentID == null) this.elements.aside.playlistsContainer.appendChild(li);
-        else document.getElementById(`children-container-${parentID}`).appendChild(li);
+        if (playlist.parent == null) this.elements.aside.playlistsContainer.appendChild(li);
+        else document.getElementById(`children-container-${playlist.parent}`).appendChild(li);
 
         const container = document.createElement("div");
         container.classList.add("container");
@@ -374,6 +397,17 @@ class App {
         modal.classList.remove("open");
     }
 
+    openConfirmRemovePlaylist(id) {
+        const modal = this.elements.modal.confirmRemovePlaylist;
+        modal.name.textContent = this.playlists[id].name;
+        modal.container.classList.add("open");
+    }
+
+    closeConfirmRemovePlaylist() {
+        const modal = this.elements.modal.confirmRemovePlaylist.container;
+        modal.classList.remove("open");
+    }
+
     createPlaylist() {
         const modal = this.elements.modal.createPlaylist;
         const name = modal.input.value;
@@ -414,6 +448,38 @@ class App {
                     setTimeout(() => window.location.href = "", 600);
                 }, 1500);
             }).catch((readErr) => this.error("Error: cant write playlists.json"));
+        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+    }
+
+    removePlaylist() {
+        const modal = this.elements.modal.confirmRemovePlaylist;
+        const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
+        const playlist = this.playlists[id];
+
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            delete jsonData[id];            
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = `Playlist "${playlist.name}" sucessfuly removed!`;
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.closeConfirmRemovePlaylist();
+                    setTimeout(() => window.location.href = "", 600);
+                }, 1500);
+            }).catch((readErr) => this.error("Error: cant write playlists.json"));
+        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+    }
+
+    movePlaylist(playlistID, parentID) {
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            jsonData[playlistID].parent = parentID;
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => window.location.href = "").catch((readErr) => this.error("Error: cant write playlists.json"));
         }).catch((readErr) => this.error("Error: cant read playlists.json"));
     }
 

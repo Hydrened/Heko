@@ -16,8 +16,9 @@ aside > ul#playlists-container {
     overflow-y: scroll;
 }
 aside li.playlist > div.container {
-    padding: 0.5rem;
+    padding: 0.5rem 1.2rem 0.5rem 0.5rem;
     display: flex;
+    align-items: center;
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
     cursor: pointer;
@@ -34,6 +35,13 @@ aside li.playlist > div.container > div.thumbnail {
     background-size: cover;
     background-repeat: no-repeat;
     border-radius: 0.4rem;
+}
+aside li.playlist > div.container > p {
+    font-weight: bold;
+    transform: rotate(90deg);
+}
+aside li.playlist > div.container > p.show {
+    transform: rotate(0deg);
 }
 aside li.playlist > div.container > div.details {
     flex: 1;
