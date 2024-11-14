@@ -62,3 +62,13 @@ function sortPlaylistsByDependencies(playlists) {
     Object.keys(playlists).forEach(id => visit(id));
     return sorted;
 }
+
+function getPlaylistNameErrors(playlists, name) {
+    const res = [];
+
+    if (Object.values(playlists).map((p) => p.name).includes(name)) res.push(`A playlist named "${name}" already exist.`);
+    const forbiddenCharacters = ['"', "'"];
+    if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) res.push(`Playlist name can't contain the characters [", '].`);
+
+    return res;
+}

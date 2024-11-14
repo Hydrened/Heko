@@ -63,6 +63,14 @@ class App {
                     cancelButton: document.getElementById("confirm-remove-playlist-cancel-button"),
                     message: document.getElementById("confirm-remove-playlist-message"),
                 },
+                renamePlaylist: {
+                    container: document.getElementById("rename-playlist-modal"),
+                    name: document.getElementById("rename-playlist-name"),
+                    input: document.getElementById("rename-playlist-input"),
+                    confirmButton: document.getElementById("rename-playlist-confirm-button"),
+                    cancelButton: document.getElementById("rename-playlist-cancel-button"),
+                    message: document.getElementById("rename-playlist-message"),
+                },
             },
         };
 
@@ -161,8 +169,11 @@ class App {
         this.elements.modal.createPlaylist.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
         this.elements.modal.createPlaylist.confirmButton.addEventListener("click", () => this.createPlaylist());
 
-        this.elements.modal.confirmRemovePlaylist.cancelButton.addEventListener("click", () => this.closeConfirmRemovePlaylist());
+        this.elements.modal.confirmRemovePlaylist.cancelButton.addEventListener("click", () => this.closeConfirmRemovePlaylistModal());
         this.elements.modal.confirmRemovePlaylist.confirmButton.addEventListener("click", () => this.removePlaylist());
+
+        this.elements.modal.renamePlaylist.cancelButton.addEventListener("click", () => this.closeRenamePlaylistModal());
+        this.elements.modal.renamePlaylist.confirmButton.addEventListener("click", () => this.renamePlaylist());
 
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
@@ -182,8 +193,8 @@ class App {
                 mapped.unshift({ name: "Root", call: () => this.movePlaylist(pID, null)});
 
                 this.contextMenu.open(e, playlistElement.children[0], [
-                    { name: "Rename", call: null, children: [] },
-                    { name: "Remove", call: () => this.openConfirmRemovePlaylist(pID), children: [] },
+                    { name: "Rename", call: () => this.openRenamePlaylistModal(pID), children: [] },
+                    { name: "Remove", call: () => this.openConfirmRemovePlaylistModal(pID), children: [] },
                     { name: "Move to", call: null, children: mapped },
                 ]);
             } else if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) this.contextMenu.open(e, null, [{ name: "Create playlist", call: () => this.openCreatePlaylistModal(), children: [] }]);
@@ -199,11 +210,13 @@ class App {
 
                 case "Escape":
                     if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.closeCreatePlaylistModal();
-                    if (this.elements.modal.confirmRemovePlaylist.container.classList.contains("open")) this.closeConfirmRemovePlaylist();
+                    if (this.elements.modal.confirmRemovePlaylist.container.classList.contains("open")) this.closeConfirmRemovePlaylistModal();
+                    if (this.elements.modal.renamePlaylist.container.classList.contains("open")) this.closeRenamePlaylistModal();
                     break;
                 case "Enter":
                     if (this.elements.modal.createPlaylist.container.classList.contains("open")) this.createPlaylist();
                     if (this.elements.modal.confirmRemovePlaylist.container.classList.contains("open")) this.removePlaylist();
+                    if (this.elements.modal.renamePlaylist.container.classList.contains("open")) this.renamePlaylist();
                     break;
 
                 case "ArrowLeft": this.songListener.previous(); break;
@@ -397,14 +410,27 @@ class App {
         modal.classList.remove("open");
     }
 
-    openConfirmRemovePlaylist(id) {
+    openConfirmRemovePlaylistModal(id) {
         const modal = this.elements.modal.confirmRemovePlaylist;
         modal.name.textContent = this.playlists[id].name;
         modal.container.classList.add("open");
     }
 
-    closeConfirmRemovePlaylist() {
+    closeConfirmRemovePlaylistModal() {
         const modal = this.elements.modal.confirmRemovePlaylist.container;
+        modal.classList.remove("open");
+    }
+
+    openRenamePlaylistModal(id) {
+        const modal = this.elements.modal.renamePlaylist;
+        modal.name.textContent = this.playlists[id].name;
+        modal.input.value = this.playlists[id].name;
+        modal.container.classList.add("open");
+        modal.input.focus();
+    }
+
+    closeRenamePlaylistModal() {
+        const modal = this.elements.modal.renamePlaylist.container;
         modal.classList.remove("open");
     }
 
@@ -414,41 +440,35 @@ class App {
         modal.message.classList.value = "";
         modal.message.textContent = "";
         
-        if (Object.values(this.playlists).map((p) => p.name).includes(name)) {
-            modal.message.textContent = `A playlist named "${name}" already exist.`;
+        const errors = getPlaylistNameErrors(this.playlists, name);
+        if (errors.length == 0) {
+            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+                const jsonData = JSON.parse(data);
+                const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
+
+                jsonData[id] = {
+                    name: name,
+                    thumbnail: "",
+                    songs: [],
+                    parent: null,
+                };
+
+                fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                    modal.message.textContent = `Playlist "${name}" sucessfuly created!`;
+                    modal.message.classList.remove("error");
+                    modal.message.classList.add("success");
+
+                    setTimeout(() => {
+                        this.closeCreatePlaylistModal();
+                        setTimeout(() => window.location.href = "", 600);
+                    }, 1500);
+                }).catch((readErr) => this.error("Error: cant write playlists.json"));
+            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+        } else {
+            modal.message.textContent = errors[0];
             modal.message.classList.add("error");
-            return;
         }
-
-        const forbiddenCharacters = ['"', "'"];
-        if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) {
-            modal.message.textContent = `Playlist name can't contain the characters [", '].`;
-            modal.message.classList.add("error");
-            return;
-        }
-
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
-            const jsonData = JSON.parse(data);
-            const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
-
-            jsonData[id] = {
-                name: name,
-                thumbnail: "",
-                songs: [],
-                parent: null,
-            };
-
-            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                modal.message.textContent = `Playlist "${name}" sucessfuly created!`;
-                modal.message.classList.add("success");
-
-                setTimeout(() => {
-                    this.closeCreatePlaylistModal();
-                    setTimeout(() => window.location.href = "", 600);
-                }, 1500);
-            }).catch((readErr) => this.error("Error: cant write playlists.json"));
-        }).catch((readErr) => this.error("Error: cant read playlists.json"));
     }
 
     removePlaylist() {
@@ -459,18 +479,53 @@ class App {
         const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
         fsp.readFile(playlistsFile, "utf-8").then((data) => {
             const jsonData = JSON.parse(data);
-            delete jsonData[id];            
+            delete jsonData[id];
+
+            for (const pID in jsonData) {
+                const p = jsonData[pID];
+                if (p.parent == id) p.parent = null;
+            }
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
                 modal.message.textContent = `Playlist "${playlist.name}" sucessfuly removed!`;
+                modal.message.classList.remove("error");
                 modal.message.classList.add("success");
 
                 setTimeout(() => {
-                    this.closeConfirmRemovePlaylist();
+                    this.closeConfirmRemovePlaylistModal();
                     setTimeout(() => window.location.href = "", 600);
                 }, 1500);
             }).catch((readErr) => this.error("Error: cant write playlists.json"));
         }).catch((readErr) => this.error("Error: cant read playlists.json"));
+    }
+    
+    renamePlaylist() {
+        const modal = this.elements.modal.renamePlaylist;
+        const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
+        const newName = modal.input.value;
+
+        const errors = getPlaylistNameErrors(this.playlists, newName);
+        if (errors.length == 0) {
+            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+                const jsonData = JSON.parse(data);
+                jsonData[id].name = newName;
+
+                fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                    modal.message.textContent = `Playlist "${newName}" sucessfuly renamed!`;
+                    modal.message.classList.remove("error");
+                    modal.message.classList.add("success");
+
+                    setTimeout(() => {
+                        this.closeRenamePlaylistModal();
+                        setTimeout(() => window.location.href = "", 600);
+                    }, 1500);
+                }).catch((readErr) => this.error("Error: cant write playlists.json"));
+            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+        } else {
+            modal.message.textContent = errors[0];
+            modal.message.classList.add("error");
+        }
     }
 
     movePlaylist(playlistID, parentID) {

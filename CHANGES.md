@@ -1,3 +1,9 @@
+## HEKO-1.0.3
+#### ADDED
+- rename playlist
+#### FIXED
+- removing parent playlist
+
 ## HEKO-1.0.2
 #### ADDED
 - move playlist
