@@ -49,6 +49,11 @@ section > header > div.current-playlist-details > h4#current-playlist-nb-song {
 section > div.current-playlist-table {
     display: grid;
     grid-template-rows: auto 1fr;
+    transform: translateX(50%);
+    transition: 500ms ease-out;
+}
+section.open > div.current-playlist-table {
+    transform: translateX(0%);
 }
 section > div.current-playlist-table > div.current-playlist-table-head {
     border-bottom: 2px solid rgba(255,255,255,0.2);

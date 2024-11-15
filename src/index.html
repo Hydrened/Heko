@@ -128,6 +128,28 @@
                     <p id="rename-playlist-message"></p>
                 </div>
             </div>
+            <div class="modal" id="add-songs-to-playlist-modal">
+                <div>
+                    <h2>Select the song you want to add to "<span id="add-songs-to-playlist-name"></span>"</h2>
+                    <input type="text" id="add-songs-to-playlist-input">
+                    <ul id="add-songs-to-playlist-song-container"></ul>
+                    <div class="button-container">
+                        <button class="confirm" id="add-songs-to-playlist-confirm-button">Add songs</button>
+                        <button class="error" id="add-songs-to-playlist-cancel-button">Cancel</button>
+                    </div>
+                    <p id="add-songs-to-playlist-message"></p>
+                </div>
+            </div>
+            <div class="modal" id="remove-song-from-playlist-modal">
+                <div>
+                    <h2>Are you sure you want to remove "<span id="remove-song-from-playlist-song"></span>" from "<span id="remove-song-from-playlist-playlist"></span>"</h2>
+                    <div class="button-container">
+                        <button class="confirm" id="remove-song-from-playlist-confirm-button">Confirm</button>
+                        <button class="error" id="remove-song-from-playlist-cancel-button">Cancel</button>
+                    </div>
+                    <p id="remove-song-from-playlist-message"></p>
+                </div>
+            </div>
             <audio id="audio" hidden></audio>
         </div>
     </body>

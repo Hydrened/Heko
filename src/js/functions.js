@@ -46,6 +46,11 @@ function getPlaylistIdByName(playlists, name) {
     return null;
 }
 
+function getSongIdByName(songs, name) {
+    for (const id in songs) if (songs[id].name == name) return parseInt(id);
+    return null;
+}
+
 function sortPlaylistsByDependencies(playlists) {
     const sorted = [];
     const visited = {};

@@ -42,10 +42,12 @@ input {
 }
 
 
+input {
+    accent-color: var(--col-1);
+}
 input[type="range"] {
     height: 6px;
     outline: none;
-    accent-color: var(--col-1);
     overflow: visible;
 }
 input[type="range"]::-webkit-slider-runnable-track {
@@ -58,6 +60,7 @@ input[type="range"]::-webkit-slider-thumb {
 
 
 
+
 ::-webkit-scrollbar {
     width: 8px;
 }
@@ -66,7 +69,7 @@ input[type="range"]::-webkit-slider-thumb {
     border-radius: 4px;
 }
 ::-webkit-scrollbar-thumb {
-    background: rgb(90,92,94);
+    background: var(--bg-col-7);
     border-radius: 6px;
 }
 ::-webkit-scrollbar-thumb:hover {

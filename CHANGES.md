@@ -1,3 +1,11 @@
+## HEKO-1.0.5
+#### ADDED
+- add song to playlist
+- remove song from playlist
+#### FIXED
+- shortcuts working when a modal in opened
+- error modal not opening
+
 ## HEKO-1.0.4
 #### ADDED
 - add song to queue

@@ -3,7 +3,6 @@ class Modals {
         this.app = app;
 
         this.elements = {
-            error: document.getElementById("error-modal"),
             createPlaylist: {
                 container: document.getElementById("create-playlist-modal"),
                 input: document.getElementById("create-playlist-modal-input"),
@@ -26,14 +25,29 @@ class Modals {
                 cancelButton: document.getElementById("rename-playlist-cancel-button"),
                 message: document.getElementById("rename-playlist-message"),
             },
+            addSongsToPlaylist: {
+                container: document.getElementById("add-songs-to-playlist-modal"),
+                name: document.getElementById("add-songs-to-playlist-name"),
+                input: document.getElementById("add-songs-to-playlist-input"),
+                songContainer: document.getElementById("add-songs-to-playlist-song-container"),
+                confirmButton: document.getElementById("add-songs-to-playlist-confirm-button"),
+                cancelButton: document.getElementById("add-songs-to-playlist-cancel-button"),
+                message: document.getElementById("add-songs-to-playlist-message"),
+            },
+            removeSongFromPlaylist: {
+                container: document.getElementById("remove-song-from-playlist-modal"),
+                song: document.getElementById("remove-song-from-playlist-song"),
+                playlist: document.getElementById("remove-song-from-playlist-playlist"),
+                confirmButton: document.getElementById("remove-song-from-playlist-confirm-button"),
+                cancelButton: document.getElementById("remove-song-from-playlist-cancel-button"),
+                message: document.getElementById("remove-song-from-playlist-message"),
+            },
         };
 
         this.handleEvents();
     }
 
     handleEvents() {
-        this.elements.error.addEventListener("click", () => this.closeError());
-
         this.elements.createPlaylist.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
         this.elements.createPlaylist.confirmButton.addEventListener("click", () => this.app.createPlaylist());
 
@@ -42,6 +56,55 @@ class Modals {
 
         this.elements.renamePlaylist.cancelButton.addEventListener("click", () => this.closeRenamePlaylistModal());
         this.elements.renamePlaylist.confirmButton.addEventListener("click", () => this.app.renamePlaylist());
+
+        this.elements.addSongsToPlaylist.cancelButton.addEventListener("click", () => this.closeAddSongsToPlaylistModal());
+        this.elements.addSongsToPlaylist.confirmButton.addEventListener("click", () => this.app.addSongsToPlaylist());
+        this.elements.addSongsToPlaylist.input.addEventListener("input", (e) => {
+            const modal = this.elements.addSongsToPlaylist;
+            modal.songContainer.innerHTML = "";
+
+            const songsInPlaylist = this.app.playlists[getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)].songs;
+            for (const sID in this.app.songs) {
+                if (songsInPlaylist.includes(parseInt(sID))) continue;
+                const song = this.app.songs[sID];
+                if (!song.name.includes(e.target.value) && !song.artist.includes(e.target.value)) continue;
+    
+                const li = document.createElement("li");
+                li.setAttribute("song-id", sID);
+                this.elements.addSongsToPlaylist.songContainer.appendChild(li);
+
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                li.appendChild(checkbox);
+
+                const details = document.createElement("p");
+                details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
+                li.appendChild(details);
+            }
+        });
+
+        this.elements.removeSongFromPlaylist.cancelButton.addEventListener("click", () => this.closeRemoveSongFromPlaylistModal());
+        this.elements.removeSongFromPlaylist.confirmButton.addEventListener("click", () => this.app.removeSongFromPlaylist());
+        
+        document.addEventListener("click", (e) => {
+            if (e.target.classList.contains("modal")) this.closeCurrentModal();
+        });
+    }
+
+    closeCurrentModal() {
+        this.closeCreatePlaylistModal();
+        this.closeConfirmRemovePlaylistModal();
+        this.closeRenamePlaylistModal();
+        this.closeAddSongsToPlaylistModal();
+        this.closeRemoveSongFromPlaylistModal();
+    }
+
+    isAModalOpened() {
+        return this.elements.createPlaylist.container.classList.contains("open") ||
+               this.elements.renamePlaylist.container.classList.contains("open") ||
+               this.elements.confirmRemovePlaylist.container.classList.contains("open") ||
+               this.elements.addSongsToPlaylist.container.classList.contains("open") ||
+               this.elements.removeSongFromPlaylist.container.classList.contains("open")
     }
     
     openCreatePlaylistModal() {
@@ -52,8 +115,10 @@ class Modals {
     }
 
     closeCreatePlaylistModal() {
-        const modal = this.elements.createPlaylist.container;
-        modal.classList.remove("open");
+        const modal = this.elements.createPlaylist;
+        modal.container.classList.remove("open");
+        modal.input.blur();
+        setTimeout(() => modal.input.value = "", 500);
     }
 
     openConfirmRemovePlaylistModal(id) {
@@ -69,6 +134,7 @@ class Modals {
     }
 
     openRenamePlaylistModal(id) {
+        this.app.contextmenu.close();
         const modal = this.elements.renamePlaylist;
         modal.name.textContent = this.app.playlists[id].name;
         modal.input.value = this.app.playlists[id].name;
@@ -77,8 +143,41 @@ class Modals {
     }
 
     closeRenamePlaylistModal() {
+        const modal = this.elements.renamePlaylist;
+        modal.container.classList.remove("open");
+        modal.input.blur();
+        setTimeout(() => modal.input.value = "", 500);
+    }
+
+    openAddSongsToPlaylistModal(id) {
         this.app.contextmenu.close();
-        const modal = this.elements.renamePlaylist.container;
+        const modal = this.elements.addSongsToPlaylist;
+        const playlist = this.app.playlists[id];
+        modal.name.textContent = playlist.name;
+        modal.container.classList.add("open");
+        modal.input.focus();
+        modal.input.dispatchEvent(new Event("input"));
+    }
+
+    closeAddSongsToPlaylistModal() {
+        const modal = this.elements.addSongsToPlaylist;
+        modal.container.classList.remove("open");
+        modal.input.blur();
+        setTimeout(() => modal.input.value = "", 500);
+    }
+
+    openRemoveSongFromPlaylistModal(pID, sID) {
+        this.app.contextmenu.close();
+        const modal = this.elements.removeSongFromPlaylist;
+        const playlist = this.app.playlists[pID];
+        const song = this.app.songs[sID];
+        modal.song.textContent = song.name;
+        modal.playlist.textContent = playlist.name;
+        modal.container.classList.add("open");
+    }
+
+    closeRemoveSongFromPlaylistModal() {
+        const modal = this.elements.removeSongFromPlaylist.container;
         modal.classList.remove("open");
     }
 };

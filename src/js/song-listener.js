@@ -78,15 +78,21 @@ class SongListener {
     play() {
         const audio = this.elements.audio;
 
-        if (this.app.currentSondID == -1) {
-            this.playNextQueueSong();
-        } else {
-            if (this.isPaused()) audio.play();
-            else audio.pause();
-        }
+        if (this.app.currentSondID != -1) {
+            if (this.isPaused()) {
+                audio.play();
+                this.app.elements.footer.buttons.pause.classList.remove("hidden");
+                this.app.elements.footer.buttons.play.classList.add("hidden");
+            } else {
+                audio.pause();
+                this.app.elements.footer.buttons.play.classList.remove("hidden");
+                this.app.elements.footer.buttons.pause.classList.add("hidden");
+            }
+        } else this.playNextQueueSong();
     }
 
     previous() {
+        if (this.queue.length == 0) return;
         const audio = this.elements.audio;
 
         if (audio.currentTime < 5) this.playPreviousQueueSong();
@@ -141,8 +147,10 @@ class SongListener {
                 const audio = this.elements.audio;
                 audio.src = `${this.mainFolder}/songs/${song.src}`;
                 audio.play();
+                this.app.elements.footer.buttons.pause.classList.remove("hidden");
+                this.app.elements.footer.buttons.play.classList.add("hidden");
                 this.app.currentSondID = id;
-            } else this.error(`File "${song.src}" is missing`);
+            } else this.error(`File "${song.src}" is missing for the song "${song.name} by ${(song.artist == "") ? "-" : song.artist}"`);
         } else this.error(`Song ID "${id}" not found`);
     }
 

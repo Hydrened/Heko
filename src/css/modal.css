@@ -38,6 +38,7 @@ div.modal.open {
     transform: translateY(0%);
 }
 div.modal > div {
+    padding: 3rem;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -50,6 +51,7 @@ div.modal h2 {
     font-size: 2rem;
 }
 div.modal input {
+    width: 80%;
     padding: 0.5rem 0.8rem;
     font-size: 2rem;
     border-radius: 0.6rem;
@@ -75,11 +77,32 @@ div.modal button.error {
     background-color: var(--bg-col-error);
 }
 div.modal p {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
 }
 div.modal p.success {
     color: var(--font-col-success);
 }
 div.modal p.error {
     color: var(--font-col-error);
+}
+div.modal ul {
+    width: 80%;
+    height: 30vh;
+    overflow-y: scroll;
+}
+div.modal ul > li {
+    padding: 0.4rem;
+    display: flex;
+    gap: 1rem;
+    font-size: 1.3rem;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+    transition: 100ms;
+    cursor: pointer;
+}
+div.modal ul > li:hover {
+    background-color: var(--bg-col-2);
+}
+div.modal ul > li > input[type=checkbox] {
+    width: 2rem;
 }

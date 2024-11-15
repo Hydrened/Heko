@@ -49,6 +49,7 @@ class App {
                     artist: document.getElementById("current-song-artist"),
                 },
             },
+            error: document.getElementById("error-modal"),
         };
 
         this.currentPlaylist = null;
@@ -78,20 +79,20 @@ class App {
     }
 
     error(message) {
-        const modal = this.elements.modal.error;
-        modal.textContent = message;
-        modal.classList.add("show");
-        setTimeout(() => this.closeError(), 3000);
+        const error = this.elements.error;
+        error.textContent = message;
+        error.classList.add("show");
+        setTimeout(() => this.closeError(), 5000);
     }
 
     closeError() {
-        const modal = this.elements.modal.error;
-        modal.classList.add("closing");
+        const error = this.elements.error;
+        error.classList.add("closing");
 
         setTimeout(() => {
-            modal.textContent = "";
-            modal.classList.remove("show");
-            modal.classList.remove("closing");
+            error.textContent = "";
+            error.classList.remove("show");
+            error.classList.remove("closing");
         }, 1000);
     }
 
@@ -105,28 +106,19 @@ class App {
 
         this.elements.footer.buttons.previous.addEventListener("click", () => {
             this.songListener.previous();
-            this.elements.footer.buttons.pause.classList.remove("hidden");
-            this.elements.footer.buttons.play.classList.add("hidden");
+
         });
 
         this.elements.footer.buttons.play.addEventListener("click", () => {
             this.songListener.play();
-            if (this.songListener.getError() == "") {
-                this.elements.footer.buttons.pause.classList.remove("hidden");
-                this.elements.footer.buttons.play.classList.add("hidden");
-            }
         });
 
         this.elements.footer.buttons.pause.addEventListener("click", () => {
             this.songListener.play();
-            this.elements.footer.buttons.play.classList.remove("hidden");
-            this.elements.footer.buttons.pause.classList.add("hidden");
         });
 
         this.elements.footer.buttons.next.addEventListener("click", () => {
             this.songListener.next();
-            this.elements.footer.buttons.pause.classList.remove("hidden");
-            this.elements.footer.buttons.play.classList.add("hidden");
         });
 
         this.elements.footer.buttons.loop.addEventListener("click", () => {
@@ -142,6 +134,8 @@ class App {
 
             this.songListener.setCurrentTime(time);
         });
+
+        this.elements.error.addEventListener("click", () => this.closeError());
 
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
@@ -169,7 +163,7 @@ class App {
             }
             
             if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) {
-                this.contextmenu.open(e, null, [{ name: "Create playlist", call: () => this.modals.openCreatePlaylistModal(), children: [], shortcut: "Ctrl+N" }]);
+                this.contextmenu.open(e, null, [{ name: "Create playlist", call: () => this.modals.openCreatePlaylistModal(), children: [], shortcut: "Ctrl+Alt+N" }]);
                 return;
             }
             
@@ -177,14 +171,14 @@ class App {
             if (songLi) {
                 this.contextmenu.open(e, songLi, [
                     { name: "Add to queue", call: () => this.songListener.addToQueue(songLi.getAttribute("song-id")), children: [], shortcut: null },
-                    { name: "Remove from playlist", call: null, children: [], shortcut: null },
+                    { name: "Remove from playlist", call: () => this.modals.openRemoveSongFromPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name), songLi.getAttribute("song-id")), children: [], shortcut: null },
                 ]);
                 return;
             }
 
             if (e.target.closest(`ul#current-playlist-table-body`)) {
                 this.contextmenu.open(e, null, [
-                    { name: "Add song to playlist", call: null, children: [], shortcut: null },
+                    { name: "Add song to playlist", call: () => this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), children: [], shortcut: "Ctrl+N" },
                 ]);
                 return;
             }
@@ -195,13 +189,12 @@ class App {
         });
 
         window.addEventListener("keydown", (e) => {
+            if (!this.modals.isAModalOpened()) return;
+
             switch (e.key) {
                 case "Tab": e.preventDefault(); break;
-
                 case "Escape":
-                    if (this.modals.elements.createPlaylist.container.classList.contains("open")) this.modals.closeCreatePlaylistModal();
-                    if (this.modals.elements.confirmRemovePlaylist.container.classList.contains("open")) this.modals.closeConfirmRemovePlaylistModal();
-                    if (this.modals.elements.renamePlaylist.container.classList.contains("open")) this.modals.closeRenamePlaylistModal();
+                    if (this.modals.isAModalOpened()) this.modals.closeCurrentModal();
                     this.contextmenu.close();
                     break;
                 case "Enter":
@@ -210,6 +203,14 @@ class App {
                     if (this.modals.elements.renamePlaylist.container.classList.contains("open")) this.renamePlaylist();
                     break;
 
+                default: break;
+            }
+        });
+
+        window.addEventListener("keydown", (e) => {
+            if (this.modals.isAModalOpened()) return;
+
+            switch (e.key) {
                 case "ArrowLeft": this.songListener.previous(); break;
                 case "ArrowRight": this.songListener.next(); break;
 
@@ -219,9 +220,13 @@ class App {
                         else this.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
                     }
                     break;
+
                 case "l": this.elements.footer.buttons.loop.dispatchEvent(new Event("click")); break;
                 case "r": this.elements.footer.buttons.random.dispatchEvent(new Event("click")); break;
-                case "n": if (e.ctrlKey) this.modals.openCreatePlaylistModal(); break;
+                case "n": if (e.ctrlKey) {
+                    if (e.altKey) this.modals.openCreatePlaylistModal()
+                    else this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name));
+                } break;
 
                 default: break;
             }
@@ -387,8 +392,6 @@ class App {
                             li.appendChild(duration);
 
                             li.addEventListener("click", () => {
-                                this.elements.footer.buttons.pause.classList.remove("hidden");
-                                this.elements.footer.buttons.play.classList.add("hidden");
                                 this.songListener.setCurrentPlaylist(playlist);
                                 this.songListener.playSong(sID);
                             });
@@ -477,7 +480,7 @@ class App {
                 jsonData[id].name = newName;
 
                 fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                    modal.message.textContent = `Playlist "${newName}" sucessfuly renamed!`;
+                    modal.message.textContent = `Playlist "${modal.name.textContent}" sucessfuly renamed ${newName}!`;
                     modal.message.classList.remove("error");
                     modal.message.classList.add("success");
 
@@ -491,6 +494,59 @@ class App {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
         }
+    }
+
+    addSongsToPlaylist() {
+        const modal = this.modals.elements.addSongsToPlaylist;
+        const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
+        const songsToAdd = [];
+
+        const lis = this.modals.elements.addSongsToPlaylist.container.querySelectorAll("ul > li");
+        for (let i = 0; i < lis.length; i++) {
+            const li = lis[i];
+            const id = li.getAttribute("song-id");
+            if (li.querySelector("input").checked) songsToAdd.push(id);
+        }
+
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            songsToAdd.forEach((sID) => jsonData[id].songs.push(parseInt(sID)));
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = `Songs added sucessfuly to the playlist!`;
+                modal.message.classList.remove("error");
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.modals.closeAddSongsToPlaylistModal();
+                    setTimeout(() => window.location.href = "", 600);
+                }, 1500);
+            }).catch((readErr) => this.error("Error: cant write playlists.json"));
+        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+    }
+
+    removeSongFromPlaylist() {
+        const modal = this.modals.elements.removeSongFromPlaylist;
+        const sID = getSongIdByName(this.songs, modal.song.textContent);
+        const pID = getPlaylistIdByName(this.playlists, modal.playlist.textContent);
+
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            jsonData[pID].songs.splice(jsonData[pID].songs.indexOf(sID), 1);
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = `Song "${modal.song.textContent}" from the playlist "${modal.playlist.textContent}"!`;
+                modal.message.classList.remove("error");
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.modals.closeRemoveSongFromPlaylistModal();
+                    setTimeout(() => window.location.href = "", 600);
+                }, 1500);
+            }).catch((readErr) => this.error("Error: cant write playlists.json"));
+        }).catch((readErr) => this.error("Error: cant read playlists.json"));
     }
 
     movePlaylist(playlistID, parentID) {
