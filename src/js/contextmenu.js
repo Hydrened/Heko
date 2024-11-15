@@ -25,9 +25,9 @@ class Contextmenu {
             if (line.children.length > 0) {
                 let canRemove = true;
 
-                const p = document.createElement("p");
-                p.textContent = ">";
-                li.appendChild(p);
+                const arrow = document.createElement("p");
+                arrow.textContent = ">";
+                li.appendChild(arrow);
 
                 li.addEventListener("mouseenter", () => {
                     canRemove = false;
@@ -45,13 +45,16 @@ class Contextmenu {
                     ulc.addEventListener("mouseleave", () => canRemove = true);
                 });
 
-                this.container.addEventListener("mousemove", (e) => {
-                    setTimeout(() => {
-                        const ul = li.querySelector("ul");
-                        if (!e.target.closest(`ul > li:nth-of-type(${index + 1})`)) canRemove = true;
-                        if (canRemove && ul) ul.remove();
-                    }, 0);
-                });
+                this.container.addEventListener("mousemove", (e) => setTimeout(() => {
+                    const ul = li.querySelector("ul");
+                    if (!e.target.closest(`ul > li:nth-of-type(${index + 1})`)) canRemove = true;
+                    if (canRemove && ul) ul.remove();
+                }, 0));
+            } else if (line.shortcut != null) {
+                const shortcut = document.createElement("p");
+                shortcut.textContent = line.shortcut;
+                shortcut.classList.add("shortcut");
+                li.appendChild(shortcut);
             }
             if (line.call) li.addEventListener("click", () => line.call());
         });

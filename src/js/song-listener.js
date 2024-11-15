@@ -1,9 +1,9 @@
 class SongListener {
     constructor(app) {
         this.app = app;
-        this.songs = this.app.getSongs();
-        this.playlists = this.app.getPlaylists();
-        this.mainFolder = this.app.getMainFolder();
+        this.songs = this.app.songs;
+        this.playlists = this.app.playlists;
+        this.mainFolder = this.app.mainFolder;
 
         this.elements = {
             audio: document.getElementById("audio"),
@@ -95,8 +95,6 @@ class SongListener {
 
     next() {
         this.playNextQueueSong();
-        console.log(this.currentPlaylist);
-        
     }
 
     random() {
@@ -123,6 +121,7 @@ class SongListener {
     }
 
     playNextQueueSong() {
+        if (this.queue.length == 0) return;
         this.playSong(this.queue[0].id);
 
         if (this.queue[0].manuallyAdded) this.queue.shift();
@@ -161,6 +160,10 @@ class SongListener {
 
     getCurrentSongCurrentTime() {
         return this.elements.audio.currentTime;
+    }
+
+    getCurrentPlaylist() {
+        return this.currentPlaylist;
     }
 
     setVolume(volume) {

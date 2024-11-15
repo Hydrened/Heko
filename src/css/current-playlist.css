@@ -1,8 +1,15 @@
 section {
-    padding-left: 0;
+    padding: var(--main-boxes-padding);
     display: grid;
     grid-template-rows: 10rem 1fr;
     gap: 2rem;
+    opacity: 0;
+    transform: translateX(100%);
+    transition: 500ms ease-out;
+}
+section.open {
+    opacity: 1;
+    transform: translateX(0%);
 }
 section > header {
     display: flex;
@@ -30,6 +37,7 @@ section > header > div.current-playlist-details > h1#current-playlist-title {
     flex: 1;
     font-size: 6rem;
     font-weight: 700;
+    text-overflow: ellipsis;
 }
 section > header > div.current-playlist-details > h4#current-playlist-nb-song {
     margin-left: 1rem;

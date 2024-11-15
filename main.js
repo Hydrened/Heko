@@ -34,6 +34,7 @@ class Application {
         });
         window.setMenuBarVisibility(false);
         window.loadFile("src/index.html");
+
         return window;
     }
     

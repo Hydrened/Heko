@@ -1,3 +1,14 @@
+## HEKO-1.0.4
+#### ADDED
+- add song to queue
+- shortcut indication in context menus
+- create playlist button
+- playlist open / close animation
+#### FIXED
+- visual bug when resizing window's height
+- root proposition in playlists context menu when already at root
+- playing empty playlist
+
 ## HEKO-1.0.3
 #### ADDED
 - rename playlist

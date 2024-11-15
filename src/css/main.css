@@ -2,6 +2,3 @@ main {
     display: grid;
     grid-template-columns: var(--aside-width) 1fr;
 }
-main > * {
-    padding: var(--main-boxes-padding) var(--main-boxes-padding) 0 var(--main-boxes-padding);
-}

@@ -1,16 +1,39 @@
 aside {
+    padding: var(--main-boxes-padding);
     display: grid;
     grid-template-rows: auto 1fr;
     gap: 1rem;
+    background-color: var(--bg-col-3);
 }
-aside > h2 {
+aside > header {
+    padding-right: 0.5rem;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+aside > header > h2 {
+    flex: 1;
     font-weight: bold;
     display: flex;
     align-items: center;
     gap: 0.6rem;
 }
-aside > h2 > svg * {
+aside > header > svg.folder * {
     stroke: var(--font-col-1);
+}
+aside > header > button.plus {
+    cursor: pointer;
+}
+aside > header > button.plus > svg {
+    width: 1.5rem;
+}
+aside > header > button.plus > svg * {
+    fill: var(--font-col-1);
+    transition: 200ms;
+}
+aside > header > button.plus:hover > svg * {
+    fill: var(--col-1);
+    filter: brightness(130%);
 }
 aside > ul#playlists-container {
     overflow-y: scroll;
@@ -36,11 +59,11 @@ aside li.playlist > div.container > div.thumbnail {
     background-repeat: no-repeat;
     border-radius: 0.4rem;
 }
-aside li.playlist > div.container > p {
+aside li.playlist > div.container > p.arrow {
     font-weight: bold;
     transform: rotate(90deg);
 }
-aside li.playlist > div.container > p.show {
+aside li.playlist > div.container > p.arrow.show {
     transform: rotate(0deg);
 }
 aside li.playlist > div.container > div.details {
@@ -54,6 +77,7 @@ aside li.playlist > div.container > div.details {
 aside li.playlist > div.container > div.details > h4 {
     font-weight: bold;
     transition: 150ms;
+    text-overflow: ellipsis;
 }
 aside li.playlist > div.container:hover > div.details > h4 {
     color: var(--col-1);

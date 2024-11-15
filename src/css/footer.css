@@ -1,6 +1,7 @@
 footer {
     display: grid;
     grid-template-columns: 25% 1fr 25%;
+    background-color: var(--bg-col-5);
 }
 footer > article {
     padding: var(--main-boxes-padding);

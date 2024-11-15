@@ -24,17 +24,18 @@ div.modal {
     width: 100vw;
     height: 100vh;
     position: absolute;
-    top: -100vh;
+    top: 0;
     left: 0;
     display: flex;
     justify-content: center;
     align-items: center;
     background-color: rgba(0,0,0,0.8);
-    transition: top 600ms;
+    transition: transform 600ms;
+    transform: translateY(-100%);
     z-index: 10;
 }
 div.modal.open {
-    top: 0;
+    transform: translateY(0%);
 }
 div.modal > div {
     display: flex;
