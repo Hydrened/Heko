@@ -86,3 +86,8 @@ div.page {
 body > div.page > header {
     background-color: var(--col-1);
 }
+
+.arrow {
+    font-family: Courier;
+    font-weight: 900;
+}

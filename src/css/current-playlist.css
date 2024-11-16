@@ -2,7 +2,7 @@ section {
     padding: var(--main-boxes-padding);
     display: grid;
     grid-template-rows: 10rem 1fr;
-    gap: 2rem;
+    gap: 1rem;
     opacity: 0;
     transform: translateX(100%);
     transition: 500ms ease-out;
@@ -38,10 +38,32 @@ section > header > div.current-playlist-details > h1#current-playlist-title {
     font-size: 6rem;
     font-weight: 700;
     text-overflow: ellipsis;
+    overflow: visible;
 }
-section > header > div.current-playlist-details > h4#current-playlist-nb-song {
+
+
+
+section > header > div.current-playlist-details > div {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+section > header > div.current-playlist-details > div > h4#current-playlist-nb-song {
     margin-left: 1rem;
     color: var(--font-col-2);
+}
+section > header > div.current-playlist-details > div > button {
+    cursor: pointer;
+}
+section > header > div.current-playlist-details > div > button > svg * {
+    fill: var(--font-col-1);
+    transition: 200ms;
+}
+section > header > div.current-playlist-details > div > button:hover > svg * {
+    fill: var(--col-1);
+}
+section > header > div.current-playlist-details > div > button.plus > svg {
+    width: 1.5rem;
 }
 
 

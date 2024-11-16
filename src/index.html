@@ -48,13 +48,30 @@
                         </button>
                     </header>
                     <ul id="playlists-container"></ul>
+                    <footer>
+                        <svg class="songs" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 19C9 20.1046 7.65685 21 6 21C4.34315 21 3 20.1046 3 19C3 17.8954 4.34315 17 6 17C7.65685 17 9 17.8954 9 19ZM9 19V5L21 3V17M21 17C21 18.1046 19.6569 19 18 19C16.3431 19 15 18.1046 15 17C15 15.8954 16.3431 15 18 15C19.6569 15 21 15.8954 21 17ZM9 9L21 7" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: #e8e6e3;"></path></svg>
+                        <h2>Songs</h2>
+                        <button class="dots" id="manage-songs-open-button">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 10C6.10457 10 7 10.8954 7 12C7 13.1046 6.10457 14 5 14C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path> <path d="M12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path> <path d="M21 12C21 10.8954 20.1046 10 19 10C17.8954 10 17 10.8954 17 12C17 13.1046 17.8954 14 19 14C20.1046 14 21 13.1046 21 12Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
+                        </button>
+                        <ul class="contextmenu" id="manage-songs-menu">
+                            <li id="manage-songs-add-button">Add song</li>
+                            <li id="manage-songs-edit-button">Edit song</li>
+                            <li id="manage-songs-remove-button">Remove song</li>
+                        </ul>
+                    </footer>
                 </aside>
                 <section id="current-playlist">
                     <header>
                         <div id="current-playlist-thumbnail"></div>
                         <div class="current-playlist-details">
                             <h1 id="current-playlist-title">Titre</h1>
-                            <h4 id="current-playlist-nb-song">0 songs</h4>
+                            <div>
+                                <h4 id="current-playlist-nb-song">0 songs</h4>
+                                <button class="plus" id="add-songs-to-current-playlist-button">
+                                    <svg viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M9 17a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 10-2 0v6H3a1 1 0 000 2h6v6z" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
+                                </button>
+                            </div>
                         </div>
                     </header>
                     <div class="current-playlist-table">
@@ -122,7 +139,7 @@
                     <h2>New "<span id="rename-playlist-name"></span>" name</h2>
                     <input type="text" id="rename-playlist-input">
                     <div class="button-container">
-                        <button class="confirm" id="rename-playlist-confirm-button">Create</button>
+                        <button class="confirm" id="rename-playlist-confirm-button">Rename</button>
                         <button class="error" id="rename-playlist-cancel-button">Cancel</button>
                     </div>
                     <p id="rename-playlist-message"></p>
@@ -148,6 +165,20 @@
                         <button class="error" id="remove-song-from-playlist-cancel-button">Cancel</button>
                     </div>
                     <p id="remove-song-from-playlist-message"></p>
+                </div>
+            </div>
+            <div class="modal" id="add-song-to-app-modal">
+                <div>
+                    <h2>Add a song</h2>
+                    <input type="file" id="add-song-to-app-file">
+                    <div class="drag-zone">Drag file here</div>
+                    <input type="text" id="add-song-to-app-name" placeholder="Name">
+                    <input type="text" id="add-song-to-app-artist" placeholder="Artist">
+                    <div class="button-container">
+                        <button class="confirm" id="add-song-to-app-confirm-button">Add</button>
+                        <button class="error" id="add-song-to-app-cancel-button">Cancel</button>
+                    </div>
+                    <p id="add-song-to-app-message"></p>
                 </div>
             </div>
             <audio id="audio" hidden></audio>

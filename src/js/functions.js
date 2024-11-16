@@ -71,6 +71,7 @@ function sortPlaylistsByDependencies(playlists) {
 function getPlaylistNameErrors(playlists, name) {
     const res = [];
 
+    if (name == "") res.push("Playlist does not have a name");
     if (Object.values(playlists).map((p) => p.name).includes(name)) res.push(`A playlist named "${name}" already exist.`);
     const forbiddenCharacters = ['"', "'"];
     if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) res.push(`Playlist name can't contain the characters [", '].`);

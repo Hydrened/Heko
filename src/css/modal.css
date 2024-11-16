@@ -47,6 +47,44 @@ div.modal > div {
 
 
 
+div.modal input[type="file"] {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    background-color: transparent;
+    z-index: -1;
+}
+div.modal input[type="file"].active {
+    display: block;
+    z-index: 2;
+}
+div.modal input[type="file"] + div.drag-zone {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 2rem;
+    background-color: transparent;
+    opacity: 0;
+    transition: 300ms;
+    z-index: -1;
+}
+div.modal input[type="file"].active + div.drag-zone {
+    opacity: 1;
+    background-color: var(--col-1);
+    z-index: 1;
+}
+
+
+
 div.modal h2 {
     font-size: 2rem;
 }

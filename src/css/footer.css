@@ -1,12 +1,12 @@
-footer {
+div.page > footer {
     display: grid;
     grid-template-columns: 25% 1fr 25%;
     background-color: var(--bg-col-5);
 }
-footer > article {
+div.page > footer > article {
     padding: var(--main-boxes-padding);
 }
-footer svg * {
+div.page > footer svg * {
     stroke: var(--font-col-1);
 }
 

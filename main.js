@@ -15,8 +15,21 @@ class Application {
         ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
         ipcMain.on("window-close", () => this.window.close());
 
+        this.window.on("resize", () => {
+            const { width, height } = this.window.getBounds();
+            this.window.webContents.send("window-size-changed", { width, height });
+        });
+
         ipcMain.on("get-main-folder", (e) => {
             e.reply("send-main-folder", path.join(app.getPath("documents"), "Heko"));
+        });
+
+        ipcMain.on("save-song", (e, { fileName, content }) => {
+            const destinationPath = path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName);
+            fs.writeFile(destinationPath, Buffer.from(content), (err) => {
+                if (err) console.error("Error writing file in song folder:", err);
+                e.reply("song-saved", (err) ? false : true);
+            });
         });
     }
 
@@ -34,6 +47,13 @@ class Application {
         });
         window.setMenuBarVisibility(false);
         window.loadFile("src/index.html");
+
+        window.webContents.on("did-finish-load", () => {
+            setTimeout(() => {
+                const { width, height } = window.getBounds();
+                window.webContents.send("window-size-changed", { width, height });
+            }, 10);
+        });
 
         return window;
     }
@@ -88,5 +108,5 @@ app.whenReady().then(() => {
 });
 
 app.on("window-all-closed", () => {
-    if (process.platform !== "darwin") app.quit();
+    if (process.platform != "darwin") app.quit();
 });

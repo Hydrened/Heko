@@ -6,6 +6,7 @@ ul.contextmenu ul {
     border-radius: 0.25rem;
     border: 1px solid var(--bg-col-4);
     overflow: visible;
+    z-index: 10;
 }
 ul.contextmenu ul {
     position: absolute;

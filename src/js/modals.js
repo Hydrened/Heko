@@ -42,6 +42,15 @@ class Modals {
                 cancelButton: document.getElementById("remove-song-from-playlist-cancel-button"),
                 message: document.getElementById("remove-song-from-playlist-message"),
             },
+            addSongToApp: {
+                container: document.getElementById("add-song-to-app-modal"),
+                file: document.getElementById("add-song-to-app-file"),
+                name: document.getElementById("add-song-to-app-name"),
+                artist: document.getElementById("add-song-to-app-artist"),
+                confirmButton: document.getElementById("add-song-to-app-confirm-button"),
+                cancelButton: document.getElementById("add-song-to-app-cancel-button"),
+                message: document.getElementById("add-song-to-app-message"),
+            },
         };
 
         this.handleEvents();
@@ -80,11 +89,22 @@ class Modals {
                 const details = document.createElement("p");
                 details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
                 li.appendChild(details);
+
+                li.addEventListener("click", (e) => {
+                    if (e.target.tagName == "INPUT") return;
+                    checkbox.checked = !checkbox.checked;
+                });
             }
         });
 
         this.elements.removeSongFromPlaylist.cancelButton.addEventListener("click", () => this.closeRemoveSongFromPlaylistModal());
         this.elements.removeSongFromPlaylist.confirmButton.addEventListener("click", () => this.app.removeSongFromPlaylist());
+
+        this.elements.addSongToApp.cancelButton.addEventListener("click", () => this.closeAddSongToAppModal());
+        this.elements.addSongToApp.confirmButton.addEventListener("click", () => this.app.addSong());
+        this.elements.addSongToApp.container.addEventListener("dragenter", () => this.elements.addSongToApp.file.classList.add("active"));
+        this.elements.addSongToApp.file.addEventListener("dragleave", () => this.elements.addSongToApp.file.classList.remove("active"));
+        this.elements.addSongToApp.file.addEventListener("drop", (e) => this.elements.addSongToApp.file.classList.remove("active"));
         
         document.addEventListener("click", (e) => {
             if (e.target.classList.contains("modal")) this.closeCurrentModal();
@@ -97,6 +117,7 @@ class Modals {
         this.closeRenamePlaylistModal();
         this.closeAddSongsToPlaylistModal();
         this.closeRemoveSongFromPlaylistModal();
+        this.closeAddSongToAppModal();
     }
 
     isAModalOpened() {
@@ -104,7 +125,8 @@ class Modals {
                this.elements.renamePlaylist.container.classList.contains("open") ||
                this.elements.confirmRemovePlaylist.container.classList.contains("open") ||
                this.elements.addSongsToPlaylist.container.classList.contains("open") ||
-               this.elements.removeSongFromPlaylist.container.classList.contains("open")
+               this.elements.removeSongFromPlaylist.container.classList.contains("open") ||
+               this.elements.addSongToApp.container.classList.contains("open")
     }
     
     openCreatePlaylistModal() {
@@ -118,7 +140,10 @@ class Modals {
         const modal = this.elements.createPlaylist;
         modal.container.classList.remove("open");
         modal.input.blur();
-        setTimeout(() => modal.input.value = "", 500);
+        setTimeout(() => {
+            modal.input.value = "";
+            modal.message.textContent = "";
+        }, 500);
     }
 
     openConfirmRemovePlaylistModal(id) {
@@ -146,7 +171,10 @@ class Modals {
         const modal = this.elements.renamePlaylist;
         modal.container.classList.remove("open");
         modal.input.blur();
-        setTimeout(() => modal.input.value = "", 500);
+        setTimeout(() => {
+            modal.input.value = "";
+            modal.message.textContent = "";
+        }, 500);
     }
 
     openAddSongsToPlaylistModal(id) {
@@ -163,7 +191,10 @@ class Modals {
         const modal = this.elements.addSongsToPlaylist;
         modal.container.classList.remove("open");
         modal.input.blur();
-        setTimeout(() => modal.input.value = "", 500);
+        setTimeout(() => {
+            modal.input.value = "";
+            modal.message.textContent = "";
+        }, 500);
     }
 
     openRemoveSongFromPlaylistModal(pID, sID) {
@@ -179,5 +210,24 @@ class Modals {
     closeRemoveSongFromPlaylistModal() {
         const modal = this.elements.removeSongFromPlaylist.container;
         modal.classList.remove("open");
+        setTimeout(() => {
+            modal.message.textContent = "";
+        }, 500);
+    }
+
+    openAddSongToAppModal() {
+        const modal = this.elements.addSongToApp;
+        modal.container.classList.add("open");
+    }
+
+    closeAddSongToAppModal() {
+        const modal = this.elements.addSongToApp;
+        modal.container.classList.remove("open");
+        setTimeout(() => {
+            modal.name.value = "";
+            modal.artist.value = "";
+            modal.file.value = "";
+            modal.message.textContent = "";
+        }, 500);
     }
 };

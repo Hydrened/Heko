@@ -1,3 +1,12 @@
+## HEKO-1.1.0
+#### ADDED
+- add song to playlist button
+- manage song button and menu
+- add song to app
+#### FIXED
+- add song to playlist modal checkboxs not working
+- contextmenu out of window
+
 ## HEKO-1.0.5
 #### ADDED
 - add song to playlist

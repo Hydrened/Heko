@@ -14,12 +14,20 @@ class App {
             aside: {
                 createPlaylist: document.getElementById("create-playlist-button"),
                 playlistsContainer: document.getElementById("playlists-container"),
+                manageSongsMenu: {
+                    container: document.getElementById("manage-songs-menu"),
+                    openButton: document.getElementById("manage-songs-open-button"),
+                    addButton: document.getElementById("manage-songs-add-button"),
+                    editButton: document.getElementById("manage-songs-edit-button"),
+                    removeButton: document.getElementById("manage-songs-remove-button"),
+                }
             },
             currentPlaylist: {
                 container: document.getElementById("current-playlist"),
                 thumbnail: document.getElementById("current-playlist-thumbnail"),
                 title: document.getElementById("current-playlist-title"),
                 nbSong: document.getElementById("current-playlist-nb-song"),
+                addSong: document.getElementById("add-songs-to-current-playlist-button"),
                 songContainer: document.getElementById("current-playlist-table-body"),
             },
             footer: {
@@ -55,6 +63,12 @@ class App {
         this.currentPlaylist = null;
         this.currentSondID = -1;
 
+        this.windowSize = { width: 0, height: 0 };
+
+        const url = new URL(window.location.href);
+        const params = url.searchParams;
+        const playlistToOpen = params.get("p");
+
         this.initData().then(() => {
             this.songListener = new SongListener(this);
             this.contextmenu = new Contextmenu(this);
@@ -64,14 +78,16 @@ class App {
             this.handleEvents();
             this.initPlaylists();
 
-            const parentIds = new Set(Object.values(this.playlists).map(playlist => playlist.parent).filter(parent => parent !== null));
-            for (const [id, playlist] of Object.entries(this.playlists)) {
-                if (!parentIds.has(parseInt(id))) {
-                    this.openPlaylist(id);
-                    this.songListener.setCurrentPlaylist(this.currentPlaylist);
-                    break;
+            if (!playlistToOpen) {
+                const parentIds = new Set(Object.values(this.playlists).map(playlist => playlist.parent).filter(parent => parent !== null));
+                for (const [id, playlist] of Object.entries(this.playlists)) {
+                    if (!parentIds.has(parseInt(id))) {
+                        this.openPlaylist(id);
+                        break;
+                    }
                 }
-            }
+            } else this.openPlaylist(playlistToOpen);
+            this.songListener.setCurrentPlaylist(this.currentPlaylist);
 
             this.initFromSaves();
             this.updateLoop();
@@ -99,6 +115,11 @@ class App {
     handleEvents() {
         this.elements.aside.createPlaylist.addEventListener("click", () => this.modals.openCreatePlaylistModal());
 
+        this.elements.aside.manageSongsMenu.openButton.addEventListener("click", () => this.elements.aside.manageSongsMenu.container.classList.toggle("open"));
+        this.elements.aside.manageSongsMenu.addButton.addEventListener("click", () => this.modals.openAddSongToAppModal());
+
+        this.elements.currentPlaylist.addSong.addEventListener("click", () => this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)));
+
         this.elements.footer.buttons.random.addEventListener("click", () => {
             this.songListener.random();
             this.elements.footer.buttons.random.classList.toggle("activated");
@@ -106,7 +127,6 @@ class App {
 
         this.elements.footer.buttons.previous.addEventListener("click", () => {
             this.songListener.previous();
-
         });
 
         this.elements.footer.buttons.play.addEventListener("click", () => {
@@ -129,6 +149,7 @@ class App {
         this.elements.footer.volume.slider.addEventListener("input", (e) => this.setVolume(e.target.value));
 
         this.elements.footer.song.slider.addEventListener("input", (e) => {
+            if (this.currentSondID == -1) return;
             const duration = this.songListener.getCurrentSongDuration();
             const time = e.target.value / 100 * duration;
 
@@ -140,6 +161,7 @@ class App {
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             this.contextmenu.close();
+            this.elements.aside.manageSongsMenu.container.classList.remove("open");
 
             if (e.target.closest(`#${this.elements.aside.playlistsContainer.id} > li.playlist`)) {
                 const playlistContainers = Array.from(this.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
@@ -184,8 +206,11 @@ class App {
             }
         });
 
-        document.addEventListener("click", () => {
-            setTimeout(() => this.contextmenu.close(), 10);
+        document.addEventListener("click", (e) => {
+            setTimeout(() => {
+                this.contextmenu.close();
+                if (!e.target.closest("button#manage-songs-open-button")) this.elements.aside.manageSongsMenu.container.classList.remove("open");
+            }, 10);
         });
 
         window.addEventListener("keydown", (e) => {
@@ -211,6 +236,8 @@ class App {
             if (this.modals.isAModalOpened()) return;
 
             switch (e.key) {
+                case "Escape": this.elements.aside.manageSongsMenu.container.classList.remove("open"); break;
+
                 case "ArrowLeft": this.songListener.previous(); break;
                 case "ArrowRight": this.songListener.next(); break;
 
@@ -231,6 +258,8 @@ class App {
                 default: break;
             }
         });
+
+        ipcRenderer.on("window-size-changed", (e, size) => this.windowSize = size);
     }
 
     initData() {
@@ -429,7 +458,7 @@ class App {
 
                     setTimeout(() => {
                         this.modals.closeCreatePlaylistModal();
-                        setTimeout(() => window.location.href = "", 600);
+                        setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
                     }, 1500);
                 }).catch((readErr) => this.error("Error: cant write playlists.json"));
             }).catch((readErr) => this.error("Error: cant read playlists.json"));
@@ -461,7 +490,7 @@ class App {
 
                 setTimeout(() => {
                     this.modals.closeConfirmRemovePlaylistModal();
-                    setTimeout(() => window.location.href = "", 600);
+                    setTimeout(() => window.location.href = "index.html", 600);
                 }, 1500);
             }).catch((readErr) => this.error("Error: cant write playlists.json"));
         }).catch((readErr) => this.error("Error: cant read playlists.json"));
@@ -486,7 +515,7 @@ class App {
 
                     setTimeout(() => {
                         this.modals.closeRenamePlaylistModal();
-                        setTimeout(() => window.location.href = "", 600);
+                        setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
                     }, 1500);
                 }).catch((readErr) => this.error("Error: cant write playlists.json"));
             }).catch((readErr) => this.error("Error: cant read playlists.json"));
@@ -508,22 +537,24 @@ class App {
             if (li.querySelector("input").checked) songsToAdd.push(id);
         }
 
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
-            const jsonData = JSON.parse(data);
-            songsToAdd.forEach((sID) => jsonData[id].songs.push(parseInt(sID)));
+        if (songsToAdd.length > 0) {
+            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+                const jsonData = JSON.parse(data);
+                songsToAdd.forEach((sID) => jsonData[id].songs.push(parseInt(sID)));
 
-            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                modal.message.textContent = `Songs added sucessfuly to the playlist!`;
-                modal.message.classList.remove("error");
-                modal.message.classList.add("success");
+                fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                    modal.message.textContent = `Songs added sucessfuly to the playlist!`;
+                    modal.message.classList.remove("error");
+                    modal.message.classList.add("success");
 
-                setTimeout(() => {
-                    this.modals.closeAddSongsToPlaylistModal();
-                    setTimeout(() => window.location.href = "", 600);
-                }, 1500);
-            }).catch((readErr) => this.error("Error: cant write playlists.json"));
-        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+                    setTimeout(() => {
+                        this.modals.closeAddSongsToPlaylistModal();
+                        setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
+                    }, 1500);
+                }).catch((readErr) => this.error("Error: cant write playlists.json"));
+            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+        } 
     }
 
     removeSongFromPlaylist() {
@@ -543,7 +574,7 @@ class App {
 
                 setTimeout(() => {
                     this.modals.closeRemoveSongFromPlaylistModal();
-                    setTimeout(() => window.location.href = "", 600);
+                    setTimeout(() => window.location.href = `index.html?p=${pID}`, 600);
                 }, 1500);
             }).catch((readErr) => this.error("Error: cant write playlists.json"));
         }).catch((readErr) => this.error("Error: cant read playlists.json"));
@@ -555,8 +586,61 @@ class App {
             const jsonData = JSON.parse(data);
             jsonData[playlistID].parent = parentID;
 
-            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => window.location.href = "").catch((readErr) => this.error("Error: cant write playlists.json"));
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
+            }).catch((readErr) => this.error("Error: cant write playlists.json"));
         }).catch((readErr) => this.error("Error: cant read playlists.json"));
+    }
+
+    addSong() {
+        const modal = this.modals.elements.addSongToApp;
+        const file = modal.file.files[0];
+        const name = modal.name.value;
+        const artist = modal.artist.value;
+
+        modal.message.classList.remove("error");
+        modal.message.textContent = "";
+
+        const errors = getPlaylistNameErrors(this.playlists, name);
+        if (artist == "") errors.push("Artist does not have a name");
+        if (!file) errors.push("No file detected");
+        if (fs.existsSync(path.join(this.mainFolder, "songs", file.name))) errors.push("File already exists");
+
+        if (errors.length == 0) {
+            if (file) {
+                const reader = new FileReader();
+                const self = this;
+
+                reader.onload = function(event) {
+                    const fileContent = event.target.result;
+                    ipcRenderer.send("save-song", { fileName: file.name, content: fileContent });
+                    
+                    ipcRenderer.once("song-saved", (e, success) => {
+                        if (!success) return self.error("Error writing file in songs");
+
+                        const songsFile = path.join(self.mainFolder, "data/songs.json");
+                        fsp.readFile(songsFile, "utf-8").then((data) => {
+                            const jsonData = JSON.parse(data);
+                            const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
+
+                            jsonData[id] = {
+                                name: name,
+                                artist: artist,
+                                src: file.name,
+                            };
+                
+                            fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                                window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`;
+                            }).catch((readErr) => self.error("Error: cant write songs.json"));
+                        }).catch((readErr) => self.error("Error: cant read songs.json"));
+                    });
+                };
+                reader.readAsArrayBuffer(file);
+            }
+        } else {
+            modal.message.textContent = errors[0];
+            modal.message.classList.add("error");
+        }
     }
 
     setVolume(volume) {

@@ -16,6 +16,9 @@ class Contextmenu {
         this.container.style.top = `${e.y}px`;
         this.container.style.left = `${e.x}px`;
         document.body.appendChild(this.container);
+        
+        const rect = this.container.getBoundingClientRect();
+        if (rect.x + rect.width > this.app.windowSize.width) this.container.style.left = `${e.x - rect.width}px`;
 
         menu.forEach((line, index) => {
             const li = document.createElement("li");
@@ -27,12 +30,18 @@ class Contextmenu {
 
                 const arrow = document.createElement("p");
                 arrow.textContent = ">";
+                arrow.classList.add("arrow");
                 li.appendChild(arrow);
 
                 li.addEventListener("mouseenter", () => {
                     canRemove = false;
                     const ulc = document.createElement("ul");
                     li.appendChild(ulc);
+
+                    setTimeout(() => {
+                        const ulcRect = ulc.getBoundingClientRect();
+                        if (ulcRect.y + ulcRect.height > this.app.windowSize.height) ulc.style.top = `calc(100% - ${ulcRect.height}px)`;
+                    }, 0);
     
                     line.children.forEach((child) => {
                         const lic = document.createElement("li");
@@ -58,7 +67,6 @@ class Contextmenu {
             }
             if (line.call) li.addEventListener("click", () => line.call());
         });
-        return this.container;
     }
 
     close() {

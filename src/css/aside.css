@@ -1,40 +1,71 @@
 aside {
     padding: var(--main-boxes-padding);
     display: grid;
-    grid-template-rows: auto 1fr;
-    gap: 1rem;
+    grid-template-rows: auto 1fr auto;
+    gap: var(--main-boxes-padding);
     background-color: var(--bg-col-3);
+    overflow: visible;
 }
-aside > header {
+
+
+aside > footer {
+    position: relative;
+    overflow: visible;
+}
+aside > header,
+aside > footer {
     padding-right: 0.5rem;
     display: flex;
     align-items: center;
     gap: 0.8rem;
 }
-aside > header > h2 {
+aside > header > h2,
+aside > footer > h2 {
     flex: 1;
     font-weight: bold;
     display: flex;
     align-items: center;
     gap: 0.6rem;
 }
-aside > header > svg.folder * {
+aside > header > svg.folder *,
+aside > footer > svg.songs * {
     stroke: var(--font-col-1);
 }
-aside > header > button.plus {
+aside > header > button.plus,
+aside > footer > button.dots {
     cursor: pointer;
 }
 aside > header > button.plus > svg {
     width: 1.5rem;
 }
-aside > header > button.plus > svg * {
+aside > footer > button.dots > svg {
+    width: 1.7rem;
+}
+aside > header > button.plus > svg *,
+aside > footer > button.dots > svg * {
     fill: var(--font-col-1);
     transition: 200ms;
 }
-aside > header > button.plus:hover > svg * {
+aside > header > button.plus:hover > svg *,
+aside > footer > button.dots:hover > svg * {
     fill: var(--col-1);
     filter: brightness(130%);
 }
+
+
+
+aside > footer > ul#manage-songs-menu {
+    bottom: 0;
+    right: 0;
+    transform: translateX(calc(100% + 0.5rem));
+    display: none;
+}
+aside > footer > ul#manage-songs-menu.open {
+    display: block;
+}
+
+
+
 aside > ul#playlists-container {
     overflow-y: scroll;
 }
