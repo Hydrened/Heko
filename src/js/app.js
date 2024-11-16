@@ -87,7 +87,7 @@ class App {
                     }
                 }
             } else this.openPlaylist(playlistToOpen);
-            this.songListener.setCurrentPlaylist(this.currentPlaylist);
+            if (this.currentPlaylist) this.songListener.setCurrentPlaylist(this.currentPlaylist);
 
             this.initFromSaves();
             this.updateLoop();
@@ -442,7 +442,7 @@ class App {
             const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
             fsp.readFile(playlistsFile, "utf-8").then((data) => {
                 const jsonData = JSON.parse(data);
-                const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
+                const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
 
                 jsonData[id] = {
                     name: name,
@@ -621,7 +621,7 @@ class App {
                         const songsFile = path.join(self.mainFolder, "data/songs.json");
                         fsp.readFile(songsFile, "utf-8").then((data) => {
                             const jsonData = JSON.parse(data);
-                            const id = parseInt(Object.keys(jsonData).at(-1)) + 1;
+                            const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
 
                             jsonData[id] = {
                                 name: name,

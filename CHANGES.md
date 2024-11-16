@@ -1,3 +1,8 @@
+## HEKO-1.1.1
+#### FIXED
+- no playlist created
+- song list memorizing choices
+
 ## HEKO-1.1.0
 #### ADDED
 - add song to playlist button

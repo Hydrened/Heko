@@ -30,6 +30,7 @@ class Modals {
                 name: document.getElementById("add-songs-to-playlist-name"),
                 input: document.getElementById("add-songs-to-playlist-input"),
                 songContainer: document.getElementById("add-songs-to-playlist-song-container"),
+                songsLis: [],
                 confirmButton: document.getElementById("add-songs-to-playlist-confirm-button"),
                 cancelButton: document.getElementById("add-songs-to-playlist-cancel-button"),
                 message: document.getElementById("add-songs-to-playlist-message"),
@@ -53,7 +54,10 @@ class Modals {
             },
         };
 
-        this.handleEvents();
+        setTimeout(() => {
+            this.initAddSongsToPlaylistModal();
+            this.handleEvents();
+        }, 0);
     }
 
     handleEvents() {
@@ -69,31 +73,11 @@ class Modals {
         this.elements.addSongsToPlaylist.cancelButton.addEventListener("click", () => this.closeAddSongsToPlaylistModal());
         this.elements.addSongsToPlaylist.confirmButton.addEventListener("click", () => this.app.addSongsToPlaylist());
         this.elements.addSongsToPlaylist.input.addEventListener("input", (e) => {
-            const modal = this.elements.addSongsToPlaylist;
-            modal.songContainer.innerHTML = "";
-
-            const songsInPlaylist = this.app.playlists[getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)].songs;
-            for (const sID in this.app.songs) {
-                if (songsInPlaylist.includes(parseInt(sID))) continue;
-                const song = this.app.songs[sID];
-                if (!song.name.includes(e.target.value) && !song.artist.includes(e.target.value)) continue;
-    
-                const li = document.createElement("li");
-                li.setAttribute("song-id", sID);
-                this.elements.addSongsToPlaylist.songContainer.appendChild(li);
-
-                const checkbox = document.createElement("input");
-                checkbox.type = "checkbox";
-                li.appendChild(checkbox);
-
-                const details = document.createElement("p");
-                details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
-                li.appendChild(details);
-
-                li.addEventListener("click", (e) => {
-                    if (e.target.tagName == "INPUT") return;
-                    checkbox.checked = !checkbox.checked;
-                });
+            const songLis = this.elements.addSongsToPlaylist.songsLis;
+            for (const id in songLis) {
+                const songLi = songLis[id];
+                songLi.element.classList.remove("hidden");
+                if (!songLi.values.name.includes(e.target.value) && !songLi.values.artist.includes(e.target.value)) songLi.element.classList.add("hidden");
             }
         });
 
@@ -109,6 +93,37 @@ class Modals {
         document.addEventListener("click", (e) => {
             if (e.target.classList.contains("modal")) this.closeCurrentModal();
         });
+    }
+
+    initAddSongsToPlaylistModal() {
+        const songsInPlaylist = this.app.playlists[getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)].songs;
+        for (const sID in this.app.songs) {
+            const song = this.app.songs[sID];
+
+            const li = document.createElement("li");
+            li.setAttribute("song-id", sID);
+            this.elements.addSongsToPlaylist.songContainer.appendChild(li);
+            this.elements.addSongsToPlaylist.songsLis.push({
+                element: li,
+                values: {
+                    name: song.name,
+                    artist: song.artist,
+                },
+            });
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            li.appendChild(checkbox);
+
+            const details = document.createElement("p");
+            details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
+            li.appendChild(details);
+
+            li.addEventListener("click", (e) => {
+                if (e.target.tagName == "INPUT") return;
+                checkbox.checked = !checkbox.checked;
+            });
+        }
     }
 
     closeCurrentModal() {
@@ -194,6 +209,12 @@ class Modals {
         setTimeout(() => {
             modal.input.value = "";
             modal.message.textContent = "";
+            
+            const songLis = this.elements.addSongsToPlaylist.songsLis;
+            for (const id in songLis) {
+                const songLi = songLis[id];
+                songLi.element.querySelector("input").checked = false;
+            }
         }, 500);
     }
 
@@ -208,14 +229,15 @@ class Modals {
     }
 
     closeRemoveSongFromPlaylistModal() {
-        const modal = this.elements.removeSongFromPlaylist.container;
-        modal.classList.remove("open");
+        const modal = this.elements.removeSongFromPlaylist;
+        modal.container.classList.remove("open");
         setTimeout(() => {
             modal.message.textContent = "";
         }, 500);
     }
 
     openAddSongToAppModal() {
+        this.app.contextmenu.close();
         const modal = this.elements.addSongToApp;
         modal.container.classList.add("open");
     }
