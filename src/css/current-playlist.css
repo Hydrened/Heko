@@ -75,18 +75,23 @@ section > div.current-playlist-table {
     transition: 500ms ease-out;
 }
 section.open > div.current-playlist-table {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
     transform: translateX(0%);
 }
 section > div.current-playlist-table > div.current-playlist-table-head {
     border-bottom: 2px solid rgba(255,255,255,0.2);
 }
 section > div.current-playlist-table > ul#current-playlist-table-body {
+    flex: 1;
     overflow-y: scroll;
 }
 section > div.current-playlist-table > div.current-playlist-table-head,
 section > div.current-playlist-table > ul#current-playlist-table-body > li {
+    height: 2.5rem;
     display: grid;
-    grid-template-columns: 8% 47% 30% 15%;
+    grid-template-columns: 3rem 1fr 1fr 7rem;
 }
 section > div.current-playlist-table > div.current-playlist-table-head > p,
 section > div.current-playlist-table > ul#current-playlist-table-body > li > p {
@@ -97,10 +102,12 @@ section > div.current-playlist-table > div.current-playlist-table-head > p:last-
 section > div.current-playlist-table > ul#current-playlist-table-body > li > p:first-of-type,
 section > div.current-playlist-table > ul#current-playlist-table-body > li > p:last-of-type {
     text-align: center;
+    justify-content: center;
 }
 section > div.current-playlist-table > ul#current-playlist-table-body > li {
     transition: 150ms;
     cursor: pointer;
+    font-size: 0.85rem;
     border-radius: 0.5rem;
 }
 section > div.current-playlist-table > ul#current-playlist-table-body > li:hover {

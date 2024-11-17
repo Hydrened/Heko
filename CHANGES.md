@@ -1,3 +1,13 @@
+## HEKO-1.1.2
+#### ADDED
+- remove playlist shortcut
+- rename playlist shortcut
+#### FIXED
+- song list in add song to a playlist
+- drag file detection only for files
+- can only drop audio files when adding song to app
+- anti spam confirm buttons
+
 ## HEKO-1.1.1
 #### FIXED
 - no playlist created

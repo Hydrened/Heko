@@ -73,8 +73,18 @@ function getPlaylistNameErrors(playlists, name) {
 
     if (name == "") res.push("Playlist does not have a name");
     if (Object.values(playlists).map((p) => p.name).includes(name)) res.push(`A playlist named "${name}" already exist.`);
-    const forbiddenCharacters = ['"', "'"];
-    if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) res.push(`Playlist name can't contain the characters [", '].`);
+    const forbiddenCharacters = ['"', "/", "\\"];
+    if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) res.push(`Playlist name can't contain the characters [", /, \\].`);
+
+    return res;
+}
+
+function getSongNameErrors(playlists, name) {
+    const res = [];
+
+    if (name == "") res.push("Playlist does not have a name");
+    const forbiddenCharacters = ['"', "/", "\\"];
+    if (name.split("").map((c) => forbiddenCharacters.includes(c)).includes(true)) res.push(`Song name can't contain the characters [", /, \\].`);
 
     return res;
 }

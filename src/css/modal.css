@@ -125,7 +125,7 @@ div.modal p.error {
 }
 div.modal ul {
     width: 40vw;
-    height: 30vh;
+    height: 40vh;
     overflow-y: scroll;
 }
 div.modal ul > li {
@@ -135,6 +135,7 @@ div.modal ul > li {
     font-size: 1.3rem;
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
+    white-space: nowrap;
     transition: 100ms;
     cursor: pointer;
 }

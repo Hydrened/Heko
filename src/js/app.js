@@ -177,8 +177,8 @@ class App {
                 if (playlist.parent != null) mapped.unshift({ name: "Root", call: () => this.movePlaylist(pID, null)});
 
                 this.contextmenu.open(e, playlistElement.children[0], [
-                    { name: "Rename playlist", call: () => this.modals.openRenamePlaylistModal(pID), children: [], shortcut: null },
-                    { name: "Remove playlist", call: () => this.modals.openConfirmRemovePlaylistModal(pID), children: [], shortcut: null },
+                    { name: "Rename playlist", call: () => this.modals.openRenamePlaylistModal(pID), children: [], shortcut: "F2" },
+                    { name: "Remove playlist", call: () => this.modals.openConfirmRemovePlaylistModal(pID), children: [], shortcut: "Suppr" },
                     { name: "Move to", call: null, children: mapped, shortcut: null },
                 ]);
                 return;
@@ -219,7 +219,7 @@ class App {
             switch (e.key) {
                 case "Tab": e.preventDefault(); break;
                 case "Escape":
-                    if (this.modals.isAModalOpened()) this.modals.closeCurrentModal();
+                    this.modals.closeCurrentModal();
                     this.contextmenu.close();
                     break;
                 case "Enter":
@@ -237,6 +237,9 @@ class App {
 
             switch (e.key) {
                 case "Escape": this.elements.aside.manageSongsMenu.container.classList.remove("open"); break;
+
+                case "F2": this.modals.openRenamePlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)); break;
+                case "Delete": this.modals.openConfirmRemovePlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)); break;
 
                 case "ArrowLeft": this.songListener.previous(); break;
                 case "ArrowRight": this.songListener.next(); break;
@@ -601,10 +604,10 @@ class App {
         modal.message.classList.remove("error");
         modal.message.textContent = "";
 
-        const errors = getPlaylistNameErrors(this.playlists, name);
+        const errors = getSongNameErrors(this.playlists, name);
         if (artist == "") errors.push("Artist does not have a name");
         if (!file) errors.push("No file detected");
-        if (fs.existsSync(path.join(this.mainFolder, "songs", file.name))) errors.push("File already exists");
+        else if (fs.existsSync(path.join(this.mainFolder, "songs", file.name))) errors.push("File already exists");
 
         if (errors.length == 0) {
             if (file) {
@@ -630,7 +633,14 @@ class App {
                             };
                 
                             fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                                window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`;
+                                modal.message.textContent = `Song "${name}" by "${artist}" successfuly added!`;
+                                modal.message.classList.remove("error");
+                                modal.message.classList.add("success");
+
+                                setTimeout(() => {
+                                    self.modals.closeAddSongToAppModal();
+                                    setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`, 600);
+                                }, 1500);
                             }).catch((readErr) => self.error("Error: cant write songs.json"));
                         }).catch((readErr) => self.error("Error: cant read songs.json"));
                     });
