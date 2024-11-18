@@ -21,10 +21,14 @@ article.current-song-details {
 }
 article.current-song-details > h3 {
     font-weight: bold;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 article.current-song-details > h4 {
     color: var(--font-col-2);
     font-size: 0.9rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 

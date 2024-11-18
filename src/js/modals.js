@@ -52,12 +52,22 @@ class Modals {
                 cancelButton: document.getElementById("add-song-to-app-cancel-button"),
                 message: document.getElementById("add-song-to-app-message"),
             },
+            removeSongsFromApp: {
+                container: document.getElementById("remove-songs-from-app-modal"),
+                name: document.getElementById("remove-songs-from-app-name"),
+                input: document.getElementById("remove-songs-from-app-input"),
+                songContainer: document.getElementById("remove-songs-from-app-song-container"),
+                songsLis: [],
+                confirmButton: document.getElementById("remove-songs-from-app-confirm-button"),
+                cancelButton: document.getElementById("remove-songs-from-app-cancel-button"),
+                message: document.getElementById("remove-songs-from-app-message"),
+            },
         };
 
         this.closing = false;
 
         setTimeout(() => {
-            this.initAddSongsToPlaylistModal();
+            this.initModals();
             this.handleEvents();
         }, 0);
     }
@@ -125,41 +135,60 @@ class Modals {
             if (e.dataTransfer.files[0].type != "audio/mpeg") e.preventDefault();
             this.elements.addSongToApp.file.classList.remove("active");
         });
+
+        this.elements.removeSongsFromApp.cancelButton.addEventListener("click", () => this.closeRemoveSongsFromAppModal());
+        this.elements.removeSongsFromApp.confirmButton.addEventListener("click", () => {
+            if (this.closing) return;
+            this.closing = true;
+            this.app.removeSongsFromApp();
+        });
+        this.elements.removeSongsFromApp.input.addEventListener("input", (e) => {
+            const songLis = this.elements.removeSongsFromApp.songsLis;
+            
+            for (const id in songLis) {
+                const songLi = songLis[id];
+                const name = songLi.values.name.toLowerCase();
+                const artist = songLi.values.artist.toLowerCase();
+                songLi.element.classList.remove("hidden");
+                if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase()))) songLi.element.classList.add("hidden");
+            }
+        });
         
         document.addEventListener("click", (e) => {
             if (e.target.classList.contains("modal")) this.closeCurrentModal();
         });
     }
 
-    initAddSongsToPlaylistModal() {
-        const songsInPlaylist = this.app.playlists[getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)].songs;
-        for (const sID in this.app.songs) {
-            const song = this.app.songs[sID];
-
-            const li = document.createElement("li");
-            li.setAttribute("song-id", sID);
-            this.elements.addSongsToPlaylist.songContainer.appendChild(li);
-            this.elements.addSongsToPlaylist.songsLis.push({
-                element: li,
-                values: {
-                    name: song.name,
-                    artist: song.artist,
-                },
-            });
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            li.appendChild(checkbox);
-
-            const details = document.createElement("p");
-            details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
-            li.appendChild(details);
-
-            li.addEventListener("click", (e) => {
-                if (e.target.tagName == "INPUT") return;
-                checkbox.checked = !checkbox.checked;
-            });
-        }
+    initModals() {
+        [this.elements.addSongsToPlaylist, this.elements.removeSongsFromApp].forEach((modal) => {
+            for (const sID in this.app.songs) {
+                const song = this.app.songs[sID];
+    
+                const li = document.createElement("li");
+                li.setAttribute("song-id", sID);
+                modal.songContainer.appendChild(li);
+                modal.songsLis.push({
+                    element: li,
+                    values: {
+                        name: song.name,
+                        artist: song.artist,
+                    },
+                });
+    
+                const checkbox = document.createElement("input");
+                checkbox.type = "checkbox";
+                li.appendChild(checkbox);
+    
+                const details = document.createElement("p");
+                details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
+                li.appendChild(details);
+    
+                li.addEventListener("click", (e) => {
+                    if (e.target.tagName == "INPUT") return;
+                    checkbox.checked = !checkbox.checked;
+                });
+            }
+        });
     }
 
     closeCurrentModal() {
@@ -169,6 +198,7 @@ class Modals {
         if (this.elements.addSongsToPlaylist.container.classList.contains("open")) this.closeAddSongsToPlaylistModal();
         if (this.elements.removeSongFromPlaylist.container.classList.contains("open")) this.closeRemoveSongFromPlaylistModal();
         if (this.elements.addSongToApp.container.classList.contains("open")) this.closeAddSongToAppModal();
+        if (this.elements.removeSongsFromApp.container.classList.contains("open")) this.closeRemoveSongsFromAppModal();
     }
 
     isAModalOpened() {
@@ -177,7 +207,8 @@ class Modals {
                this.elements.confirmRemovePlaylist.container.classList.contains("open") ||
                this.elements.addSongsToPlaylist.container.classList.contains("open") ||
                this.elements.removeSongFromPlaylist.container.classList.contains("open") ||
-               this.elements.addSongToApp.container.classList.contains("open")
+               this.elements.addSongToApp.container.classList.contains("open") ||
+               this.elements.removeSongsFromApp.container.classList.contains("open")
     }
     
     openCreatePlaylistModal() {
@@ -293,6 +324,31 @@ class Modals {
             modal.artist.value = "";
             modal.file.value = "";
             modal.message.textContent = "";
+            this.closing = false;
+        }, 500);
+    }
+
+    openRemoveSongsFromAppModal() {
+        this.app.contextmenu.close();
+        const modal = this.elements.removeSongsFromApp;
+        modal.container.classList.add("open");
+        modal.input.focus();
+        modal.input.dispatchEvent(new Event("input"));
+    }
+
+    closeRemoveSongsFromAppModal() {
+        const modal = this.elements.removeSongsFromApp;
+        modal.container.classList.remove("open");
+        modal.input.blur();
+        setTimeout(() => {
+            modal.input.value = "";
+            modal.message.textContent = "";
+            
+            const songLis = this.elements.removeSongsFromApp.songsLis;
+            for (const id in songLis) {
+                const songLi = songLis[id];
+                songLi.element.querySelector("input").checked = false;
+            }
             this.closing = false;
         }, 500);
     }

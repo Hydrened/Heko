@@ -63,7 +63,12 @@ class App {
         this.currentPlaylist = null;
         this.currentSondID = -1;
 
-        this.windowSize = { width: 0, height: 0 };
+        this.window = {
+            x: 0,
+            y: 0,
+            w: 0,
+            h: 0,
+        };
 
         const url = new URL(window.location.href);
         const params = url.searchParams;
@@ -73,9 +78,8 @@ class App {
             this.songListener = new SongListener(this);
             this.contextmenu = new Contextmenu(this);
             this.modals = new Modals(this);
-            this.setVolume(this.saves.volume);
+            this.events = new Events(this);
 
-            this.handleEvents();
             this.initPlaylists();
 
             if (!playlistToOpen) {
@@ -112,165 +116,12 @@ class App {
         }, 1000);
     }
 
-    handleEvents() {
-        this.elements.aside.createPlaylist.addEventListener("click", () => this.modals.openCreatePlaylistModal());
-
-        this.elements.aside.manageSongsMenu.openButton.addEventListener("click", () => this.elements.aside.manageSongsMenu.container.classList.toggle("open"));
-        this.elements.aside.manageSongsMenu.addButton.addEventListener("click", () => this.modals.openAddSongToAppModal());
-
-        this.elements.currentPlaylist.addSong.addEventListener("click", () => this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)));
-
-        this.elements.footer.buttons.random.addEventListener("click", () => {
-            this.songListener.random();
-            this.elements.footer.buttons.random.classList.toggle("activated");
-        });
-
-        this.elements.footer.buttons.previous.addEventListener("click", () => {
-            this.songListener.previous();
-        });
-
-        this.elements.footer.buttons.play.addEventListener("click", () => {
-            this.songListener.play();
-        });
-
-        this.elements.footer.buttons.pause.addEventListener("click", () => {
-            this.songListener.play();
-        });
-
-        this.elements.footer.buttons.next.addEventListener("click", () => {
-            this.songListener.next();
-        });
-
-        this.elements.footer.buttons.loop.addEventListener("click", () => {
-            this.songListener.loop();
-            this.elements.footer.buttons.loop.classList.toggle("activated");
-        });
-
-        this.elements.footer.volume.slider.addEventListener("input", (e) => this.setVolume(e.target.value));
-
-        this.elements.footer.song.slider.addEventListener("input", (e) => {
-            if (this.currentSondID == -1) return;
-            const duration = this.songListener.getCurrentSongDuration();
-            const time = e.target.value / 100 * duration;
-
-            this.songListener.setCurrentTime(time);
-        });
-
-        this.elements.error.addEventListener("click", () => this.closeError());
-
-        document.addEventListener("contextmenu", (e) => {
-            e.preventDefault();
-            this.contextmenu.close();
-            this.elements.aside.manageSongsMenu.container.classList.remove("open");
-
-            if (e.target.closest(`#${this.elements.aside.playlistsContainer.id} > li.playlist`)) {
-                const playlistContainers = Array.from(this.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
-                const playlistElement = playlistContainers.filter((pEl) => isChildOf(pEl, e.target))[0];
-                const pID = parseInt(playlistElement.getAttribute("playlist-id"));
-                const playlist = this.playlists[pID];
-
-                const children = getChildrenByName(this.playlists, playlist.name).map((p) => p.name);
-                const removedSelf = Object.values(this.playlists).filter((p) => p.name != playlist.name);
-                const removedChildren = removedSelf.filter((p) => !children.includes(p.name));
-                const removedParent = (playlist.parent != null) ? removedChildren.filter((p) => p.name != this.playlists[playlist.parent].name) : removedChildren;
-                const mapped = removedParent.map((p) => { return { name: p.name, call: () => this.movePlaylist(pID, getPlaylistIdByName(this.playlists, p.name))}});
-                if (playlist.parent != null) mapped.unshift({ name: "Root", call: () => this.movePlaylist(pID, null)});
-
-                this.contextmenu.open(e, playlistElement.children[0], [
-                    { name: "Rename playlist", call: () => this.modals.openRenamePlaylistModal(pID), children: [], shortcut: "F2" },
-                    { name: "Remove playlist", call: () => this.modals.openConfirmRemovePlaylistModal(pID), children: [], shortcut: "Suppr" },
-                    { name: "Move to", call: null, children: mapped, shortcut: null },
-                ]);
-                return;
-            }
-            
-            if (e.target.closest(`#${this.elements.aside.playlistsContainer.id}`)) {
-                this.contextmenu.open(e, null, [{ name: "Create playlist", call: () => this.modals.openCreatePlaylistModal(), children: [], shortcut: "Ctrl+Alt+N" }]);
-                return;
-            }
-            
-            const songLi = e.target.closest(`ul#current-playlist-table-body > li`);
-            if (songLi) {
-                this.contextmenu.open(e, songLi, [
-                    { name: "Add to queue", call: () => this.songListener.addToQueue(songLi.getAttribute("song-id")), children: [], shortcut: null },
-                    { name: "Remove from playlist", call: () => this.modals.openRemoveSongFromPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name), songLi.getAttribute("song-id")), children: [], shortcut: null },
-                ]);
-                return;
-            }
-
-            if (e.target.closest(`ul#current-playlist-table-body`)) {
-                this.contextmenu.open(e, null, [
-                    { name: "Add song to playlist", call: () => this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), children: [], shortcut: "Ctrl+N" },
-                ]);
-                return;
-            }
-        });
-
-        document.addEventListener("click", (e) => {
-            setTimeout(() => {
-                this.contextmenu.close();
-                if (!e.target.closest("button#manage-songs-open-button")) this.elements.aside.manageSongsMenu.container.classList.remove("open");
-            }, 10);
-        });
-
-        window.addEventListener("keydown", (e) => {
-            if (!this.modals.isAModalOpened()) return;
-
-            switch (e.key) {
-                case "Tab": e.preventDefault(); break;
-                case "Escape":
-                    this.modals.closeCurrentModal();
-                    this.contextmenu.close();
-                    break;
-                case "Enter":
-                    if (this.modals.elements.createPlaylist.container.classList.contains("open")) this.createPlaylist();
-                    if (this.modals.elements.confirmRemovePlaylist.container.classList.contains("open")) this.removePlaylist();
-                    if (this.modals.elements.renamePlaylist.container.classList.contains("open")) this.renamePlaylist();
-                    break;
-
-                default: break;
-            }
-        });
-
-        window.addEventListener("keydown", (e) => {
-            if (this.modals.isAModalOpened()) return;
-
-            switch (e.key) {
-                case "Escape": this.elements.aside.manageSongsMenu.container.classList.remove("open"); break;
-
-                case "F2": this.modals.openRenamePlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)); break;
-                case "Delete": this.modals.openConfirmRemovePlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)); break;
-
-                case "ArrowLeft": this.songListener.previous(); break;
-                case "ArrowRight": this.songListener.next(); break;
-
-                case " ":
-                    if (this.songListener.getCurrentPlaylist().songs.length > 0) {
-                        if (this.songListener.isPaused()) this.elements.footer.buttons.play.dispatchEvent(new Event("click"));
-                        else this.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
-                    }
-                    break;
-
-                case "l": this.elements.footer.buttons.loop.dispatchEvent(new Event("click")); break;
-                case "r": this.elements.footer.buttons.random.dispatchEvent(new Event("click")); break;
-                case "n": if (e.ctrlKey) {
-                    if (e.altKey) this.modals.openCreatePlaylistModal()
-                    else this.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.playlists, this.currentPlaylist.name));
-                } break;
-
-                default: break;
-            }
-        });
-
-        ipcRenderer.on("window-size-changed", (e, size) => this.windowSize = size);
-    }
-
-    initData() {
+    async initData() {
         let volume = 0;
         const readSaves = fsp.readFile(this.mainFolder + "/data/saves.json", "utf8").then(data => {
             const jsonData = JSON.parse(data);
-            this.settings.loop = jsonData.loop;
-            this.settings.random = jsonData.random;
+            this.saves.loop = jsonData.loop;
+            this.saves.random = jsonData.random;
             this.saves.volume = jsonData.volume;
         }).catch(err => this.error("Error reading saves.json:", err));
 
@@ -360,6 +211,7 @@ class App {
         this.setVolume(this.saves.volume * 100);
         if (this.saves.random) this.elements.footer.buttons.random.dispatchEvent(new Event("click"));
         if (this.saves.loop) this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
+        this.setVolume(this.saves.volume);
     }
 
     updateLoop() {
@@ -434,6 +286,24 @@ class App {
         }
     }
 
+    setVolume(volume) {
+        this.elements.footer.volume.slider.value = volume;
+        if (volume <= 0) {
+            this.elements.footer.volume.svg.no.classList.remove("hidden");
+            this.elements.footer.volume.svg.low.classList.add("hidden");
+            this.elements.footer.volume.svg.high.classList.add("hidden");
+        } else if (volume < 50) {
+            this.elements.footer.volume.svg.no.classList.add("hidden");
+            this.elements.footer.volume.svg.low.classList.remove("hidden");
+            this.elements.footer.volume.svg.high.classList.add("hidden");
+        } else {
+            this.elements.footer.volume.svg.no.classList.add("hidden");
+            this.elements.footer.volume.svg.low.classList.add("hidden");
+            this.elements.footer.volume.svg.high.classList.remove("hidden");
+        }
+        this.songListener.setVolume(Math.pow(volume / 100, 3));
+    }
+
     createPlaylist() {
         const modal = this.modals.elements.createPlaylist;
         const name = modal.input.value;
@@ -463,8 +333,8 @@ class App {
                         this.modals.closeCreatePlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
                     }, 1500);
-                }).catch((readErr) => this.error("Error: cant write playlists.json"));
-            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -495,8 +365,8 @@ class App {
                     this.modals.closeConfirmRemovePlaylistModal();
                     setTimeout(() => window.location.href = "index.html", 600);
                 }, 1500);
-            }).catch((readErr) => this.error("Error: cant write playlists.json"));
-        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
     }
     
     renamePlaylist() {
@@ -520,8 +390,8 @@ class App {
                         this.modals.closeRenamePlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
                     }, 1500);
-                }).catch((readErr) => this.error("Error: cant write playlists.json"));
-            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -533,7 +403,7 @@ class App {
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const songsToAdd = [];
 
-        const lis = this.modals.elements.addSongsToPlaylist.container.querySelectorAll("ul > li");
+        const lis = modal.container.querySelectorAll("ul > li");
         for (let i = 0; i < lis.length; i++) {
             const li = lis[i];
             const id = li.getAttribute("song-id");
@@ -555,8 +425,8 @@ class App {
                         this.modals.closeAddSongsToPlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
                     }, 1500);
-                }).catch((readErr) => this.error("Error: cant write playlists.json"));
-            }).catch((readErr) => this.error("Error: cant read playlists.json"));
+                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
         } 
     }
 
@@ -579,8 +449,8 @@ class App {
                     this.modals.closeRemoveSongFromPlaylistModal();
                     setTimeout(() => window.location.href = `index.html?p=${pID}`, 600);
                 }, 1500);
-            }).catch((readErr) => this.error("Error: cant write playlists.json"));
-        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
     }
 
     movePlaylist(playlistID, parentID) {
@@ -591,8 +461,8 @@ class App {
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
                 window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
-            }).catch((readErr) => this.error("Error: cant write playlists.json"));
-        }).catch((readErr) => this.error("Error: cant read playlists.json"));
+            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
     }
 
     addSong() {
@@ -641,8 +511,8 @@ class App {
                                     self.modals.closeAddSongToAppModal();
                                     setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`, 600);
                                 }, 1500);
-                            }).catch((readErr) => self.error("Error: cant write songs.json"));
-                        }).catch((readErr) => self.error("Error: cant read songs.json"));
+                            }).catch((writeErr) => self.error("Error => cant write songs.json:" + writeErr));
+                        }).catch((readErr) => self.error("Error => cant read songs.json:" + readErr));
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -653,21 +523,55 @@ class App {
         }
     }
 
-    setVolume(volume) {
-        this.elements.footer.volume.slider.value = volume;
-        if (volume <= 0) {
-            this.elements.footer.volume.svg.no.classList.remove("hidden");
-            this.elements.footer.volume.svg.low.classList.add("hidden");
-            this.elements.footer.volume.svg.high.classList.add("hidden");
-        } else if (volume < 50) {
-            this.elements.footer.volume.svg.no.classList.add("hidden");
-            this.elements.footer.volume.svg.low.classList.remove("hidden");
-            this.elements.footer.volume.svg.high.classList.add("hidden");
-        } else {
-            this.elements.footer.volume.svg.no.classList.add("hidden");
-            this.elements.footer.volume.svg.low.classList.add("hidden");
-            this.elements.footer.volume.svg.high.classList.remove("hidden");
+    removeSongsFromApp() {
+        const modal = this.modals.elements.removeSongsFromApp;
+        const songsToRemove = [];
+
+        const lis = modal.container.querySelectorAll("ul > li");
+        for (let i = 0; i < lis.length; i++) {
+            const li = lis[i];
+            const id = li.getAttribute("song-id");
+            if (li.querySelector("input").checked) songsToRemove.push(parseInt(id));
         }
-        this.songListener.setVolume(Math.pow(volume / 100, 3));
+
+        const songsFile = path.join(this.mainFolder, "data/songs.json");
+        fsp.readFile(songsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            songsToRemove.forEach((sID) => delete jsonData[sID]);
+
+            fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
+            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            for (const pID in jsonData) {
+                jsonData[pID].songs.forEach((sID, index) => {
+                    if (!songsToRemove.includes(parseInt(sID))) return;
+                    jsonData[pID].songs.splice(index, 1);
+                });
+            }
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = "Songs successfuly removed from the app!";
+                modal.message.classList.remove("error");
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.modals.closeRemoveSongsFromAppModal();
+                    setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
+                }, 1500);
+            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+
+        songsToRemove.forEach((sID) => {
+            const song = this.songs[sID];
+            if (!song) return;
+
+            const songPath = path.join(this.mainFolder, "songs", song.src);
+            if (fs.existsSync(songPath)) fs.unlink(songPath, (err) => this.error("Error => can't remove song:" + err));
+        });
     }
 };

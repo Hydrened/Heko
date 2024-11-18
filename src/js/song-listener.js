@@ -19,9 +19,7 @@ class SongListener {
     error(message) {
         this.app.error(message);
         this.lastError = message;
-        setTimeout(() => {
-            this.lastError = "";
-        }, 10);
+        setTimeout(() => this.lastError = "", 10);
     }
 
     handleEvents() {

@@ -16,8 +16,10 @@ class Application {
         ipcMain.on("window-close", () => this.window.close());
 
         this.window.on("resize", () => {
-            const { width, height } = this.window.getBounds();
-            this.window.webContents.send("window-size-changed", { width, height });
+            const { x, y, width, height } = this.window.getBounds();
+            console.log(this.window.getBounds());
+            
+            this.window.webContents.send("window-size-changed", { x, y, width, height });
         });
 
         ipcMain.on("get-main-folder", (e) => {
@@ -34,11 +36,24 @@ class Application {
     }
 
     createWindow() {
+        const savesFile = path.join(app.getPath("documents"), "Heko", "data", "saves.json");
+        const jsonData = (fs.existsSync(savesFile)) ? JSON.parse(fs.readFileSync(savesFile, "utf8")) : null;
+
+        const minW = 900;
+        const minH = 650;
+
+        const x = (jsonData) ? jsonData.window.x : 0;
+        const y = (jsonData) ? jsonData.window.y : 0;
+        const w = (jsonData) ? Math.max(jsonData.window.w, minW) : 1280;
+        const h = (jsonData) ? Math.max(jsonData.window.h, minH) : 720;
+
         const window = new BrowserWindow({
-            width: 1600,
-            height: 900,
-            minWidth: 900,
-            minHeight: 650,
+            x: x,
+            y: y,
+            width: w,
+            height: h,
+            minWidth: minW,
+            minHeight: minH,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
@@ -52,7 +67,7 @@ class Application {
             setTimeout(() => {
                 const { width, height } = window.getBounds();
                 window.webContents.send("window-size-changed", { width, height });
-            }, 10);
+            }, 100);
         });
 
         return window;
@@ -75,9 +90,16 @@ class Application {
 
         const savesFile = path.join(dataFolder, "saves.json");
         const saveData = {
-            volume: 0.3,
+            volume: 0.5,
             loop: false,
             random: false,
+            window: {
+                x: 0,
+                y: 0,
+                w: 1280,
+                h: 720,
+            },
+            playlists: [],
         };
         const strSaveData = JSON.stringify(saveData, null, 2);
         if (!fs.existsSync(savesFile)) fs.writeFile(savesFile, strSaveData, (err) => {
@@ -97,6 +119,13 @@ class Application {
         const songsData = {};
         const strSongstsData = JSON.stringify(songsData, null, 2);
         if (!fs.existsSync(songsFile)) fs.writeFile(songsFile, strSongstsData, (err) => {
+            if (err) console.error("Error writing json:", err);
+        });
+
+        const statsFile = path.join(dataFolder, "stats.json");
+        const statsData = {};
+        const strStatsData = JSON.stringify(statsData, null, 2);
+        if (!fs.existsSync(statsFile)) fs.writeFile(statsFile, strStatsData, (err) => {
             if (err) console.error("Error writing json:", err);
         });
     }

@@ -129,13 +129,13 @@ div.modal ul {
     overflow-y: scroll;
 }
 div.modal ul > li {
-    padding: 0.4rem;
+    padding: 0.4rem 0.8rem;
     display: flex;
+    align-items: center;
     gap: 1rem;
-    font-size: 1.3rem;
+    font-size: 1.2rem;
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
-    white-space: nowrap;
     transition: 100ms;
     cursor: pointer;
 }
@@ -146,5 +146,11 @@ div.modal ul > li:hover {
     background-color: var(--bg-col-2);
 }
 div.modal ul > li > input[type=checkbox] {
-    width: 2rem;
+    width: 1.4rem;
+    height: 1.4rem;
+}
+div.modal ul > li > p {
+    flex: 1;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }

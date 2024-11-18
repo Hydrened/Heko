@@ -1,3 +1,9 @@
+## HEKO-1.1.3
+#### ADDED
+- save random, loop and volume
+- save window size and position
+- remove songs from app
+
 ## HEKO-1.1.2
 #### ADDED
 - remove playlist shortcut
