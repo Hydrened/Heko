@@ -81,6 +81,7 @@ class App {
             this.events = new Events(this);
 
             this.initPlaylists();
+            this.setVolume(this.saves.volume);
 
             if (!playlistToOpen) {
                 const parentIds = new Set(Object.values(this.playlists).map(playlist => playlist.parent).filter(parent => parent !== null));
@@ -211,7 +212,6 @@ class App {
         this.setVolume(this.saves.volume * 100);
         if (this.saves.random) this.elements.footer.buttons.random.dispatchEvent(new Event("click"));
         if (this.saves.loop) this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
-        this.setVolume(this.saves.volume);
     }
 
     updateLoop() {
@@ -333,8 +333,8 @@ class App {
                         this.modals.closeCreatePlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -365,8 +365,8 @@ class App {
                     this.modals.closeConfirmRemovePlaylistModal();
                     setTimeout(() => window.location.href = "index.html", 600);
                 }, 1500);
-            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
     }
     
     renamePlaylist() {
@@ -390,8 +390,8 @@ class App {
                         this.modals.closeRenamePlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -425,8 +425,8 @@ class App {
                         this.modals.closeAddSongsToPlaylistModal();
                         setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
         } 
     }
 
@@ -449,8 +449,8 @@ class App {
                     this.modals.closeRemoveSongFromPlaylistModal();
                     setTimeout(() => window.location.href = `index.html?p=${pID}`, 600);
                 }, 1500);
-            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
     }
 
     movePlaylist(playlistID, parentID) {
@@ -461,11 +461,11 @@ class App {
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
                 window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
-            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
     }
 
-    addSong() {
+    addSongToApp() {
         const modal = this.modals.elements.addSongToApp;
         const file = modal.file.files[0];
         const name = modal.name.value;
@@ -474,7 +474,7 @@ class App {
         modal.message.classList.remove("error");
         modal.message.textContent = "";
 
-        const errors = getSongNameErrors(this.playlists, name);
+        const errors = getSongNameErrors(this.songs, name);
         if (artist == "") errors.push("Artist does not have a name");
         if (!file) errors.push("No file detected");
         else if (fs.existsSync(path.join(this.mainFolder, "songs", file.name))) errors.push("File already exists");
@@ -511,8 +511,8 @@ class App {
                                     self.modals.closeAddSongToAppModal();
                                     setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`, 600);
                                 }, 1500);
-                            }).catch((writeErr) => self.error("Error => cant write songs.json:" + writeErr));
-                        }).catch((readErr) => self.error("Error => cant read songs.json:" + readErr));
+                            }).catch((writeErr) => self.error("Error => can't write songs.json:" + writeErr));
+                        }).catch((readErr) => self.error("Error => can't read songs.json:" + readErr));
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -520,6 +520,7 @@ class App {
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
+            this.modals.closing = false;
         }
     }
 
@@ -540,38 +541,38 @@ class App {
             songsToRemove.forEach((sID) => delete jsonData[sID]);
 
             fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
-            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
+                const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
 
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
-            const jsonData = JSON.parse(data);
-            for (const pID in jsonData) {
-                jsonData[pID].songs.forEach((sID, index) => {
-                    if (!songsToRemove.includes(parseInt(sID))) return;
-                    jsonData[pID].songs.splice(index, 1);
-                });
-            }
+                fsp.readFile(playlistsFile, "utf-8").then((data) => {
+                    const jsonData = JSON.parse(data);
+                    for (const pID in jsonData) {
+                        jsonData[pID].songs.forEach((sID, index) => {
+                            if (!songsToRemove.includes(parseInt(sID))) return;
+                            jsonData[pID].songs.splice(index, 1);
+                        });
+                    }
+        
+                    fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                        modal.message.textContent = "Songs successfuly removed from the app!";
+                        modal.message.classList.remove("error");
+                        modal.message.classList.add("success");
 
-            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                modal.message.textContent = "Songs successfuly removed from the app!";
-                modal.message.classList.remove("error");
-                modal.message.classList.add("success");
+                        songsToRemove.forEach((sID) => {
+                            const song = this.songs[sID];
+                            if (!song) return;
+                
+                            const songPath = path.join(this.mainFolder, "songs", song.src);
+                            if (fs.existsSync(songPath)) fsp.unlink(songPath, (err) => this.error("Error => can't remove song:" + err));
+                        });
+        
+                        setTimeout(() => {
+                            this.modals.closeRemoveSongsFromAppModal();
+                            setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
+                        }, 1500);
 
-                setTimeout(() => {
-                    this.modals.closeRemoveSongsFromAppModal();
-                    setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
-                }, 1500);
-            }).catch((writeErr) => this.error("Error => cant write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => cant read playlists.json:" + readErr));
-
-        songsToRemove.forEach((sID) => {
-            const song = this.songs[sID];
-            if (!song) return;
-
-            const songPath = path.join(this.mainFolder, "songs", song.src);
-            if (fs.existsSync(songPath)) fs.unlink(songPath, (err) => this.error("Error => can't remove song:" + err));
-        });
+                    }).catch((writeErr1) => this.error("Error => can't write playlists.json:" + writeErr1));
+                }).catch((readErr1) => this.error("Error => can't read playlists.json:" + readErr1));
+            }).catch((writeErr2) => this.error("Error => can't write songs.json:" + writeErr2));
+        }).catch((readErr2) => this.error("Error => can't read songs.json:" + readErr2));
     }
 };

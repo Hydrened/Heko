@@ -124,7 +124,7 @@ class Modals {
         this.elements.addSongToApp.confirmButton.addEventListener("click", () => {
             if (this.closing) return;
             this.closing = true;
-            this.app.addSong();
+            this.app.addSongToApp();
         });
         this.elements.addSongToApp.container.addEventListener("dragenter", (e) => {
             if (!e.dataTransfer.types.includes("Files")) return;

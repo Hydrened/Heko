@@ -1,3 +1,10 @@
+## HEKO-1.1.4
+#### FIXED
+- volume saving
+- file add
+- song can't have same names
+- enter key event in modals
+
 ## HEKO-1.1.3
 #### ADDED
 - save random, loop and volume

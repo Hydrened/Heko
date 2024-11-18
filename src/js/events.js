@@ -116,6 +116,10 @@ class Events {
                     if (this.app.modals.elements.createPlaylist.container.classList.contains("open")) this.app.createPlaylist();
                     if (this.app.modals.elements.confirmRemovePlaylist.container.classList.contains("open")) this.app.removePlaylist();
                     if (this.app.modals.elements.renamePlaylist.container.classList.contains("open")) this.app.renamePlaylist();
+                    if (this.app.modals.elements.addSongsToPlaylist.container.classList.contains("open")) this.app.addSongsToPlaylist();
+                    if (this.app.modals.elements.removeSongFromPlaylist.container.classList.contains("open")) this.app.removeSongFromPlaylist();
+                    if (this.app.modals.elements.addSongToApp.container.classList.contains("open")) this.app.addSongToApp();
+                    if (this.app.modals.elements.removeSongsFromApp.container.classList.contains("open")) this.app.removeSongsFromApp();
                     break;
 
                 default: break;
