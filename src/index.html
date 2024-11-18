@@ -57,7 +57,6 @@
                         </button>
                         <ul class="contextmenu" id="manage-songs-menu">
                             <li id="manage-songs-add-button">Add song</li>
-                            <li id="manage-songs-edit-button">Edit song</li>
                             <li id="manage-songs-remove-button">Remove song</li>
                         </ul>
                     </footer>
@@ -114,84 +113,86 @@
                 </article>
             </footer>
             <div id="error-modal"></div>
-            <div class="modal" id="create-playlist-modal">
-                <div>
-                    <h2>Playlist name</h2>
-                    <input type="text" id="create-playlist-modal-input">
-                    <div class="button-container">
-                        <button class="confirm" id="create-playlist-modal-confirm-button">Create</button>
-                        <button class="error" id="create-playlist-modal-cancel-button">Cancel</button>
+            <div class="modal-container">
+                <div class="modal" id="create-playlist-modal">
+                    <div>
+                        <h2>Playlist name</h2>
+                        <input type="text" id="create-playlist-modal-input">
+                        <div class="button-container">
+                            <button class="confirm" id="create-playlist-modal-confirm-button">Create</button>
+                            <button class="error" id="create-playlist-modal-cancel-button">Cancel</button>
+                        </div>
+                        <p id="create-playlist-modal-message"></p>
                     </div>
-                    <p id="create-playlist-modal-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="confirm-remove-playlist-modal">
-                <div>
-                    <h2>Are you sure you want to delete "<span id="confirm-remove-playlist-name"></span>" ?</h2>
-                    <div class="button-container">
-                        <button class="confirm" id="confirm-remove-playlist-confirm-button">Confirm</button>
-                        <button class="error" id="confirm-remove-playlist-cancel-button">Cancel</button>
+                <div class="modal" id="confirm-remove-playlist-modal">
+                    <div>
+                        <h2>Are you sure you want to delete "<span id="confirm-remove-playlist-name"></span>" ?</h2>
+                        <div class="button-container">
+                            <button class="confirm" id="confirm-remove-playlist-confirm-button">Confirm</button>
+                            <button class="error" id="confirm-remove-playlist-cancel-button">Cancel</button>
+                        </div>
+                        <p id="confirm-remove-playlist-message"></p>
                     </div>
-                    <p id="confirm-remove-playlist-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="rename-playlist-modal">
-                <div>
-                    <h2>New "<span id="rename-playlist-name"></span>" name</h2>
-                    <input type="text" id="rename-playlist-input">
-                    <div class="button-container">
-                        <button class="confirm" id="rename-playlist-confirm-button">Rename</button>
-                        <button class="error" id="rename-playlist-cancel-button">Cancel</button>
+                <div class="modal" id="rename-playlist-modal">
+                    <div>
+                        <h2>New "<span id="rename-playlist-name"></span>" name</h2>
+                        <input type="text" id="rename-playlist-input">
+                        <div class="button-container">
+                            <button class="confirm" id="rename-playlist-confirm-button">Rename</button>
+                            <button class="error" id="rename-playlist-cancel-button">Cancel</button>
+                        </div>
+                        <p id="rename-playlist-message"></p>
                     </div>
-                    <p id="rename-playlist-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="add-songs-to-playlist-modal">
-                <div>
-                    <h2>Select the song(s) you want to add to "<span id="add-songs-to-playlist-name"></span>"</h2>
-                    <input type="text" id="add-songs-to-playlist-input">
-                    <ul id="add-songs-to-playlist-song-container"></ul>
-                    <div class="button-container">
-                        <button class="confirm" id="add-songs-to-playlist-confirm-button">Add song(s)</button>
-                        <button class="error" id="add-songs-to-playlist-cancel-button">Cancel</button>
+                <div class="modal" id="add-songs-to-playlist-modal">
+                    <div>
+                        <h2>Select the song(s) you want to add to "<span id="add-songs-to-playlist-name"></span>"</h2>
+                        <input type="text" id="add-songs-to-playlist-input">
+                        <ul id="add-songs-to-playlist-song-container"></ul>
+                        <div class="button-container">
+                            <button class="confirm" id="add-songs-to-playlist-confirm-button">Add song(s)</button>
+                            <button class="error" id="add-songs-to-playlist-cancel-button">Cancel</button>
+                        </div>
+                        <p id="add-songs-to-playlist-message"></p>
                     </div>
-                    <p id="add-songs-to-playlist-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="remove-song-from-playlist-modal">
-                <div>
-                    <h2>Are you sure you want to remove "<span id="remove-song-from-playlist-song"></span>" from "<span id="remove-song-from-playlist-playlist"></span>"</h2>
-                    <div class="button-container">
-                        <button class="confirm" id="remove-song-from-playlist-confirm-button">Confirm</button>
-                        <button class="error" id="remove-song-from-playlist-cancel-button">Cancel</button>
+                <div class="modal" id="remove-song-from-playlist-modal">
+                    <div>
+                        <h2>Are you sure you want to remove "<span id="remove-song-from-playlist-song"></span>" from "<span id="remove-song-from-playlist-playlist"></span>"</h2>
+                        <div class="button-container">
+                            <button class="confirm" id="remove-song-from-playlist-confirm-button">Confirm</button>
+                            <button class="error" id="remove-song-from-playlist-cancel-button">Cancel</button>
+                        </div>
+                        <p id="remove-song-from-playlist-message"></p>
                     </div>
-                    <p id="remove-song-from-playlist-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="add-song-to-app-modal">
-                <div>
-                    <h2>Add a song</h2>
-                    <input type="file" id="add-song-to-app-file">
-                    <div class="drag-zone">Drag file here</div>
-                    <input type="text" id="add-song-to-app-name" placeholder="Name">
-                    <input type="text" id="add-song-to-app-artist" placeholder="Artist">
-                    <div class="button-container">
-                        <button class="confirm" id="add-song-to-app-confirm-button">Add</button>
-                        <button class="error" id="add-song-to-app-cancel-button">Cancel</button>
+                <div class="modal" id="add-song-to-app-modal">
+                    <div>
+                        <h2>Add a song</h2>
+                        <input type="file" id="add-song-to-app-file">
+                        <div class="drag-zone">Drag file here</div>
+                        <input type="text" id="add-song-to-app-name" placeholder="Name">
+                        <input type="text" id="add-song-to-app-artist" placeholder="Artist">
+                        <div class="button-container">
+                            <button class="confirm" id="add-song-to-app-confirm-button">Add</button>
+                            <button class="error" id="add-song-to-app-cancel-button">Cancel</button>
+                        </div>
+                        <p id="add-song-to-app-message"></p>
                     </div>
-                    <p id="add-song-to-app-message"></p>
                 </div>
-            </div>
-            <div class="modal" id="remove-songs-from-app-modal">
-                <div>
-                    <h2>Select the song(s) you want to remove</h2>
-                    <input type="text" id="remove-songs-from-app-input">
-                    <ul id="remove-songs-from-app-song-container"></ul>
-                    <div class="button-container">
-                        <button class="confirm" id="remove-songs-from-app-confirm-button">Remove song(s)</button>
-                        <button class="error" id="remove-songs-from-app-cancel-button">Cancel</button>
+                <div class="modal" id="remove-songs-from-app-modal">
+                    <div>
+                        <h2>Select the song(s) you want to remove</h2>
+                        <input type="text" id="remove-songs-from-app-input">
+                        <ul id="remove-songs-from-app-song-container"></ul>
+                        <div class="button-container">
+                            <button class="confirm" id="remove-songs-from-app-confirm-button">Remove song(s)</button>
+                            <button class="error" id="remove-songs-from-app-cancel-button">Cancel</button>
+                        </div>
+                        <p id="remove-songs-from-app-message"></p>
                     </div>
-                    <p id="remove-songs-from-app-message"></p>
                 </div>
             </div>
             <audio id="audio" hidden></audio>

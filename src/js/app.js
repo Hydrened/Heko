@@ -18,7 +18,6 @@ class App {
                     container: document.getElementById("manage-songs-menu"),
                     openButton: document.getElementById("manage-songs-open-button"),
                     addButton: document.getElementById("manage-songs-add-button"),
-                    editButton: document.getElementById("manage-songs-edit-button"),
                     removeButton: document.getElementById("manage-songs-remove-button"),
                 }
             },

@@ -1,3 +1,8 @@
+## HEKO-1.1.5
+#### ADDED
+- blur background when a modal is open
+- changed colors
+
 ## HEKO-1.1.4
 #### FIXED
 - volume saving

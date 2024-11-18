@@ -104,6 +104,7 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li > p:l
     text-align: center;
     justify-content: center;
 }
+
 section > div.current-playlist-table > ul#current-playlist-table-body > li {
     transition: 150ms;
     cursor: pointer;
@@ -112,4 +113,15 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li {
 }
 section > div.current-playlist-table > ul#current-playlist-table-body > li:hover {
     background-color: var(--bg-col-3);
+}
+
+@media screen and (width < 1000px) {
+    section > div.current-playlist-table > ul#current-playlist-table-body > li > p:nth-of-type(3),
+    section > div.current-playlist-table > div.current-playlist-table-head > p:nth-of-type(3) {
+        display: none;
+    }
+    section > div.current-playlist-table > div.current-playlist-table-head,
+    section > div.current-playlist-table > ul#current-playlist-table-body > li {
+        grid-template-columns: 3rem 1fr 7rem;
+    }
 }

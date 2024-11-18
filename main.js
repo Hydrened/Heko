@@ -6,7 +6,6 @@ class Application {
     constructor() {
         this.window = this.createWindow();
         this.initMainFolder();
-
         this.handleEvents();
     }
 
@@ -17,8 +16,6 @@ class Application {
 
         this.window.on("resize", () => {
             const { x, y, width, height } = this.window.getBounds();
-            console.log(this.window.getBounds());
-            
             this.window.webContents.send("window-size-changed", { x, y, width, height });
         });
 

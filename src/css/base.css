@@ -87,6 +87,15 @@ body > div.page > header {
     background-color: var(--col-1);
 }
 
+
+
+div.page:has(div.modal.open) > main,
+div.page:has(div.modal.open) > footer {
+    filter: blur(3px);
+}
+
+
+
 .arrow {
     font-family: Courier;
     font-weight: 900;
