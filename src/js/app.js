@@ -78,6 +78,7 @@ class App {
             this.contextmenu = new Contextmenu(this);
             this.modals = new Modals(this);
             this.events = new Events(this);
+            this.tooltip = new Tooltip();
 
             this.initPlaylists();
             this.setVolume(this.saves.volume);
@@ -242,13 +243,16 @@ class App {
                     this.elements.currentPlaylist.container.classList.add("open");
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
 
-                    this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
+                    const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
+                    if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
+
                     this.elements.currentPlaylist.title.textContent = playlist.name;
                     this.elements.currentPlaylist.nbSong.textContent = `${playlist.songs.length} songs`;
                     if (playlist.songs.length < 2) this.elements.currentPlaylist.nbSong.textContent = this.elements.currentPlaylist.nbSong.textContent.slice(0, -1);
 
                     playlist.songs.forEach((sID, index) => {
                         const song = this.songs[sID];
+                        const songPath = path.resolve(this.mainFolder, "songs", song.src);
 
                         if (song) {
                             const li = document.createElement("li");
@@ -269,10 +273,17 @@ class App {
 
                             const duration = document.createElement("p");
                             const audio = document.createElement("audio");
-                            audio.src = `${this.mainFolder}/songs/${song.src}`;
                             duration.textContent = "-:--";
-                            audio.addEventListener("loadedmetadata", () => duration.textContent = formatTime(parseInt(audio.duration)));
                             li.appendChild(duration);
+
+                            audio.addEventListener("error", (e) => {
+                                if (!e.target.error) return;
+                                li.classList.add("error");
+                            });
+                            if (fs.existsSync(songPath)) {
+                                audio.src = songPath;
+                                audio.addEventListener("loadedmetadata", () => duration.textContent = formatTime(parseInt(audio.duration)));
+                            } else li.classList.add("error");
 
                             li.addEventListener("click", () => {
                                 this.songListener.setCurrentPlaylist(playlist);
@@ -459,7 +470,8 @@ class App {
             jsonData[playlistID].parent = parentID;
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`;
+                const cPlaylist = getPlaylistIdByName(this.playlists, this.currentPlaylist.name);
+                window.location.href = `index.html?p=${(cPlaylist != parentID) ? cPlaylist : ""}`;
             }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
         }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
     }
@@ -573,5 +585,25 @@ class App {
                 }).catch((readErr1) => this.error("Error => can't read playlists.json:" + readErr1));
             }).catch((writeErr2) => this.error("Error => can't write songs.json:" + writeErr2));
         }).catch((readErr2) => this.error("Error => can't read songs.json:" + readErr2));
+    }
+
+    duplicatePlaylist(pID) {
+        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const jsonData = JSON.parse(data);
+            const playlistToDuplicate = jsonData[pID];
+            const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
+
+            jsonData[id] = {
+                name: playlistToDuplicate.name + " copy",
+                thumbnail: playlistToDuplicate.thumbnail,
+                songs: playlistToDuplicate.songs,
+                parent: playlistToDuplicate.parent,
+            };
+
+            fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                window.location.href = `index.html?p=${id}`;
+            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
     }
 };

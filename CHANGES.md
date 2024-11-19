@@ -1,3 +1,12 @@
+## HEKO-1.1.6
+#### ADDED
+- software name and version in frame
+- duplicate playlist
+- shade not working songs
+#### FIXED
+- save window location
+- can't play shaded songs
+
 ## HEKO-1.1.5
 #### ADDED
 - blur background when a modal is open

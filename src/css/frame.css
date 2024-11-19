@@ -1,11 +1,17 @@
 header.frame {
     display: grid;
-    grid-template-columns: 1fr auto;
+    grid-template-columns: auto 1fr auto;
     background-color: var(--bg-col-2);
 }
 
 
 
+header.frame > p#window-title {
+    padding-inline: 0.8rem;
+    display: flex;
+    align-items: center;
+    font-size: 0.8rem;
+}
 header.frame > div.drag-area {
     -webkit-app-region: drag;
 }

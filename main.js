@@ -16,7 +16,12 @@ class Application {
 
         this.window.on("resize", () => {
             const { x, y, width, height } = this.window.getBounds();
-            this.window.webContents.send("window-size-changed", { x, y, width, height });
+            this.window.webContents.send("window-update", { x, y, width, height });
+        });
+
+        this.window.on("move", () => {
+            const { x, y, width, height } = this.window.getBounds();
+            this.window.webContents.send("window-update", { x, y, width, height });
         });
 
         ipcMain.on("get-main-folder", (e) => {
@@ -51,6 +56,8 @@ class Application {
             height: h,
             minWidth: minW,
             minHeight: minH,
+            maxWidth: 1920,
+            maxHeight: 1050,
             frame: false,
             webPreferences: {
                 nodeIntegration: true,
@@ -62,8 +69,8 @@ class Application {
 
         window.webContents.on("did-finish-load", () => {
             setTimeout(() => {
-                const { width, height } = window.getBounds();
-                window.webContents.send("window-size-changed", { width, height });
+                const { x, y, width, height } = window.getBounds();
+                window.webContents.send("window-update", { x, y, width, height });
             }, 100);
         });
 

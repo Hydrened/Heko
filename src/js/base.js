@@ -17,8 +17,8 @@ window.addEventListener("load", () => {
                 loop: app.settings.loop,
                 random: app.settings.random,
                 window: {
-                    x: app.window.x,
-                    y: app.window.y,
+                    x: Math.max(app.window.x, 0),
+                    y: Math.max(app.window.y, 0),
                     w: app.window.w,
                     h: app.window.h,
                 },

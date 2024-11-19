@@ -93,6 +93,10 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li {
     display: grid;
     grid-template-columns: 3rem 1fr 1fr 7rem;
 }
+section > div.current-playlist-table > ul#current-playlist-table-body > li.error {
+    pointer-events: none;
+    filter: opacity(50%);
+}
 section > div.current-playlist-table > div.current-playlist-table-head > p,
 section > div.current-playlist-table > ul#current-playlist-table-body > li > p {
     padding: 0.7rem 1rem;

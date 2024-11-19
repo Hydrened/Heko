@@ -69,6 +69,7 @@ class Events {
                 this.app.contextmenu.open(e, playlistElement.children[0], [
                     { name: "Rename playlist", call: () => this.app.modals.openRenamePlaylistModal(pID), children: [], shortcut: "F2" },
                     { name: "Remove playlist", call: () => this.app.modals.openConfirmRemovePlaylistModal(pID), children: [], shortcut: "Suppr" },
+                    { name: "Duplicate playlist", call: () => this.app.duplicatePlaylist(pID), children: [], shortcut: "Ctrl+D" },
                     { name: "Move to", call: null, children: mapped, shortcut: null },
                 ]);
                 return;
@@ -147,8 +148,9 @@ class Events {
 
                 case "l": this.app.elements.footer.buttons.loop.dispatchEvent(new Event("click")); break;
                 case "r": if (!e.ctrlKey) this.app.elements.footer.buttons.random.dispatchEvent(new Event("click")); break;
+                case "d": if (e.ctrlKey) this.app.duplicatePlaylist(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
                 case "n": if (e.ctrlKey) {
-                    if (e.altKey) this.app.modals.openCreatePlaylistModal()
+                    if (e.altKey) this.app.modals.openCreatePlaylistModal();
                     else this.app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name));
                 } break;
 
@@ -156,7 +158,7 @@ class Events {
             }
         });
 
-        ipcRenderer.on("window-size-changed", (e, data) => {
+        ipcRenderer.on("window-update", (e, data) => {
             this.app.window.x = data.x;
             this.app.window.y = data.y;
             this.app.window.w = data.width;

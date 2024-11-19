@@ -24,6 +24,9 @@ class SongListener {
 
     handleEvents() {
         this.elements.audio.addEventListener("ended", () => this.next());
+        this.elements.audio.addEventListener("error", (e) => {
+            if (e.target.error) this.playNextQueueSong();
+        });
     }
     
     resetQueue() {
