@@ -12,6 +12,12 @@ function formatTime(seconds) {
     return `${minutesStr}:${secondsStr}`;
 }
 
+function parseDuration(duration) {
+    if (duration == "-:--") return 0;
+    const [minutes, seconds] = duration.split(":").map(Number);
+    return minutes * 60 + seconds;
+};
+
 function isChildOf(element, child) {
     while (child) {
         if (element == child) {

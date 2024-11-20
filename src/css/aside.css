@@ -79,7 +79,7 @@ aside li.playlist > div.container {
 }
 aside li.playlist > div.container:hover,
 aside li.playlist > div.container.contextmenu-hover {
-    background-color: var(--bg-col-6);
+    background-color: var(--bg-col-5);
 }
 aside li.playlist > div.container > div.thumbnail {
     aspect-ratio: 1 / 1;

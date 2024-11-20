@@ -1,7 +1,7 @@
 section {
     padding: var(--main-boxes-padding);
     display: grid;
-    grid-template-rows: 10rem 1fr;
+    grid-template-rows: 10rem auto 1fr;
     gap: 1rem;
     opacity: 0;
     transform: translateX(100%);
@@ -68,6 +68,14 @@ section > header > div.current-playlist-details > div > button.plus > svg {
 }
 
 
+section > input#current-playlist-song-filter-input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    font-size: 1.2rem;
+    border-radius: 0.5rem;
+}
+
+
 
 section > div.current-playlist-table {
     display: grid;
@@ -82,7 +90,18 @@ section.open > div.current-playlist-table {
     transform: translateX(0%);
 }
 section > div.current-playlist-table > div.current-playlist-table-head {
+    width: calc(100% - var(--scroll-width));
     border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+section > div.current-playlist-table > div.current-playlist-table-head > p {
+    cursor: pointer;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+}
+section > div.current-playlist-table > div.current-playlist-table-head > p:hover,
+section > div.current-playlist-table > div.current-playlist-table-head > p.sorted-by {
+    background-color: var(--bg-col-3);
+    color: var(--col-1);
 }
 section > div.current-playlist-table > ul#current-playlist-table-body {
     flex: 1;
@@ -110,16 +129,20 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li > p:l
     text-align: center;
     justify-content: center;
 }
-
 section > div.current-playlist-table > ul#current-playlist-table-body > li {
     cursor: pointer;
     font-size: 0.85rem;
     border-radius: 0.5rem;
 }
-section > div.current-playlist-table > ul#current-playlist-table-body > li:hover {
+section > div.current-playlist-table > ul#current-playlist-table-body > li.hidden {
+    display: none;
+}
+section > div.current-playlist-table > ul#current-playlist-table-body > li:hover,
+section > div.current-playlist-table > ul#current-playlist-table-body > li.contextmenu-hover {
     background-color: var(--bg-col-3);
 }
-section > div.current-playlist-table > ul#current-playlist-table-body > li:hover > p {
+section > div.current-playlist-table > ul#current-playlist-table-body > li:hover > p,
+    section > div.current-playlist-table > ul#current-playlist-table-body > li.contextmenu-hover > p {
     color: var(--col-1);
 }
 

@@ -27,6 +27,13 @@ class App {
                 title: document.getElementById("current-playlist-title"),
                 nbSong: document.getElementById("current-playlist-nb-song"),
                 addSong: document.getElementById("add-songs-to-current-playlist-button"),
+                filter: document.getElementById("current-playlist-song-filter-input"),
+                sort: {
+                    id: document.getElementById("current-playlist-sort-by-id"),
+                    title: document.getElementById("current-playlist-sort-by-title"),
+                    artist: document.getElementById("current-playlist-sort-by-artist"),
+                    duration: document.getElementById("current-playlist-sort-by-duration"),
+                },
                 songContainer: document.getElementById("current-playlist-table-body"),
             },
             footer: {
@@ -244,6 +251,10 @@ class App {
                 setTimeout(() => {
                     this.elements.currentPlaylist.container.classList.add("open");
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
+                    this.elements.currentPlaylist.filter.value = "";
+                    setTimeout(() => {
+                        this.elements.currentPlaylist.filter.focus();
+                    }, 700);
 
                     const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
                     if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;

@@ -1,3 +1,11 @@
+## HEKO-1.1.8
+#### ADDED
+- changes open in browser when clicking on window title
+- song filter in current playlist
+- sort current playlist songs by id, title, artist and duration
+#### FIXED
+- hover on song in current playlist when right clicking it
+
 ## HEKO-1.1.7
 #### ADDED
 - main color on song hover in current playlist

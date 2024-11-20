@@ -1,44 +1,73 @@
 class Events {
     constructor(app) {
         this.app = app;
+        this.songOrder = "id";
 
-        this.app.elements.aside.createPlaylist.addEventListener("click", () => this.app.modals.openCreatePlaylistModal());
+        const aside = this.app.elements.aside;
+        const currentPlaylist = this.app.elements.currentPlaylist;
+        const footer = this.app.elements.footer;
 
-        this.app.elements.aside.manageSongsMenu.openButton.addEventListener("click", () => this.app.elements.aside.manageSongsMenu.container.classList.toggle("open"));
-        this.app.elements.aside.manageSongsMenu.addButton.addEventListener("click", () => this.app.modals.openAddSongToAppModal());
-        this.app.elements.aside.manageSongsMenu.removeButton.addEventListener("click", () => this.app.modals.openRemoveSongsFromAppModal());
 
-        this.app.elements.currentPlaylist.addSong.addEventListener("click", () => this.app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)));
 
-        this.app.elements.footer.buttons.random.addEventListener("click", () => {
-            this.app.songListener.random();
-            this.app.elements.footer.buttons.random.classList.toggle("activated");
+        aside.createPlaylist.addEventListener("click", () => this.app.modals.openCreatePlaylistModal());
+
+        aside.manageSongsMenu.openButton.addEventListener("click", () => aside.manageSongsMenu.container.classList.toggle("open"));
+        aside.manageSongsMenu.addButton.addEventListener("click", () => this.app.modals.openAddSongToAppModal());
+        aside.manageSongsMenu.removeButton.addEventListener("click", () => this.app.modals.openRemoveSongsFromAppModal());
+
+        currentPlaylist.addSong.addEventListener("click", () => this.app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)));
+
+        currentPlaylist.filter.addEventListener("input", (e) => {
+            const songs = [...currentPlaylist.songContainer.children];
+            songs.forEach((song) => {
+                const name = song.children[1].textContent.toLowerCase();
+                const artist = song.children[2].textContent.toLowerCase();
+                song.classList.remove("hidden");
+                if (!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase())) song.classList.add("hidden");
+            });
         });
 
-        this.app.elements.footer.buttons.previous.addEventListener("click", () => {
+        currentPlaylist.sort.id.addEventListener("click", () => {
+            if (this.songOrder == "id") this.sortSongBy("id-reverse");
+            else this.sortSongBy("id");
+        });
+        currentPlaylist.sort.title.addEventListener("click", () => {
+            if (this.songOrder == "title") this.sortSongBy("title-reverse");
+            else this.sortSongBy("title");
+        });
+        currentPlaylist.sort.artist.addEventListener("click", () => {
+            if (this.songOrder == "artist") this.sortSongBy("artist-reverse");
+            else this.sortSongBy("artist");
+        });
+        currentPlaylist.sort.duration.addEventListener("click", () => {
+            if (this.songOrder == "duration") this.sortSongBy("duration-reverse");
+            else this.sortSongBy("duration");
+        });
+
+        footer.buttons.random.addEventListener("click", () => {
+            this.app.songListener.random();
+            footer.buttons.random.classList.toggle("activated");
+        });
+        footer.buttons.previous.addEventListener("click", () => {
             this.app.songListener.previous();
         });
-
-        this.app.elements.footer.buttons.play.addEventListener("click", () => {
+        footer.buttons.play.addEventListener("click", () => {
             this.app.songListener.play();
         });
-
-        this.app.elements.footer.buttons.pause.addEventListener("click", () => {
+        footer.buttons.pause.addEventListener("click", () => {
             this.app.songListener.play();
         });
-
-        this.app.elements.footer.buttons.next.addEventListener("click", () => {
+        footer.buttons.next.addEventListener("click", () => {
             this.app.songListener.next();
         });
-
-        this.app.elements.footer.buttons.loop.addEventListener("click", () => {
+        footer.buttons.loop.addEventListener("click", () => {
             this.app.songListener.loop();
-            this.app.elements.footer.buttons.loop.classList.toggle("activated");
+            footer.buttons.loop.classList.toggle("activated");
         });
 
-        this.app.elements.footer.volume.slider.addEventListener("input", (e) => this.app.setVolume(e.target.value));
+        footer.volume.slider.addEventListener("input", (e) => this.app.setVolume(e.target.value));
 
-        this.app.elements.footer.song.slider.addEventListener("input", (e) => {
+        footer.song.slider.addEventListener("input", (e) => {
             if (this.app.currentSondID == -1) return;
             const duration = this.app.songListener.getCurrentSongDuration();
             const time = e.target.value / 100 * duration;
@@ -172,6 +201,38 @@ class Events {
             this.app.window.w = data.width;
             this.app.window.h = data.height;
             this.app.window.f = data.f;
+        });
+    }
+
+    sortSongBy(order) {
+        this.songOrder = order;
+        const currentPlaylist = this.app.elements.currentPlaylist;
+        const reverse = order.includes("reverse");
+        const songs = [...currentPlaylist.songContainer.children];
+
+        for (const t in currentPlaylist.sort) {
+            const element = currentPlaylist.sort[t];
+            if (order.includes(t)) element.classList.add("sorted-by");
+            else element.classList.remove("sorted-by");
+        }
+
+        if (order.includes("id")) songs.sort((a, b) => {
+            const intA = parseInt(a.children[0].textContent);
+            const intB = parseInt(b.children[0].textContent);
+            return intA - intB;
+        }); else if (order.includes("duration")) songs.sort((a, b) => {
+            const durationA = parseDuration(a.children[3].textContent.trim());
+            const durationB = parseDuration(b.children[3].textContent.trim());
+            return durationA - durationB;
+        }); else {
+            const childrenIndex = (order.includes("title")) ? 1 : 2;
+            songs.sort((a, b) => a.children[childrenIndex].textContent.localeCompare(b.children[childrenIndex].textContent));
+        }
+
+        if (reverse) songs.reverse();
+
+        songs.forEach((song) => {
+            currentPlaylist.songContainer.appendChild(song);
         });
     }
 };

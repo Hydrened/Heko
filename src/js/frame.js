@@ -16,6 +16,9 @@ class Frame {
         fsp.readFile(packageFile, "utf-8").then((data) => {
             const jsonData = JSON.parse(data);
             this.elements.title.textContent = `${jsonData.name} ${jsonData.version}`;
+            this.elements.title.addEventListener("click", () => {
+                shell.openExternal("https://github.com/Hydrened/Heko/blob/main/CHANGES.md");
+            });
         }).catch((readErr) => console.error("Error => can't read package.json:" + readErr));
     }
 
