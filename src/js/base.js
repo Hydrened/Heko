@@ -21,6 +21,7 @@ window.addEventListener("load", () => {
                     y: Math.max(app.window.y, 0),
                     w: app.window.w,
                     h: app.window.h,
+                    f: app.window.f,
                 },
                 playlists: [],
             };

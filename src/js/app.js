@@ -52,8 +52,8 @@ class App {
                     position: document.getElementById("song-position"),
                 },
                 details: {
-                    title: document.getElementById("current-song-name"),
-                    artist: document.getElementById("current-song-artist"),
+                    title: document.getElementById("current-song-name").querySelector("span"),
+                    artist: document.getElementById("current-song-artist").querySelector("span"),
                 },
             },
             error: document.getElementById("error-modal"),
@@ -67,6 +67,7 @@ class App {
             y: 0,
             w: 0,
             h: 0,
+            f: false,
         };
 
         const url = new URL(window.location.href);
@@ -228,7 +229,8 @@ class App {
                 this.elements.footer.details.artist.textContent = `by ${(currentSong.artist == "") ? "-" : currentSong.artist}`;
             }
         }
-        
+
+        this.tooltip.refresh();
         setTimeout(() => this.updateLoop(), 16.67);
     }
 

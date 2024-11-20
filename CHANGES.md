@@ -1,3 +1,16 @@
+## HEKO-1.1.7
+#### ADDED
+- main color on song hover in current playlist
+- hover popup
+#### FIXED
+- text overflow in current playlist song list
+- text overflow on current playlist title
+- random and loop not working when switching playlist
+- right click on unvalid songs
+- removed "Move to" contextmenu on playlist that can't be moved
+- random when loop is being disabled
+- window maximize saving
+
 ## HEKO-1.1.6
 #### ADDED
 - software name and version in frame

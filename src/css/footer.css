@@ -67,7 +67,6 @@ article.song-controls > div.song-controls-buttons > svg#play-button:hover *, art
 }
 article.song-controls > div.song-controls-buttons > svg.activated * {
     stroke: var(--col-1);
-    filter: brightness(130%);
 }
 article.song-controls > div.song-controls-buttons > svg.hidden {
     display: none;

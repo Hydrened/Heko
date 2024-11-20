@@ -16,7 +16,8 @@ class Application {
 
         this.window.on("resize", () => {
             const { x, y, width, height } = this.window.getBounds();
-            this.window.webContents.send("window-update", { x, y, width, height });
+            const f = this.window.isMaximized();
+            this.window.webContents.send("window-update", { x, y, width, height, f });
         });
 
         this.window.on("move", () => {
@@ -66,11 +67,13 @@ class Application {
         });
         window.setMenuBarVisibility(false);
         window.loadFile("src/index.html");
+        if (jsonData) if (jsonData.window.f) window.maximize();
 
         window.webContents.on("did-finish-load", () => {
             setTimeout(() => {
                 const { x, y, width, height } = window.getBounds();
-                window.webContents.send("window-update", { x, y, width, height });
+                const f = window.isMaximized();
+                window.webContents.send("window-update", { x, y, width, height, f });
             }, 100);
         });
 
@@ -102,6 +105,7 @@ class Application {
                 y: 0,
                 w: 1280,
                 h: 720,
+                f: false,
             },
             playlists: [],
         };

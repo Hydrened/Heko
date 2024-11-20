@@ -112,9 +112,6 @@ div.modal button {
     cursor: pointer;
     transition: filter 200ms;
 }
-div.modal button:hover {
-    filter: brightness(130%);
-}
 div.modal button.confirm {
     background-color: var(--bg-col-success);
 }

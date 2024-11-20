@@ -116,11 +116,14 @@ class SongListener {
 
     loop() {
         this.app.settings.loop = !this.app.settings.loop;
-        if (this.app.settings.loop) this.updateQueue();
-        else {
+        if (!this.app.settings.loop) {
             this.resetQueue();
+            if (this.app.settings.random) {
+                this.app.settings.random = !this.app.settings.random;
+                this.random();
+            }
             this.shiftQueue(this.currentPlaylist.songs.indexOf(this.app.currentSondID) + 1);
-        }
+        } else this.updateQueue(0);
     }
 
     addToQueue(sID) {
@@ -151,7 +154,7 @@ class SongListener {
                 this.app.elements.footer.buttons.pause.classList.remove("hidden");
                 this.app.elements.footer.buttons.play.classList.add("hidden");
                 this.app.currentSondID = id;
-            } else this.error(`File "${song.src}" is missing for the song "${song.name} by ${(song.artist == "") ? "-" : song.artist}"`);
+            } else this.error(`File "${song.src}" is missing for the song "${song.name} by ${song.artist}"`);
         } else this.error(`Song ID "${id}" not found`);
     }
 
@@ -187,5 +190,12 @@ class SongListener {
         this.currentPlaylist = playlist;
         this.resetQueue();
         this.updateQueue(0);
+        if (this.app.settings.random) {
+            this.app.settings.random = !this.app.settings.random;
+            this.random();
+        } else if (this.app.settings.loop) {
+            this.app.settings.random = !this.app.settings.random;
+            this.loop();
+        }
     }
 };

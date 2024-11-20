@@ -53,7 +53,9 @@ class Events {
             this.app.contextmenu.close();
             this.app.elements.aside.manageSongsMenu.container.classList.remove("open");
 
-            if (e.target.closest(`#${this.app.elements.aside.playlistsContainer.id} > li.playlist`)) {
+            const playlistLi = e.target.closest(`#${this.app.elements.aside.playlistsContainer.id} > li.playlist`);
+
+            if (playlistLi) {
                 const playlistContainers = Array.from(this.app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
                 const playlistElement = playlistContainers.filter((pEl) => isChildOf(pEl, e.target))[0];
                 const pID = parseInt(playlistElement.getAttribute("playlist-id"));
@@ -66,12 +68,15 @@ class Events {
                 const mapped = removedParent.map((p) => { return { name: p.name, call: () => this.app.movePlaylist(pID, getPlaylistIdByName(this.app.playlists, p.name))}});
                 if (playlist.parent != null) mapped.unshift({ name: "Root", call: () => this.app.movePlaylist(pID, null)});
 
-                this.app.contextmenu.open(e, playlistElement.children[0], [
+                const menus = [
                     { name: "Rename playlist", call: () => this.app.modals.openRenamePlaylistModal(pID), children: [], shortcut: "F2" },
                     { name: "Remove playlist", call: () => this.app.modals.openConfirmRemovePlaylistModal(pID), children: [], shortcut: "Suppr" },
                     { name: "Duplicate playlist", call: () => this.app.duplicatePlaylist(pID), children: [], shortcut: "Ctrl+D" },
                     { name: "Move to", call: null, children: mapped, shortcut: null },
-                ]);
+                ];
+
+                if (menus.filter((m) => m.name == "Move to")[0].children.length == 0) menus.splice(menus.map((m) => m.name).indexOf("Move to"), 1);
+                this.app.contextmenu.open(e, playlistElement.children[0], menus);
                 return;
             }
             
@@ -82,10 +87,13 @@ class Events {
             
             const songLi = e.target.closest(`ul#current-playlist-table-body > li`);
             if (songLi) {
-                this.app.contextmenu.open(e, songLi, [
+                const menus = [
                     { name: "Add to queue", call: () => this.app.songListener.addToQueue(songLi.getAttribute("song-id")), children: [], shortcut: null },
                     { name: "Remove from playlist", call: () => this.app.modals.openRemoveSongFromPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name), songLi.getAttribute("song-id")), children: [], shortcut: null },
-                ]);
+                ];
+
+                if (songLi.classList.contains("error")) menus.splice(0, 1);
+                this.app.contextmenu.open(e, songLi, menus);
                 return;
             }
 
@@ -163,6 +171,7 @@ class Events {
             this.app.window.y = data.y;
             this.app.window.w = data.width;
             this.app.window.h = data.height;
+            this.app.window.f = data.f;
         });
     }
 };
