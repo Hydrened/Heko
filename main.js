@@ -39,8 +39,8 @@ class Application {
     }
 
     createWindow() {
-        const savesFile = path.join(app.getPath("documents"), "Heko", "data", "saves.json");
-        const jsonData = (fs.existsSync(savesFile)) ? JSON.parse(fs.readFileSync(savesFile, "utf8")) : null;
+        const settingsFile = path.join(app.getPath("documents"), "Heko", "data", "settings.json");
+        const jsonData = (fs.existsSync(settingsFile)) ? JSON.parse(fs.readFileSync(settingsFile, "utf8")) : null;
 
         const minW = 900;
         const minH = 650;
@@ -95,7 +95,7 @@ class Application {
         const dataFolder = path.join(mainFolder, "data");
         if (!fs.existsSync(dataFolder)) fs.mkdirSync(dataFolder);
 
-        const savesFile = path.join(dataFolder, "saves.json");
+        const settingsFile = path.join(dataFolder, "settings.json");
         const saveData = {
             volume: 0.5,
             loop: false,
@@ -108,9 +108,12 @@ class Application {
                 f: false,
             },
             playlists: [],
+            colors: {
+                main: "rgb(31,114,198)",
+            },
         };
         const strSaveData = JSON.stringify(saveData, null, 2);
-        if (!fs.existsSync(savesFile)) fs.writeFile(savesFile, strSaveData, (err) => {
+        if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSaveData, (err) => {
             if (err) console.error("Error writing json:", err);
         });
 

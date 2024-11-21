@@ -6,14 +6,20 @@ class Events {
         const aside = this.app.elements.aside;
         const currentPlaylist = this.app.elements.currentPlaylist;
         const footer = this.app.elements.footer;
+        const manageSongsMenu = this.app.elements.manageSongsMenu;
 
-
+        setTimeout(() => this.oldVolume = footer.volume.slider.value, 0);
 
         aside.createPlaylist.addEventListener("click", () => this.app.modals.openCreatePlaylistModal());
 
-        aside.manageSongsMenu.openButton.addEventListener("click", () => aside.manageSongsMenu.container.classList.toggle("open"));
-        aside.manageSongsMenu.addButton.addEventListener("click", () => this.app.modals.openAddSongToAppModal());
-        aside.manageSongsMenu.removeButton.addEventListener("click", () => this.app.modals.openRemoveSongsFromAppModal());
+        manageSongsMenu.openButton.addEventListener("click", () => {
+            manageSongsMenu.container.classList.toggle("open");
+            const rect = document.querySelector("aside > footer").getBoundingClientRect();
+            manageSongsMenu.container.style.top = `${rect.y}px`;
+            manageSongsMenu.container.style.left = `${rect.x + rect.width}px`;
+        });
+        manageSongsMenu.addButton.addEventListener("click", () => this.app.modals.openAddSongToAppModal());
+        manageSongsMenu.removeButton.addEventListener("click", () => this.app.modals.openRemoveSongsFromAppModal());
 
         currentPlaylist.addSong.addEventListener("click", () => this.app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)));
 
@@ -65,8 +71,10 @@ class Events {
             footer.buttons.loop.classList.toggle("activated");
         });
 
-        footer.volume.slider.addEventListener("input", (e) => this.app.setVolume(e.target.value));
-
+        footer.volume.slider.addEventListener("input", (e) => {
+            this.oldVolume = e.target.value;
+            this.app.setVolume(e.target.value);
+        });
         footer.song.slider.addEventListener("input", (e) => {
             if (this.app.currentSondID == -1) return;
             const duration = this.app.songListener.getCurrentSongDuration();
@@ -74,13 +82,18 @@ class Events {
 
             this.app.songListener.setCurrentTime(time);
         });
+        footer.volume.svg.no.parentNode.addEventListener("click", () => {
+            this.app.settings.muted = !this.app.settings.muted;
+            if (this.app.settings.muted) this.app.setVolume(0);
+            else this.app.setVolume(this.oldVolume);
+        });
 
         this.app.elements.error.addEventListener("click", () => this.app.closeError());
 
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             this.app.contextmenu.close();
-            this.app.elements.aside.manageSongsMenu.container.classList.remove("open");
+            this.app.elements.manageSongsMenu.container.classList.remove("open");
 
             const playlistLi = e.target.closest(`#${this.app.elements.aside.playlistsContainer.id} > li.playlist`);
 
@@ -137,7 +150,7 @@ class Events {
         document.addEventListener("click", (e) => {
             setTimeout(() => {
                 this.app.contextmenu.close();
-                if (!e.target.closest("button#manage-songs-open-button")) this.app.elements.aside.manageSongsMenu.container.classList.remove("open");
+                if (!e.target.closest("button#manage-songs-open-button")) this.app.elements.manageSongsMenu.container.classList.remove("open");
             }, 10);
         });
 
@@ -163,12 +176,11 @@ class Events {
                 default: break;
             }
         });
-
         window.addEventListener("keydown", (e) => {
             if (this.app.modals.isAModalOpened()) return;
 
             switch (e.key) {
-                case "Escape": this.app.elements.aside.manageSongsMenu.container.classList.remove("open"); break;
+                case "Escape": this.app.elements.manageSongsMenu.container.classList.remove("open"); break;
 
                 case "F2": this.app.modals.openRenamePlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
                 case "Delete": this.app.modals.openConfirmRemovePlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
@@ -186,6 +198,7 @@ class Events {
                 case "l": this.app.elements.footer.buttons.loop.dispatchEvent(new Event("click")); break;
                 case "r": if (!e.ctrlKey) this.app.elements.footer.buttons.random.dispatchEvent(new Event("click")); break;
                 case "d": if (e.ctrlKey) this.app.duplicatePlaylist(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
+                case "m": footer.volume.svg.no.parentNode.dispatchEvent(new Event("click")); break;
                 case "n": if (e.ctrlKey) {
                     if (e.altKey) this.app.modals.openCreatePlaylistModal();
                     else this.app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name));

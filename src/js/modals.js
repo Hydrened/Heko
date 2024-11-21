@@ -48,6 +48,7 @@ class Modals {
                 file: document.getElementById("add-song-to-app-file"),
                 name: document.getElementById("add-song-to-app-name"),
                 artist: document.getElementById("add-song-to-app-artist"),
+                fakeDragZone: document.getElementById("add-song-to-app-fake-drag-zone"),
                 confirmButton: document.getElementById("add-song-to-app-confirm-button"),
                 cancelButton: document.getElementById("add-song-to-app-cancel-button"),
                 message: document.getElementById("add-song-to-app-message"),
@@ -131,10 +132,27 @@ class Modals {
             this.elements.addSongToApp.file.classList.add("active");
         });
         this.elements.addSongToApp.file.addEventListener("dragleave", () => this.elements.addSongToApp.file.classList.remove("active"));
+        this.elements.addSongToApp.file.addEventListener("change", (e) => {
+            const file = e.target.files[0];
+            const dropEvent = new DragEvent("drop", {
+                dataTransfer: new DataTransfer(),
+            });
+            dropEvent.dataTransfer.items.add(file);
+            this.elements.addSongToApp.file.dispatchEvent(dropEvent);
+        });
         this.elements.addSongToApp.file.addEventListener("drop", (e) => {
-            if (e.dataTransfer.files[0].type != "audio/mpeg") e.preventDefault();
+            this.elements.addSongToApp.message.textContent = "";
+            this.elements.addSongToApp.message.classList.remove("error");
+
+            if (e.dataTransfer.files[0].type != "audio/mpeg") {
+                e.preventDefault();
+                this.elements.addSongToApp.file.value = "";
+                this.elements.addSongToApp.message.textContent = "File has to be a song format";
+                this.elements.addSongToApp.message.classList.add("error");
+            }
             this.elements.addSongToApp.file.classList.remove("active");
         });
+        this.elements.addSongToApp.fakeDragZone.addEventListener("click", () => this.elements.addSongToApp.file.click());
 
         this.elements.removeSongsFromApp.cancelButton.addEventListener("click", () => this.closeRemoveSongsFromAppModal());
         this.elements.removeSongsFromApp.confirmButton.addEventListener("click", () => {

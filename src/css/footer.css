@@ -91,13 +91,13 @@ article.song-volume {
     align-items: center;
     gap: 0.5rem;
 }
-article.song-volume > svg {
+article.song-volume > div > svg {
     width: 1.4rem;
     cursor: pointer;
 }
-article.song-volume > svg:hover * {
+article.song-volume > div > svg:hover * {
     stroke: white;
 }
-article.song-volume > svg.hidden {
+article.song-volume > div > svg.hidden {
     display: none;
 }

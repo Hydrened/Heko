@@ -63,7 +63,7 @@ div.modal input[type="file"] {
     left: 0;
     opacity: 0;
     background-color: transparent;
-    z-index: -1;
+    z-index: -10;
 }
 div.modal input[type="file"].active {
     display: block;
@@ -71,7 +71,7 @@ div.modal input[type="file"].active {
 }
 div.modal input[type="file"] + div.drag-zone {
     width: 100vw;
-    height: 100vh;
+    height: 0;
     position: absolute;
     top: 0;
     left: 0;
@@ -81,10 +81,10 @@ div.modal input[type="file"] + div.drag-zone {
     font-size: 2rem;
     background-color: transparent;
     opacity: 0;
-    transition: 300ms;
-    z-index: -1;
+    transition: opacity 300ms;
 }
 div.modal input[type="file"].active + div.drag-zone {
+    height: 100vh;
     opacity: 1;
     background-color: var(--col-1);
     z-index: 1;
@@ -157,4 +157,19 @@ div.modal ul > li > p {
     flex: 1;
     white-space: nowrap;
     text-overflow: ellipsis;
+}
+div.modal div.fake-drag-zone {
+    width: 100%;
+    height: 10rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 1.5rem;
+    border: 3px dashed rgba(255,255,255,0.2);
+    border-radius: 1rem;
+    transition: 200ms;
+    cursor: pointer;
+}
+div.modal div.fake-drag-zone:hover {
+    border-color: var(--col-1);
 }

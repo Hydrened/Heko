@@ -1,3 +1,15 @@
+## HEKO-1.1.9
+#### ADDED
+- mute toggle when clicking on song volume logo
+- m shortcut for toggle mute
+- drag zone for add song to app modal
+#### FIXED
+- playlist container wont scroll
+- add song to app modal not closing when clicking on edges
+- only song files are accepted
+#### REMOVED
+- auto filter input blur when opening a playlist
+
 ## HEKO-1.1.8
 #### ADDED
 - changes open in browser when clicking on window title

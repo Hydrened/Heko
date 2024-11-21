@@ -8,18 +8,13 @@ class App {
         this.settings = {
             random: false,
             loop: false,
+            muted: false,
         };
 
         this.elements = {
             aside: {
                 createPlaylist: document.getElementById("create-playlist-button"),
                 playlistsContainer: document.getElementById("playlists-container"),
-                manageSongsMenu: {
-                    container: document.getElementById("manage-songs-menu"),
-                    openButton: document.getElementById("manage-songs-open-button"),
-                    addButton: document.getElementById("manage-songs-add-button"),
-                    removeButton: document.getElementById("manage-songs-remove-button"),
-                }
             },
             currentPlaylist: {
                 container: document.getElementById("current-playlist"),
@@ -64,6 +59,12 @@ class App {
                 },
             },
             error: document.getElementById("error-modal"),
+            manageSongsMenu: {
+                container: document.getElementById("manage-songs-menu"),
+                openButton: document.getElementById("manage-songs-open-button"),
+                addButton: document.getElementById("manage-songs-add-button"),
+                removeButton: document.getElementById("manage-songs-remove-button"),
+            },
         };
 
         this.currentPlaylist = null;
@@ -127,12 +128,15 @@ class App {
 
     async initData() {
         let volume = 0;
-        const readSaves = fsp.readFile(this.mainFolder + "/data/saves.json", "utf8").then(data => {
+        const readSettings = fsp.readFile(this.mainFolder + "/data/settings.json", "utf8").then(data => {
             const jsonData = JSON.parse(data);
             this.saves.loop = jsonData.loop;
             this.saves.random = jsonData.random;
             this.saves.volume = jsonData.volume;
-        }).catch(err => this.error("Error reading saves.json:", err));
+
+            const root = document.documentElement;
+            root.style.setProperty("--col-1", jsonData.colors.main);
+        }).catch(err => this.error("Error reading settings.json:", err));
 
         const readSongs = fsp.readFile(this.mainFolder + "/data/songs.json", "utf8").then(data => {
             this.songs = JSON.parse(data);
@@ -142,7 +146,7 @@ class App {
             this.playlists = JSON.parse(data);
         }).catch(err => this.error("Error reading playlists.json:", err));
 
-        return Promise.all([readSaves, readSongs, readPlaylists]).then().catch(err => this.error("Error reading json files :", err));
+        return Promise.all([readSettings, readSongs, readPlaylists]).then().catch(err => this.error("Error reading json files :", err));
     }
 
     initPlaylists() {
@@ -252,9 +256,6 @@ class App {
                     this.elements.currentPlaylist.container.classList.add("open");
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
                     this.elements.currentPlaylist.filter.value = "";
-                    setTimeout(() => {
-                        this.elements.currentPlaylist.filter.focus();
-                    }, 700);
 
                     const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
                     if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;

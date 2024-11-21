@@ -4,7 +4,6 @@ aside {
     grid-template-rows: auto 1fr auto;
     gap: var(--main-boxes-padding);
     background-color: var(--bg-col-3);
-    overflow: visible;
 }
 
 
@@ -53,13 +52,10 @@ aside > footer > button.dots:hover > svg * {
 
 
 
-aside > footer > ul#manage-songs-menu {
-    bottom: 0;
-    right: 0;
-    transform: translateX(calc(100% + 0.5rem));
+ul#manage-songs-menu {
     display: none;
 }
-aside > footer > ul#manage-songs-menu.open {
+ul#manage-songs-menu.open {
     display: block;
 }
 
@@ -75,7 +71,6 @@ aside li.playlist > div.container {
     border-top-left-radius: 0.5rem;
     border-bottom-left-radius: 0.5rem;
     cursor: pointer;
-    transition: 150ms;
 }
 aside li.playlist > div.container:hover,
 aside li.playlist > div.container.contextmenu-hover {
