@@ -1,3 +1,13 @@
+## HEKO-1.1.10
+#### ADDED
+- error naming system
+- scroll on volume
+- save current data when refreshing
+#### FIXED
+- window frame accessible when inside a modal
+- queue system
+- window maximize saving
+
 ## HEKO-1.1.9
 #### ADDED
 - mute toggle when clicking on song volume logo

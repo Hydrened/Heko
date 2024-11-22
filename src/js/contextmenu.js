@@ -18,7 +18,7 @@ class Contextmenu {
         document.body.appendChild(this.container);
         
         const rect = this.container.getBoundingClientRect();
-        if (rect.x + rect.width > this.app.window.w) this.container.style.left = `${e.x - rect.width}px`;
+        if (rect.x + rect.width > this.app.settings.window.w) this.container.style.left = `${e.x - rect.width}px`;
 
         menu.forEach((line, index) => {
             const li = document.createElement("li");
@@ -40,7 +40,7 @@ class Contextmenu {
 
                     setTimeout(() => {
                         const ulcRect = ulc.getBoundingClientRect();
-                        if (ulcRect.y + ulcRect.height > this.app.window.h) ulc.style.top = `calc(100% - ${ulcRect.height}px)`;
+                        if (ulcRect.y + ulcRect.height > this.app.settings.window.h) ulc.style.top = `calc(100% - ${ulcRect.height}px)`;
                     }, 0);
     
                     line.children.forEach((child) => {

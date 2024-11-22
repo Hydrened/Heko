@@ -22,7 +22,8 @@ class Application {
 
         this.window.on("move", () => {
             const { x, y, width, height } = this.window.getBounds();
-            this.window.webContents.send("window-update", { x, y, width, height });
+            const f = this.window.isMaximized();
+            this.window.webContents.send("window-update", { x, y, width, height, f });
         });
 
         ipcMain.on("get-main-folder", (e) => {
@@ -30,9 +31,8 @@ class Application {
         });
 
         ipcMain.on("save-song", (e, { fileName, content }) => {
-            const destinationPath = path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName);
-            fs.writeFile(destinationPath, Buffer.from(content), (err) => {
-                if (err) console.error("Error writing file in song folder:", err);
+            fs.writeFile(path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName), Buffer.from(content), (err) => {
+                if (err) console.error("ERROR HK-201 => Writing file in song folder:", err);
                 e.reply("song-saved", (err) ? false : true);
             });
         });
@@ -114,7 +114,7 @@ class Application {
         };
         const strSaveData = JSON.stringify(saveData, null, 2);
         if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSaveData, (err) => {
-            if (err) console.error("Error writing json:", err);
+            if (err) console.error("ERROR HK-202 => Could not write settings.json:", err);
         });
 
         const playlistsFile = path.join(dataFolder, "playlists.json");
@@ -123,21 +123,21 @@ class Application {
         };
         const strPlaylistsData = JSON.stringify(playlistsData, null, 2);
         if (!fs.existsSync(playlistsFile)) fs.writeFile(playlistsFile, strPlaylistsData, (err) => {
-            if (err) console.error("Error writing json:", err);
+            if (err) console.error("ERROR HK-203 => Could not write playlists.json:", err);
         });
 
         const songsFile = path.join(dataFolder, "songs.json");
         const songsData = {};
         const strSongstsData = JSON.stringify(songsData, null, 2);
         if (!fs.existsSync(songsFile)) fs.writeFile(songsFile, strSongstsData, (err) => {
-            if (err) console.error("Error writing json:", err);
+            if (err) console.error("ERROR HK-204 => Could not write songs.json:", err);
         });
 
         const statsFile = path.join(dataFolder, "stats.json");
         const statsData = {};
         const strStatsData = JSON.stringify(statsData, null, 2);
         if (!fs.existsSync(statsFile)) fs.writeFile(statsFile, strStatsData, (err) => {
-            if (err) console.error("Error writing json:", err);
+            if (err) console.error("ERROR HK-205 => Could not write stats.json:", err);
         });
     }
 };

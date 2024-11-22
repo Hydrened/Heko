@@ -13,18 +13,16 @@ class Frame {
 
     initTitle() {
         const packageFile = path.join(__dirname, "..", "package.json");
-        fsp.readFile(packageFile, "utf-8").then((data) => {
+        fsp.readFile(packageFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             this.elements.title.textContent = `${jsonData.name} ${jsonData.version}`;
             this.elements.title.addEventListener("click", () => {
                 shell.openExternal("https://github.com/Hydrened/Heko/blob/main/CHANGES.md");
             });
-        }).catch((readErr) => console.error("Error => can't read package.json:" + readErr));
+        }).catch((readErr) => console.error("ERROR HK-115 => Could not read package.json:" + readErr));
     }
 
     handleEvents() {
-        const window = this.elements.window;
-
         this.elements.minimize.addEventListener("click", () => ipcRenderer.send("window-minimize"));
         this.elements.maximize.addEventListener("click", () => ipcRenderer.send("window-maximize"));
         this.elements.close.addEventListener("click", () => ipcRenderer.send("window-close"));

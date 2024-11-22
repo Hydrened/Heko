@@ -1,15 +1,11 @@
 class App {
     constructor(mainFolder) {
         this.mainFolder = mainFolder;
-        this.songs = {};
-        this.playlists = {};
-        this.saves = {};
+        this.songs = null;
+        this.playlists = null;
 
-        this.settings = {
-            random: false,
-            loop: false,
-            muted: false,
-        };
+        this.settings = null;
+        this.currentPlaylist = null;
 
         this.elements = {
             aside: {
@@ -67,17 +63,6 @@ class App {
             },
         };
 
-        this.currentPlaylist = null;
-        this.currentSondID = -1;
-
-        this.window = {
-            x: 0,
-            y: 0,
-            w: 0,
-            h: 0,
-            f: false,
-        };
-
         const url = new URL(window.location.href);
         const params = url.searchParams;
         const playlistToOpen = params.get("p");
@@ -90,7 +75,6 @@ class App {
             this.tooltip = new Tooltip();
 
             this.initPlaylists();
-            this.setVolume(this.saves.volume);
 
             if (!playlistToOpen) {
                 const parentIds = new Set(Object.values(this.playlists).map(playlist => playlist.parent).filter(parent => parent !== null));
@@ -101,9 +85,8 @@ class App {
                     }
                 }
             } else this.openPlaylist(playlistToOpen);
-            if (this.currentPlaylist) this.songListener.setCurrentPlaylist(this.currentPlaylist);
 
-            this.initFromSaves();
+            this.initFromSettings();
             this.updateLoop();
         });
     }
@@ -127,26 +110,23 @@ class App {
     }
 
     async initData() {
-        let volume = 0;
-        const readSettings = fsp.readFile(this.mainFolder + "/data/settings.json", "utf8").then(data => {
+        const readSettings = fsp.readFile(path.join(this.mainFolder, "data", "settings.json"), "utf8").then(data => {
             const jsonData = JSON.parse(data);
-            this.saves.loop = jsonData.loop;
-            this.saves.random = jsonData.random;
-            this.saves.volume = jsonData.volume;
+            this.settings = jsonData;
 
             const root = document.documentElement;
             root.style.setProperty("--col-1", jsonData.colors.main);
-        }).catch(err => this.error("Error reading settings.json:", err));
+        }).catch(err => this.error("ERROR HK-101 => Could not read settings.json:", err));
 
-        const readSongs = fsp.readFile(this.mainFolder + "/data/songs.json", "utf8").then(data => {
+        const readSongs = fsp.readFile(path.join(this.mainFolder, "data", "songs.json"), "utf8").then(data => {
             this.songs = JSON.parse(data);
-        }).catch(err => this.error("Error reading songs.json:", err));
+        }).catch(err => this.error("ERROR HK-102 => Could not read songs.json:", err));
 
-        const readPlaylists = fsp.readFile(this.mainFolder + "/data/playlists.json", "utf8").then(data => {
+        const readPlaylists = fsp.readFile(path.join(this.mainFolder, "data", "playlists.json"), "utf8").then(data => {
             this.playlists = JSON.parse(data);
-        }).catch(err => this.error("Error reading playlists.json:", err));
+        }).catch(err => this.error("ERROR HK-103 => Could not read playlists.json:", err));
 
-        return Promise.all([readSettings, readSongs, readPlaylists]).then().catch(err => this.error("Error reading json files :", err));
+        return Promise.all([readSettings, readSongs, readPlaylists]).then().catch(err => this.error("ERROR HK-104 => Could not read json files:", err));
     }
 
     initPlaylists() {
@@ -212,25 +192,28 @@ class App {
                 if (nbSubPlaylist != 0) {
                     childrenContainer.classList.toggle("show");
                     arrow.classList.toggle("show");
-                } else {
-                    this.openPlaylist(pID);
-                    if (this.currentSondID == -1) this.songListener.setCurrentPlaylist(this.playlists[pID]);
-                }
+                } else this.openPlaylist(pID);
             });
         }
     }
 
-    initFromSaves() {
-        this.setVolume(this.saves.volume * 100);
-        if (this.saves.random) this.elements.footer.buttons.random.dispatchEvent(new Event("click"));
-        if (this.saves.loop) this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
+    initFromSettings() {
+        this.setVolume(this.settings.volume * 100);
+        if (this.settings.random) {
+            this.settings.random = false;
+            this.elements.footer.buttons.random.dispatchEvent(new Event("click"));
+        }
+        if (this.settings.loop) {
+            this.settings.loop = false;
+            this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
+        }
     }
 
     updateLoop() {
         if (!this.songListener.isPaused()) {
             const currentTime = this.songListener.getCurrentSongCurrentTime();
             const duration = this.songListener.getCurrentSongDuration();
-            const currentSong = this.songs[this.currentSondID];
+            const currentSong = this.songs[this.songListener.getCurrentSongID()];
 
             if (!isNaN(currentTime) && !isNaN(duration)) {
                 this.elements.footer.song.position.textContent = formatTime(parseInt(currentTime));
@@ -299,33 +282,42 @@ class App {
                                 audio.addEventListener("loadedmetadata", () => duration.textContent = formatTime(parseInt(audio.duration)));
                             } else li.classList.add("error");
 
-                            li.addEventListener("click", () => {
-                                this.songListener.setCurrentPlaylist(playlist);
-                                this.songListener.playSong(sID);
-                            });
+                            li.addEventListener("click", () => this.songListener.setCurrentPlaylist(playlist, index, 1));
                         }
                     });
                 }, 600);
-            } else this.error(`Playlist ID "${id}" not found`);
+            } else this.error(`ERROR HK-301 => Playlist ID "${id}" not found`);
         }
     }
 
     setVolume(volume) {
         this.elements.footer.volume.slider.value = volume;
+        this.settings.volume = volume / 100;
+
         if (volume <= 0) {
             this.elements.footer.volume.svg.no.classList.remove("hidden");
             this.elements.footer.volume.svg.low.classList.add("hidden");
             this.elements.footer.volume.svg.high.classList.add("hidden");
+
         } else if (volume < 50) {
             this.elements.footer.volume.svg.no.classList.add("hidden");
             this.elements.footer.volume.svg.low.classList.remove("hidden");
             this.elements.footer.volume.svg.high.classList.add("hidden");
+
         } else {
             this.elements.footer.volume.svg.no.classList.add("hidden");
             this.elements.footer.volume.svg.low.classList.add("hidden");
             this.elements.footer.volume.svg.high.classList.remove("hidden");
         }
         this.songListener.setVolume(Math.pow(volume / 100, 3));
+    }
+
+    refresh(pID) {
+        const songListenerData = this.songListener.getCurrentData();
+        const jsonSongListenerData = encodeURIComponent(JSON.stringify(songListenerData));
+
+        const url = `index.html${(pID != null) ? `?p=${pID}` : ""}${(songListenerData.playlist) ? `${(pID != null) ? "&" : "?"}d=${jsonSongListenerData}` : ""}`;
+        window.location.href = url;
     }
 
     createPlaylist() {
@@ -336,8 +328,8 @@ class App {
         
         const errors = getPlaylistNameErrors(this.playlists, name);
         if (errors.length == 0) {
-            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+            fsp.readFile(playlistsFile, "utf8").then((data) => {
                 const jsonData = JSON.parse(data);
                 const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
 
@@ -355,10 +347,10 @@ class App {
 
                     setTimeout(() => {
                         this.modals.closeCreatePlaylistModal();
-                        setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
+                        setTimeout(() => this.refresh(id), 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("ERROR HK-206 => Could not write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("ERROR HK-105 => Could not read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -370,8 +362,8 @@ class App {
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const playlist = this.playlists[id];
 
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+        const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+        fsp.readFile(playlistsFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             delete jsonData[id];
 
@@ -387,10 +379,10 @@ class App {
 
                 setTimeout(() => {
                     this.modals.closeConfirmRemovePlaylistModal();
-                    setTimeout(() => window.location.href = "index.html", 600);
+                    setTimeout(() => this.refresh(), 600);
                 }, 1500);
-            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+            }).catch((writeErr) => this.error("ERROR HK-207 => Could not write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("ERROR HK-106 => Could not read playlists.json:" + readErr));
     }
     
     renamePlaylist() {
@@ -400,8 +392,8 @@ class App {
 
         const errors = getPlaylistNameErrors(this.playlists, newName);
         if (errors.length == 0) {
-            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+            fsp.readFile(playlistsFile, "utf8").then((data) => {
                 const jsonData = JSON.parse(data);
                 jsonData[id].name = newName;
 
@@ -412,10 +404,10 @@ class App {
 
                     setTimeout(() => {
                         this.modals.closeRenamePlaylistModal();
-                        setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
+                        setTimeout(() => this.refresh(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("ERROR HK-208 => Could not write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("ERROR HK-107 => Could not read playlists.json:" + readErr));
         } else {
             modal.message.textContent = errors[0];
             modal.message.classList.add("error");
@@ -435,8 +427,8 @@ class App {
         }
 
         if (songsToAdd.length > 0) {
-            const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-            fsp.readFile(playlistsFile, "utf-8").then((data) => {
+            const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+            fsp.readFile(playlistsFile, "utf8").then((data) => {
                 const jsonData = JSON.parse(data);
                 songsToAdd.forEach((sID) => jsonData[id].songs.push(parseInt(sID)));
 
@@ -447,10 +439,10 @@ class App {
 
                     setTimeout(() => {
                         this.modals.closeAddSongsToPlaylistModal();
-                        setTimeout(() => window.location.href = `index.html?p=${id}`, 600);
+                        setTimeout(() => this.refresh(id), 600);
                     }, 1500);
-                }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-            }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+                }).catch((writeErr) => this.error("ERROR HK-209 => Could not write playlists.json:" + writeErr));
+            }).catch((readErr) => this.error("ERROR HK-108 => Could not read playlists.json:" + readErr));
         } 
     }
 
@@ -459,8 +451,8 @@ class App {
         const sID = getSongIdByName(this.songs, modal.song.textContent);
         const pID = getPlaylistIdByName(this.playlists, modal.playlist.textContent);
 
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+        const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+        fsp.readFile(playlistsFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             jsonData[pID].songs.splice(jsonData[pID].songs.indexOf(sID), 1);
 
@@ -471,23 +463,23 @@ class App {
 
                 setTimeout(() => {
                     this.modals.closeRemoveSongFromPlaylistModal();
-                    setTimeout(() => window.location.href = `index.html?p=${pID}`, 600);
+                    setTimeout(() => this.refresh(pID), 600);
                 }, 1500);
-            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+            }).catch((writeErr) => this.error("ERROR HK-210 => Could not write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("ERROR HK-109 => Could not read playlists.json:" + readErr));
     }
 
     movePlaylist(playlistID, parentID) {
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+        const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+        fsp.readFile(playlistsFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             jsonData[playlistID].parent = parentID;
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
                 const cPlaylist = getPlaylistIdByName(this.playlists, this.currentPlaylist.name);
-                window.location.href = `index.html?p=${(cPlaylist != parentID) ? cPlaylist : ""}`;
-            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+                this.refresh((cPlaylist != parentID) ? cPlaylist : null);
+            }).catch((writeErr) => this.error("ERROR HK-211 => Could not write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("ERROR HK-110 => Could not read playlists.json:" + readErr));
     }
 
     addSongToApp() {
@@ -514,10 +506,10 @@ class App {
                     ipcRenderer.send("save-song", { fileName: file.name, content: fileContent });
                     
                     ipcRenderer.once("song-saved", (e, success) => {
-                        if (!success) return self.error("Error writing file in songs");
+                        if (!success) return self.error("ERROR HK-212 => Could not write songs.json");
 
-                        const songsFile = path.join(self.mainFolder, "data/songs.json");
-                        fsp.readFile(songsFile, "utf-8").then((data) => {
+                        const songsFile = path.join(self.mainFolder, "data", "songs.json");
+                        fsp.readFile(songsFile, "utf8").then((data) => {
                             const jsonData = JSON.parse(data);
                             const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
 
@@ -534,10 +526,10 @@ class App {
 
                                 setTimeout(() => {
                                     self.modals.closeAddSongToAppModal();
-                                    setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(self.playlists, self.currentPlaylist.name)}`, 600);
+                                    setTimeout(() => self.refresh(getPlaylistIdByName(self.playlists, self.currentPlaylist.name)), 600);
                                 }, 1500);
-                            }).catch((writeErr) => self.error("Error => can't write songs.json:" + writeErr));
-                        }).catch((readErr) => self.error("Error => can't read songs.json:" + readErr));
+                            }).catch((writeErr) => self.error("ERROR HK-213 => Could not write songs.json:" + writeErr));
+                        }).catch((readErr) => self.error("ERROR HK-111 => Could not read songs.json:" + readErr));
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -560,15 +552,15 @@ class App {
             if (li.querySelector("input").checked) songsToRemove.push(parseInt(id));
         }
 
-        const songsFile = path.join(this.mainFolder, "data/songs.json");
-        fsp.readFile(songsFile, "utf-8").then((data) => {
+        const songsFile = path.join(this.mainFolder, "data", "songs.json");
+        fsp.readFile(songsFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             songsToRemove.forEach((sID) => delete jsonData[sID]);
 
             fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
+                const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
 
-                fsp.readFile(playlistsFile, "utf-8").then((data) => {
+                fsp.readFile(playlistsFile, "utf8").then((data) => {
                     const jsonData = JSON.parse(data);
                     for (const pID in jsonData) {
                         jsonData[pID].songs.forEach((sID, index) => {
@@ -587,23 +579,23 @@ class App {
                             if (!song) return;
                 
                             const songPath = path.join(this.mainFolder, "songs", song.src);
-                            if (fs.existsSync(songPath)) fsp.unlink(songPath, (err) => this.error("Error => can't remove song:" + err));
+                            if (fs.existsSync(songPath)) fsp.unlink(songPath, (err) => this.error("ERROR HK-302 => Could not remove song:" + err));
                         });
         
                         setTimeout(() => {
                             this.modals.closeRemoveSongsFromAppModal();
-                            setTimeout(() => window.location.href = `index.html?p=${getPlaylistIdByName(this.playlists, this.currentPlaylist.name)}`, 600);
+                            setTimeout(() => this.refresh(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), 600);
                         }, 1500);
 
-                    }).catch((writeErr1) => this.error("Error => can't write playlists.json:" + writeErr1));
-                }).catch((readErr1) => this.error("Error => can't read playlists.json:" + readErr1));
-            }).catch((writeErr2) => this.error("Error => can't write songs.json:" + writeErr2));
-        }).catch((readErr2) => this.error("Error => can't read songs.json:" + readErr2));
+                    }).catch((writeErr2) => this.error("ERROR HK-215 => Could not write playlists.json:" + writeErr2));
+                }).catch((readErr2) => this.error("ERROR HK-113 => Could not read playlists.json:" + readErr2));
+            }).catch((writeErr1) => this.error("ERROR HK-214 => Could not write songs.json:" + writeErr1));
+        }).catch((readErr1) => this.error("ERROR HK-112 => Could not read songs.json:" + readErr1));
     }
 
     duplicatePlaylist(pID) {
-        const playlistsFile = path.join(this.mainFolder, "data/playlists.json");
-        fsp.readFile(playlistsFile, "utf-8").then((data) => {
+        const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
+        fsp.readFile(playlistsFile, "utf8").then((data) => {
             const jsonData = JSON.parse(data);
             const playlistToDuplicate = jsonData[pID];
             const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
@@ -616,8 +608,8 @@ class App {
             };
 
             fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                window.location.href = `index.html?p=${id}`;
-            }).catch((writeErr) => this.error("Error => can't write playlists.json:" + writeErr));
-        }).catch((readErr) => this.error("Error => can't read playlists.json:" + readErr));
+                this.refresh(id);
+            }).catch((writeErr) => this.error("ERROR HK-216 => Could not write playlists.json:" + writeErr));
+        }).catch((readErr) => this.error("ERROR HK-114 => Could not read playlists.json:" + readErr));
     }
 };

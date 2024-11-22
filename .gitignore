@@ -2,3 +2,4 @@ node_modules/
 todo.md
 dist/*
 !dist/*.exe
+errors.md

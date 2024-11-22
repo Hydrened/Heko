@@ -2,6 +2,8 @@ class Events {
     constructor(app) {
         this.app = app;
         this.songOrder = "id";
+        this.volumeSliderHover = false;
+        this.muted = false;
 
         const aside = this.app.elements.aside;
         const currentPlaylist = this.app.elements.currentPlaylist;
@@ -51,23 +53,33 @@ class Events {
         });
 
         footer.buttons.random.addEventListener("click", () => {
-            this.app.songListener.random();
+            this.app.settings.random = !this.app.settings.random;
+            this.app.songListener.randomButton();
             footer.buttons.random.classList.toggle("activated");
         });
         footer.buttons.previous.addEventListener("click", () => {
-            this.app.songListener.previous();
+            this.app.songListener.previousButton();
         });
         footer.buttons.play.addEventListener("click", () => {
-            this.app.songListener.play();
+            this.app.songListener.playButton();
+            if (this.app.songListener.currentPlaylist.songs.length == 0) return;
+
+            this.app.elements.footer.buttons.pause.classList.remove("hidden");
+            this.app.elements.footer.buttons.play.classList.add("hidden");
         });
         footer.buttons.pause.addEventListener("click", () => {
-            this.app.songListener.play();
+            this.app.songListener.playButton();
+            if (this.app.songListener.currentPlaylist.songs.length == 0) return;
+
+            this.app.elements.footer.buttons.pause.classList.add("hidden");
+            this.app.elements.footer.buttons.play.classList.remove("hidden");
         });
         footer.buttons.next.addEventListener("click", () => {
-            this.app.songListener.next();
+            this.app.songListener.nextButton();
         });
         footer.buttons.loop.addEventListener("click", () => {
-            this.app.songListener.loop();
+            this.app.settings.loop = !this.app.settings.loop;
+            this.app.songListener.loopButton();
             footer.buttons.loop.classList.toggle("activated");
         });
 
@@ -75,16 +87,23 @@ class Events {
             this.oldVolume = e.target.value;
             this.app.setVolume(e.target.value);
         });
+        footer.volume.slider.addEventListener("wheel", (e) => {
+            const currentVolumeValue = parseFloat(footer.volume.slider.value);
+            const newVolumeValue = (e.deltaY > 0) ? Math.max(currentVolumeValue - 10, 0) : Math.min(currentVolumeValue + 10, 100);
+            this.app.setVolume(newVolumeValue);
+        })
         footer.song.slider.addEventListener("input", (e) => {
-            if (this.app.currentSondID == -1) return;
-            const duration = this.app.songListener.getCurrentSongDuration();
-            const time = e.target.value / 100 * duration;
+            if (this.app.songListener.getCurrentSongID() != -1) {
+                const duration = this.app.songListener.getCurrentSongDuration();
+                const time = e.target.value / 100 * duration;
+                this.app.songListener.setSongCurrentTime(time);
 
-            this.app.songListener.setCurrentTime(time);
+            } else e.target.value = 0;
         });
+
         footer.volume.svg.no.parentNode.addEventListener("click", () => {
-            this.app.settings.muted = !this.app.settings.muted;
-            if (this.app.settings.muted) this.app.setVolume(0);
+            this.muted = !this.muted;
+            if (this.muted) this.app.setVolume(0);
             else this.app.setVolume(this.oldVolume);
         });
 
@@ -185,14 +204,12 @@ class Events {
                 case "F2": this.app.modals.openRenamePlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
                 case "Delete": this.app.modals.openConfirmRemovePlaylistModal(getPlaylistIdByName(this.app.playlists, this.app.currentPlaylist.name)); break;
 
-                case "ArrowLeft": this.app.songListener.previous(); break;
-                case "ArrowRight": this.app.songListener.next(); break;
+                case "ArrowLeft": this.app.songListener.previousButton(); break;
+                case "ArrowRight": this.app.songListener.nextButton(); break;
 
-                case " ":
-                    if (this.app.songListener.getCurrentPlaylist().songs.length > 0) {
-                        if (this.app.songListener.isPaused()) this.app.elements.footer.buttons.play.dispatchEvent(new Event("click"));
-                        else this.app.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
-                    }
+                case " ": 
+                    if (this.app.songListener.isPaused()) this.app.elements.footer.buttons.play.dispatchEvent(new Event("click"));
+                    else this.app.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
                     break;
 
                 case "l": this.app.elements.footer.buttons.loop.dispatchEvent(new Event("click")); break;
@@ -209,11 +226,11 @@ class Events {
         });
 
         ipcRenderer.on("window-update", (e, data) => {
-            this.app.window.x = data.x;
-            this.app.window.y = data.y;
-            this.app.window.w = data.width;
-            this.app.window.h = data.height;
-            this.app.window.f = data.f;
+            this.app.settings.window.x = data.x;
+            this.app.settings.window.y = data.y;
+            this.app.settings.window.w = data.width;
+            this.app.settings.window.h = data.height;
+            this.app.settings.window.f = data.f;
         });
     }
 

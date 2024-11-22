@@ -159,7 +159,7 @@ div.modal ul > li > p {
     text-overflow: ellipsis;
 }
 div.modal div.fake-drag-zone {
-    width: 100%;
+    width: 40rem;
     height: 10rem;
     display: flex;
     justify-content: center;
