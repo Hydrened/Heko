@@ -1,3 +1,7 @@
+## HEKO-1.1.11
+#### FIXED
+- playing correct song when clicking on a song when random is enabled
+
 ## HEKO-1.1.10
 #### ADDED
 - error naming system

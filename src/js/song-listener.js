@@ -54,6 +54,7 @@ class SongListener {
             this.queue = this.currentPlaylist.songs.map(() => {
                 return this.currentPlaylist.songs[rand(0, this.currentPlaylist.songs.length - 1)];
             });
+            this.queue[0] = startIndex;
 
         } else {
             this.queue = [...this.currentPlaylist.songs];
