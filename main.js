@@ -147,6 +147,7 @@ class Application {
             colors: {
                 main: "rgb(31,114,198)",
             },
+            lastSongID: 0,
         };
         const strSaveData = JSON.stringify(saveData, null, 2);
         if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSaveData, (err) => {

@@ -17,7 +17,13 @@ class SongListener {
     }
 
     handleEvents() {
-        this.audio.addEventListener("ended", () => this.playNextSong(1));
+        this.audio.addEventListener("ended", () => {
+            const sID = this.getCurrentSongID();
+            if (this.app.stats[sID]) this.app.stats[sID]++;
+            else this.app.stats[sID] = 1;
+
+            this.playNextSong(1);
+        });
         this.audio.addEventListener("error", (e) => {
             if (e.target.error) this.app.error("ERROR HK-303 => File not found");
         });
@@ -28,9 +34,12 @@ class SongListener {
         const jsonData = params.get("d");
 
         if (jsonData) {
-            
             const d = JSON.parse(decodeURIComponent(jsonData));
             if (!d.playlist) return;
+            if (!d.playlist.songs.includes(d.songID)) return;
+            
+            const songs = JSON.parse(fs.readFileSync(path.join(this.mainFolder, "data", "songs.json"), "utf8"));
+            if (!songs[d.songID]) return;
 
             this.currentPlaylist = d.playlist;
             this.queue = d.queue;
@@ -111,7 +120,7 @@ class SongListener {
         this.audio.src = path.join(this.mainFolder, "songs", song.src);
         this.audio.setAttribute("song-id", sID);
         this.audio.play();
-
+        
         this.app.elements.footer.buttons.pause.classList.remove("hidden");
         this.app.elements.footer.buttons.play.classList.add("hidden");
         ipcRenderer.send("set-thumbnail-play-button", "pause");

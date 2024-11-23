@@ -3,6 +3,7 @@ class App {
         this.mainFolder = mainFolder;
         this.songs = null;
         this.playlists = null;
+        this.stats = null;
 
         this.settings = null;
         this.currentPlaylist = null;
@@ -125,6 +126,10 @@ class App {
         const readPlaylists = fsp.readFile(path.join(this.mainFolder, "data", "playlists.json"), "utf8").then(data => {
             this.playlists = JSON.parse(data);
         }).catch(err => this.error("ERROR HK-103 => Could not read playlists.json:", err));
+
+        const readStats = fsp.readFile(path.join(this.mainFolder, "data", "stats.json"), "utf8").then((data) => {
+            this.stats = JSON.parse(data);
+        }).catch(err => this.error("ERROR HK-118 => Could not read stats.json:", err));
 
         return Promise.all([readSettings, readSongs, readPlaylists]).then().catch(err => this.error("ERROR HK-104 => Could not read json files:", err));
     }
@@ -522,25 +527,31 @@ class App {
                         const songsFile = path.join(self.mainFolder, "data", "songs.json");
                         fsp.readFile(songsFile, "utf8").then((data) => {
                             const jsonData = JSON.parse(data);
-                            const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
 
-                            jsonData[id] = {
-                                name: name,
-                                artist: artist,
-                                src: file.name,
-                            };
-                
-                            fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                                modal.message.textContent = `Song "${name}" by "${artist}" successfuly added!`;
-                                modal.message.classList.remove("error");
-                                modal.message.classList.add("success");
+                            const settingsFile = path.join(self.mainFolder, "data", "settings.json");
+                            fsp.readFile(settingsFile, "utf8").then((data2) => {
+                                const jsonData2 = JSON.parse(data2);
+                                const id = parseInt(jsonData2.lastSongID) + 1;
 
-                                setTimeout(() => {
-                                    self.modals.closeAddSongToAppModal();
-                                    setTimeout(() => self.refresh(getPlaylistIdByName(self.playlists, self.currentPlaylist.name)), 600);
-                                }, 1500);
-                            }).catch((writeErr) => self.error("ERROR HK-213 => Could not write songs.json:" + writeErr));
-                        }).catch((readErr) => self.error("ERROR HK-111 => Could not read songs.json:" + readErr));
+                                self.settings.lastSongID++;
+                                jsonData[id] = {
+                                    name: name,
+                                    artist: artist,
+                                    src: file.name,
+                                };
+
+                                fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                                    modal.message.textContent = `Song "${name}" by "${artist}" successfuly added!`;
+                                    modal.message.classList.remove("error");
+                                    modal.message.classList.add("success");
+
+                                    setTimeout(() => {
+                                        self.modals.closeAddSongToAppModal();
+                                        setTimeout(() => self.refresh(getPlaylistIdByName(self.playlists, self.currentPlaylist.name)), 600);
+                                    }, 1500);
+                                }).catch((writeErr1) => self.error("ERROR HK-213 => Could not write songs.json:" + writeErr1));
+                            }).catch((readErr2) => self.error("ERROR HK-117 => Could not read settings.json:" + readErr2));
+                        }).catch((readErr1) => self.error("ERROR HK-111 => Could not read songs.json:" + readErr1));
                     });
                 };
                 reader.readAsArrayBuffer(file);
@@ -554,14 +565,7 @@ class App {
 
     removeSongsFromApp() {
         const modal = this.modals.elements.removeSongsFromApp;
-        const songsToRemove = [];
-
-        const lis = modal.container.querySelectorAll("ul > li");
-        for (let i = 0; i < lis.length; i++) {
-            const li = lis[i];
-            const id = li.getAttribute("song-id");
-            if (li.querySelector("input").checked) songsToRemove.push(parseInt(id));
-        }
+        const songsToRemove = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => parseInt(li.getAttribute("song-id")));
 
         const songsFile = path.join(this.mainFolder, "data", "songs.json");
         fsp.readFile(songsFile, "utf8").then((data) => {
@@ -572,15 +576,15 @@ class App {
                 const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
 
                 fsp.readFile(playlistsFile, "utf8").then((data) => {
-                    const jsonData = JSON.parse(data);
-                    for (const pID in jsonData) {
-                        jsonData[pID].songs.forEach((sID, index) => {
+                    const jsonData2 = JSON.parse(data);
+                    for (const pID in jsonData2) {
+                        jsonData2[pID].songs.forEach((sID, index) => {
                             if (!songsToRemove.includes(parseInt(sID))) return;
-                            jsonData[pID].songs.splice(index, 1);
+                            jsonData2[pID].songs.splice(index, 1);
                         });
                     }
         
-                    fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                    fsp.writeFile(playlistsFile, JSON.stringify(jsonData2, null, 2), "utf8").then(() => {
                         modal.message.textContent = "Songs successfuly removed from the app!";
                         modal.message.classList.remove("error");
                         modal.message.classList.add("success");

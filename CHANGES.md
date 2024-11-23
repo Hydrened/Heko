@@ -1,3 +1,10 @@
+## HEKO-1.1.13
+#### ADDED
+- save the number of plays for each music 
+#### FIXED
+- removing song from app while listening to it
+- song hve now unique id
+
 ## HEKO-1.1.12
 #### ADDED
 - controls buttons in task bar hover menu
