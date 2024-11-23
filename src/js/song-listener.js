@@ -19,8 +19,10 @@ class SongListener {
     handleEvents() {
         this.audio.addEventListener("ended", () => {
             const sID = this.getCurrentSongID();
-            if (this.app.stats[sID]) this.app.stats[sID]++;
-            else this.app.stats[sID] = 1;
+
+            const ts = Date.now();
+            if (this.app.stats[sID]) this.app.stats[sID].push(ts);
+            else this.app.stats[sID] = [ts];
 
             this.playNextSong(1);
         });

@@ -1,9 +1,13 @@
+## HEKO-1.1.14
+#### FIXED
+- save the timestamp for each song play
+
 ## HEKO-1.1.13
 #### ADDED
-- save the number of plays for each music 
+- save the number of plays for each song
 #### FIXED
 - removing song from app while listening to it
-- song hve now unique id
+- song h&ve now unique id
 
 ## HEKO-1.1.12
 #### ADDED
