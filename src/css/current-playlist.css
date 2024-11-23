@@ -145,6 +145,9 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li:hover
     section > div.current-playlist-table > ul#current-playlist-table-body > li.contextmenu-hover > p {
     color: var(--col-1);
 }
+section > div.current-playlist-table > ul#current-playlist-table-body > li.playing {
+    background-color: var(--bg-col-5);
+}
 
 @media screen and (width < 1000px) {
     section > div.current-playlist-table > ul#current-playlist-table-body > li > p:nth-of-type(3),

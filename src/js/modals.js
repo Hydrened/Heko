@@ -198,7 +198,7 @@ class Modals {
                 li.appendChild(checkbox);
     
                 const details = document.createElement("p");
-                details.textContent = `${song.name} by ${(song.artist != "") ? song.artist : "-"}`;
+                details.textContent = `${song.name} by ${song.artist}`;
                 li.appendChild(details);
     
                 li.addEventListener("click", (e) => {

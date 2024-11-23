@@ -66,6 +66,7 @@ class Events {
 
             this.app.elements.footer.buttons.pause.classList.remove("hidden");
             this.app.elements.footer.buttons.play.classList.add("hidden");
+            ipcRenderer.send("set-thumbnail-play-button", "pause");
         });
         footer.buttons.pause.addEventListener("click", () => {
             this.app.songListener.playButton();
@@ -73,6 +74,7 @@ class Events {
 
             this.app.elements.footer.buttons.pause.classList.add("hidden");
             this.app.elements.footer.buttons.play.classList.remove("hidden");
+            ipcRenderer.send("set-thumbnail-play-button", "play");
         });
         footer.buttons.next.addEventListener("click", () => {
             this.app.songListener.nextButton();
@@ -231,6 +233,14 @@ class Events {
             this.app.settings.window.w = data.width;
             this.app.settings.window.h = data.height;
             this.app.settings.window.f = data.f;
+        });
+        ipcRenderer.on("song-control", (e, data) => {
+            switch (data) {
+                case "previous": footer.buttons.previous.dispatchEvent(new Event("click")); break;
+                case "next": footer.buttons.next.dispatchEvent(new Event("click")); break;
+                case "play": footer.buttons.play.dispatchEvent(new Event("click")); break;
+                case "pause": footer.buttons.pause.dispatchEvent(new Event("click")); break;
+            }
         });
     }
 

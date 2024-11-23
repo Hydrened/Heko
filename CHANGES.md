@@ -1,3 +1,13 @@
+## HEKO-1.1.12
+#### ADDED
+- controls buttons in task bar hover menu
+- show which song is playing in current playlist
+#### FIXED
+- playing correct song when clicking on a song when random is enabled
+- added to queue when refreshing
+- save pause status when refreshing
+- error HK-303 display
+
 ## HEKO-1.1.11
 #### FIXED
 - playing correct song when clicking on a song when random is enabled

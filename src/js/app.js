@@ -210,17 +210,28 @@ class App {
     }
 
     updateLoop() {
-        if (!this.songListener.isPaused()) {
-            const currentTime = this.songListener.getCurrentSongCurrentTime();
-            const duration = this.songListener.getCurrentSongDuration();
-            const currentSong = this.songs[this.songListener.getCurrentSongID()];
+        const currentData = this.songListener.getCurrentData();
+
+        if (!currentData.isPaused) {
+            const currentTime = currentData.currentTime;
+            const duration = currentData.duration;
+            const currentSong = this.songs[currentData.songID];
 
             if (!isNaN(currentTime) && !isNaN(duration)) {
                 this.elements.footer.song.position.textContent = formatTime(parseInt(currentTime));
                 this.elements.footer.song.duration.textContent = formatTime(parseInt(duration));
                 this.elements.footer.song.slider.value = currentTime / duration * 100;
                 this.elements.footer.details.title.textContent = currentSong.name;
-                this.elements.footer.details.artist.textContent = `by ${(currentSong.artist == "") ? "-" : currentSong.artist}`;
+                this.elements.footer.details.artist.textContent = `by ${currentSong.artist}`;
+            }
+        }
+
+        if (currentData.songID != -1) {
+            if (currentData.playlist.name == this.currentPlaylist.name) {
+                const songLis = [...this.elements.currentPlaylist.songContainer.children];
+                songLis.filter((el) => el.classList.remove("playing"));
+                const li = songLis.filter((el) => parseInt(el.getAttribute("song-id")) == currentData.songID)[0];
+                if (li) li.classList.add("playing");
             }
         }
 
@@ -265,7 +276,7 @@ class App {
                             li.appendChild(title);
 
                             const artist = document.createElement("p");
-                            artist.textContent = (song.artist == "") ? "-" : song.artist;
+                            artist.textContent = song.artist;
                             li.appendChild(artist);
 
                             const duration = document.createElement("p");

@@ -19,7 +19,7 @@ class SongListener {
     handleEvents() {
         this.audio.addEventListener("ended", () => this.playNextSong(1));
         this.audio.addEventListener("error", (e) => {
-            if (e.target.error) this.app.error("ERROR HK-303 =>", e.target.error);
+            if (e.target.error) this.app.error("ERROR HK-303 => File not found");
         });
     }
 
@@ -28,23 +28,34 @@ class SongListener {
         const jsonData = params.get("d");
 
         if (jsonData) {
+            
             const d = JSON.parse(decodeURIComponent(jsonData));
             if (!d.playlist) return;
 
             this.currentPlaylist = d.playlist;
             this.queue = d.queue;
-            this.addedToQueue = d.addedToQueue;
             
             this.queue.unshift(d.songID);
             this.playNextSong(1);
             this.setSongCurrentTime(d.currentTime);
+
+            const self = this;
+            function autoPause() {
+                setTimeout(() => {
+                    self.app.elements.footer.buttons.pause.dispatchEvent(new Event("click"));
+                    self.audio.removeEventListener("loadeddata", autoPause);
+                }, 7);
+            }
+
+            if (d.isPaused) this.audio.addEventListener("loadeddata", autoPause);
+            this.addedToQueue = d.addedToQueue;
         }
     }
 
     resetQueue(startIndex) {
         const random = this.app.settings.random;
         const loop = this.app.settings.loop;
-
+        
         this.queue = [];
         if (this.currentPlaylist.songs.length == 0) return;
 
@@ -54,7 +65,7 @@ class SongListener {
             this.queue = this.currentPlaylist.songs.map(() => {
                 return this.currentPlaylist.songs[rand(0, this.currentPlaylist.songs.length - 1)];
             });
-            this.queue[0] = startIndex;
+            this.queue[0] = this.currentPlaylist.songs[startIndex];
 
         } else {
             this.queue = [...this.currentPlaylist.songs];
@@ -103,6 +114,7 @@ class SongListener {
 
         this.app.elements.footer.buttons.pause.classList.remove("hidden");
         this.app.elements.footer.buttons.play.classList.add("hidden");
+        ipcRenderer.send("set-thumbnail-play-button", "pause");
     }
 
     addToQueue(sID) {
@@ -175,8 +187,10 @@ class SongListener {
             playlist: this.currentPlaylist,
             songID: this.getCurrentSongID(),
             currentTime: this.getCurrentSongCurrentTime(),
+            duration: this.getCurrentSongDuration(),
             queue: this.queue,
             addedToQueue: this.addedToQueue,
+            isPaused: this.isPaused(),
         };
     }
 

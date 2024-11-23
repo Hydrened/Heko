@@ -36,6 +36,15 @@ class Application {
                 e.reply("song-saved", (err) ? false : true);
             });
         });
+
+        ipcMain.on("set-thumbnail-play-button", (e, data) => {
+            this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
+            this.thumbnailButtons[1].icon = path.join(app.getAppPath(), "assets", "img", `${data}.png`),
+            this.thumbnailButtons[1].click = () => {
+                this.window.webContents.send("song-control", data);
+            };
+            this.window.setThumbarButtons(this.thumbnailButtons);
+        });
     }
 
     createWindow() {
@@ -68,6 +77,33 @@ class Application {
         window.setMenuBarVisibility(false);
         window.loadFile("src/index.html");
         if (jsonData) if (jsonData.window.f) window.maximize();
+
+        
+
+        this.thumbnailButtons = [
+            {
+                tooltip: "Previous",
+                icon: path.join(app.getAppPath(), "assets", "img", "previous.png"),
+                click: () => {
+                    window.webContents.send("song-control", "previous");
+                },
+            },
+            {
+                tooltip: "Play",
+                icon: path.join(app.getAppPath(), "assets", "img", "play.png"),
+                click: () => {
+                    window.webContents.send("song-control", "play");
+                },
+            },
+            {
+                tooltip: "Next",
+                icon: path.join(app.getAppPath(), "assets", "img", "next.png"),
+                click: () => {
+                    window.webContents.send("song-control", "next");
+                },
+            }
+        ];
+        window.setThumbarButtons(this.thumbnailButtons);
 
         window.webContents.on("did-finish-load", () => {
             setTimeout(() => {
