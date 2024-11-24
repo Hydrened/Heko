@@ -55,6 +55,7 @@ class App {
                     artist: document.getElementById("current-song-artist").querySelector("span"),
                 },
             },
+            success: document.getElementById("success-modal"),
             error: document.getElementById("error-modal"),
             manageSongsMenu: {
                 container: document.getElementById("manage-songs-menu"),
@@ -92,22 +93,34 @@ class App {
         });
     }
 
+    success(message) {
+        const success = this.elements.success;
+        success.textContent = message;
+        success.classList.add("show");
+        setTimeout(() => {
+            success.classList.add("closing");
+
+            setTimeout(() => {
+                success.textContent = "";
+                success.classList.remove("show");
+                success.classList.remove("closing");
+            }, 1000);
+        }, 5000);
+    }
+
     error(message) {
         const error = this.elements.error;
         error.textContent = message;
         error.classList.add("show");
-        setTimeout(() => this.closeError(), 5000);
-    }
-
-    closeError() {
-        const error = this.elements.error;
-        error.classList.add("closing");
-
         setTimeout(() => {
-            error.textContent = "";
-            error.classList.remove("show");
-            error.classList.remove("closing");
-        }, 1000);
+            error.classList.add("closing");
+
+            setTimeout(() => {
+                error.textContent = "";
+                error.classList.remove("show");
+                error.classList.remove("closing");
+            }, 1000);
+        }, 5000);
     }
 
     async initData() {
@@ -172,9 +185,7 @@ class App {
             li.appendChild(childrenContainer);
         });
 
-        const appendPlaylists = document.querySelectorAll("[playlist-id]");
-        for (let i = 0; i < appendPlaylists.length; i++) {
-            const playlist = appendPlaylists[i];
+        [...document.querySelectorAll("[playlist-id]")].forEach((playlist) => {
             const playlistContainer = playlist.querySelector("div");
             const childrenContainer = playlist.querySelector("ul");
             const nbSubPlaylist = childrenContainer.children.length;
@@ -199,7 +210,7 @@ class App {
                     arrow.classList.toggle("show");
                 } else this.openPlaylist(pID);
             });
-        }
+        });
     }
 
     initFromSettings() {
@@ -256,8 +267,8 @@ class App {
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
                     this.elements.currentPlaylist.filter.value = "";
 
-                    const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
-                    if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
+                    // const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
+                    // if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
 
                     this.elements.currentPlaylist.title.textContent = playlist.name;
                     this.elements.currentPlaylist.nbSong.textContent = `${playlist.songs.length} songs`;
@@ -433,14 +444,7 @@ class App {
     addSongsToPlaylist() {
         const modal = this.modals.elements.addSongsToPlaylist;
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
-        const songsToAdd = [];
-
-        const lis = modal.container.querySelectorAll("ul > li");
-        for (let i = 0; i < lis.length; i++) {
-            const li = lis[i];
-            const id = li.getAttribute("song-id");
-            if (li.querySelector("input").checked) songsToAdd.push(id);
-        }
+        const songsToAdd = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => li.getAttribute("song-id"));
 
         if (songsToAdd.length > 0) {
             const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");

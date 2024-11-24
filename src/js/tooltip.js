@@ -41,6 +41,7 @@ class Tooltip {
     }
 
     leave(e) {
+        if (!this.tooltip) return;
         this.tooltip.remove();
         this.tooltip = null;
     }

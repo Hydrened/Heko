@@ -1,3 +1,12 @@
+## HEKO-1.1.15
+#### ADDED
+- visual for when a file has been dropped
+- notification when adding a song to queue manually
+#### FIXED
+- extended modal inner padding
+- queue saving when refreshing
+- tab in modals
+
 ## HEKO-1.1.14
 #### FIXED
 - save the timestamp for each song play

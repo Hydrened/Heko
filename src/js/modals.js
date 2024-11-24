@@ -74,103 +74,140 @@ class Modals {
     }
 
     handleEvents() {
-        this.elements.createPlaylist.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
-        this.elements.createPlaylist.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.createPlaylist();
-        });
-
-        this.elements.confirmRemovePlaylist.cancelButton.addEventListener("click", () => this.closeConfirmRemovePlaylistModal());
-        this.elements.confirmRemovePlaylist.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.removePlaylist();
-        });
-
-        this.elements.renamePlaylist.cancelButton.addEventListener("click", () => this.closeRenamePlaylistModal());
-        this.elements.renamePlaylist.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.renamePlaylist();
-        });
-
-        this.elements.addSongsToPlaylist.cancelButton.addEventListener("click", () => this.closeAddSongsToPlaylistModal());
-        this.elements.addSongsToPlaylist.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.addSongsToPlaylist();
-        });
-        this.elements.addSongsToPlaylist.input.addEventListener("input", (e) => {
-            const songLis = this.elements.addSongsToPlaylist.songsLis;
-            const songsIn = this.app.currentPlaylist.songs.map((sID) => this.app.songs[sID].name);
-            
-            for (const id in songLis) {
-                const songLi = songLis[id];
-                const name = songLi.values.name.toLowerCase();
-                const artist = songLi.values.artist.toLowerCase();
-                songLi.element.classList.remove("hidden");
-                if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase())) || songsIn.includes(songLi.values.name)) songLi.element.classList.add("hidden");
-            }
-        });
-
-        this.elements.removeSongFromPlaylist.cancelButton.addEventListener("click", () => this.closeRemoveSongFromPlaylistModal());
-        this.elements.removeSongFromPlaylist.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.removeSongFromPlaylist();
-        });
-
-        this.elements.addSongToApp.cancelButton.addEventListener("click", () => this.closeAddSongToAppModal());
-        this.elements.addSongToApp.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.addSongToApp();
-        });
-        this.elements.addSongToApp.container.addEventListener("dragenter", (e) => {
-            if (!e.dataTransfer.types.includes("Files")) return;
-            this.elements.addSongToApp.file.classList.add("active");
-        });
-        this.elements.addSongToApp.file.addEventListener("dragleave", () => this.elements.addSongToApp.file.classList.remove("active"));
-        this.elements.addSongToApp.file.addEventListener("change", (e) => {
-            const file = e.target.files[0];
-            const dropEvent = new DragEvent("drop", {
-                dataTransfer: new DataTransfer(),
+        const createPlaylistModal = this.elements.createPlaylist;
+        if (createPlaylistModal) {
+            createPlaylistModal.cancelButton.addEventListener("click", () => this.closeCreatePlaylistModal());
+            createPlaylistModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.createPlaylist();
             });
-            dropEvent.dataTransfer.items.add(file);
-            this.elements.addSongToApp.file.dispatchEvent(dropEvent);
-        });
-        this.elements.addSongToApp.file.addEventListener("drop", (e) => {
-            this.elements.addSongToApp.message.textContent = "";
-            this.elements.addSongToApp.message.classList.remove("error");
+        }
 
-            if (e.dataTransfer.files[0].type != "audio/mpeg") {
-                e.preventDefault();
-                this.elements.addSongToApp.file.value = "";
-                this.elements.addSongToApp.message.textContent = "File has to be a song format";
-                this.elements.addSongToApp.message.classList.add("error");
-            }
-            this.elements.addSongToApp.file.classList.remove("active");
-        });
-        this.elements.addSongToApp.fakeDragZone.addEventListener("click", () => this.elements.addSongToApp.file.click());
+        const confirmRemovePlaylistModal = this.elements.confirmRemovePlaylist;
+        if (confirmRemovePlaylistModal) {
+            confirmRemovePlaylistModal.cancelButton.addEventListener("click", () => this.closeConfirmRemovePlaylistModal());
+            confirmRemovePlaylistModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.removePlaylist();
+            });
+        }
 
-        this.elements.removeSongsFromApp.cancelButton.addEventListener("click", () => this.closeRemoveSongsFromAppModal());
-        this.elements.removeSongsFromApp.confirmButton.addEventListener("click", () => {
-            if (this.closing) return;
-            this.closing = true;
-            this.app.removeSongsFromApp();
-        });
-        this.elements.removeSongsFromApp.input.addEventListener("input", (e) => {
-            const songLis = this.elements.removeSongsFromApp.songsLis;
-            
-            for (const id in songLis) {
-                const songLi = songLis[id];
-                const name = songLi.values.name.toLowerCase();
-                const artist = songLi.values.artist.toLowerCase();
-                songLi.element.classList.remove("hidden");
-                if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase()))) songLi.element.classList.add("hidden");
-            }
-        });
+        const renamePlaylistModal = this.elements.renamePlaylist;
+        if (renamePlaylistModal) {
+            renamePlaylistModal.cancelButton.addEventListener("click", () => this.closeRenamePlaylistModal());
+            renamePlaylistModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.renamePlaylist();
+            });
+        }
+
+        const addSongsToPlaylistModal = this.elements.addSongsToPlaylist;
+        if (addSongsToPlaylistModal) {
+            addSongsToPlaylistModal.cancelButton.addEventListener("click", () => this.closeAddSongsToPlaylistModal());
+            addSongsToPlaylistModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.addSongsToPlaylist();
+            });
+            addSongsToPlaylistModal.input.addEventListener("input", (e) => {
+                const songLis = addSongsToPlaylistModal.songsLis;
+                const songsIn = this.app.currentPlaylist.songs.map((sID) => this.app.songs[sID].name);
+                
+                for (const id in songLis) {
+                    const songLi = songLis[id];
+                    const name = songLi.values.name.toLowerCase();
+                    const artist = songLi.values.artist.toLowerCase();
+                    songLi.element.classList.remove("hidden");
+                    if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase())) || songsIn.includes(songLi.values.name)) songLi.element.classList.add("hidden");
+                }
+            });
+        }
+
+        const removeSongFromPlaylistModal = this.elements.removeSongFromPlaylist;
+        if (removeSongFromPlaylistModal) {
+            removeSongFromPlaylistModal.cancelButton.addEventListener("click", () => this.closeRemoveSongFromPlaylistModal());
+            removeSongFromPlaylistModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.removeSongFromPlaylist();
+            });
+        }
+
+        const addSongToAppModal = this.elements.addSongToApp;
+        if (addSongToAppModal) {
+            addSongToAppModal.cancelButton.addEventListener("click", () => this.closeAddSongToAppModal());
+            addSongToAppModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.addSongToApp();
+            });
+            addSongToAppModal.container.addEventListener("dragenter", (e) => {
+                if (!e.dataTransfer.types.includes("Files")) return;
+                addSongToAppModal.file.classList.add("active");
+            });
+            addSongToAppModal.file.addEventListener("dragleave", () => addSongToAppModal.file.classList.remove("active"));
+            addSongToAppModal.file.addEventListener("change", (e) => {
+                const file = e.target.files[0];
+                const dropEvent = new DragEvent("drop", {
+                    dataTransfer: new DataTransfer(),
+                });
+                dropEvent.dataTransfer.items.add(file);
+                addSongToAppModal.file.dispatchEvent(dropEvent);
+            });
+            addSongToAppModal.file.addEventListener("change", (e) => {
+                const fakeDragZone = addSongToAppModal.fakeDragZone;
+                if (addSongToAppModal.file.files.length > 0) {
+                    fakeDragZone.classList.add("contains-file");
+                    fakeDragZone.textContent = e.target.files[0].name;
+                } else {
+                    fakeDragZone.classList.remove("contains-file");
+                    fakeDragZone.textContent = "Drag file here";
+                }
+            });
+            addSongToAppModal.file.addEventListener("drop", (e) => {
+                addSongToAppModal.message.textContent = "";
+                addSongToAppModal.message.classList.remove("error");
+
+                if (e.dataTransfer.files[0].type != "audio/mpeg") {
+                    e.preventDefault();
+                    addSongToAppModal.file.value = "";
+                    addSongToAppModal.message.textContent = "File has to be a song format";
+                    addSongToAppModal.message.classList.add("error");
+                }
+                addSongToAppModal.file.classList.remove("active");
+            });
+            addSongToAppModal.fakeDragZone.addEventListener("click", () => addSongToAppModal.file.click());
+            addSongToAppModal.name.addEventListener("keydown", (e) => {
+                if (e.key == "Tab") addSongToAppModal.artist.focus();
+            });
+            addSongToAppModal.artist.addEventListener("keydown", (e) => {
+                if (e.key == "Tab") addSongToAppModal.name.focus();
+            });
+        }
+        
+        const removeSongsFromAppModal = this.elements.removeSongsFromApp;
+        if (removeSongsFromAppModal) {
+            removeSongsFromAppModal.cancelButton.addEventListener("click", () => this.closeRemoveSongsFromAppModal());
+            removeSongsFromAppModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.removeSongsFromApp();
+            });
+            removeSongsFromAppModal.input.addEventListener("input", (e) => {
+                const songLis = removeSongsFromAppModal.songsLis;
+                
+                for (const id in songLis) {
+                    const songLi = songLis[id];
+                    const name = songLi.values.name.toLowerCase();
+                    const artist = songLi.values.artist.toLowerCase();
+                    songLi.element.classList.remove("hidden");
+                    if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase()))) songLi.element.classList.add("hidden");
+                }
+            });
+        }
         
         document.addEventListener("click", (e) => {
             if (e.target.classList.contains("modal")) this.closeCurrentModal();
@@ -332,6 +369,8 @@ class Modals {
         this.app.contextmenu.close();
         const modal = this.elements.addSongToApp;
         modal.container.classList.add("open");
+        modal.fakeDragZone.classList.remove("contains-file");
+        modal.fakeDragZone.textContent = "Drag file here";
     }
 
     closeAddSongToAppModal() {

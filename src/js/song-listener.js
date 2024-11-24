@@ -34,7 +34,7 @@ class SongListener {
     initQueues() {
         const params = new URLSearchParams(window.location.search);
         const jsonData = params.get("d");
-
+            
         if (jsonData) {
             const d = JSON.parse(decodeURIComponent(jsonData));
             if (!d.playlist) return;
@@ -45,11 +45,12 @@ class SongListener {
 
             this.currentPlaylist = d.playlist;
             this.queue = d.queue;
-            
+
             this.queue.unshift(d.songID);
             this.playNextSong(1);
             this.setSongCurrentTime(d.currentTime);
-
+            this.queue.pop();
+            
             const self = this;
             function autoPause() {
                 setTimeout(() => {
@@ -112,7 +113,7 @@ class SongListener {
         if (this.queue.length == 0) return;
         if (incr > 1) incr = 1;
         else if (incr < -1) incr = -1;
-        
+
         const sID = (this.addedToQueue.length == 0) ? this.queue.at((incr > 0) ? 0 : -1) : this.addedToQueue[0];
 
         if (this.addedToQueue.length != 0) this.addedToQueue.shift();
@@ -129,7 +130,11 @@ class SongListener {
     }
 
     addToQueue(sID) {
-        this.addedToQueue.push(parseInt(sID));
+        const song = this.songs[sID];
+        if (song) {
+            this.addedToQueue.push(parseInt(sID));
+            this.app.success(`Added "${this.songs[sID].name}" to queue`);
+        } else this.app.error(`Song ID "${sID}" is not valid`);
     }
 
 

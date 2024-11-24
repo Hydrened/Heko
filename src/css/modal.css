@@ -1,7 +1,7 @@
+div#success-modal,
 div#error-modal {
     padding: 2rem 3rem;
     background-color: var(--bg-col-2);
-    border: 3px solid var(--bg-col-error);
     border-radius: 1rem;
     position: absolute;
     top: -100%;
@@ -11,9 +11,17 @@ div#error-modal {
     cursor: pointer;
     z-index: 100;
 }
+div#success-modal {
+    border: 3px solid var(--bg-col-success);
+}
+div#error-modal {
+    border: 3px solid var(--bg-col-error);
+}
+div#success-modal.show,
 div#error-modal.show {
     top: 5rem;
 }
+div#success-modal.closing,
 div#error-modal.closing {
     opacity: 0;
 }
@@ -45,7 +53,7 @@ div.modal.open {
     transform: translateY(100%);
 }
 div.modal > div {
-    padding: 3rem;
+    padding: 3rem 8vw;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -172,4 +180,7 @@ div.modal div.fake-drag-zone {
 }
 div.modal div.fake-drag-zone:hover {
     border-color: var(--col-1);
+}
+div.modal div.fake-drag-zone.contains-file {
+    border: 3px solid var(--col-1);
 }

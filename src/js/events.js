@@ -109,8 +109,6 @@ class Events {
             else this.app.setVolume(this.oldVolume);
         });
 
-        this.app.elements.error.addEventListener("click", () => this.app.closeError());
-
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             this.app.contextmenu.close();
@@ -177,6 +175,7 @@ class Events {
 
         window.addEventListener("keydown", (e) => {
             if (!this.app.modals.isAModalOpened()) return;
+            if (e.target == currentPlaylist.filter) return;
 
             switch (e.key) {
                 case "Tab": e.preventDefault(); break;
@@ -199,6 +198,7 @@ class Events {
         });
         window.addEventListener("keydown", (e) => {
             if (this.app.modals.isAModalOpened()) return;
+            if (e.target == currentPlaylist.filter) return;
 
             switch (e.key) {
                 case "Escape": this.app.elements.manageSongsMenu.container.classList.remove("open"); break;
