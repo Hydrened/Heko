@@ -137,7 +137,7 @@ div.modal p.error {
 }
 div.modal ul {
     width: 40vw;
-    height: 40vh;
+    max-height: 40vh;
     overflow-y: scroll;
 }
 div.modal ul > li {

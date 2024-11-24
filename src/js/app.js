@@ -347,7 +347,7 @@ class App {
         window.location.href = url;
     }
 
-    createPlaylist() {
+    createPlaylistFromModal() {
         const modal = this.modals.elements.createPlaylist;
         const name = modal.input.value;
         modal.message.classList.value = "";
@@ -384,7 +384,7 @@ class App {
         }
     }
 
-    removePlaylist() {
+    removePlaylistFromModal() {
         const modal = this.modals.elements.confirmRemovePlaylist;
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const playlist = this.playlists[id];
@@ -412,7 +412,7 @@ class App {
         }).catch((readErr) => this.error("ERROR HK-106 => Could not read playlists.json:" + readErr));
     }
     
-    renamePlaylist() {
+    renamePlaylistFromModal() {
         const modal = this.modals.elements.renamePlaylist;
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const newName = modal.input.value;
@@ -441,32 +441,37 @@ class App {
         }
     }
 
-    addSongsToPlaylist() {
+    addSongsToPlaylistFromModal() {
         const modal = this.modals.elements.addSongsToPlaylist;
-        const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
+        const pID = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const songsToAdd = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => li.getAttribute("song-id"));
+        this.addSongsToPlaylist(songsToAdd, pID, modal);
+    }
 
-        if (songsToAdd.length > 0) {
+    addSongsToPlaylist(sIDs, pID, modal) {
+        if (sIDs.length > 0) {
             const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
             fsp.readFile(playlistsFile, "utf8").then((data) => {
                 const jsonData = JSON.parse(data);
-                songsToAdd.forEach((sID) => jsonData[id].songs.push(parseInt(sID)));
+                sIDs.forEach((sID) => jsonData[pID].songs.push(parseInt(sID)));
 
                 fsp.writeFile(playlistsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                    modal.message.textContent = `Songs added sucessfuly to the playlist!`;
-                    modal.message.classList.remove("error");
-                    modal.message.classList.add("success");
+                    if (modal) {
+                        modal.message.textContent = `Songs added sucessfuly to the playlist!`;
+                        modal.message.classList.remove("error");
+                        modal.message.classList.add("success");
+                    }
 
                     setTimeout(() => {
                         this.modals.closeAddSongsToPlaylistModal();
-                        setTimeout(() => this.refresh(id), 600);
-                    }, 1500);
+                        setTimeout(() => this.refresh((modal) ? pID : getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), (modal) ? 600 : 0);
+                    }, (modal) ? 1500 : 0);
                 }).catch((writeErr) => this.error("ERROR HK-209 => Could not write playlists.json:" + writeErr));
             }).catch((readErr) => this.error("ERROR HK-108 => Could not read playlists.json:" + readErr));
         } 
     }
 
-    removeSongFromPlaylist() {
+    removeSongFromPlaylistFromModal() {
         const modal = this.modals.elements.removeSongFromPlaylist;
         const sID = getSongIdByName(this.songs, modal.song.textContent);
         const pID = getPlaylistIdByName(this.playlists, modal.playlist.textContent);
@@ -502,7 +507,7 @@ class App {
         }).catch((readErr) => this.error("ERROR HK-110 => Could not read playlists.json:" + readErr));
     }
 
-    addSongToApp() {
+    addSongToAppFromModal() {
         const modal = this.modals.elements.addSongToApp;
         const file = modal.file.files[0];
         const name = modal.name.value;
@@ -567,7 +572,7 @@ class App {
         }
     }
 
-    removeSongsFromApp() {
+    removeSongsFromAppFromModal() {
         const modal = this.modals.elements.removeSongsFromApp;
         const songsToRemove = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => parseInt(li.getAttribute("song-id")));
 
@@ -630,5 +635,29 @@ class App {
                 this.refresh(id);
             }).catch((writeErr) => this.error("ERROR HK-216 => Could not write playlists.json:" + writeErr));
         }).catch((readErr) => this.error("ERROR HK-114 => Could not read playlists.json:" + readErr));
+    }
+
+    editSongFromAppFromModal() {
+        const modal = this.modals.elements.editSongFromApp;
+        const sID = getSongIdByName(this.songs, modal.name.textContent);
+
+        const songsFile = path.join(this.mainFolder, "data", "songs.json");
+        fsp.readFile(songsFile, "utf8").then((data) => {
+            const jsonData = JSON.parse(data);
+
+            jsonData[sID].name = modal.nameInput.value;
+            jsonData[sID].artist = modal.artistInput.value;
+
+            fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                modal.message.textContent = `Modification for "${modal.name.textContent}" has been saved!`;
+                modal.message.classList.remove("error");
+                modal.message.classList.add("success");
+
+                setTimeout(() => {
+                    this.modals.closeEditSongFromAppModal();
+                    setTimeout(() => this.refresh(getPlaylistIdByName(this.playlists, this.currentPlaylist.name)), 600);
+                }, 1500);
+            }).catch((writeErr) => this.error("ERROR HK-217 => Could not write songs.json:" + writeErr));
+        }).catch((readErr) => this.error("ERROR HK-116 => Could not read songs.json:" + readErr));
     }
 };

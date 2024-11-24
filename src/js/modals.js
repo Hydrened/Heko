@@ -63,6 +63,15 @@ class Modals {
                 cancelButton: document.getElementById("remove-songs-from-app-cancel-button"),
                 message: document.getElementById("remove-songs-from-app-message"),
             },
+            editSongFromApp: {
+                container: document.getElementById("edit-song-from-app-modal"),
+                name: document.getElementById("edit-song-from-app-name"),
+                nameInput: document.getElementById("edit-song-from-app-input-name"),
+                artistInput: document.getElementById("edit-song-from-app-input-artist"),
+                confirmButton: document.getElementById("edit-song-from-app-confirm-button"),
+                cancelButton: document.getElementById("edit-song-from-app-cancel-button"),
+                message: document.getElementById("edit-song-from-app-message"),
+            },
         };
 
         this.closing = false;
@@ -80,7 +89,7 @@ class Modals {
             createPlaylistModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.createPlaylist();
+                this.app.createPlaylistFromModal();
             });
         }
 
@@ -90,7 +99,7 @@ class Modals {
             confirmRemovePlaylistModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.removePlaylist();
+                this.app.removePlaylistFromModal();
             });
         }
 
@@ -100,7 +109,7 @@ class Modals {
             renamePlaylistModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.renamePlaylist();
+                this.app.renamePlaylistFromModal();
             });
         }
 
@@ -110,7 +119,7 @@ class Modals {
             addSongsToPlaylistModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.addSongsToPlaylist();
+                this.app.addSongsToPlaylistFromModal();
             });
             addSongsToPlaylistModal.input.addEventListener("input", (e) => {
                 const songLis = addSongsToPlaylistModal.songsLis;
@@ -132,7 +141,7 @@ class Modals {
             removeSongFromPlaylistModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.removeSongFromPlaylist();
+                this.app.removeSongFromPlaylistFromModal();
             });
         }
 
@@ -142,7 +151,7 @@ class Modals {
             addSongToAppModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.addSongToApp();
+                this.app.addSongToAppFromModal();
             });
             addSongToAppModal.container.addEventListener("dragenter", (e) => {
                 if (!e.dataTransfer.types.includes("Files")) return;
@@ -194,7 +203,7 @@ class Modals {
             removeSongsFromAppModal.confirmButton.addEventListener("click", () => {
                 if (this.closing) return;
                 this.closing = true;
-                this.app.removeSongsFromApp();
+                this.app.removeSongsFromAppFromModal();
             });
             removeSongsFromAppModal.input.addEventListener("input", (e) => {
                 const songLis = removeSongsFromAppModal.songsLis;
@@ -206,6 +215,22 @@ class Modals {
                     songLi.element.classList.remove("hidden");
                     if ((!name.includes(e.target.value.toLowerCase()) && !artist.includes(e.target.value.toLowerCase()))) songLi.element.classList.add("hidden");
                 }
+            });
+        }
+
+        const editSongFromAppModal = this.elements.editSongFromApp;
+        if (editSongFromAppModal) {
+            editSongFromAppModal.cancelButton.addEventListener("click", () => this.closeEditSongFromAppModal());
+            editSongFromAppModal.confirmButton.addEventListener("click", () => {
+                if (this.closing) return;
+                this.closing = true;
+                this.app.editSongFromAppFromModal();
+            });
+            editSongFromAppModal.nameInput.addEventListener("keydown", (e) => {
+                if (e.key == "Tab") editSongFromAppModal.artistInput.focus();
+            });
+            editSongFromAppModal.artistInput.addEventListener("keydown", (e) => {
+                if (e.key == "Tab") editSongFromAppModal.nameInput.focus();
             });
         }
         
@@ -254,6 +279,7 @@ class Modals {
         if (this.elements.removeSongFromPlaylist.container.classList.contains("open")) this.closeRemoveSongFromPlaylistModal();
         if (this.elements.addSongToApp.container.classList.contains("open")) this.closeAddSongToAppModal();
         if (this.elements.removeSongsFromApp.container.classList.contains("open")) this.closeRemoveSongsFromAppModal();
+        if (this.elements.editSongFromApp.container.classList.contains("open")) this.closeEditSongFromAppModal();
     }
 
     isAModalOpened() {
@@ -263,7 +289,8 @@ class Modals {
                this.elements.addSongsToPlaylist.container.classList.contains("open") ||
                this.elements.removeSongFromPlaylist.container.classList.contains("open") ||
                this.elements.addSongToApp.container.classList.contains("open") ||
-               this.elements.removeSongsFromApp.container.classList.contains("open")
+               this.elements.removeSongsFromApp.container.classList.contains("open") ||
+               this.elements.editSongFromApp.container.classList.contains("open")
     }
     
     openCreatePlaylistModal() {
@@ -371,6 +398,7 @@ class Modals {
         modal.container.classList.add("open");
         modal.fakeDragZone.classList.remove("contains-file");
         modal.fakeDragZone.textContent = "Drag file here";
+        modal.name.focus();
     }
 
     closeAddSongToAppModal() {
@@ -406,6 +434,28 @@ class Modals {
                 const songLi = songLis[id];
                 songLi.element.querySelector("input").checked = false;
             }
+            this.closing = false;
+        }, 500);
+    }
+
+    openEditSongFromAppModal(sID) {
+        this.app.contextmenu.close();
+        const modal = this.elements.editSongFromApp;
+        modal.container.classList.add("open");
+        modal.name.textContent = this.app.songs[sID].name;
+        modal.nameInput.value = this.app.songs[sID].name;
+        modal.artistInput.value = this.app.songs[sID].artist;
+        modal.nameInput.focus();
+    }
+
+    closeEditSongFromAppModal() {
+        const modal = this.elements.editSongFromApp;
+        modal.container.classList.remove("open");
+        setTimeout(() => {
+            modal.name.textContent = "";
+            modal.nameInput.value = "";
+            modal.artistInput.value = "";
+            modal.message.textContent = "";
             this.closing = false;
         }, 500);
     }

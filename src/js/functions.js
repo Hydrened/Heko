@@ -95,3 +95,7 @@ function getSongNameErrors(songs, name) {
 
     return res;
 }
+
+function isPlaylistParent(playlists, pID) {
+    return Object.values(playlists).some(playlist => playlist.parent == pID);
+}
