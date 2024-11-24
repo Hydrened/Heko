@@ -1,12 +1,12 @@
 ## HEKO-1.2.0
 #### MODIFIED
 - arrow shortcut is now for current song time controls
-- add to playlist in current playlist songs's contextmenu 
-- song edit
-- song edit in current playlist song's contextmenu
 #### ADDED
 - ctrl + arrow for previous or next song
 - 0 to 9 shortcuts for other current song time controls
+- add to playlist in current playlist songs's contextmenu 
+- song edit
+- song edit in current playlist song's contextmenu
 
 ## HEKO-1.1.15
 #### ADDED
