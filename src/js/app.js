@@ -82,11 +82,11 @@ class App {
                 const parentIds = new Set(Object.values(this.playlists).map(playlist => playlist.parent).filter(parent => parent !== null));
                 for (const [id, playlist] of Object.entries(this.playlists)) {
                     if (!parentIds.has(parseInt(id))) {
-                        this.openPlaylist(id);
+                        this.openPlaylist(id, (params.get("r")) ? true : false);
                         break;
                     }
                 }
-            } else this.openPlaylist(playlistToOpen);
+            } else this.openPlaylist(playlistToOpen, true);
 
             this.initFromSettings();
             this.updateLoop();
@@ -208,7 +208,7 @@ class App {
                 if (nbSubPlaylist != 0) {
                     childrenContainer.classList.toggle("show");
                     arrow.classList.toggle("show");
-                } else this.openPlaylist(pID);
+                } else this.openPlaylist(pID, false);
             });
         });
     }
@@ -255,7 +255,7 @@ class App {
         setTimeout(() => this.updateLoop(), 16.67);
     }
 
-    openPlaylist(id) {
+    openPlaylist(id, instant) {
         const playlist = this.playlists[id];
 
         if (playlist != this.currentPlaylist) {
@@ -263,9 +263,20 @@ class App {
                 this.elements.currentPlaylist.container.classList.remove("open");
                 this.currentPlaylist = playlist;
                 setTimeout(() => {
+                    const table = document.querySelector(".current-playlist-table");
+                    if (instant == true) {
+                        this.elements.currentPlaylist.container.style.transition = "0ms";
+                        table.style.transition = "0ms";
+                    }
+
                     this.elements.currentPlaylist.container.classList.add("open");
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
                     this.elements.currentPlaylist.filter.value = "";
+
+                    if (instant == true) setTimeout(() => {
+                        this.elements.currentPlaylist.container.style.transition = "";
+                        table.style.transition = "";
+                    }, 1);
 
                     // const thumbnailPath = path.resolve(this.mainFolder, "thumbnails", playlist.thumbnail);
                     // if (fs.existsSync(thumbnailPath)) this.elements.currentPlaylist.thumbnail.style.backgroundImage = `url("${this.mainFolder}/thumbnails/${playlist.thumbnail}")`;
@@ -312,7 +323,7 @@ class App {
                             li.addEventListener("click", () => this.songListener.setCurrentPlaylist(playlist, index, 1));
                         }
                     });
-                }, 600);
+                }, (instant == true) ? 0 : 600);
             } else this.error(`ERROR HK-301 => Playlist ID "${id}" not found`);
         }
     }
@@ -343,7 +354,11 @@ class App {
         const songListenerData = this.songListener.getCurrentData();
         const jsonSongListenerData = encodeURIComponent(JSON.stringify(songListenerData));
 
-        const url = `index.html${(pID != null) ? `?p=${pID}` : ""}${(songListenerData.playlist) ? `${(pID != null) ? "&" : "?"}d=${jsonSongListenerData}` : ""}`;
+        const parameters = [{ name: "r", data: true }];
+        if (pID != null) parameters.push({ name: "p", data: pID });
+        if (songListenerData.playlist) parameters.push({ name: "d", data: jsonSongListenerData });
+
+        const url = `index.html${(parameters.length > 0) ? "?" : ""}${parameters.map((p) => `${p.name}=${p.data}&`).join("").slice(0, -1)}`;
         window.location.href = url;
     }
 

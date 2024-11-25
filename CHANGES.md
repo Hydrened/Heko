@@ -1,3 +1,9 @@
+## HEKO-1.2.1
+#### ADDED
+- instant playlist opening when refreshing
+#### FIXED
+- loop specific song
+
 ## HEKO-1.2.0
 #### MODIFIED
 - arrow shortcut is now for current song time controls

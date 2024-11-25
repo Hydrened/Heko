@@ -86,6 +86,7 @@ class SongListener {
     }
 
     shiftQueue(incr) {
+        if (this.app.settings.loop) return;
         for (let i = 0; i < Math.abs(incr); i++) {
             if (!this.app.settings.random) {
                 if (incr > 0) this.queue.push(this.queue.shift());
