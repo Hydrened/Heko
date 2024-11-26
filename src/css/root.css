@@ -6,6 +6,7 @@
     --bg-col-5: rgb(18,20,22);
     --bg-col-6: rgb(22,24,26);
     --bg-col-7: rgb(70,72,74);
+    --bg-col-8: rgb(28,30,32);
     --bg-col-success: rgb(51,155,51);
     --bg-col-error: rgb(132,34,34);
 
@@ -16,6 +17,7 @@
 
     --col-1: rgb(31,114,198);
 
+    --header-height: 18px;
     --scroll-width: 8px;
     --frame-height: 36px;
     --main-boxes-padding: 1.5rem;

@@ -1,11 +1,12 @@
 div.page > footer {
+    padding-inline: var(--main-boxes-padding);
     display: grid;
-    grid-template-columns: 25% 1fr 25%;
+    grid-template-columns: 30% 1fr 30%;
     background-color: var(--bg-col-5);
     transition: filter 400ms;
 }
 div.page > footer > article {
-    padding: var(--main-boxes-padding);
+    padding-block: var(--main-boxes-padding);
 }
 div.page > footer svg * {
     stroke: var(--font-col-1);
@@ -76,7 +77,7 @@ article.song-controls > div.song-slider {
     gap: 0.4rem;
 }
 article.song-controls > div.song-slider > input {
-    width: 60%;
+    width: 80%;
 }
 article.song-controls > div.song-slider > p {
     color: var(--font-col-2);
@@ -85,19 +86,29 @@ article.song-controls > div.song-slider > p {
 
 
 
-article.song-volume {
+article.other {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+}
+article.other > svg#open-queue-button {
+    width: 1.4rem;
+    cursor: pointer;
+}
+article.other > div.song-volume {
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 0.5rem;
 }
-article.song-volume > div > svg {
+article.other > div.song-volume > div > svg {
     width: 1.4rem;
     cursor: pointer;
 }
-article.song-volume > div > svg:hover * {
-    stroke: white;
-}
-article.song-volume > div > svg.hidden {
+article.other > div.song-volume > div > svg.hidden {
     display: none;
+}
+article.other svg:hover * {
+    stroke: white;
 }

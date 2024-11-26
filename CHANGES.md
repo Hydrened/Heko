@@ -1,3 +1,10 @@
+## HEKO-1.2.2
+#### ADDED
+- queue visualizer
+#### FIXED
+- success / error display
+- contextmenu display neer edges
+
 ## HEKO-1.2.1
 #### ADDED
 - instant playlist opening when refreshing

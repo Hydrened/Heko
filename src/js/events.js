@@ -12,7 +12,7 @@ class Events {
         const footer = app.elements.footer;
         const manageSongsMenu = app.elements.manageSongsMenu;
 
-        setTimeout(() => this.oldVolume = footer.volume.slider.value, 0);
+        setTimeout(() => this.oldVolume = footer.other.volume.slider.value, 0);
 
         if (aside) {
             aside.createPlaylist.addEventListener("click", () => modals.openCreatePlaylistModal());
@@ -94,12 +94,12 @@ class Events {
                 footer.buttons.loop.classList.toggle("activated");
             });
 
-            footer.volume.slider.addEventListener("input", (e) => {
+            footer.other.volume.slider.addEventListener("input", (e) => {
                 this.oldVolume = e.target.value;
                 app.setVolume(e.target.value);
             });
-            footer.volume.slider.addEventListener("wheel", (e) => {
-                const currentVolumeValue = parseFloat(footer.volume.slider.value);
+            footer.other.volume.slider.addEventListener("wheel", (e) => {
+                const currentVolumeValue = parseFloat(footer.other.volume.slider.value);
                 const newVolumeValue = (e.deltaY > 0) ? Math.max(currentVolumeValue - 10, 0) : Math.min(currentVolumeValue + 10, 100);
                 app.setVolume(newVolumeValue);
             })
@@ -113,11 +113,13 @@ class Events {
                 footer.song.slider.blur();
             });
 
-            footer.volume.svg.no.parentNode.addEventListener("click", () => {
+            footer.other.volume.svg.no.parentNode.addEventListener("click", () => {
                 this.muted = !this.muted;
                 if (this.muted) app.setVolume(0);
                 else app.setVolume(this.oldVolume);
             });
+
+            footer.other.queue.addEventListener("click", () => modals.openQueueModal());
         }
 
         document.addEventListener("contextmenu", (e) => {
@@ -178,7 +180,7 @@ class Events {
                 });
 
                 const menus = [
-                    { name: "Add to queue", call: () => songListener.addToQueue(sID), children: [], shortcut: null },
+                    { name: "Add to queue", call: () => songListener.addToQueue(sID, true), children: [], shortcut: null },
                     { name: "Remove from playlist", call: () => modals.openRemoveSongFromPlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name), sID), children: [], shortcut: null },
                     { name: "Add to other playlist", call: null, children: mappedAddToOtherPlaylistChildren, shortcut: null },
                     { name: "Edit song", call: () => modals.openEditSongFromAppModal(sID), children: [], shortcut: null },
@@ -214,14 +216,14 @@ class Events {
                     app.contextmenu.close();
                     break;
                 case "Enter":
-                    if (modals.elements.createPlaylist.container.classList.contains("open")) app.createPlaylistFromModal();
-                    if (modals.elements.confirmRemovePlaylist.container.classList.contains("open")) app.removePlaylistFromModal();
-                    if (modals.elements.renamePlaylist.container.classList.contains("open")) app.renamePlaylistFromModal();
-                    if (modals.elements.addSongsToPlaylist.container.classList.contains("open")) app.addSongsToPlaylistFromModal();
-                    if (modals.elements.removeSongFromPlaylist.container.classList.contains("open")) app.removeSongFromPlaylistFromModal();
-                    if (modals.elements.addSongToApp.container.classList.contains("open")) app.addSongToAppFromModal();
-                    if (modals.elements.removeSongsFromApp.container.classList.contains("open")) app.removeSongsFromAppFromModal();
-                    if (modals.elements.editSongFromApp.container.classList.contains("open")) app.editSongFromAppFromModal();
+                    if (modals.elements.top.createPlaylist.container.classList.contains("open")) app.createPlaylistFromModal();
+                    if (modals.elements.top.confirmRemovePlaylist.container.classList.contains("open")) app.removePlaylistFromModal();
+                    if (modals.elements.top.renamePlaylist.container.classList.contains("open")) app.renamePlaylistFromModal();
+                    if (modals.elements.top.addSongsToPlaylist.container.classList.contains("open")) app.addSongsToPlaylistFromModal();
+                    if (modals.elements.top.removeSongFromPlaylist.container.classList.contains("open")) app.removeSongFromPlaylistFromModal();
+                    if (modals.elements.top.addSongToApp.container.classList.contains("open")) app.addSongToAppFromModal();
+                    if (modals.elements.top.removeSongsFromApp.container.classList.contains("open")) app.removeSongsFromAppFromModal();
+                    if (modals.elements.top.editSongFromApp.container.classList.contains("open")) app.editSongFromAppFromModal();
                     break;
 
                 default: break;
@@ -269,7 +271,7 @@ class Events {
                 case "l": footer.buttons.loop.dispatchEvent(new Event("click")); break;
                 case "r": if (!e.ctrlKey) footer.buttons.random.dispatchEvent(new Event("click")); break;
                 case "d": if (e.ctrlKey) app.duplicatePlaylist(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;
-                case "m": footer.volume.svg.no.parentNode.dispatchEvent(new Event("click")); break;
+                case "m": footer.other.volume.svg.no.parentNode.dispatchEvent(new Event("click")); break;
                 case "n": if (e.ctrlKey) {
                     if (e.altKey) app.modals.openCreatePlaylistModal();
                     else app.modals.openAddSongsToPlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name));

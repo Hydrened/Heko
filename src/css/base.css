@@ -81,7 +81,7 @@ input[type="range"]::-webkit-slider-thumb {
 div.page {
     height: calc(100vh - var(--frame-height));
     display: grid;
-    grid-template-rows: 18px 1fr var(--footer-height);
+    grid-template-rows: var(--header-height) 1fr var(--footer-height);
 }
 body > div.page > header {
     background-color: var(--col-1);
@@ -89,8 +89,8 @@ body > div.page > header {
 
 
 
-div.page:has(div.modal.open) > main,
-div.page:has(div.modal.open) > footer {
+div.page:has(div.top-modal-container > div.modal.open) > main,
+div.page:has(div.top-modal-container > div.modal.open) > footer {
     filter: blur(3px);
 }
 

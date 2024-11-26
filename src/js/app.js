@@ -37,12 +37,15 @@ class App {
                     next: document.getElementById("next-button"),
                     loop: document.getElementById("loop-button"),
                 },
-                volume: {
-                    slider: document.getElementById("volume-slider"),
-                    svg: {
-                        no: document.getElementById("song-no-volume-logo"),
-                        low: document.getElementById("song-low-volume-logo"),
-                        high: document.getElementById("song-high-volume-logo"),
+                other: {
+                    queue: document.getElementById("open-queue-button"),
+                    volume: {
+                        slider: document.getElementById("volume-slider"),
+                        svg: {
+                            no: document.getElementById("song-no-volume-logo"),
+                            low: document.getElementById("song-low-volume-logo"),
+                            high: document.getElementById("song-high-volume-logo"),
+                        },
                     },
                 },
                 song: {
@@ -95,9 +98,8 @@ class App {
 
     success(message) {
         const success = this.elements.success;
-        success.textContent = message;
-        success.classList.add("show");
-        setTimeout(() => {
+
+        function close() {
             success.classList.add("closing");
 
             setTimeout(() => {
@@ -105,14 +107,24 @@ class App {
                 success.classList.remove("show");
                 success.classList.remove("closing");
             }, 1000);
-        }, 5000);
+        }
+
+        if (!success.classList.contains("show")) {
+            success.textContent = message;
+            success.classList.add("show");
+            setTimeout(() => {
+                if (message == success.textContent) close();
+            }, 5000);
+        } else {
+            close();
+            setTimeout(() => this.success(message), 1000);
+        }
     }
 
     error(message) {
         const error = this.elements.error;
-        error.textContent = message;
-        error.classList.add("show");
-        setTimeout(() => {
+
+        function close() {
             error.classList.add("closing");
 
             setTimeout(() => {
@@ -120,7 +132,18 @@ class App {
                 error.classList.remove("show");
                 error.classList.remove("closing");
             }, 1000);
-        }, 5000);
+        }
+
+        if (!error.classList.contains("show")) {
+            error.textContent = message;
+            error.classList.add("show");
+            setTimeout(() => {
+                if (message == error.textContent) close();
+            }, 5000);
+        } else {
+            close();
+            setTimeout(() => this.error(message), 1000);
+        }
     }
 
     async initData() {
@@ -329,23 +352,23 @@ class App {
     }
 
     setVolume(volume) {
-        this.elements.footer.volume.slider.value = volume;
+        this.elements.footer.other.volume.slider.value = volume;
         this.settings.volume = volume / 100;
 
         if (volume <= 0) {
-            this.elements.footer.volume.svg.no.classList.remove("hidden");
-            this.elements.footer.volume.svg.low.classList.add("hidden");
-            this.elements.footer.volume.svg.high.classList.add("hidden");
+            this.elements.footer.other.volume.svg.no.classList.remove("hidden");
+            this.elements.footer.other.volume.svg.low.classList.add("hidden");
+            this.elements.footer.other.volume.svg.high.classList.add("hidden");
 
         } else if (volume < 50) {
-            this.elements.footer.volume.svg.no.classList.add("hidden");
-            this.elements.footer.volume.svg.low.classList.remove("hidden");
-            this.elements.footer.volume.svg.high.classList.add("hidden");
+            this.elements.footer.other.volume.svg.no.classList.add("hidden");
+            this.elements.footer.other.volume.svg.low.classList.remove("hidden");
+            this.elements.footer.other.volume.svg.high.classList.add("hidden");
 
         } else {
-            this.elements.footer.volume.svg.no.classList.add("hidden");
-            this.elements.footer.volume.svg.low.classList.add("hidden");
-            this.elements.footer.volume.svg.high.classList.remove("hidden");
+            this.elements.footer.other.volume.svg.no.classList.add("hidden");
+            this.elements.footer.other.volume.svg.low.classList.add("hidden");
+            this.elements.footer.other.volume.svg.high.classList.remove("hidden");
         }
         this.songListener.setVolume(Math.pow(volume / 100, 3));
     }
@@ -363,7 +386,7 @@ class App {
     }
 
     createPlaylistFromModal() {
-        const modal = this.modals.elements.createPlaylist;
+        const modal = this.modals.elements.top.createPlaylist;
         const name = modal.input.value;
         modal.message.classList.value = "";
         modal.message.textContent = "";
@@ -400,7 +423,7 @@ class App {
     }
 
     removePlaylistFromModal() {
-        const modal = this.modals.elements.confirmRemovePlaylist;
+        const modal = this.modals.elements.top.confirmRemovePlaylist;
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const playlist = this.playlists[id];
 
@@ -428,7 +451,7 @@ class App {
     }
     
     renamePlaylistFromModal() {
-        const modal = this.modals.elements.renamePlaylist;
+        const modal = this.modals.elements.top.renamePlaylist;
         const id = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const newName = modal.input.value;
 
@@ -457,7 +480,7 @@ class App {
     }
 
     addSongsToPlaylistFromModal() {
-        const modal = this.modals.elements.addSongsToPlaylist;
+        const modal = this.modals.elements.top.addSongsToPlaylist;
         const pID = getPlaylistIdByName(this.playlists, modal.name.textContent);
         const songsToAdd = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => li.getAttribute("song-id"));
         this.addSongsToPlaylist(songsToAdd, pID, modal);
@@ -487,7 +510,7 @@ class App {
     }
 
     removeSongFromPlaylistFromModal() {
-        const modal = this.modals.elements.removeSongFromPlaylist;
+        const modal = this.modals.elements.top.removeSongFromPlaylist;
         const sID = getSongIdByName(this.songs, modal.song.textContent);
         const pID = getPlaylistIdByName(this.playlists, modal.playlist.textContent);
 
@@ -523,7 +546,7 @@ class App {
     }
 
     addSongToAppFromModal() {
-        const modal = this.modals.elements.addSongToApp;
+        const modal = this.modals.elements.top.addSongToApp;
         const file = modal.file.files[0];
         const name = modal.name.value;
         const artist = modal.artist.value;
@@ -588,7 +611,7 @@ class App {
     }
 
     removeSongsFromAppFromModal() {
-        const modal = this.modals.elements.removeSongsFromApp;
+        const modal = this.modals.elements.top.removeSongsFromApp;
         const songsToRemove = [...modal.container.querySelectorAll("ul > li")].filter((li) => li.querySelector("input").checked).map((li) => parseInt(li.getAttribute("song-id")));
 
         const songsFile = path.join(this.mainFolder, "data", "songs.json");
@@ -653,7 +676,7 @@ class App {
     }
 
     editSongFromAppFromModal() {
-        const modal = this.modals.elements.editSongFromApp;
+        const modal = this.modals.elements.top.editSongFromApp;
         const sID = getSongIdByName(this.songs, modal.name.textContent);
 
         const songsFile = path.join(this.mainFolder, "data", "songs.json");

@@ -61,6 +61,7 @@ class SongListener {
 
             if (d.isPaused) this.audio.addEventListener("loadeddata", autoPause);
             this.addedToQueue = d.addedToQueue;
+            this.app.modals.refreshQueueModal();
         }
     }
 
@@ -83,10 +84,12 @@ class SongListener {
             this.queue = [...this.currentPlaylist.songs];
             this.shiftQueue(startIndex);
         }
+        this.app.modals.refreshQueueModal();
     }
 
     shiftQueue(incr) {
         if (this.app.settings.loop) return;
+
         for (let i = 0; i < Math.abs(incr); i++) {
             if (!this.app.settings.random) {
                 if (incr > 0) this.queue.push(this.queue.shift());
@@ -102,6 +105,7 @@ class SongListener {
                 }
             }
         }
+        this.app.modals.refreshQueueModal();
     }
 
     setCurrentPlaylist(playlist, startIndex, incr) {
@@ -130,12 +134,14 @@ class SongListener {
         ipcRenderer.send("set-thumbnail-play-button", "pause");
     }
 
-    addToQueue(sID) {
+    addToQueue(sID, notif) {
         const song = this.songs[sID];
         if (song) {
             this.addedToQueue.push(parseInt(sID));
-            this.app.success(`Added "${this.songs[sID].name}" to queue`);
+            if (notif == true) this.app.success(`Added "${this.songs[sID].name}" to queue`);
         } else this.app.error(`Song ID "${sID}" is not valid`);
+        
+        this.app.modals.refreshQueueModal();
     }
 
 
