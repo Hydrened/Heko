@@ -1,0 +1,29 @@
+div.slider-menu {
+    padding: 0.8rem 0.7rem;
+    position: absolute;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.6rem;
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    background-color: var(--bg-col-2);
+    border: 1px solid var(--bg-col-4);
+    transform: translateY(-130%);
+    overflow: visible;
+    z-index: 10;
+}
+div.slider-menu::after {
+    content: "";
+    width: 12px;
+    aspect-ratio: 1 / 1;
+    position: absolute;
+    bottom: -12px;
+    left: -1px;
+    background-color: var(--bg-col-4);
+    border: 1px solid var(--bg-col-4);
+    clip-path: polygon(0 0, 0% 100%, 100% 0);
+}

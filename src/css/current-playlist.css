@@ -56,13 +56,6 @@ section > header > div.current-playlist-details > div > h4#current-playlist-nb-s
 section > header > div.current-playlist-details > div > button {
     cursor: pointer;
 }
-section > header > div.current-playlist-details > div > button > svg * {
-    fill: var(--font-col-1);
-    transition: 200ms;
-}
-section > header > div.current-playlist-details > div > button:hover > svg * {
-    fill: var(--col-1);
-}
 section > header > div.current-playlist-details > div > button.plus > svg {
     width: 1.5rem;
 }
@@ -119,6 +112,8 @@ section > div.current-playlist-table > ul#current-playlist-table-body > li.error
 section > div.current-playlist-table > div.current-playlist-table-head > p,
 section > div.current-playlist-table > ul#current-playlist-table-body > li > p {
     padding: 0.7rem 1rem;
+    display: flex;
+    align-items: center;
     text-overflow: ellipsis;
     white-space: nowrap;
 }

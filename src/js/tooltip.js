@@ -40,7 +40,7 @@ class Tooltip {
         }
     }
 
-    leave(e) {
+    leave() {
         if (!this.tooltip) return;
         this.tooltip.remove();
         this.tooltip = null;

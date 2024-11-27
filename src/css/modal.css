@@ -169,10 +169,12 @@ div.top-modal-container > div.modal ul > li > p {
 div.top-modal-container > div.modal div.fake-drag-zone {
     width: 40rem;
     height: 10rem;
+    padding: 2rem;
     display: flex;
     justify-content: center;
     align-items: center;
     font-size: 1.5rem;
+    text-align: center;
     border: 3px dashed rgba(255,255,255,0.2);
     border-radius: 1rem;
     transition: 200ms;

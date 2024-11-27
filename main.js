@@ -1,6 +1,7 @@
-const { app, BrowserWindow, ipcMain } = require("electron");
+const { app, BrowserWindow, ipcMain, dialog, shell } = require("electron");
 const fs = require("fs");
 const path = require("path");
+const fetch = require("node-fetch");
 
 class Application {
     constructor() {
@@ -51,7 +52,7 @@ class Application {
         const settingsFile = path.join(app.getPath("documents"), "Heko", "data", "settings.json");
         const jsonData = (fs.existsSync(settingsFile)) ? JSON.parse(fs.readFileSync(settingsFile, "utf8")) : null;
 
-        const minW = 900;
+        const minW = 950;
         const minH = 650;
 
         const x = (jsonData) ? jsonData.window.x : 0;
@@ -77,8 +78,6 @@ class Application {
         window.setMenuBarVisibility(false);
         window.loadFile("src/index.html");
         if (jsonData) if (jsonData.window.f) window.maximize();
-
-        
 
         this.thumbnailButtons = [
             {
@@ -110,6 +109,7 @@ class Application {
                 const { x, y, width, height } = window.getBounds();
                 const f = window.isMaximized();
                 window.webContents.send("window-update", { x, y, width, height, f });
+                checkVersion();
             }, 100);
         });
 
@@ -148,6 +148,8 @@ class Application {
                 main: "rgb(31,114,198)",
             },
             lastSongID: 0,
+            playbackRate: "1",
+            pitch: "1",
         };
         const strSaveData = JSON.stringify(saveData, null, 2);
         if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSaveData, (err) => {
@@ -179,6 +181,37 @@ class Application {
     }
 };
 
+async function checkVersion() {
+    const url = "https://raw.githubusercontent.com/Hydrened/Heko/main/CHANGES.md";
+    try {
+        const response = await fetch(url);
+        if (!response.ok) throw new Error(`HTTP Error: statut : ${response.status}`);
+        const text = await response.text();
+
+        const latestVersion = text.slice(text.indexOf("## HEKO-") + 8, text.indexOf("####") - 1);
+        const currentVersion = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8")).version;
+        if (latestVersion == currentVersion || currentVersion.includes("b")) return;
+        
+        const res = dialog.showMessageBoxSync({
+            type: "info",
+            buttons: ["Update", "Ignore"],
+            defaultId: 0,
+            cancelId: 1,
+            title: "Heko",
+            message: "A new version is available",
+        });
+
+        if (res == 0) shell.openExternal(`https://raw.githubusercontent.com/Hydrened/Heko/main/dist/Heko%20Setup%20${latestVersion}.exe`);
+    } catch (error) {
+        dialog.showMessageBoxSync({
+            type: "error",
+            buttons: ["OK"],
+            defaultId: 0,
+            title: "Heko",
+            message: "ERROR HK-319 => Could not read CHANGES.md: " + error,
+        });
+    }
+}
 
 app.whenReady().then(() => {
     const applciation = new Application();

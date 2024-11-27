@@ -10,23 +10,23 @@ class Events {
         const aside = app.elements.aside;
         const currentPlaylist = app.elements.currentPlaylist;
         const footer = app.elements.footer;
-        const manageSongsMenu = app.elements.manageSongsMenu;
 
         setTimeout(() => this.oldVolume = footer.other.volume.slider.value, 0);
 
         if (aside) {
             aside.createPlaylist.addEventListener("click", () => modals.openCreatePlaylistModal());
-        }
 
-        if (manageSongsMenu) {
-            manageSongsMenu.openButton.addEventListener("click", () => {
-                manageSongsMenu.container.classList.toggle("open");
-                const rect = document.querySelector("aside > footer").getBoundingClientRect();
-                manageSongsMenu.container.style.top = `${rect.y}px`;
-                manageSongsMenu.container.style.left = `${rect.x + rect.width}px`;
+            aside.manageSongsButton.addEventListener("click", () => {
+                setTimeout(() => {
+                    const menus = [
+                        { name: "Add song", call: () => modals.openAddSongToAppModal(), children: [], shortcut: "" },
+                        { name: "Remove song", call: () => modals.openRemoveSongsFromAppModal(), children: [], shortcut: "" },
+                    ];
+                    const rect = document.querySelector("aside > footer").getBoundingClientRect();
+
+                    app.contextmenu.open({ x: rect.x + rect.width, y: rect.y }, document.body, menus);
+                }, 15);
             });
-            manageSongsMenu.addButton.addEventListener("click", () => modals.openAddSongToAppModal());
-            manageSongsMenu.removeButton.addEventListener("click", () => modals.openRemoveSongsFromAppModal());
         }
 
         if (currentPlaylist) {
@@ -94,6 +94,17 @@ class Events {
                 footer.buttons.loop.classList.toggle("activated");
             });
 
+            footer.other.playbackRate.addEventListener("click", () => {
+                setTimeout(() => {
+                    const rect = footer.other.playbackRate.getBoundingClientRect();
+                    app.sliderMenus.push(new SliderMenu(rect.x + rect.width / 2, rect.y, app.settings.playbackRate, { min: 0.1, max: 2, step: 0.1 }, (e) => {
+                        songListener.setSpeed(e.target.value);
+                    }));
+                }, 15);
+            });
+
+            footer.other.queue.addEventListener("click", () => modals.openQueueModal());
+
             footer.other.volume.slider.addEventListener("input", (e) => {
                 this.oldVolume = e.target.value;
                 app.setVolume(e.target.value);
@@ -118,14 +129,11 @@ class Events {
                 if (this.muted) app.setVolume(0);
                 else app.setVolume(this.oldVolume);
             });
-
-            footer.other.queue.addEventListener("click", () => modals.openQueueModal());
         }
 
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             app.contextmenu.close();
-            app.elements.manageSongsMenu.container.classList.remove("open");
 
             if (e.target.closest(`#${app.elements.aside.playlistsContainer.id} > li.playlist`)) {
                 const playlistContainers = Array.from(app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
@@ -198,10 +206,14 @@ class Events {
                 return;
             }
         });
-        document.addEventListener("click", (e) => {
+        document.addEventListener("mouseup", (e) => {
+            if (e.button == 2) return;
             setTimeout(() => {
                 app.contextmenu.close();
-                if (!e.target.closest("button#manage-songs-open-button")) app.elements.manageSongsMenu.container.classList.remove("open");
+                app.sliderMenus.forEach((sm) => {
+                    if (e.target == sm.slider || e.target == sm.container) return;
+                    sm.close();
+                });
             }, 10);
         });
 
@@ -214,6 +226,7 @@ class Events {
                 case "Escape":
                     modals.closeCurrentModal();
                     app.contextmenu.close();
+                    app.sliderMenus.forEach((sm) => sm.close());
                     break;
                 case "Enter":
                     if (modals.elements.top.createPlaylist.container.classList.contains("open")) app.createPlaylistFromModal();
@@ -240,8 +253,8 @@ class Events {
                 
             } else switch (e.key) {
                 case "Escape":
-                    app.elements.manageSongsMenu.container.classList.remove("open");
                     app.contextmenu.close();
+                    app.sliderMenus.forEach((sm) => sm.close());
                     break;
 
                 case "F2": modals.openRenamePlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;

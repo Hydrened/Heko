@@ -7,13 +7,13 @@ class SongListener {
 
         this.audio = document.getElementById("audio");
         this.audio.volume = 0;
+        this.track = null;
 
         this.queue = [];
         this.addedToQueue = [];
         this.currentPlaylist = null;
     
         this.handleEvents();
-        this.initQueues();
     }
 
     handleEvents() {
@@ -127,6 +127,14 @@ class SongListener {
         const song = this.songs[sID];
         this.audio.src = path.join(this.mainFolder, "songs", song.src);
         this.audio.setAttribute("song-id", sID);
+
+        if (!this.track) {
+            const audioContext = new AudioContext();
+            this.track = audioContext.createMediaElementSource(this.audio);
+            this.track.connect(audioContext.destination);
+        }
+
+        this.audio.playbackRate = this.app.settings.playbackRate;
         this.audio.play();
         
         this.app.elements.footer.buttons.pause.classList.remove("hidden");
@@ -150,13 +158,13 @@ class SongListener {
         if (!this.currentPlaylist) return;
         const currentSid = this.getCurrentSongID();
         const currentSidIndex = this.currentPlaylist.songs.indexOf(currentSid);
-        this.resetQueue(currentSidIndex + 1);
+        this.resetQueue(currentSidIndex);
     }
 
     loopButton() {
         if (!this.currentPlaylist) return;
         const currentSid = this.getCurrentSongID();
-        const currentSidIndex = this.currentPlaylist.songs.indexOf(currentSid) + ((this.app.settings.loop) ? 0 : 1);
+        const currentSidIndex = this.currentPlaylist.songs.indexOf(currentSid);
         this.resetQueue(currentSidIndex);
     }
 
@@ -225,5 +233,14 @@ class SongListener {
 
     setVolume(volume) {
         this.audio.volume = volume;
+    }
+
+    setSpeed(speed) {
+        this.audio.playbackRate = speed;
+        this.app.settings.playbackRate = speed;
+    }
+
+    setPitch(pitch) {
+        this.pitch = pitch;
     }
 };

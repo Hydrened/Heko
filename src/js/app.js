@@ -8,10 +8,13 @@ class App {
         this.settings = null;
         this.currentPlaylist = null;
 
+        this.sliderMenus = [];
+
         this.elements = {
             aside: {
                 createPlaylist: document.getElementById("create-playlist-button"),
                 playlistsContainer: document.getElementById("playlists-container"),
+                manageSongsButton: document.getElementById("manage-songs-open-button"),
             },
             currentPlaylist: {
                 container: document.getElementById("current-playlist"),
@@ -38,6 +41,7 @@ class App {
                     loop: document.getElementById("loop-button"),
                 },
                 other: {
+                    playbackRate: document.getElementById("playback-rate-button"),
                     queue: document.getElementById("open-queue-button"),
                     volume: {
                         slider: document.getElementById("volume-slider"),
@@ -60,12 +64,6 @@ class App {
             },
             success: document.getElementById("success-modal"),
             error: document.getElementById("error-modal"),
-            manageSongsMenu: {
-                container: document.getElementById("manage-songs-menu"),
-                openButton: document.getElementById("manage-songs-open-button"),
-                addButton: document.getElementById("manage-songs-add-button"),
-                removeButton: document.getElementById("manage-songs-remove-button"),
-            },
         };
 
         const url = new URL(window.location.href);
@@ -79,6 +77,7 @@ class App {
             this.events = new Events(this);
             this.tooltip = new Tooltip();
 
+            this.songListener.initQueues();
             this.initPlaylists();
 
             if (!playlistToOpen) {
@@ -246,6 +245,8 @@ class App {
             this.settings.loop = false;
             this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
         }
+        this.songListener.setSpeed(this.settings.playbackRate);
+        this.songListener.setPitch(this.settings.pitch);
     }
 
     updateLoop() {
@@ -360,7 +361,7 @@ class App {
             this.elements.footer.other.volume.svg.low.classList.add("hidden");
             this.elements.footer.other.volume.svg.high.classList.add("hidden");
 
-        } else if (volume < 50) {
+        } else if (volume < 75) {
             this.elements.footer.other.volume.svg.no.classList.add("hidden");
             this.elements.footer.other.volume.svg.low.classList.remove("hidden");
             this.elements.footer.other.volume.svg.high.classList.add("hidden");

@@ -26,10 +26,6 @@ aside > footer > h2 {
     align-items: center;
     gap: 0.6rem;
 }
-aside > header > svg.folder *,
-aside > footer > svg.songs * {
-    stroke: var(--font-col-1);
-}
 aside > header > button.plus,
 aside > footer > button.dots {
     cursor: pointer;
@@ -39,15 +35,6 @@ aside > header > button.plus > svg {
 }
 aside > footer > button.dots > svg {
     width: 1.7rem;
-}
-aside > header > button.plus > svg *,
-aside > footer > button.dots > svg * {
-    fill: var(--font-col-1);
-    transition: 200ms;
-}
-aside > header > button.plus:hover > svg *,
-aside > footer > button.dots:hover > svg * {
-    fill: var(--col-1);
 }
 
 

@@ -58,9 +58,9 @@ class Contextmenu {
                     ulc.addEventListener("mouseleave", () => canRemove = true);
                 });
 
-                this.container.addEventListener("mousemove", (e) => setTimeout(() => {
+                this.container.addEventListener("mousemove", (e2) => setTimeout(() => {
                     const ul = li.querySelector("ul");
-                    if (!e.target.closest(`ul > li:nth-of-type(${index + 1})`)) canRemove = true;
+                    if (!e2.target.closest(`ul > li:nth-of-type(${index + 1})`)) canRemove = true;
                     if (canRemove && ul) ul.remove();
                 }, 0));
             } else if (line.shortcut != null) {

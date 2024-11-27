@@ -1,3 +1,11 @@
+## HEKO-1.2.3
+#### ADDED
+- new version detection
+- playback rate setting
+#### FIXED
+- queue bug when adding a new song to the app if shiffle or loop
+- file name display in add song to app modal
+
 ## HEKO-1.2.2
 #### ADDED
 - queue visualizer

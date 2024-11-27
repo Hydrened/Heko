@@ -43,6 +43,3 @@ header.frame > div.buttons-container > button > svg {
     width: var(--frame-height);
     padding: 0.5rem;
 }
-header.frame > div.buttons-container > button > svg * {
-    fill: var(--font-col-1);
-}
