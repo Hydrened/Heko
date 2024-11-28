@@ -1,3 +1,7 @@
+## HEKO-1.2.4
+#### ADDED
+- playlist duration
+
 ## HEKO-1.2.3
 #### ADDED
 - new version detection

@@ -101,3 +101,13 @@ article.other > div.song-volume > div > svg {
 article.other > div.song-volume > div > svg.hidden {
     display: none;
 }
+
+
+
+
+
+
+
+svg.hidden {
+    display: none;
+}

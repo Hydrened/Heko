@@ -53,6 +53,9 @@ section > header > div.current-playlist-details > div > h4#current-playlist-nb-s
     margin-left: 1rem;
     color: var(--font-col-2);
 }
+section > header > div.current-playlist-details > div > h4#current-playlist-duration {
+    color: var(--font-col-2);
+}
 section > header > div.current-playlist-details > div > button {
     cursor: pointer;
 }

@@ -18,7 +18,7 @@ class SliderMenu {
         const indicator = document.createElement("p");
         this.container.appendChild(indicator);
         this.slider.addEventListener("input", (e) => {
-            indicator.textContent = "x" + parseFloat(e.target.value).toFixed(1);
+            indicator.textContent = "x" + parseFloat(e.target.value).toFixed(Math.max(String(parameters.step).length - 2, 0));
         });
 
         this.slider.dispatchEvent(new Event("input"));

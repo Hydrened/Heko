@@ -8,7 +8,7 @@ class App {
         this.settings = null;
         this.currentPlaylist = null;
 
-        this.sliderMenus = [];
+        this.sliderMenu = null;
 
         this.elements = {
             aside: {
@@ -21,6 +21,7 @@ class App {
                 thumbnail: document.getElementById("current-playlist-thumbnail"),
                 title: document.getElementById("current-playlist-title"),
                 nbSong: document.getElementById("current-playlist-nb-song"),
+                duration: document.getElementById("current-playlist-duration"),
                 addSong: document.getElementById("add-songs-to-current-playlist-button"),
                 filter: document.getElementById("current-playlist-song-filter-input"),
                 sort: {
@@ -51,6 +52,7 @@ class App {
                             high: document.getElementById("song-high-volume-logo"),
                         },
                     },
+                    pipMode: document.getElementById("pip-mode-button"),
                 },
                 song: {
                     slider: document.getElementById("song-slider"),
@@ -246,7 +248,6 @@ class App {
             this.elements.footer.buttons.loop.dispatchEvent(new Event("click"));
         }
         this.songListener.setSpeed(this.settings.playbackRate);
-        this.songListener.setPitch(this.settings.pitch);
     }
 
     updateLoop() {
@@ -341,12 +342,18 @@ class App {
                             });
                             if (fs.existsSync(songPath)) {
                                 audio.src = songPath;
-                                audio.addEventListener("loadedmetadata", () => duration.textContent = formatTime(parseInt(audio.duration)));
+                                audio.addEventListener("loadedmetadata", () => {
+                                    duration.textContent = formatTime(parseInt(audio.duration));
+
+                                    const act = (this.elements.currentPlaylist.duration.textContent == "") ? 0 : parseDuration(this.elements.currentPlaylist.duration.textContent);
+                                    this.elements.currentPlaylist.duration.textContent = formatTime(act + parseInt(audio.duration));
+                                });
                             } else li.classList.add("error");
 
                             li.addEventListener("click", () => this.songListener.setCurrentPlaylist(playlist, index, 1));
                         }
                     });
+                    
                 }, (instant == true) ? 0 : 600);
             } else this.error(`ERROR HK-301 => Playlist ID "${id}" not found`);
         }

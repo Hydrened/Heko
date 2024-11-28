@@ -69,6 +69,7 @@
                             <h1 id="current-playlist-title">Titre</h1>
                             <div>
                                 <h4 id="current-playlist-nb-song">0 songs</h4>
+                                <h4 id="current-playlist-duration"></h4>
                                 <button class="plus" id="add-songs-to-current-playlist-button">
                                     <svg class="fill main-color-hover" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M9 17a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 10-2 0v6H3a1 1 0 000 2h6v6z" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
                                 </button>
@@ -108,7 +109,7 @@
                     </div>
                 </article>
                 <article class="other">
-                    <svg tooltip="Playback Rate" id="playback-rate-button" class="fill white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"><path d="M4.788 17.444A.5.5 0 0 1 4 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036zM13 6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036a.5.5 0 0 1-.788-.409V6.965z"></path></svg>
+                    <svg tooltip="Playback Rate" id="playback-rate-button" class="fill white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4.788 17.444A.5.5 0 0 1 4 17.035V6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036zM13 6.965a.5.5 0 0 1 .788-.409l7.133 5.036a.5.5 0 0 1 0 .816l-7.133 5.036a.5.5 0 0 1-.788-.409V6.965z"></path></svg>
                     <svg tooltip="Queue" id="open-queue-button" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M21 12L9 12M21 6L9 6M21 18L9 18M5 12C5 12.5523 4.55228 13 4 13C3.44772 13 3 12.5523 3 12C3 11.4477 3.44772 11 4 11C4.55228 11 5 11.4477 5 12ZM5 6C5 6.55228 4.55228 7 4 7C3.44772 7 3 6.55228 3 6C3 5.44772 3.44772 5 4 5C4.55228 5 5 5.44772 5 6ZM5 18C5 18.5523 4.55228 19 4 19C3.44772 19 3 18.5523 3 18C3 17.4477 3.44772 17 4 17C4.55228 17 5 17.4477 5 18Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: #e8e6e3;"></path></svg>
                     <div class="song-volume">
                         <div>
@@ -118,6 +119,7 @@
                         </div>
                         <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="0">
                     </div>
+                    <svg tooltip="PIP mode" id="pip-mode-button" class="fill white-hover hidden" viewBox="0 0 256 256" fill="#000000" xmlns="http://www.w3.org/2000/svg"><path d="M216,44H40A20.02229,20.02229,0,0,0,20,64V192a20.02229,20.02229,0,0,0,20,20H216a20.02229,20.02229,0,0,0,20-20V64A20.02229,20.02229,0,0,0,216,44ZM44,68H212v48H144a20.02229,20.02229,0,0,0-20,20v52H44ZM148,188V140h64v48Z"></path></svg>
                 </article>
             </footer>
             <div id="success-modal"></div>

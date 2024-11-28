@@ -239,8 +239,4 @@ class SongListener {
         this.audio.playbackRate = speed;
         this.app.settings.playbackRate = speed;
     }
-
-    setPitch(pitch) {
-        this.pitch = pitch;
-    }
 };

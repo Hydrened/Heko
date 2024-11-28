@@ -97,9 +97,9 @@ class Events {
             footer.other.playbackRate.addEventListener("click", () => {
                 setTimeout(() => {
                     const rect = footer.other.playbackRate.getBoundingClientRect();
-                    app.sliderMenus.push(new SliderMenu(rect.x + rect.width / 2, rect.y, app.settings.playbackRate, { min: 0.1, max: 2, step: 0.1 }, (e) => {
+                    app.sliderMenu = new SliderMenu(rect.x + rect.width / 2, rect.y, app.settings.playbackRate, { min: 0.25, max: 2, step: 0.05 }, (e) => {
                         songListener.setSpeed(e.target.value);
-                    }));
+                    });
                 }, 15);
             });
 
@@ -129,11 +129,19 @@ class Events {
                 if (this.muted) app.setVolume(0);
                 else app.setVolume(this.oldVolume);
             });
+
+            footer.other.pipMode.addEventListener("click", () => {
+                ipcRenderer.send("toggle-pip-mode", true);
+            });
         }
 
         document.addEventListener("contextmenu", (e) => {
             e.preventDefault();
             app.contextmenu.close();
+            if (app.sliderMenu != null) {
+                app.sliderMenu.close();
+                app.sliderMenu = null;
+            }
 
             if (e.target.closest(`#${app.elements.aside.playlistsContainer.id} > li.playlist`)) {
                 const playlistContainers = Array.from(app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")).reverse();
@@ -210,10 +218,10 @@ class Events {
             if (e.button == 2) return;
             setTimeout(() => {
                 app.contextmenu.close();
-                app.sliderMenus.forEach((sm) => {
-                    if (e.target == sm.slider || e.target == sm.container) return;
-                    sm.close();
-                });
+                if (app.sliderMenu != null) if (e.target != app.sliderMenu.slider && e.target != app.sliderMenu.container) {
+                    app.sliderMenu.close();
+                    app.sliderMenu = null;
+                }
             }, 10);
         });
 
@@ -226,7 +234,10 @@ class Events {
                 case "Escape":
                     modals.closeCurrentModal();
                     app.contextmenu.close();
-                    app.sliderMenus.forEach((sm) => sm.close());
+                    if (app.sliderMenu != null) {
+                        app.sliderMenu.close();
+                        app.sliderMenu = null;
+                    }
                     break;
                 case "Enter":
                     if (modals.elements.top.createPlaylist.container.classList.contains("open")) app.createPlaylistFromModal();
@@ -254,7 +265,10 @@ class Events {
             } else switch (e.key) {
                 case "Escape":
                     app.contextmenu.close();
-                    app.sliderMenus.forEach((sm) => sm.close());
+                    if (app.sliderMenu != null) {
+                        app.sliderMenu.close();
+                        app.sliderMenu = null;
+                    }
                     break;
 
                 case "F2": modals.openRenamePlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;

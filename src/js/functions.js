@@ -5,18 +5,32 @@ function rand(min, max) { //v 1.0
 }
 
 function formatTime(seconds) {
-    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(seconds / 3600);
+    const minutes = Math.floor((seconds % 3600) / 60);
     const remainingSeconds = seconds % 60;
-    const minutesStr = String(minutes).padStart(1, "0");
+
+    const minutesStr = hours > 0 
+        ? String(minutes).padStart(2, "0")
+        : String(minutes);
+
     const secondsStr = String(remainingSeconds).padStart(2, "0");
-    return `${minutesStr}:${secondsStr}`;
+    return hours > 0 
+        ? `${hours}:${minutesStr}:${secondsStr}`
+        : `${minutes}:${secondsStr}`;
 }
 
 function parseDuration(duration) {
-    if (duration == "-:--") return 0;
-    const [minutes, seconds] = duration.split(":").map(Number);
-    return minutes * 60 + seconds;
-};
+    if (duration === "-:--") return 0;
+    const parts = duration.split(":").map(Number);
+    if (parts.length === 3) {
+        const [hours, minutes, seconds] = parts;
+        return hours * 3600 + minutes * 60 + seconds;
+    } else if (parts.length === 2) {
+        const [minutes, seconds] = parts;
+        return minutes * 60 + seconds;
+    }
+    return 0;
+}
 
 function isChildOf(element, child) {
     while (child) {
