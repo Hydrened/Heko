@@ -113,7 +113,7 @@ class Events {
                 const currentVolumeValue = parseFloat(footer.other.volume.slider.value);
                 const newVolumeValue = (e.deltaY > 0) ? Math.max(currentVolumeValue - 10, 0) : Math.min(currentVolumeValue + 10, 100);
                 app.setVolume(newVolumeValue);
-            })
+            });
             footer.song.slider.addEventListener("input", (e) => {
                 if (songListener.getCurrentSongID() != -1) {
                     const duration = songListener.getCurrentSongDuration();
@@ -128,10 +128,6 @@ class Events {
                 this.muted = !this.muted;
                 if (this.muted) app.setVolume(0);
                 else app.setVolume(this.oldVolume);
-            });
-
-            footer.other.pipMode.addEventListener("click", () => {
-                ipcRenderer.send("toggle-pip-mode", true);
             });
         }
 
@@ -274,6 +270,8 @@ class Events {
                 case "F2": modals.openRenamePlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;
                 case "Delete": modals.openConfirmRemovePlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;
 
+                case "ArrowUp": app.setVolume(Math.min(parseFloat(footer.other.volume.slider.value) + 5, 100)); break;
+                case "ArrowDown": app.setVolume(Math.max(parseFloat(footer.other.volume.slider.value) - 5, 0)); break;
                 case "ArrowLeft":
                     if (!e.ctrlKey) {
                         if (!songListener.isSrcValid()) return;

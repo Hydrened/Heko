@@ -6,7 +6,6 @@ const fetch = require("node-fetch");
 class Application {
     constructor() {
         this.window = this.createWindow();
-        this.pip = null;
 
         this.initMainFolder();
         this.handleEvents();
@@ -25,15 +24,10 @@ class Application {
             this.window.webContents.send("window-update", { x, y, width, height, f });
         });
 
-        this.window.on("close", () => {
-            if (this.pip) this.closePIP();
-        });
-
         ipcMain.on("window-minimize", () => this.window.minimize());
         ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
         ipcMain.on("window-close", () => {
             this.window.close();
-            if (this.pip) this.closePIP();
         });
 
         ipcMain.on("get-main-folder", (e) => {
@@ -54,11 +48,6 @@ class Application {
                 this.window.webContents.send("song-control", data);
             };
             this.window.setThumbarButtons(this.thumbnailButtons);
-        });
-
-        ipcMain.on("toggle-pip-mode", (e, data) => {
-            if (!this.pip) this.openPIP();
-            else this.closePIP();
         });
     }
 
@@ -145,7 +134,7 @@ class Application {
         if (!fs.existsSync(dataFolder)) fs.mkdirSync(dataFolder);
 
         const settingsFile = path.join(dataFolder, "settings.json");
-        const saveData = {
+        const settingsData = {
             volume: 0.5,
             loop: false,
             random: false,
@@ -154,17 +143,18 @@ class Application {
                 y: 0,
                 w: 1280,
                 h: 720,
-                f: false,
+                f: true,
             },
-            playlists: [],
+            playlists: {},
             colors: {
                 main: "rgb(31,114,198)",
             },
             lastSongID: 0,
-            playbackRate: "1",
+            lastPlaylistID: 0,
+            playbackRate: 1,
         };
-        const strSaveData = JSON.stringify(saveData, null, 2);
-        if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSaveData, (err) => {
+        const strSettingsData = JSON.stringify(settingsData, null, 2);
+        if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSettingsData, (err) => {
             if (err) console.error("ERROR HK-202 => Could not write settings.json:", err);
         });
 
@@ -190,43 +180,6 @@ class Application {
         if (!fs.existsSync(statsFile)) fs.writeFile(statsFile, strStatsData, (err) => {
             if (err) console.error("ERROR HK-205 => Could not write stats.json:", err);
         });
-    }
-
-    openPIP() {
-        const { x, y, width, height } = this.window.getBounds();
-        this.pip = new BrowserWindow({
-            x: x + width - 250,
-            y: y + 100,
-            width: 200,
-            height: 200,
-            minWidth: 200,
-            minHeight: 200,
-            maxWidth: 500,
-            maxHeight: 500,
-            frame: false,
-            alwaysOnTop: true,
-            webPreferences: {
-                nodeIntegration: true,
-                contextIsolation: false,
-            },
-        });
-
-        this.pip.loadFile("src/pip.html");
-
-        this.pip.on("resize", () => {
-            const { width, height } = this.pip.getBounds();
-            const max = Math.max(width, height);
-            this.pip.setSize(max, max);
-        });
-
-        this.pip.on("maximize", (e) => {
-            e.preventDefault();
-        });
-    }
-
-    closePIP() {
-        this.pip.close();
-        this.pip = null;
     }
 };
 

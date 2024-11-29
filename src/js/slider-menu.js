@@ -21,6 +21,13 @@ class SliderMenu {
             indicator.textContent = "x" + parseFloat(e.target.value).toFixed(Math.max(String(parameters.step).length - 2, 0));
         });
 
+        this.slider.addEventListener("wheel", (e) => {
+            const currentValue = parseFloat(this.slider.value);
+            const newValue = (e.deltaY > 0) ? Math.max(currentValue - parameters.step, parameters.min) : Math.min(currentValue + parameters.step, parameters.max);
+            this.slider.value = newValue;
+            this.slider.dispatchEvent(new Event("input"));
+        });
+
         this.slider.dispatchEvent(new Event("input"));
         this.slider.addEventListener("input", this.changeEvent);
     }

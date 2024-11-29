@@ -52,7 +52,6 @@ class App {
                             high: document.getElementById("song-high-volume-logo"),
                         },
                     },
-                    pipMode: document.getElementById("pip-mode-button"),
                 },
                 song: {
                     slider: document.getElementById("song-slider"),
@@ -204,7 +203,7 @@ class App {
         
             const childrenContainer = document.createElement("ul");
             childrenContainer.classList.add("children-container");
-            childrenContainer.classList.add("show");
+            if (this.settings.playlists[id]) childrenContainer.classList.add("show");
             childrenContainer.id = `children-container-${id}`;
             li.appendChild(childrenContainer);
         });
@@ -223,6 +222,7 @@ class App {
             } else {
                 arrow = document.createElement("p");
                 arrow.classList.add("arrow");
+                if (!this.settings.playlists[pID]) arrow.classList.add("show");
                 arrow.textContent = ">";
                 playlistContainer.appendChild(arrow);
                 content.textContent = `${nbSubPlaylist} playlist${(nbSubPlaylist < 2) ? "" : "s"}`;
@@ -297,6 +297,7 @@ class App {
                     this.elements.currentPlaylist.container.classList.add("open");
                     this.elements.currentPlaylist.songContainer.innerHTML = "";
                     this.elements.currentPlaylist.filter.value = "";
+                    this.elements.currentPlaylist.duration.textContent = "";
 
                     if (instant == true) setTimeout(() => {
                         this.elements.currentPlaylist.container.style.transition = "";
@@ -404,7 +405,8 @@ class App {
             const playlistsFile = path.join(this.mainFolder, "data", "playlists.json");
             fsp.readFile(playlistsFile, "utf8").then((data) => {
                 const jsonData = JSON.parse(data);
-                const id = (Object.keys(jsonData).length > 0) ? parseInt(Object.keys(jsonData).at(-1)) + 1 : 0;
+                this.settings.lastPlaylistID = parseInt(this.settings.lastPlaylistID) + 1;
+                const id = parseInt(this.settings.lastPlaylistID);
 
                 jsonData[id] = {
                     name: name,
@@ -582,31 +584,26 @@ class App {
                         const songsFile = path.join(self.mainFolder, "data", "songs.json");
                         fsp.readFile(songsFile, "utf8").then((data) => {
                             const jsonData = JSON.parse(data);
+                            self.settings.lastSongID++;
+                            const id = self.settings.lastSongID;
 
-                            const settingsFile = path.join(self.mainFolder, "data", "settings.json");
-                            fsp.readFile(settingsFile, "utf8").then((data2) => {
-                                const jsonData2 = JSON.parse(data2);
-                                const id = parseInt(jsonData2.lastSongID) + 1;
+                            jsonData[id] = {
+                                name: name,
+                                artist: artist,
+                                src: file.name,
+                            };
 
-                                self.settings.lastSongID++;
-                                jsonData[id] = {
-                                    name: name,
-                                    artist: artist,
-                                    src: file.name,
-                                };
+                            fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
+                                modal.message.textContent = `Song "${name}" by "${artist}" successfuly added!`;
+                                modal.message.classList.remove("error");
+                                modal.message.classList.add("success");
 
-                                fsp.writeFile(songsFile, JSON.stringify(jsonData, null, 2), "utf8").then(() => {
-                                    modal.message.textContent = `Song "${name}" by "${artist}" successfuly added!`;
-                                    modal.message.classList.remove("error");
-                                    modal.message.classList.add("success");
-
-                                    setTimeout(() => {
-                                        self.modals.closeAddSongToAppModal();
-                                        setTimeout(() => self.refresh(getPlaylistIdByName(self.playlists, self.currentPlaylist.name)), 600);
-                                    }, 1500);
-                                }).catch((writeErr1) => self.error("ERROR HK-213 => Could not write songs.json:" + writeErr1));
-                            }).catch((readErr2) => self.error("ERROR HK-117 => Could not read settings.json:" + readErr2));
-                        }).catch((readErr1) => self.error("ERROR HK-111 => Could not read songs.json:" + readErr1));
+                                setTimeout(() => {
+                                    self.modals.closeAddSongToAppModal();
+                                    setTimeout(() => self.refresh(getPlaylistIdByName(self.playlists, self.currentPlaylist.name)), 600);
+                                }, 1500);
+                            }).catch((writeErr) => self.error("ERROR HK-213 => Could not write songs.json:" + writeErr));
+                        }).catch((readErr) => self.error("ERROR HK-111 => Could not read songs.json:" + readErr));
                     });
                 };
                 reader.readAsArrayBuffer(file);

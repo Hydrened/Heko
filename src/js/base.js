@@ -14,8 +14,14 @@ window.addEventListener("load", () => {
             try {
                 const settingsFile = path.join(app.mainFolder, "data", "settings.json");
                 const settingsData = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
+
                 if (app.settings.window.x < 0) app.settings.window.x = 0;
                 if (app.settings.window.y < 0) app.settings.window.y = 0;
+
+                [...app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")].forEach((li) => {
+                    app.settings.playlists[li.getAttribute("playlist-id")] = li.querySelector("ul").classList.contains("show");
+                });
+
                 const strSettingsData = JSON.stringify(app.settings, null, 2);
                 fs.writeFileSync(settingsFile, strSettingsData, "utf8");
         

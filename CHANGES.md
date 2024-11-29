@@ -1,3 +1,12 @@
+## HEKO-1.2.5
+#### ADDED
+- arrow for volume control
+- scroll in playback rate menu
+- playlist open / close state saving
+#### FIXED
+- playlist duration not reseting when opening a playlist
+- unique playlist id
+
 ## HEKO-1.2.4
 #### ADDED
 - playlist duration
