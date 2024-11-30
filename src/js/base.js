@@ -19,7 +19,9 @@ window.addEventListener("load", () => {
                 if (app.settings.window.y < 0) app.settings.window.y = 0;
 
                 [...app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")].forEach((li) => {
-                    app.settings.playlists[li.getAttribute("playlist-id")] = li.querySelector("ul").classList.contains("show");
+                    const id = parseInt(li.getAttribute("playlist-id"));
+                    if (!isPlaylistParent(app.playlists, id)) app.settings.playlists[id] = true;
+                    else app.settings.playlists[id] = li.querySelector("ul").classList.contains("show");
                 });
 
                 const strSettingsData = JSON.stringify(app.settings, null, 2);

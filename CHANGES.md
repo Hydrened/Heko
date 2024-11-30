@@ -1,3 +1,7 @@
+## HEKO-1.2.6
+#### FIXED
+- playlist open / close state saving
+
 ## HEKO-1.2.5
 #### ADDED
 - arrow for volume control
