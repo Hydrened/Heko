@@ -6,6 +6,7 @@ const fetch = require("node-fetch");
 class Application {
     constructor() {
         this.window = this.createWindow();
+        setTimeout(() => this.checkVersion(), 1000);
 
         this.initMainFolder();
         this.handleEvents();
@@ -111,7 +112,6 @@ class Application {
                 const { x, y, width, height } = window.getBounds();
                 const f = window.isMaximized();
                 window.webContents.send("window-update", { x, y, width, height, f });
-                checkVersion();
             }, 100);
         });
 
@@ -181,39 +181,39 @@ class Application {
             if (err) console.error("ERROR HK-205 => Could not write stats.json:", err);
         });
     }
-};
 
-async function checkVersion() {
-    const url = "https://raw.githubusercontent.com/Hydrened/Heko/main/CHANGES.md";
-    try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error(`HTTP Error: statut : ${response.status}`);
-        const text = await response.text();
-
-        const latestVersion = text.slice(text.indexOf("## HEKO-") + 8, text.indexOf("####") - 1);
-        const currentVersion = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8")).version;
-        if (latestVersion == currentVersion || currentVersion.includes("b")) return;
-        
-        const res = dialog.showMessageBoxSync({
-            type: "info",
-            buttons: ["Update", "Ignore"],
-            defaultId: 0,
-            cancelId: 1,
-            title: "Heko",
-            message: "A new version is available",
-        });
-
-        if (res == 0) shell.openExternal(`https://raw.githubusercontent.com/Hydrened/Heko/main/dist/Heko%20Setup%20${latestVersion}.exe`);
-    } catch (error) {
-        dialog.showMessageBoxSync({
-            type: "error",
-            buttons: ["OK"],
-            defaultId: 0,
-            title: "Heko",
-            message: "ERROR HK-319 => Could not read CHANGES.md: " + error,
-        });
+    async checkVersion() {
+        const url = "https://raw.githubusercontent.com/Hydrened/Heko/main/CHANGES.md";
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`HTTP Error: statut : ${response.status}`);
+            const text = await response.text();
+    
+            const latestVersion = text.slice(text.indexOf("## HEKO-") + 8, text.indexOf("####") - 1);
+            const currentVersion = JSON.parse(fs.readFileSync(path.join(__dirname, "package.json"), "utf8")).version;
+            if (latestVersion == currentVersion || currentVersion.includes("b")) return;
+            
+            const res = dialog.showMessageBoxSync({
+                type: "info",
+                buttons: ["Update", "Ignore"],
+                defaultId: 0,
+                cancelId: 1,
+                title: "Heko",
+                message: "A new version is available",
+            });
+    
+            if (res == 0) shell.openExternal(`https://raw.githubusercontent.com/Hydrened/Heko/main/dist/Heko%20Setup%20${latestVersion}.exe`);
+        } catch (error) {
+            dialog.showMessageBoxSync({
+                type: "error",
+                buttons: ["OK"],
+                defaultId: 0,
+                title: "Heko",
+                message: "ERROR HK-319 => Could not read CHANGES.md: " + error,
+            });
+        }
     }
-}
+};
 
 app.whenReady().then(() => {
     const applciation = new Application();

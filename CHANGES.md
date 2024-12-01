@@ -1,3 +1,9 @@
+## HEKO-1.2.7
+#### ADDED
+- save sort
+#### FIXED
+- only check for new version when opening app
+
 ## HEKO-1.2.6
 #### FIXED
 - playlist open / close state saving

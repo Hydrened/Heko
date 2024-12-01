@@ -93,6 +93,10 @@ class App {
 
             this.initFromSettings();
             this.updateLoop();
+            
+            setTimeout(() => {
+                if (params.get("s")) this.events.sortSongBy(params.get("s"));
+            }, 0);
         });
     }
 
@@ -389,6 +393,7 @@ class App {
         const parameters = [{ name: "r", data: true }];
         if (pID != null) parameters.push({ name: "p", data: pID });
         if (songListenerData.playlist) parameters.push({ name: "d", data: jsonSongListenerData });
+        parameters.push({ name: "s", data: this.events.songOrder });
 
         const url = `index.html${(parameters.length > 0) ? "?" : ""}${parameters.map((p) => `${p.name}=${p.data}&`).join("").slice(0, -1)}`;
         window.location.href = url;
