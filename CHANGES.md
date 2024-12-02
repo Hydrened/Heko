@@ -1,3 +1,7 @@
+## HEKO-1.2.8
+#### ADDED
+- save filter
+
 ## HEKO-1.2.7
 #### ADDED
 - save sort

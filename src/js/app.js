@@ -95,7 +95,11 @@ class App {
             this.updateLoop();
             
             setTimeout(() => {
-                if (params.get("s")) this.events.sortSongBy(params.get("s"));
+                if (params.get("sort")) this.events.sortSongBy(params.get("sort"));
+                if (params.get("filter")) {
+                    this.elements.currentPlaylist.filter.value = params.get("filter");
+                    this.elements.currentPlaylist.filter.dispatchEvent(new Event("input"));
+                }
             }, 0);
         });
     }
@@ -393,7 +397,8 @@ class App {
         const parameters = [{ name: "r", data: true }];
         if (pID != null) parameters.push({ name: "p", data: pID });
         if (songListenerData.playlist) parameters.push({ name: "d", data: jsonSongListenerData });
-        parameters.push({ name: "s", data: this.events.songOrder });
+        parameters.push({ name: "sort", data: this.events.songOrder });
+        parameters.push({ name: "filter", data: this.elements.currentPlaylist.filter.value });
 
         const url = `index.html${(parameters.length > 0) ? "?" : ""}${parameters.map((p) => `${p.name}=${p.data}&`).join("").slice(0, -1)}`;
         window.location.href = url;
