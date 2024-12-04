@@ -1,3 +1,8 @@
+## HEKO-1.2.9
+#### FIXED
+- first song is random when random
+- playing same song in a row after a refresh
+
 ## HEKO-1.2.8
 #### ADDED
 - save filter

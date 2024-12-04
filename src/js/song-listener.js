@@ -50,7 +50,7 @@ class SongListener {
             this.playNextSong(1);
             this.setSongCurrentTime(d.currentTime);
             this.queue.pop();
-            
+
             const self = this;
             function autoPause() {
                 setTimeout(() => {
@@ -172,20 +172,20 @@ class SongListener {
         if (this.isSrcValid()) {
             if (this.isPaused()) this.audio.play();
             else this.audio.pause();    
-        } else this.setCurrentPlaylist(this.app.currentPlaylist, 0, 1);
+        } else this.setCurrentPlaylist(this.app.currentPlaylist, (this.app.settings.random) ? this.app.currentPlaylist.songs[rand(0, this.app.currentPlaylist.songs.length - 1)]: 0, 1);
     }
 
     nextButton() {
-        if (this.currentPlaylist) this.playNextSong(1);
-        else this.setCurrentPlaylist(this.app.currentPlaylist, 0, 1);
+        if (this.isSrcValid()) this.playNextSong(1);
+        else this.setCurrentPlaylist(this.app.currentPlaylist, (this.app.settings.random) ? this.app.currentPlaylist.songs[rand(0, this.app.currentPlaylist.songs.length - 1)]: 0, 1);
     }
 
     previousButton() {
-        if (this.currentPlaylist) {
+        if (this.isSrcValid()) {
             if (this.getCurrentSongCurrentTime() > 5) this.setSongCurrentTime(0);
             else this.playNextSong(-1);
         }
-        else this.setCurrentPlaylist(this.app.currentPlaylist, 0, -1);
+        else this.setCurrentPlaylist(this.app.currentPlaylist, (this.app.settings.random) ? this.app.currentPlaylist.songs[rand(0, this.app.currentPlaylist.songs.length - 1)]: 0, -1);
     }
 
 

@@ -78,7 +78,6 @@ class App {
             this.events = new Events(this);
             this.tooltip = new Tooltip();
 
-            this.songListener.initQueues();
             this.initPlaylists();
 
             if (!playlistToOpen) {
@@ -93,6 +92,7 @@ class App {
 
             this.initFromSettings();
             this.updateLoop();
+            this.songListener.initQueues();
             
             setTimeout(() => {
                 if (params.get("sort")) this.events.sortSongBy(params.get("sort"));
