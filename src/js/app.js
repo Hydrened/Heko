@@ -293,6 +293,8 @@ class App {
 
         if (playlist != this.currentPlaylist) {
             if (playlist) {
+                this.events.sortSongBy("id");
+
                 this.elements.currentPlaylist.container.classList.remove("open");
                 this.currentPlaylist = playlist;
                 setTimeout(() => {

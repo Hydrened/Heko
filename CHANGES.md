@@ -1,3 +1,7 @@
+## HEKO-1.2.10
+#### FIXED
+- reseting sort when opening playlist
+
 ## HEKO-1.2.9
 #### FIXED
 - first song is random when random
