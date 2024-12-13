@@ -1,3 +1,7 @@
+## HEKO-1.2.12
+#### ADDED
+- window title is equal to playing song's name
+
 ## HEKO-1.2.11
 #### ADDED
 - escape shortcut to reset song search filter

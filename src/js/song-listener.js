@@ -136,6 +136,7 @@ class SongListener {
 
         this.audio.playbackRate = this.app.settings.playbackRate;
         this.audio.play();
+        document.querySelector("title").textContent = song.name;
         
         this.app.elements.footer.buttons.pause.classList.remove("hidden");
         this.app.elements.footer.buttons.play.classList.add("hidden");
