@@ -265,6 +265,7 @@ class Events {
                         app.sliderMenu.close();
                         app.sliderMenu = null;
                     }
+                    currentPlaylist.filter.value = "";
                     break;
 
                 case "F2": modals.openRenamePlaylistModal(getPlaylistIdByName(app.playlists, app.currentPlaylist.name)); break;

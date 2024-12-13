@@ -1,3 +1,7 @@
+## HEKO-1.2.11
+#### ADDED
+- escape shortcut to reset song search filter
+
 ## HEKO-1.2.10
 #### FIXED
 - reseting sort when opening playlist
