@@ -15,9 +15,6 @@ window.addEventListener("load", () => {
                 const settingsFile = path.join(app.mainFolder, "data", "settings.json");
                 const settingsData = JSON.parse(fs.readFileSync(settingsFile, "utf8"));
 
-                if (app.settings.window.x < 0) app.settings.window.x = 0;
-                if (app.settings.window.y < 0) app.settings.window.y = 0;
-
                 [...app.elements.aside.playlistsContainer.querySelectorAll("li.playlist")].forEach((li) => {
                     const id = parseInt(li.getAttribute("playlist-id"));
                     if (!isPlaylistParent(app.playlists, id)) app.settings.playlists[id] = true;

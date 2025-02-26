@@ -1,3 +1,7 @@
+## HEKO-1.2.13
+#### FIXED
+- window negative position
+
 ## HEKO-1.2.12
 #### ADDED
 - window title is equal to playing song's name
