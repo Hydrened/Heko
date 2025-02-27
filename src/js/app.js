@@ -322,10 +322,12 @@ class App {
                     if (playlist.songs.length < 2) this.elements.currentPlaylist.nbSong.textContent = this.elements.currentPlaylist.nbSong.textContent.slice(0, -1);
 
                     playlist.songs.forEach((sID, index) => {
+
                         const song = this.songs[sID];
-                        const songPath = path.resolve(this.mainFolder, "songs", song.src);
 
                         if (song) {
+                            const songPath = path.resolve(this.mainFolder, "songs", song.src);
+
                             const li = document.createElement("li");
                             li.setAttribute("song-id", sID);
                             this.elements.currentPlaylist.songContainer.appendChild(li);
@@ -347,21 +349,23 @@ class App {
                             duration.textContent = "-:--";
                             li.appendChild(duration);
 
-                            audio.addEventListener("error", (e) => {
-                                if (!e.target.error) return;
-                                li.classList.add("error");
-                            });
                             if (fs.existsSync(songPath)) {
-                                audio.src = songPath;
+                                const audio = new Audio(songPath);
+
+                                audio.addEventListener("error", (e) => {
+                                    if (!e.target.error) return;
+                                    li.classList.add("error");
+                                });
+
                                 audio.addEventListener("loadedmetadata", () => {
                                     duration.textContent = formatTime(parseInt(audio.duration));
-
+    
                                     const act = (this.elements.currentPlaylist.duration.textContent == "") ? 0 : parseDuration(this.elements.currentPlaylist.duration.textContent);
                                     this.elements.currentPlaylist.duration.textContent = formatTime(act + parseInt(audio.duration));
                                 });
-                            } else li.classList.add("error");
+                                li.addEventListener("click", () => this.songListener.setCurrentPlaylist(playlist, index, 1));
 
-                            li.addEventListener("click", () => this.songListener.setCurrentPlaylist(playlist, index, 1));
+                            } else li.classList.add("error");
                         }
                     });
                     

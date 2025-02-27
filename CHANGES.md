@@ -1,3 +1,7 @@
+## HEKO-1.2.14
+#### FIXED
+- optimized song duration loading time when opening a playlist
+
 ## HEKO-1.2.13
 #### FIXED
 - window negative position
