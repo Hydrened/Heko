@@ -13,43 +13,43 @@ class Application {
     }
 
     handleEvents() {
-        this.window.on("resize", () => {
-            const { x, y, width, height } = this.window.getBounds();
-            const f = this.window.isMaximized();
-            this.window.webContents.send("window-update", { x, y, width, height, f });
+        ipcMain.handle("get-main-folder", async (e) => {
+            return path.join(app.getPath("documents"), "Heko").replaceAll("\\", "/");
         });
 
-        this.window.on("move", () => {
-            const { x, y, width, height } = this.window.getBounds();
-            const f = this.window.isMaximized();
-            this.window.webContents.send("window-update", { x, y, width, height, f });
-        });
+        // this.window.on("resize", () => {
+        //     const { x, y, width, height } = this.window.getBounds();
+        //     const f = this.window.isMaximized();
+        //     this.window.webContents.send("window-update", { x, y, width, height, f });
+        // });
 
-        ipcMain.on("window-minimize", () => this.window.minimize());
-        ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
-        ipcMain.on("window-close", () => {
-            this.window.close();
-        });
+        // this.window.on("move", () => {
+        //     const { x, y, width, height } = this.window.getBounds();
+        //     const f = this.window.isMaximized();
+        //     this.window.webContents.send("window-update", { x, y, width, height, f });
+        // });
 
-        ipcMain.on("get-main-folder", (e) => {
-            e.reply("send-main-folder", path.join(app.getPath("documents"), "Heko"));
-        });
+        // ipcMain.on("window-minimize", () => this.window.minimize());
+        // ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
+        // ipcMain.on("window-close", () => {
+        //     this.window.close();
+        // });
 
-        ipcMain.on("save-song", (e, { fileName, content }) => {
-            fs.writeFile(path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName), Buffer.from(content), (err) => {
-                if (err) console.error("ERROR HK-201 => Writing file in song folder:", err);
-                e.reply("song-saved", (err) ? false : true);
-            });
-        });
+        // ipcMain.on("save-song", (e, { fileName, content }) => {
+        //     fs.writeFile(path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName), Buffer.from(content), (err) => {
+        //         if (err) console.error("ERROR HK-2xx => Writing file in song folder:", err);
+        //         e.reply("song-saved", (err) ? false : true);
+        //     });
+        // });
 
-        ipcMain.on("set-thumbnail-play-button", (e, data) => {
-            this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
-            this.thumbnailButtons[1].icon = path.join(app.getAppPath(), "assets", "img", `${data}.png`),
-            this.thumbnailButtons[1].click = () => {
-                this.window.webContents.send("song-control", data);
-            };
-            this.window.setThumbarButtons(this.thumbnailButtons);
-        });
+        // ipcMain.on("set-thumbnail-play-button", (e, data) => {
+        //     this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
+        //     this.thumbnailButtons[1].icon = path.join(app.getAppPath(), "assets", "img", `${data}.png`),
+        //     this.thumbnailButtons[1].click = () => {
+        //         this.window.webContents.send("song-control", data);
+        //     };
+        //     this.window.setThumbarButtons(this.thumbnailButtons);
+        // });
     }
 
     createWindow() {
@@ -155,7 +155,7 @@ class Application {
         };
         const strSettingsData = JSON.stringify(settingsData, null, 2);
         if (!fs.existsSync(settingsFile)) fs.writeFile(settingsFile, strSettingsData, (err) => {
-            if (err) console.error("ERROR HK-202 => Could not write settings.json:", err);
+            if (err) console.error("ERROR HK-201 => Could not write settings.json:", err);
         });
 
         const playlistsFile = path.join(dataFolder, "playlists.json");
@@ -164,21 +164,21 @@ class Application {
         };
         const strPlaylistsData = JSON.stringify(playlistsData, null, 2);
         if (!fs.existsSync(playlistsFile)) fs.writeFile(playlistsFile, strPlaylistsData, (err) => {
-            if (err) console.error("ERROR HK-203 => Could not write playlists.json:", err);
+            if (err) console.error("ERROR HK-202 => Could not write playlists.json:", err);
         });
 
         const songsFile = path.join(dataFolder, "songs.json");
         const songsData = {};
         const strSongstsData = JSON.stringify(songsData, null, 2);
         if (!fs.existsSync(songsFile)) fs.writeFile(songsFile, strSongstsData, (err) => {
-            if (err) console.error("ERROR HK-204 => Could not write songs.json:", err);
+            if (err) console.error("ERROR HK-203 => Could not write songs.json:", err);
         });
 
         const statsFile = path.join(dataFolder, "stats.json");
         const statsData = {};
         const strStatsData = JSON.stringify(statsData, null, 2);
         if (!fs.existsSync(statsFile)) fs.writeFile(statsFile, strStatsData, (err) => {
-            if (err) console.error("ERROR HK-205 => Could not write stats.json:", err);
+            if (err) console.error("ERROR HK-204 => Could not write stats.json:", err);
         });
     }
 
@@ -209,7 +209,7 @@ class Application {
                 buttons: ["OK"],
                 defaultId: 0,
                 title: "Heko",
-                message: "ERROR HK-319 => Could not read CHANGES.md: " + error,
+                message: "ERROR HK-301 => Could not read CHANGES.md: " + error,
             });
         }
     }

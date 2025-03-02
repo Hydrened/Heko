@@ -19,7 +19,7 @@ class Frame {
             this.elements.title.addEventListener("click", () => {
                 shell.openExternal("https://github.com/Hydrened/Heko/blob/main/CHANGES.md");
             });
-        }).catch((readErr) => console.error("ERROR HK-115 => Could not read package.json:" + readErr));
+        }).catch((readErr) => console.error("ERROR HK-101 => Could not read package.json:" + readErr));
     }
 
     handleEvents() {

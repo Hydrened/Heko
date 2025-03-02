@@ -126,7 +126,7 @@ div.top-modal-container > div.modal button.confirm {
 div.top-modal-container > div.modal button.error {
     background-color: var(--bg-col-error);
 }
-div.top-modal-container > div.modal p {
+div.top-modal-container > div.modal p.message {
     font-size: 1.5rem;
 }
 div.top-modal-container > div.modal p.success {

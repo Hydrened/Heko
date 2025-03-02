@@ -1,3 +1,11 @@
+## HEKO-2.0.0
+#### REMAKE CODE FROM SCRATCH
+#### ADDED
+- playlists
+- create playlist
+- remove playlist
+- rename playlist
+
 ## HEKO-1.2.14
 #### FIXED
 - optimized song duration loading time when opening a playlist
