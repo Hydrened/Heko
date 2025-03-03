@@ -27,6 +27,10 @@ ul.contextmenu > li:hover,
 ul.contextmenu ul > li:hover {
     background-color: var(--bg-col-4);
 }
+ul.contextmenu li.disabled {
+    pointer-events: none;
+    opacity: 0.35;
+}
 ul.contextmenu li > p.shortcut {
     color: var(--font-col-2);
 }

@@ -72,6 +72,7 @@ div.top-modal-container > div.modal input[type="file"] {
     opacity: 0;
     background-color: transparent;
     z-index: -10;
+    border-radius: 0px;
 }
 div.top-modal-container > div.modal input[type="file"].active {
     display: block;
@@ -128,6 +129,9 @@ div.top-modal-container > div.modal button.error {
 }
 div.top-modal-container > div.modal p.message {
     font-size: 1.5rem;
+    white-space: pre-line;
+    text-align: center;
+    line-height: 2.3rem;
 }
 div.top-modal-container > div.modal p.success {
     color: var(--font-col-success);

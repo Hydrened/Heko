@@ -37,22 +37,48 @@ class Contextmenu {
         this.container.style.left = `${e.x}px`;
         document.body.appendChild(this.container);
 
-        menus.forEach((line, index) => {
-            const li = document.createElement("li");
-            li.textContent = line.name;
-            this.container.appendChild(li);
+        function buildMenu(container, rows) {
+            rows.forEach((row, index) => {
+                const li = document.createElement("li");
+                li.textContent = row.name;
+                container.appendChild(li);
+    
+                if (row.children.length > 0) {
+                    const arrow = document.createElement("p");
+                    arrow.textContent = ">";
+                    arrow.classList.add("arrow");
+                    li.appendChild(arrow);
+    
+                    li.addEventListener("mouseenter", () => {
+                        const ulc = document.createElement("ul");
+                        ulc.classList.add("submenu");
+                        li.appendChild(ulc);
+            
+                        buildMenu(ulc, row.children);
+            
+                        li.addEventListener("mouseenter", () => ulc.style.display = "block");
+                        li.addEventListener("mouseleave", () => ulc.style.display = "none");
+                    });
+    
+                    li.addEventListener("mouseleave", () => {
+                        const ul = li.querySelector("ul");
+                        ul.remove();
+                    });
+    
+                } else if (row.call == null) li.classList.add("disabled");
+                
+                if (row.shortcut != null) {
+                    const shortcut = document.createElement("p");
+                    shortcut.textContent = row.shortcut;
+                    shortcut.classList.add("shortcut");
+                    li.appendChild(shortcut);
+                }
+    
+                if (row.call != null) li.addEventListener("click", () => row.call());
+            });
+        }
 
-            if (line.children.length > 0) {
-
-            } else if (line.shortcut != null) {
-                const shortcut = document.createElement("p");
-                shortcut.textContent = line.shortcut;
-                shortcut.classList.add("shortcut");
-                li.appendChild(shortcut);
-            }
-
-            if (line.call != null) li.addEventListener("click", () => line.call());
-        });
+        buildMenu(this.container, menus);
     }
 
     close() {

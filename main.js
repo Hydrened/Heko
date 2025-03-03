@@ -14,7 +14,7 @@ class Application {
 
     handleEvents() {
         ipcMain.handle("get-main-folder", async (e) => {
-            return path.join(app.getPath("documents"), "Heko").replaceAll("\\", "/");
+            return path.join(app.getPath("documents"), "Heko.test").replaceAll("\\", "/");
         });
 
         // this.window.on("resize", () => {
@@ -121,7 +121,7 @@ class Application {
     initMainFolder() {
         const documents = app.getPath("documents");
 
-        const mainFolder = path.join(documents, "Heko");
+        const mainFolder = path.join(documents, "Heko.test");
         if (!fs.existsSync(mainFolder)) fs.mkdirSync(mainFolder);
         
         const songsFolder = path.join(mainFolder, "songs");

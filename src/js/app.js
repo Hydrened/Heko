@@ -176,26 +176,73 @@ class App {
     }
 
     initEvents() {
+        ////// DEFAULT
         window.addEventListener("beforeunload", () => this.deconstructor());
 
+        document.addEventListener("keydown", (e) => {
+            const curr = this.currentPlaylist;
+            const currID = (curr) ? curr.data.id : -1;
+
+            if (!this.modals.isAModalOpened()) switch (e.key) {
+                case "d": if (!e.altKey && e.ctrlKey) if (curr) this.operations.duplicatePlaylist(currID); break;
+                case "n": if (e.altKey && e.ctrlKey) this.modals.open("create-playlist", null); break;
+                case "F2": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("rename-playlist", { pID: currID }); break;
+                case "Delete": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("confirm-remove-playlist", { pID: currID }); break;
+                default: break;
+            }
+        });
+
+
+
+        ////// ASIDE
         const aside = this.elements.aside;
 
         aside.createPlaylist.addEventListener("click", () => this.modals.open("create-playlist", null));
 
         [...aside.playlistsContainer.querySelectorAll("li.playlist")].forEach((li) => {
             const container = li.querySelector("div.container");
-            const pID = li.getAttribute("playlist-id");
+            const pID = parseInt(li.getAttribute("playlist-id"));
+            const thisP = this.data.playlists[pID];
 
             container.addEventListener("contextmenu", (e) => {
+                const removeSelf = this.playlists.filter((p) => p.data.id != pID);
+                const removeChildren = removeSelf.filter((p) => !this.isPlaylistChildOf(pID, p.data.id));
+                const removeParents = removeChildren.filter((p) => !this.isPlaylistChildOf(p.data.id, pID));
+
+                const possibleParents = removeParents.map((p) => {
+                    return { name: p.data.name, call: () => this.operations.movePlaylist(pID, p.data.id), children: [], shortcut: null };
+                });
+                if (thisP.parent) possibleParents.unshift({ name: "Root", call: () => this.operations.movePlaylist(pID, null), children: [], shortcut: null });
+
                 const menus = [
                     { name: "Rename playlist", call: () => this.modals.open("rename-playlist", { pID: pID }), children: [], shortcut: "F2" },
                     { name: "Remove playlist", call: () => this.modals.open("confirm-remove-playlist", { pID: pID }), children: [], shortcut: "Suppr" },
-                    // { name: "Duplicate playlist", call: null, children: [], shortcut: "Ctrl+D" },
-                    // { name: "Move to", call: null, children: [], shortcut: null },
+                    { name: "Duplicate playlist", call: () => this.operations.duplicatePlaylist(pID), children: [], shortcut: "Ctrl+D" },
+                    { name: "Move to", call: null, children: possibleParents, shortcut: null },
                 ];
 
                 this.contextmenu.open(e, container, menus);
             });
+        });
+
+        aside.playlistsContainer.addEventListener("contextmenu", (e) => {
+            if (e.target.id != "playlists-container") return;
+            const menus = [
+                { name: "Create playlist", call: () => this.modals.open("create-playlist", null), children: [], shortcut: "Ctrl+Alt+N" },
+            ];
+
+            this.contextmenu.open(e, null, menus);
+        });
+
+        aside.manageSongsButton.addEventListener("click", (e) => {
+            setTimeout(() => {
+                const menus = [
+                    { name: "Add song", call: () => this.modals.open("add-song-to-app", null), children: [], shortcut: "" },
+                    // { name: "Remove song", call: () => this.modals.open("", null), children: [], shortcut: "" },
+                ];
+                const rect = document.querySelector("aside > footer").getBoundingClientRect();
+                this.contextmenu.open({ x: rect.x + rect.width, y: rect.y }, document.body, menus);
+            }, 0);
         });
     }
 
@@ -260,5 +307,18 @@ class App {
     getPlaylistByName(name) {
         const res = this.playlists.filter((p) => p.data.name == name);
         return (res.length != 1) ? null : res[0];
+    }
+
+    isPlaylistChildOf(pID, pIDparent) {
+        let curP = this.getPlaylistByID(pID);
+
+        let c = 0;
+        while (curP && curP.data.parent != null && c < 1000) {
+            if (curP.data.parent == pIDparent) return true;
+            curP = this.getPlaylistByID(curP.data.parent);
+            c++;
+        }
+
+        return false;
     }
 };

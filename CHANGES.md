@@ -1,3 +1,16 @@
+## HEKO-2.0.1
+#### ADDED
+- duplicate playlist
+- move playlist
+- contextmenu recusrsive child system
+- contextmenu shortcuts
+- add song to app
+#### FIXED
+- modal message not centered
+- modal message on one line
+- errors in reading & writing json file not showing (console)
+- success message showing when reading or writing errors
+
 ## HEKO-2.0.0
 #### REMAKE CODE FROM SCRATCH
 #### ADDED
@@ -5,6 +18,7 @@
 - create playlist
 - remove playlist
 - rename playlist
+- contextmenu
 
 ## HEKO-1.2.14
 #### FIXED
