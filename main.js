@@ -17,30 +17,23 @@ class Application {
             return path.join(app.getPath("documents"), "Heko.test").replaceAll("\\", "/");
         });
 
-        // this.window.on("resize", () => {
-        //     const { x, y, width, height } = this.window.getBounds();
-        //     const f = this.window.isMaximized();
-        //     this.window.webContents.send("window-update", { x, y, width, height, f });
-        // });
+        this.window.on("resize", () => {
+            const { x, y, width, height } = this.window.getBounds();
+            const f = this.window.isMaximized();
+            this.window.webContents.send("window-update", { x, y, width, height, f });
+        });
 
-        // this.window.on("move", () => {
-        //     const { x, y, width, height } = this.window.getBounds();
-        //     const f = this.window.isMaximized();
-        //     this.window.webContents.send("window-update", { x, y, width, height, f });
-        // });
+        this.window.on("move", () => {
+            const { x, y, width, height } = this.window.getBounds();
+            const f = this.window.isMaximized();
+            this.window.webContents.send("window-update", { x, y, width, height, f });
+        });
 
-        // ipcMain.on("window-minimize", () => this.window.minimize());
-        // ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
-        // ipcMain.on("window-close", () => {
-        //     this.window.close();
-        // });
-
-        // ipcMain.on("save-song", (e, { fileName, content }) => {
-        //     fs.writeFile(path.join(path.join(app.getPath("documents"), "Heko"), "songs", fileName), Buffer.from(content), (err) => {
-        //         if (err) console.error("ERROR HK-2xx => Writing file in song folder:", err);
-        //         e.reply("song-saved", (err) ? false : true);
-        //     });
-        // });
+        ipcMain.on("window-minimize", () => this.window.minimize());
+        ipcMain.on("window-maximize", () => (this.window.isMaximized()) ? this.window.unmaximize() : this.window.maximize());
+        ipcMain.on("window-close", () => {
+            this.window.close();
+        });
 
         // ipcMain.on("set-thumbnail-play-button", (e, data) => {
         //     this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
@@ -53,7 +46,7 @@ class Application {
     }
 
     createWindow() {
-        const settingsFile = path.join(app.getPath("documents"), "Heko", "data", "settings.json");
+        const settingsFile = path.join(app.getPath("documents"), "Heko.test", "data", "settings.json");
         const jsonData = (fs.existsSync(settingsFile)) ? JSON.parse(fs.readFileSync(settingsFile, "utf8")) : null;
 
         const minW = 950;

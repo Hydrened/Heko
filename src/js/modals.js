@@ -18,6 +18,8 @@ class Modals {
                 case "confirm-remove-playlist": m.confirmRemovePlaylist(); break;
                 case "rename-playlist": m.confirmRenamePlaylist(); break;
                 case "add-song-to-app": m.confirmAddSongToApp(); break;
+                case "remove-songs-from-app": m.confirmRemoveSongsFromApp(); break;
+                case "add-songs-to-playlist": m.confirmAddSongsToPlaylis(); break;
                 default: break;
             }
         }
@@ -90,6 +92,16 @@ class Modals {
             }
             dragZone.addEventListener("drop", () => dragZone.dispatchEvent(new Event("change")));
         });
+
+        // REMOVE SONG FROM APP
+        const removeSongFromAppSearchInput = document.getElementById("remove-songs-from-app-input");
+        removeSongFromAppSearchInput.addEventListener("input", (e) => {
+            [...this.getCurrentModal().querySelectorAll("li[song-id]")].forEach((li) => {
+                const song = this.app.data.songs[parseInt(li.getAttribute("song-id"))];
+                li.classList.remove("hidden");
+                if (![song.name, song.artist].some((v) => v.includes(e.target.value))) li.classList.add("hidden");
+            });
+        });
     }
 
     // EVENTS
@@ -104,6 +116,8 @@ class Modals {
             case "confirm-remove-playlist": this.initConfirmRemovePlaylist(data); break;
             case "rename-playlist": this.initRenamePlaylist(data); break;
             case "add-song-to-app": break;
+            case "remove-songs-from-app": this.initRemoveSongsFromApp(data); break;
+            case "add-songs-to-playlist": this.initAddSongsToPlaylist(data); break;
             default: break;
         }
 
@@ -170,6 +184,59 @@ class Modals {
         document.getElementById("rename-playlist-input").value = playlist.name;
     }
 
+    initRemoveSongsFromApp(data) {
+        const songContainer = document.getElementById("remove-songs-from-app-song-container");
+
+        songContainer.innerHTML = "";
+
+        for (const sID in data.songs) {
+            const song = data.songs[sID];
+
+            const li = document.createElement("li");
+            li.setAttribute("song-id", sID);
+            songContainer.appendChild(li);
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            li.appendChild(checkbox);
+
+            const p = document.createElement("p");
+            p.textContent = `${song.name} by ${song.artist}`;
+            li.appendChild(p);
+
+            li.addEventListener("click", () => checkbox.checked = !checkbox.checked);
+        }
+    }
+
+    initAddSongsToPlaylist(data) {
+        if (data.pID == null) return;
+
+        const songContainer = document.getElementById("add-songs-to-playlist-song-container");
+        const playlist = this.app.data.playlists[data.pID];
+        const playlistSongs = playlist.songs;
+
+        songContainer.innerHTML = "";
+        document.getElementById("add-songs-to-playlist-name").textContent = playlist.name;
+
+        Object.keys(this.app.data.songs).filter((sID) => !playlistSongs.includes(parseInt(sID))).forEach((sID) => {
+            const song = this.app.data.songs[sID];
+
+            const li = document.createElement("li");
+            li.setAttribute("song-id", sID);
+            songContainer.appendChild(li);
+
+            const checkbox = document.createElement("input");
+            checkbox.type = "checkbox";
+            li.appendChild(checkbox);
+
+            const p = document.createElement("p");
+            p.textContent = `${song.name} by ${song.artist}`;
+            li.appendChild(p);
+
+            li.addEventListener("click", () => checkbox.checked = !checkbox.checked);
+        });
+    }
+
     // MODALS CONFIRM
     confirmCreatePlaylist() {
         const errors = [];
@@ -221,6 +288,32 @@ class Modals {
         if (errors.length == 0) {
             this.app.operations.addSongToApp(name, artist, file).then(() => {
                 this.displaySucess(`Song "${name}" by "${artist}" successfuly added!`);
+            });
+        } else this.displayErrors(errors);
+    }
+
+    confirmRemoveSongsFromApp() {
+        const errors = [];
+        const songsToRemove = [...this.getCurrentModal().querySelectorAll("li[song-id] > input[type=checkbox]")].filter((input) => input.checked).map((i) => parseInt(i.parentElement.getAttribute("song-id")));
+
+        if (songsToRemove.length == 0) errors.push("No song(s) selected");
+
+        if (errors.length == 0) {
+            this.app.operations.removeSongsFromApp(songsToRemove).then(() => {
+                this.displaySucess(`Song(s) successfuly removed!`);
+            });
+        } else this.displayErrors(errors);
+    }
+
+    confirmAddSongsToPlaylis() {
+        const errors = [];
+        const songsToAdd = [...this.getCurrentModal().querySelectorAll("li[song-id] > input[type=checkbox]")].filter((input) => input.checked).map((i) => parseInt(i.parentElement.getAttribute("song-id")));
+        
+        if (songsToAdd.length == 0) errors.push("No song(s) selected");
+        
+        if (errors.length == 0) {
+            this.app.operations.addSongsToPlaylist(this.app.currentPlaylist.data.id, songsToAdd).then(() => {
+                this.displaySucess(`Song(s) successfuly added to "${this.app.currentPlaylist.data.name}"`);
             });
         } else this.displayErrors(errors);
     }

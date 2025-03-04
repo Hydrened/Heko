@@ -176,7 +176,7 @@ class App {
     }
 
     initEvents() {
-        ////// DEFAULT
+        // DEFAULT
         window.addEventListener("beforeunload", () => this.deconstructor());
 
         document.addEventListener("keydown", (e) => {
@@ -192,9 +192,21 @@ class App {
             }
         });
 
+        console.log(this.data.settings.window);
 
 
-        ////// ASIDE
+        // WINDOW
+        ipcRenderer.on("window-update", (e, data) => {
+            this.data.settings.window.x = data.x;
+            this.data.settings.window.y = data.y;
+            this.data.settings.window.w = data.width;
+            this.data.settings.window.h = data.height;
+            this.data.settings.window.f = data.f;
+        });
+
+
+
+        // ASIDE
         const aside = this.elements.aside;
 
         aside.createPlaylist.addEventListener("click", () => this.modals.open("create-playlist", null));
@@ -238,12 +250,19 @@ class App {
             setTimeout(() => {
                 const menus = [
                     { name: "Add song", call: () => this.modals.open("add-song-to-app", null), children: [], shortcut: "" },
-                    // { name: "Remove song", call: () => this.modals.open("", null), children: [], shortcut: "" },
+                    { name: "Remove song", call: () => this.modals.open("remove-songs-from-app", { songs: this.data.songs }), children: [], shortcut: "" },
                 ];
                 const rect = document.querySelector("aside > footer").getBoundingClientRect();
                 this.contextmenu.open({ x: rect.x + rect.width, y: rect.y }, document.body, menus);
             }, 0);
         });
+
+
+
+        // CURRENT PLAYLIST
+        const currentP = this.elements.currentPlaylist;
+
+        currentP.addSong.addEventListener("click", () => this.modals.open("add-songs-to-playlist", { pID: (this.currentPlaylist) ? this.currentPlaylist.data.id : null }));
     }
 
     // CLEANUP

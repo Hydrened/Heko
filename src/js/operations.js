@@ -69,7 +69,7 @@ class Operations {
             data[pID].name = newName;
 
             this.writeJSON(playlistsFile, data, "HK-209").then(() => {
-                this.app.refresh();
+                this.app.refresh([{ key: "p", value: pID }]);
             });
         });
     }
@@ -142,5 +142,52 @@ class Operations {
         };
 
         reader.readAsArrayBuffer(file);
+    }
+
+    async removeSongsFromApp(songs) {
+        const songsFile = path.join(this.app.mainFolder, "data", "songs.json");
+        const playlistsFile = path.join(this.app.mainFolder, "data", "playlists.json");
+
+        await Promise.all(songs.map(async (sID) => {
+            const song = this.app.data.songs[sID];
+            const songPath = path.join(this.app.mainFolder, "songs", song.src);
+
+            if (fs.existsSync(songPath)) {
+                try {
+                    await fs.promises.unlink(songPath);
+                } catch (error) {
+                    this.app.error(`ERROR HK-303 => Could not remove song file: ${error}`);
+                }
+            }
+
+            const songsData = await this.readJSON(songsFile, "HK-113");
+            delete songsData[sID];
+            await this.writeJSON(songsFile, songsData, "HK-213");
+
+            const playlistsData = await this.readJSON(playlistsFile, "HK-114");
+
+            for (const pID in playlistsData) {
+                const songIndex = playlistsData[pID].songs.indexOf(sID);
+                if (songIndex !== -1) {
+                    playlistsData[pID].songs.splice(songIndex, 1);
+                }
+            }
+
+            await this.writeJSON(playlistsFile, playlistsData, "HK-214");
+        }));
+
+        this.app.refresh([{ key: "p", value: this.app.currentPlaylist.data.id }]);
+    }
+
+    async addSongsToPlaylist(pID, songs) {
+        const playlistsFile = path.join(this.app.mainFolder, "data", "playlists.json");
+
+        return this.readJSON(playlistsFile, "HK-115").then((data) => {
+            data[pID].songs = data[pID].songs.concat(songs);
+
+            this.writeJSON(playlistsFile, data, "HK-215").then(() => {
+                this.app.refresh([{ key: "p", value: this.app.currentPlaylist.data.id }]);
+            });
+        });
     }
 };

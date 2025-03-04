@@ -1,3 +1,12 @@
+## HEKO-2.0.2
+#### ADDED
+- remove song from app
+- add song to playlist
+#### FIXED
+- open correct playlist when refreshing after an operation
+- frame buttons not working
+- window position and size not saving
+
 ## HEKO-2.0.1
 #### ADDED
 - duplicate playlist
