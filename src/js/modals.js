@@ -19,7 +19,9 @@ class Modals {
                 case "rename-playlist": m.confirmRenamePlaylist(); break;
                 case "add-song-to-app": m.confirmAddSongToApp(); break;
                 case "remove-songs-from-app": m.confirmRemoveSongsFromApp(); break;
-                case "add-songs-to-playlist": m.confirmAddSongsToPlaylis(); break;
+                case "add-songs-to-playlist": m.confirmAddSongsToPlaylist(); break;
+                case "remove-song-from-playlist": m.confirmRemoveSongFromPlaylist(); break;
+                case "edit-song-from-app": m.confirmEditSongFromApp(); break;
                 default: break;
             }
         }
@@ -93,13 +95,23 @@ class Modals {
             dragZone.addEventListener("drop", () => dragZone.dispatchEvent(new Event("change")));
         });
 
+        // ADD SONGS TO PLAYLIST
+        const addSongToPlaylistSearchInput = document.getElementById("add-songs-to-playlist-input");
+        addSongToPlaylistSearchInput.addEventListener("input", (e) => {
+            [...this.getCurrentModal().querySelectorAll("li[song-id]")].forEach((li) => {
+                const song = this.app.data.songs[parseInt(li.getAttribute("song-id"))];
+                li.classList.remove("hidden");
+                if (![song.name.toLowerCase(), song.artist.toLowerCase()].some((v) => v.includes(e.target.value.toLowerCase()))) li.classList.add("hidden");
+            });
+        });
+
         // REMOVE SONG FROM APP
         const removeSongFromAppSearchInput = document.getElementById("remove-songs-from-app-input");
         removeSongFromAppSearchInput.addEventListener("input", (e) => {
             [...this.getCurrentModal().querySelectorAll("li[song-id]")].forEach((li) => {
                 const song = this.app.data.songs[parseInt(li.getAttribute("song-id"))];
                 li.classList.remove("hidden");
-                if (![song.name, song.artist].some((v) => v.includes(e.target.value))) li.classList.add("hidden");
+                if (![song.name.toLowerCase(), song.artist.toLowerCase()].some((v) => v.includes(e.target.value.toLowerCase()))) li.classList.add("hidden");
             });
         });
     }
@@ -109,6 +121,7 @@ class Modals {
         const modal = [...document.querySelectorAll("[modal]")].filter((el) => el.getAttribute("modal") == name)[0];
         if (!modal) return;
 
+        this.app.contextmenu.close();
         modal.classList.add("open");
 
         switch (name) {
@@ -118,6 +131,8 @@ class Modals {
             case "add-song-to-app": break;
             case "remove-songs-from-app": this.initRemoveSongsFromApp(data); break;
             case "add-songs-to-playlist": this.initAddSongsToPlaylist(data); break;
+            case "remove-song-from-playlist": this.initRemoveSongFromPlatlist(data); break;
+            case "edit-song-from-app": this.initEditSongFromApp(data); break;
             default: break;
         }
 
@@ -237,6 +252,21 @@ class Modals {
         });
     }
 
+    initRemoveSongFromPlatlist(data) {
+        document.getElementById("remove-song-from-playlist-song").textContent = this.app.data.songs[data.sID].name;
+        document.getElementById("remove-song-from-playlist-song").setAttribute("song-id", data.sID);
+        document.getElementById("remove-song-from-playlist-playlist").textContent = this.app.data.playlists[data.pID].name;
+        document.getElementById("remove-song-from-playlist-playlist").setAttribute("playlist-id", data.pID);
+    }
+
+    initEditSongFromApp(data) {
+        const song = this.app.data.songs[data.sID];
+        document.getElementById("edit-song-from-app-name").textContent = song.name;
+        document.getElementById("edit-song-from-app-name").setAttribute("song-id", data.sID);
+        document.getElementById("edit-song-from-app-input-name").value = song.name;
+        document.getElementById("edit-song-from-app-input-artist").value = song.artist;
+    }
+
     // MODALS CONFIRM
     confirmCreatePlaylist() {
         const errors = [];
@@ -305,7 +335,7 @@ class Modals {
         } else this.displayErrors(errors);
     }
 
-    confirmAddSongsToPlaylis() {
+    confirmAddSongsToPlaylist() {
         const errors = [];
         const songsToAdd = [...this.getCurrentModal().querySelectorAll("li[song-id] > input[type=checkbox]")].filter((input) => input.checked).map((i) => parseInt(i.parentElement.getAttribute("song-id")));
         
@@ -318,6 +348,38 @@ class Modals {
         } else this.displayErrors(errors);
     }
 
+    confirmRemoveSongFromPlaylist() {
+        const sID = parseInt(document.getElementById("remove-song-from-playlist-song").getAttribute("song-id"));
+        const song = this.app.data.songs[sID];
+        const pID = parseInt(document.getElementById("remove-song-from-playlist-playlist").getAttribute("playlist-id"));
+        const playlist = this.app.data.playlists[pID];
+
+        this.app.operations.removeSongFromPlaylist(sID, pID).then(() => {
+            this.displaySucess(`Successfuly removed song "${song.name}" from ${playlist.name}`);
+        });
+    }
+
+    confirmEditSongFromApp() {
+        const errors = [];
+
+        const sID = parseInt(document.getElementById("edit-song-from-app-name").getAttribute("song-id"));
+
+        const name = document.getElementById("edit-song-from-app-input-name").value;
+        if (name == "") errors.push("Song name does not have a name");
+        if (!this.areCharsValid(name)) errors.push(`Song name can't contain the characters [", /, \\].`);
+
+        const artist = document.getElementById("edit-song-from-app-input-artist").value;
+        if (artist == "") errors.push("Song artist does not have a name");
+        if (!this.areCharsValid(artist)) errors.push(`Song artist can't contain the characters [", /, \\].`);
+
+        if (errors.length == 0) {
+            const song = this.app.data.songs[sID];
+            this.app.operations.editSongFromApp(sID, name, artist).then(() => {
+                this.displaySucess(`Modifications for "${song.name}" by "${song.artist}" has been saved`);
+            });
+        } else this.displayErrors(errors);
+    }
+ 
     // GETTER
     isAModalOpened() {
         return [...document.querySelectorAll("[modal]")].filter((el) => el.classList.contains("open") || el.classList.contains("closing")).length > 0;

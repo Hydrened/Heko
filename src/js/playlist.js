@@ -66,6 +66,7 @@ class Playlist {
             visual.arrow.textContent = ">";
             visual.container.appendChild(visual.arrow);
             visual.content.textContent = `${nbSubPlaylist} playlist${(nbSubPlaylist < 2) ? "" : "s"}`;
+
         } else {
             const nbSongs = this.data.songs.length;
             visual.content.textContent = `${nbSongs} song${(nbSongs < 2) ? "" : "s"}`;
@@ -148,10 +149,11 @@ class Playlist {
                         const act = (appCPE.duration.textContent == "") ? 0 : parseDuration(appCPE.duration.textContent);
                         appCPE.duration.textContent = formatTime(act + parseInt(audio.duration));
                     });
-                    li.addEventListener("click", () => this.app.listener.listenPlaylist(this.data.id, sID));
+                    li.addEventListener("click", () => this.app.listener.clickOnSong(sID));
 
                 } else li.classList.add("error");
             });
+            this.app.sortCurrentPlaylistBy("id");
 
         }, instant ? 0 : 600);
     }

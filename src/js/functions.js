@@ -30,6 +30,13 @@ function formatTime(seconds) {
         : `${minutes}:${secondsStr}`;
 }
 
+function parseTime(timeStr) {
+    const parts = timeStr.split(":").map(Number);
+    if (parts.length == 3) return parts[0] * 3600 + parts[1] * 60 + parts[2];
+    else if (parts.length == 2) return parts[0] * 60 + parts[1];
+    else return 0;
+}
+
 function parseDuration(duration) {
     if (duration === "-:--") return 0;
     const parts = duration.split(":").map(Number);
@@ -41,4 +48,10 @@ function parseDuration(duration) {
         return minutes * 60 + seconds;
     }
     return 0;
+}
+
+function randomInRange(min, max) {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }

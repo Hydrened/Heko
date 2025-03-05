@@ -16,6 +16,13 @@ class Contextmenu {
         document.addEventListener("click", () => {
             if (this.isOpened()) this.close();
         });
+        
+        document.addEventListener("keydown", (e) => {
+            switch (e.key) {
+                case "Escape": if (this.isOpened()) this.close(); break;
+                default: break;
+            }
+        });
     }
 
     // EVENTS

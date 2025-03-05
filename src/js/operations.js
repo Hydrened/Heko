@@ -186,6 +186,32 @@ class Operations {
             data[pID].songs = data[pID].songs.concat(songs);
 
             this.writeJSON(playlistsFile, data, "HK-215").then(() => {
+                this.app.refresh([{ key: "p", value: pID }]);
+            });
+        });
+    }
+
+    async removeSongFromPlaylist(sID, pID) {
+        const playlistsFile = path.join(this.app.mainFolder, "data", "playlists.json");
+        
+        return this.readJSON(playlistsFile, "HK-116").then((data) => {
+            data[pID].songs.splice(data[pID].songs.indexOf(sID), 1);
+
+            this.writeJSON(playlistsFile, data, "HK-216").then(() => {
+                this.app.refresh([{ key: "p", value: this.app.currentPlaylist.data.id }]);
+            });
+        });
+    }
+
+    async editSongFromApp(sID, name, artist) {
+        const songsFile = path.join(this.app.mainFolder, "data", "songs.json");
+
+        return this.readJSON(songsFile, "HK-117").then((data) => {
+
+            data[sID].name = name;
+            data[sID].artist = artist;
+
+            this.writeJSON(songsFile, data, "HK-217").then(() => {
                 this.app.refresh([{ key: "p", value: this.app.currentPlaylist.data.id }]);
             });
         });

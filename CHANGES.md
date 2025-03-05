@@ -1,3 +1,22 @@
+## HEKO-2.0.3
+#### ADDED
+- remove song from playlist
+- add song to other playlist contextmenu
+- add song to playlist shortcut
+- add song to playlist contextmenu
+- edit song from app
+- song filter in current playlist
+- current playlist song conatiner sort (id, name, artist, duration) (also in reverse) 
+- play / pause button
+- random button
+- loop button
+- next song button
+- previous song playing button
+- save / load loop, random and volume
+- song playing
+#### FIXED
+- song filter not working in "adding song to playlist" modal
+
 ## HEKO-2.0.2
 #### ADDED
 - remove song from app
