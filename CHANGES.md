@@ -1,3 +1,12 @@
+## HEKO-2.0.4
+#### ADDED
+- window tab song controls
+- display current song
+- display song duration
+- updating song current time
+- updating song slider position
+- song slider set current time
+
 ## HEKO-2.0.3
 #### ADDED
 - remove song from playlist

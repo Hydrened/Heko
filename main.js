@@ -35,14 +35,14 @@ class Application {
             this.window.close();
         });
 
-        // ipcMain.on("set-thumbnail-play-button", (e, data) => {
-        //     this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
-        //     this.thumbnailButtons[1].icon = path.join(app.getAppPath(), "assets", "img", `${data}.png`),
-        //     this.thumbnailButtons[1].click = () => {
-        //         this.window.webContents.send("song-control", data);
-        //     };
-        //     this.window.setThumbarButtons(this.thumbnailButtons);
-        // });
+        ipcMain.on("set-thumbnail-play-button", (e, data) => {
+            this.thumbnailButtons[1].tooltip = data.slice(0, 1).toUpperCase() + data.slice(1);
+            this.thumbnailButtons[1].icon = path.join(app.getAppPath(), "assets", "img", `${data}.png`),
+            this.thumbnailButtons[1].click = () => {
+                this.window.webContents.send("song-control", "play");
+            };
+            this.window.setThumbarButtons(this.thumbnailButtons);
+        });
     }
 
     createWindow() {
