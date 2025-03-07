@@ -6,7 +6,10 @@ const fetch = require("node-fetch");
 class Application {
     constructor() {
         this.window = this.createWindow();
-        setTimeout(() => this.checkVersion(), 1000);
+
+        this.window.webContents.executeJavaScript("navigator.onLine").then((isOnline) => {
+            if (isOnline) this.checkVersion();
+        });
 
         this.initMainFolder();
         this.handleEvents();
@@ -14,7 +17,7 @@ class Application {
 
     handleEvents() {
         ipcMain.handle("get-main-folder", async (e) => {
-            return path.join(app.getPath("documents"), "Heko.test").replaceAll("\\", "/");
+            return path.join(app.getPath("documents"), "Heko").replaceAll("\\", "/");
         });
 
         this.window.on("resize", () => {
@@ -46,7 +49,10 @@ class Application {
     }
 
     createWindow() {
-        const settingsFile = path.join(app.getPath("documents"), "Heko.test", "data", "settings.json");
+        const gotTheLock = app.requestSingleInstanceLock();
+        if (!gotTheLock) app.quit();
+
+        const settingsFile = path.join(app.getPath("documents"), "Heko", "data", "settings.json");
         const jsonData = (fs.existsSync(settingsFile)) ? JSON.parse(fs.readFileSync(settingsFile, "utf8")) : null;
 
         const minW = 950;
@@ -114,7 +120,7 @@ class Application {
     initMainFolder() {
         const documents = app.getPath("documents");
 
-        const mainFolder = path.join(documents, "Heko.test");
+        const mainFolder = path.join(documents, "Heko");
         if (!fs.existsSync(mainFolder)) fs.mkdirSync(mainFolder);
         
         const songsFolder = path.join(mainFolder, "songs");

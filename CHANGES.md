@@ -1,3 +1,25 @@
+## HEKO-2.0.5
+#### ADDED
+- volume slider
+- current song as window title
+- play / pause shortcut
+- next button shortcut
+- previous button shortcut
+- random button shortcut
+- loop button shortcut
+- -5 / +5 second shortcut
+- 0 to 9 song position shortcuts
+#### FIXED
+- playlist wrong initializing when clicking on song when random
+- playlist wrong initializing when clicking on song when loop
+- playlist wrong initializing when clicking on song when loop and random
+- don't check for new version if the user is offline
+- app can only be opened once at the time
+- next button not working when no music playing
+- tab effect
+- checkboxes not working
+- playing a playlist with 0 songs
+
 ## HEKO-2.0.4
 #### ADDED
 - window tab song controls

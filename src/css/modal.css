@@ -251,3 +251,7 @@ div.right-modal-container > #queue-modal > ul > li > p:not(.details) {
 div.right-modal-container > #queue-modal > ul > li:hover > p {
     color: var(--col-1);
 }
+
+input[type=checkbox].no-pointer-events {
+    pointer-events: none;
+}

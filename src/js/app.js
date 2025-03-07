@@ -187,15 +187,31 @@ class App {
                 const currID = (curr) ? curr.data.id : -1;
 
                 if (!this.modals.isAModalOpened()) switch (e.key) {
-                    case "d": if (!e.altKey && e.ctrlKey) if (curr) this.operations.duplicatePlaylist(currID); break;
+                    case "d": if (!e.altKey && e.ctrlKey) if (curr) this.operations.duplicatePlaylist(currID); return;
                     case "n":
                         if (e.altKey && e.ctrlKey) this.modals.open("create-playlist", null);
                         if (!e.altKey && e.ctrlKey) if (curr) this.modals.open("add-songs-to-playlist", { pID: currID });
-                        break;
-                    case "F2": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("rename-playlist", { pID: currID }); break;
-                    case "Delete": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("confirm-remove-playlist", { pID: currID }); break;
+                        return;
+                    case "l": if (!e.ctrlKey && !e.shiftKey) this.listener.loopButton(); return;
+                    case "r": if (!e.ctrlKey && !e.shiftKey) this.listener.randomButton(); return;
+                    case "F2": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("rename-playlist", { pID: currID }); return;
+                    case "Delete": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("confirm-remove-playlist", { pID: currID }); return;
+                    case " ": if (!e.ctrlKey && !e.shiftKey) this.listener.playButton(); return;
+                    case "ArrowLeft":
+                        if (e.ctrlKey && !e.shiftKey) this.listener.previousButton();
+                        else if (!e.ctrlKey && !e.shiftKey) this.listener.incrSong(-5);
+                        return;
+                    case "ArrowRight":
+                        if (e.ctrlKey && !e.shiftKey) this.listener.nextButton();
+                        else if (!e.ctrlKey && !e.shiftKey) this.listener.incrSong(5);
+                        return;
                     default: break;
                 }
+
+                switch (e.key) {
+                    case "Tab": e.preventDefault(); return;
+                    default: break;
+                };
             });
 
             ipcRenderer.on("window-update", (e, data) => {

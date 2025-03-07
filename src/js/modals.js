@@ -9,6 +9,7 @@ class Modals {
 
     initVariables() {
         this.file = null;
+        this.tabPos = 0;
     }
 
     initEvents() {
@@ -32,6 +33,15 @@ class Modals {
                 case "Enter": if (this.isAModalOpened()) confirmModalEvents(this, this.getCurrentModalName()); break;
                 case "Escape": this.closeCurrent(); break;
                 default: break;
+            }
+
+            if (this.isAModalOpened() && e.key == "Tab") {
+                const tabSensibleElements = [...this.getCurrentModal().querySelectorAll("input[type=text]")];
+                this.tabPos += (e.shiftKey) ? -1 : 1;
+                if (this.tabPos >= tabSensibleElements.length) this.tabPos = 0;
+                if (this.tabPos < 0) this.tabPos = tabSensibleElements.length - 1;
+                
+                tabSensibleElements[this.tabPos].focus();
             }
         });
 
@@ -120,7 +130,8 @@ class Modals {
     open(name, data) {
         const modal = [...document.querySelectorAll("[modal]")].filter((el) => el.getAttribute("modal") == name)[0];
         if (!modal) return;
-
+        
+        this.tabPos = 0;
         this.app.contextmenu.close();
         modal.classList.add("open");
 
@@ -159,6 +170,7 @@ class Modals {
                 el.classList.remove("closing");
             }, 500);
         });
+        this.tabPos = 0;
     }
 
     displayErrors(errors) {
@@ -213,6 +225,7 @@ class Modals {
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.classList.add("no-pointer-events");
             li.appendChild(checkbox);
 
             const p = document.createElement("p");
@@ -242,6 +255,7 @@ class Modals {
 
             const checkbox = document.createElement("input");
             checkbox.type = "checkbox";
+            checkbox.classList.add("no-pointer-events");
             li.appendChild(checkbox);
 
             const p = document.createElement("p");

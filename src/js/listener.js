@@ -2,6 +2,14 @@ class Listener {
     // INIT
     constructor(app) {
         this.app = app;
+
+        this.initVariables();
+        this.initLoadedSettings();
+        this.initEvents();
+        this.update();
+    }
+
+    initVariables() {
         this.audio = document.getElementById("audio");
 
         this.currentPlaylist = null;
@@ -14,16 +22,14 @@ class Listener {
         this.random = false;
         this.loop = false;
 
-        this.initLoadedSettings();
-        this.initEvents();
-        this.update();
+        this.oldVolume = null;
     }
 
     initLoadedSettings() {
         setTimeout(() => {
             if (this.app.data.settings.random) this.randomButton();
             if (this.app.data.settings.loop) this.loopButton();
-            this.audio.volume = this.app.data.settings.volume;
+            this.setVolume(this.app.data.settings.volume);
         }, 0);
     }
 
@@ -45,6 +51,14 @@ class Listener {
             }
         });
 
+        document.addEventListener("keydown", (e) => {
+            if (isDigit(e.key) && this.currentSong != null) {
+                const blend = parseInt(e.key) / 10;
+                const time = this.audio.duration * blend;
+                this.setSongCurrentTime(time);
+            }
+        });
+
         this.app.elements.footer.center.song.slider.addEventListener("input", (e) => {
             if (this.currentSong == null) {
                 this.app.elements.footer.center.song.slider.value = 0;
@@ -54,13 +68,30 @@ class Listener {
             const seconds = percentage / 100 * this.audio.duration;
             this.audio.currentTime = seconds;
         });
+
+        this.app.elements.footer.right.volume.slider.addEventListener("input", (e) => {
+            this.setVolume(e.target.value / 100);
+        });
+
+        this.app.elements.footer.right.volume.svg.no.addEventListener("click", () => {
+            this.setVolume(this.oldVolume / 100);
+        });
+
+        this.app.elements.footer.right.volume.svg.low.addEventListener("click", () => {
+            this.oldVolume = this.app.elements.footer.right.volume.slider.value;
+            this.setVolume(0);
+        });
+
+        this.app.elements.footer.right.volume.svg.high.addEventListener("click", () => {
+            this.oldVolume = this.app.elements.footer.right.volume.slider.value;
+            this.setVolume(0);
+        });
     }
 
     // CLEANUP
     deconstructor() {
         this.app.data.settings.random = this.random;
         this.app.data.settings.loop = this.loop;
-        this.app.data.settings.volume = this.audio.volume;
     }
 
     // UPDATE
@@ -90,6 +121,10 @@ class Listener {
     }
 
     previousButton() {
+        if (this.history.length == 0) return this.nextButton();
+
+        if (this.currentSong != null) if (this.audio.currentTime >= 5) return this.setSongCurrentTime(0);
+
         this.historyPos = Math.min(this.historyPos + 1, this.history.length - 1);
         this.listen(this.history[this.historyPos]);
     }
@@ -110,7 +145,7 @@ class Listener {
 
     nextButton() {
         if (this.historyPos == 0) {
-            if (this.queue.length == 0) return;
+            if (this.queue.length == 0) return this.firstPlay(null);
             this.listen(this.queue[0]);
             
             const shifted = this.queue.shift();
@@ -124,6 +159,7 @@ class Listener {
             this.historyPos = Math.max(0, this.historyPos - 1);
             this.listen(this.history[this.historyPos]);
         }
+        this.displayPauseButton();
     }
 
     loopButton() {
@@ -139,6 +175,7 @@ class Listener {
     // EVENTS
     firstPlay(sID) {
         this.generateQueue(sID);
+        if (this.queue.length == 0) return;
         this.nextButton();
         this.displayPauseButton();
     }
@@ -153,17 +190,18 @@ class Listener {
         if (!this.loop) {
             if (!this.random) {
                 this.queue = songs;
-                for (let i = 0; i < songs.indexOf(sID); i++) this.queue.push(this.queue.shift());
-            } else songs.forEach(() => this.queue.push(songs[randomInRange(0, songs.length - 1)]));
+                const index = (sID == null) ? 0 : songs.indexOf(sID);
+                this.queue = songs.slice(index).concat(songs.slice(0, index));
+
+            } else {
+                songs.forEach(() => this.queue.push(songs[randomInRange(0, songs.length - 1)]));
+                if (sID != null) this.queue[0] = sID;
+            }
 
         } else {
-            const sID = parseInt(this.audio.getAttribute("song-id"));
-            if (this.random) {
-                if (sID == null) {
-                    if (this.currentSong != null) this.queue = [sID];
-                    else this.queue = [songs[randomInRange(0, songs.length - 1)]];
-                }
-            } else this.queue = (this.currentSong != null) ? [sID] : [songs[0]];
+            if (sID == null) {
+                this.queue = (this.random) ? [songs[randomInRange(0, songs.length - 1)]] : [songs[0]];
+            } else this.queue = [sID];
         }
     }
 
@@ -178,6 +216,7 @@ class Listener {
         const footer = this.app.elements.footer;
         footer.left.title.textContent = this.currentSong.name;
         footer.left.artist.textContent = this.currentSong.artist;
+        document.querySelector("title").textContent = this.currentSong.name;
 
         this.audio.addEventListener("loadeddata", () => footer.center.song.duration.textContent = formatTime(parseInt(this.audio.duration)));
     }
@@ -192,5 +231,48 @@ class Listener {
         this.app.elements.footer.center.buttons.play.classList.add("hidden");
         this.app.elements.footer.center.buttons.pause.classList.remove("hidden");
         ipcRenderer.send("set-thumbnail-play-button", "pause");
+    }
+
+    incrSong(incr) {
+        if (this.currentSong == null) return;
+
+        const duration = this.audio.duration;
+        const newCurrentTime = clamp(this.audio.currentTime + incr, 0, duration);
+        this.setSongCurrentTime(newCurrentTime);
+    }
+
+    // SETTER
+    setVolume(blend) {
+        const volume = this.app.elements.footer.right.volume;
+        const slider = volume.slider;
+        const svg = volume.svg;
+        slider.value = blend * 100;
+
+        this.app.data.settings.volume = blend;
+        blend = Math.min(Math.max(blend, 0), 1);
+        this.audio.volume = Math.pow(blend, 2.0);
+
+        svg.no.classList.add("hidden");
+        svg.low.classList.add("hidden");
+        svg.high.classList.add("hidden");
+
+        const volumeCase = (slider.value == 0) ? "no-volume" : (slider.value < 50) ? "low-volume" : "high-volume";
+        switch(volumeCase) {
+            case "no-volume": svg.no.classList.remove("hidden"); break;
+            case "low-volume": svg.low.classList.remove("hidden"); break;
+            case "high-volume": svg.high.classList.remove("hidden"); break;
+            default: break;
+        }
+    }
+
+    setSongCurrentTime(time) {
+        const slider = this.app.elements.footer.center.song.slider;
+
+        const duration = this.audio.duration;
+        const newCurrentTime = clamp(time, 0, duration);
+        const percentage = newCurrentTime / duration * 100;
+
+        slider.value = percentage;
+        slider.dispatchEvent(new InputEvent("input"));
     }
 };

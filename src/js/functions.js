@@ -55,3 +55,11 @@ function randomInRange(min, max) {
     max = Math.floor(max);
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
+
+function clamp(value, min, max) {
+    return Math.max(Math.min(value, max), min);
+}
+
+function isDigit(char) {
+    return /^[0-9]$/.test(char);
+}
