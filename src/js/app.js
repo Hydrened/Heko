@@ -186,32 +186,22 @@ class App {
                 const curr = this.currentPlaylist;
                 const currID = (curr) ? curr.data.id : -1;
 
-                if (!this.modals.isAModalOpened()) switch (e.key) {
+                switch (e.key.toLowerCase()) {
+                    case "tab": e.preventDefault(); return;
+                    case "w": if (e.ctrlKey) e.preventDefault(); break;
+                    default: break;
+                };
+
+                if (!this.modals.isAModalOpened()) switch (e.key.toLowerCase()) {
                     case "d": if (!e.altKey && e.ctrlKey) if (curr) this.operations.duplicatePlaylist(currID); return;
                     case "n":
                         if (e.altKey && e.ctrlKey) this.modals.open("create-playlist", null);
                         if (!e.altKey && e.ctrlKey) if (curr) this.modals.open("add-songs-to-playlist", { pID: currID });
                         return;
-                    case "l": if (!e.ctrlKey && !e.shiftKey) this.listener.loopButton(); return;
-                    case "r": if (!e.ctrlKey && !e.shiftKey) this.listener.randomButton(); return;
-                    case "F2": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("rename-playlist", { pID: currID }); return;
-                    case "Delete": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("confirm-remove-playlist", { pID: currID }); return;
-                    case " ": if (!e.ctrlKey && !e.shiftKey) this.listener.playButton(); return;
-                    case "ArrowLeft":
-                        if (e.ctrlKey && !e.shiftKey) this.listener.previousButton();
-                        else if (!e.ctrlKey && !e.shiftKey) this.listener.incrSong(-5);
-                        return;
-                    case "ArrowRight":
-                        if (e.ctrlKey && !e.shiftKey) this.listener.nextButton();
-                        else if (!e.ctrlKey && !e.shiftKey) this.listener.incrSong(5);
-                        return;
+                    case "f2": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("rename-playlist", { pID: currID }); return;
+                    case "delete": if (!e.altKey && !e.ctrlKey) if (curr) this.modals.open("confirm-remove-playlist", { pID: currID }); return;
                     default: break;
                 }
-
-                switch (e.key) {
-                    case "Tab": e.preventDefault(); return;
-                    default: break;
-                };
             });
 
             ipcRenderer.on("window-update", (e, data) => {
@@ -309,6 +299,7 @@ class App {
                     });
 
                     hover = li;
+                    menus.push({ name: "Add to queue", call: () => this.listener.addToQueue(sID), children: [], shortcut: null });
                     menus.push({ name: "Remove from playlist", call: () => this.modals.open("remove-song-from-playlist", { sID: sID, pID: pID }), children: [], shortcut: null });
                     menus.push({ name: "Add to other playlist", call: null, children: addToOtherPlaylistChildren, shortcut: null });
                     menus.push({ name: "Edit song", call: () => this.modals.open("edit-song-from-app", { sID: sID }), children: [], shortcut: null });
@@ -367,11 +358,29 @@ class App {
 
     // INFOS
     success(message) {
-        console.log(message);
+        this.createInfoModal("success", message);
     }
 
     error(message) {
-        console.error(message);
+        this.createInfoModal("error", message);
+    }
+
+    createInfoModal(type, message) {
+        const modal = document.createElement("div");
+        modal.classList.add("info-modal");
+        modal.classList.add(type);
+        modal.classList.add("show");
+        modal.textContent = message;
+        document.body.appendChild(modal);
+
+        function removeModalInfo() {
+            modal.removeEventListener("click", removeModalInfo);
+            modal.classList.add("fade-out");
+            setTimeout(() => modal.remove(), 300);
+        }
+
+        modal.addEventListener("click", removeModalInfo);
+        setTimeout(() => removeModalInfo(), 3000);
     }
 
     // EVENTS
@@ -413,6 +422,20 @@ class App {
         if (reverse) lis.reverse();
         
         lis.forEach((li) => this.elements.currentPlaylist.songContainer.appendChild(li));
+    }
+
+    diplayCurrentSongPlaying() {
+        if (this.listener.currentSong == null) return;
+        const listenerPlaylist = this.listener.currentPlaylist;
+        if (listenerPlaylist != this.currentPlaylist) return;
+
+        const currentSID = parseInt(this.listener.audio.getAttribute("song-id"));
+
+        [...this.elements.currentPlaylist.songContainer.children].filter((li) => {
+            const liSID = parseInt(li.getAttribute("song-id"));
+            if (liSID == currentSID) li.classList.add("playing");
+            else li.classList.remove("playing");
+        });
     }
 
     // GETTER

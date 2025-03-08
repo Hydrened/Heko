@@ -83,7 +83,7 @@ class Playlist {
     // EVENTS
     open(instant) {
         const appCPE = this.app.elements.currentPlaylist;
-            if (this.app.currentPlaylist == this) return;
+        if (this.app.currentPlaylist == this) return;
 
         appCPE.container.classList.remove("open");
         this.app.currentPlaylist = this;
@@ -153,7 +153,9 @@ class Playlist {
 
                 } else li.classList.add("error");
             });
+
             this.app.sortCurrentPlaylistBy("id");
+            this.app.diplayCurrentSongPlaying();
 
         }, instant ? 0 : 600);
     }

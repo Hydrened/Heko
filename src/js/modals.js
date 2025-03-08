@@ -29,9 +29,9 @@ class Modals {
 
         // KEYDOWN
         document.addEventListener("keydown", (e) => {
-            switch (e.key) {
-                case "Enter": if (this.isAModalOpened()) confirmModalEvents(this, this.getCurrentModalName()); break;
-                case "Escape": this.closeCurrent(); break;
+            switch (e.key.toLowerCase()) {
+                case "enter": if (this.isAModalOpened()) confirmModalEvents(this, this.getCurrentModalName()); break;
+                case "escape": this.closeCurrent(); break;
                 default: break;
             }
 

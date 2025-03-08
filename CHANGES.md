@@ -1,3 +1,13 @@
+## HEKO-2.0.6
+#### ADDED
+- volume up / down shortcuts
+- add to queue
+- mute / unmute volume shortcut
+- visual for current song in current listening playlist
+- info modals
+#### FIXED
+- shortcut not working if maj
+
 ## HEKO-2.0.5
 #### ADDED
 - volume slider
@@ -9,6 +19,7 @@
 - loop button shortcut
 - -5 / +5 second shortcut
 - 0 to 9 song position shortcuts
+- mute / unmute volume
 #### FIXED
 - playlist wrong initializing when clicking on song when random
 - playlist wrong initializing when clicking on song when loop

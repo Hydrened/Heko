@@ -18,8 +18,8 @@ class Contextmenu {
         });
         
         document.addEventListener("keydown", (e) => {
-            switch (e.key) {
-                case "Escape": if (this.isOpened()) this.close(); break;
+            switch (e.key.toLowerCase()) {
+                case "escape": if (this.isOpened()) this.close(); break;
                 default: break;
             }
         });

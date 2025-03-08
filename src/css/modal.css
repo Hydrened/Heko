@@ -1,29 +1,33 @@
-div#success-modal,
-div#error-modal {
+@keyframes show-info-modal {
+    0% { transform: translateX(-50%) translateY(-100%); }
+    100% { transform: translateX(-50%) translateY(30%); }
+}
+@keyframes hide-info-modal {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+div.info-modal {
     padding: 2rem 3rem;
     background-color: var(--bg-col-2);
     border-radius: 1rem;
     position: absolute;
-    top: -100%;
+    top: var(--frame-height);
     left: 50%;
-    transform: translateX(-50%);
-    transition: top 700ms ease-out, opacity 500ms;
+    transform: translateX(-50%) translateY(-100%);
     cursor: pointer;
     z-index: 100;
 }
-div#success-modal {
+div.info-modal.success {
     border: 3px solid var(--bg-col-success);
 }
-div#error-modal {
+div.info-modal.error {
     border: 3px solid var(--bg-col-error);
 }
-div#success-modal.show,
-div#error-modal.show {
-    top: 5rem;
+div.info-modal.show {
+    animation: show-info-modal 300ms ease-out forwards;
 }
-div#success-modal.closing,
-div#error-modal.closing {
-    opacity: 0;
+div.info-modal.fade-out {
+    animation: show-info-modal 300ms ease-out forwards, hide-info-modal 300ms ease-in forwards;
 }
 
 
@@ -250,8 +254,4 @@ div.right-modal-container > #queue-modal > ul > li > p:not(.details) {
 }
 div.right-modal-container > #queue-modal > ul > li:hover > p {
     color: var(--col-1);
-}
-
-input[type=checkbox].no-pointer-events {
-    pointer-events: none;
 }
