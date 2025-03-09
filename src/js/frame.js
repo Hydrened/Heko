@@ -12,14 +12,14 @@ class Frame {
     }
 
     initTitle() {
-        const packageFile = path.join(__dirname, "..", "package.json");
-        fsp.readFile(packageFile, "utf8").then((data) => {
-            const jsonData = JSON.parse(data);
-            this.elements.title.textContent = `${jsonData.build.productName} ${jsonData.version}`;
+        const versionFile = path.join(__dirname, "..", "version");
+        fsp.readFile(versionFile, "utf8").then((version) => {
+            console.log(version);
+            this.elements.title.textContent = `Heko ${version}`;
             this.elements.title.addEventListener("click", () => {
                 shell.openExternal("https://github.com/Hydrened/Heko/blob/main/CHANGES.md");
             });
-        }).catch((readErr) => console.error("ERROR HK-101 => Could not read package.json:" + readErr));
+        }).catch((readErr) => console.error("ERROR HK-101 => Could not read version:" + readErr));
     }
 
     handleEvents() {

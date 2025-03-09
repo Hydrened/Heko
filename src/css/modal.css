@@ -197,7 +197,6 @@ div.top-modal-container > div.modal div.fake-drag-zone.contains-file {
 
 
 
-
 div.right-modal-container {
     width: 30rem;
     height: calc(100vh - var(--frame-height) - var(--header-height));

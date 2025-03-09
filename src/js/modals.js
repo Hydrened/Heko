@@ -306,12 +306,20 @@ class Modals {
     }
 
     confirmRenamePlaylist() {
+        const errors = [];
         const pName = document.getElementById("rename-playlist-name").textContent;
         const newName = document.getElementById("rename-playlist-input").value;
-        const pID = this.app.getPlaylistByName(pName).data.id;
-        this.app.operations.renamePlaylist(pID, newName).then(() => {
-            this.displaySucess(`Successfuly renamed playlist "${pName}" to "${newName}"`);
-        });
+
+        if (newName == "") errors.push("Playlist does not have a name");
+        if (this.app.playlists.map((p) => p.data.name).includes(newName)) errors.push(`A playlist named "${newName}" already exist.`);
+        if (!this.areCharsValid(newName)) errors.push(`Playlist name can't contain the characters [", /, \\].`);
+
+        if (errors.length == 0) {
+            const pID = this.app.getPlaylistByName(pName).data.id;
+            this.app.operations.renamePlaylist(pID, newName).then(() => {
+                this.displaySucess(`Successfuly renamed playlist "${pName}" to "${newName}"`);
+            });
+        } else this.displayErrors(errors);
     }
 
     confirmAddSongToApp() {

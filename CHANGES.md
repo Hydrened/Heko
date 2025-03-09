@@ -1,3 +1,14 @@
+## HEKO-2.0.7
+#### ADDED
+- delay when refreshing
+- number of each song saved
+#### FIXED
+- songs can't be added to playlist parent through contextmenu
+- random can't have same song twice in a row
+- renaming playlist filters
+- window title text
+- window title link
+
 ## HEKO-2.0.6
 #### ADDED
 - volume up / down shortcuts

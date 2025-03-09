@@ -6,14 +6,18 @@ class Listener {
         this.initVariables();
         this.initLoadedSettings();
         this.initEvents();
-        this.update();
+        this.run();
     }
 
     initVariables() {
         this.audio = document.getElementById("audio");
 
+        this.fps = 10;
+        this.lastUpdate = performance.now();
+
         this.currentPlaylist = null;
         this.currentSong = null;
+        this.currentSongTicks = 0;
 
         this.queue = [];
         this.priorityQueue = [];
@@ -122,10 +126,16 @@ class Listener {
     }
 
     // UPDATE
+    run() {
+        setInterval(() => {
+            this.update();
+        }, 1000 / this.fps);
+    }
+
     update() {
         this.updateSongSlider();
         this.updateSongCurrentTime();
-        setTimeout(() => this.update(), 1000 / 30);
+        this.updateListened();
     }
 
     updateSongSlider() {
@@ -138,6 +148,13 @@ class Listener {
     updateSongCurrentTime() {
         if (this.currentSong == null) return;
         this.app.elements.footer.center.song.position.textContent = formatTime(parseInt(this.audio.currentTime));
+    }
+
+    updateListened() {
+        if (this.currentSong == null) return;
+        if (this.audio.paused) return;
+        if (this.audio.currentTime == 0) return;
+        this.currentSongTicks++;
     }
 
     // BUTTON
@@ -186,8 +203,11 @@ class Listener {
                 shifted = this.queue.shift();
                 const songs = this.currentPlaylist.data.songs;
 
-                if (this.loop || !this.random) this.queue.push(shifted);
-                else if (this.random) this.queue.push(songs[randomInRange(0, songs.length - 1)]);
+                if (this.random && !this.loop) {
+                    const possibleSongs = (songs.length != 1) ? songs.filter((sID) => sID != this.queue.at(-1)) : songs;
+                    this.queue.push(possibleSongs[randomInRange(0, possibleSongs.length - 1)]);
+
+                } else if (this.loop || this.random) this.queue.push(shifted);
             }
 
             this.history.unshift(shifted);
@@ -234,7 +254,11 @@ class Listener {
                 this.queue = songs.slice(index).concat(songs.slice(0, index));
 
             } else {
-                songs.forEach(() => this.queue.push(songs[randomInRange(0, songs.length - 1)]));
+                songs.forEach((s, index) => {
+                    const possibleSongs = (songs.length != 1) ? songs.filter((sID) => sID != this.queue.at(-1)) : songs;
+                    this.queue.push(possibleSongs[randomInRange(0, possibleSongs.length - 1)]);
+                });
+
                 if (sID != null) this.queue[0] = sID;
             }
 
@@ -246,6 +270,8 @@ class Listener {
     }
 
     listen(sID) {
+        this.incraseSongStat();
+
         this.currentSong = this.app.data.songs[sID];
         const songPath = path.join(this.app.mainFolder, "songs", this.currentSong.src);
 
@@ -283,6 +309,19 @@ class Listener {
             this.priorityQueue.push(sID);
             this.app.success(`Added song "${this.app.data.songs[sID].name}" to queue`);
         } else this.app.error("Can't add a song to queue if queue is not initialized");
+    }
+
+    incraseSongStat() {
+        if (this.currentSong == null) return;
+        const currentSongTotalTicks = this.audio.duration * this.fps;
+        const percentage = Math.round((this.currentSongTicks / currentSongTotalTicks) * 100);
+        this.currentSongTicks = 0;
+
+        if (percentage >= 75) {
+            const sID = parseInt(this.audio.getAttribute("song-id"));
+            if (this.app.data.stats[sID] == undefined) this.app.data.stats[sID] = [Date.now()];
+            else this.app.data.stats[sID].push(Date.now());
+        }
     }
 
     // SETTER

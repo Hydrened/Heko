@@ -80,8 +80,6 @@ class App {
                     },
                 },
                 right: {
-                    playbackRate: document.getElementById("playback-rate-button"),
-                    queue: document.getElementById("open-queue-button"),
                     volume: {
                         slider: document.getElementById("volume-slider"),
                         svg: {
@@ -269,6 +267,7 @@ class App {
             currentP.addSong.addEventListener("click", () => this.modals.open("add-songs-to-playlist", { pID: (this.currentPlaylist) ? this.currentPlaylist.data.id : null }));
 
             currentP.filter.addEventListener("input", (e) => {
+                e.preventDefault();
                 [...currentP.songContainer.children].forEach((li) => {
                     const song = this.data.songs[parseInt(li.getAttribute("song-id"))];
                     li.classList.remove("hidden");
@@ -293,7 +292,7 @@ class App {
                     const sID = parseInt(li.getAttribute("song-id"));
                     const pID = this.currentPlaylist.data.id;
 
-                    const playlistsWhereCanBeAdded = this.playlists.filter((p) => !p.data.songs.includes(sID));
+                    const playlistsWhereCanBeAdded = this.playlists.filter((p) => !p.data.songs.includes(sID) && !this.isPlaylistParent(p.data.id));
                     const addToOtherPlaylistChildren = playlistsWhereCanBeAdded.map((p) => {
                         return { name: p.data.name, call: () => this.operations.addSongsToPlaylist(p.data.id, [sID]), children: [], shortcut: null };
                     });
@@ -303,6 +302,7 @@ class App {
                     menus.push({ name: "Remove from playlist", call: () => this.modals.open("remove-song-from-playlist", { sID: sID, pID: pID }), children: [], shortcut: null });
                     menus.push({ name: "Add to other playlist", call: null, children: addToOtherPlaylistChildren, shortcut: null });
                     menus.push({ name: "Edit song", call: () => this.modals.open("edit-song-from-app", { sID: sID }), children: [], shortcut: null });
+                    // menus.push({ name: "See stats", call: () => null, children: [], shortcut: null });
                 }
                 this.contextmenu.open(e, hover, menus);
             });
@@ -387,7 +387,11 @@ class App {
     refresh(params) {
         const strParams = (params) ? params.reduce((acc, param, index) => `${acc}${(index == 0) ? "?" : "&"}${param.key}=${param.value}`, "") : "";
         const link = "index.html" + strParams;
-        window.location.href = link;
+
+        setTimeout(() => {
+            this.modals.closeCurrent();
+            setTimeout(() => window.location.href = link, 350);
+        }, 1000);
     }
 
     sortCurrentPlaylistBy(sortType) {
@@ -460,5 +464,9 @@ class App {
         }
 
         return false;
+    }
+
+    isPlaylistParent(pID) {
+        return this.playlists.filter((p) => p.data.parent == pID).length > 0;
     }
 };
