@@ -264,6 +264,11 @@ class App {
 
         const currentP = this.elements.currentPlaylist;
         if (currentP) {
+            currentP.thumbnail.addEventListener("click", () => {
+                const pID = this.currentPlaylist.data.id;
+                this.modals.open("set-playlist-thumbnail", { pID: pID });
+            });
+
             currentP.addSong.addEventListener("click", () => this.modals.open("add-songs-to-playlist", { pID: (this.currentPlaylist) ? this.currentPlaylist.data.id : null }));
 
             currentP.filter.addEventListener("input", (e) => {
@@ -324,6 +329,7 @@ class App {
         this.listener.deconstructor();
         this.saveSettings();
         this.saveStats();
+        this.saveBackup();
     }
 
     saveSettings() {
@@ -340,7 +346,7 @@ class App {
             fs.writeFileSync(settingsFile, strSettingsData, "utf8");
 
         } catch (err) {
-            this.error("ERROR HK-206 => Could not save settings.json", err);
+            throw new Error("ERROR HK-206 => Could not save settings.json:", err);
         }
     }
 
@@ -352,7 +358,28 @@ class App {
             fs.writeFileSync(statsFile, strStatsData, "utf8");
 
         } catch (err) {
-            this.error("ERROR HK-207 => Could not save stats.json", err);
+            throw new Error("ERROR HK-207 => Could not save stats.json:", err);
+        }
+    }
+
+    saveBackup() {
+        try {
+            const dataFolder = path.join(this.mainFolder, "data");
+            const dest = path.join(this.mainFolder, "backups", getFormattedDate());
+
+            fs.mkdirSync(dest, { recursive: true });
+
+            for (const file of fs.readdirSync(dataFolder)) {
+                const currentSource = path.join(dataFolder, file);
+                const currentDestination = path.join(dest, file);
+        
+                if (!fs.lstatSync(currentSource).isDirectory()) {
+                    fs.copyFileSync(currentSource, currentDestination);
+                }
+            }
+
+        } catch (err) {
+            throw new Error("ERROR HK-306 => Could not copy data folder for backup:", err);
         }
     }
 

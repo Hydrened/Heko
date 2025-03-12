@@ -23,6 +23,7 @@ class Modals {
                 case "add-songs-to-playlist": m.confirmAddSongsToPlaylist(); break;
                 case "remove-song-from-playlist": m.confirmRemoveSongFromPlaylist(); break;
                 case "edit-song-from-app": m.confirmEditSongFromApp(); break;
+                case "set-playlist-thumbnail": m.confirmSetPlaylistThumbnail(); break;
                 default: break;
             }
         }
@@ -75,21 +76,21 @@ class Modals {
             dragZone.classList.remove("active");
         });
 
-        fakeDragzone.addEventListener("click", () => dragZone.click());
+        fakeDragzone.addEventListener("click", (e) => dragZone.click());
 
         dragZone.addEventListener("change", (e) => {
             this.resetMessages();
             dragZone.classList.remove("active");
             fakeDragzone.classList.remove("contains-file");
-            fakeDragzone.textContent = "Drag a file";
+            fakeDragzone.textContent = "Drag a song";
 
             const file = e.target.files[0];
             if (!file) return;
 
             const errors = [];
 
-            if (e.target.files[0].type == "audio/mpeg") {
-                fakeDragzone.textContent = e.target.files[0].name;
+            if (file.type == "audio/mpeg") {
+                fakeDragzone.textContent = file.name;
                 fakeDragzone.classList.add("contains-file");
             } else errors.push("File has to be a song format");
 
@@ -98,7 +99,7 @@ class Modals {
             if (errors.length > 0) {
                 this.displayErrors(errors);
                 e.preventDefault();
-                fakeDragzone.textContent = "Drag a file";
+                fakeDragzone.textContent = "Drag a song";
                 fakeDragzone.classList.remove("contains-file");
                 dragZone.classList.remove("active");
             }
@@ -124,6 +125,13 @@ class Modals {
                 if (![song.name.toLowerCase(), song.artist.toLowerCase()].some((v) => v.includes(e.target.value.toLowerCase()))) li.classList.add("hidden");
             });
         });
+
+        // CREATE PLAYLIST
+        const createPlaylistThumbnailContainer = document.querySelector("[modal=create-playlist] div.thumbnail-container");
+        const createPlaylistThumbnailInput = document.getElementById("create-playlist-thumbnail-input");
+        createPlaylistThumbnailContainer.addEventListener("click", () => {
+            createPlaylistThumbnailInput.click();
+        });
     }
 
     // EVENTS
@@ -144,6 +152,7 @@ class Modals {
             case "add-songs-to-playlist": this.initAddSongsToPlaylist(data); break;
             case "remove-song-from-playlist": this.initRemoveSongFromPlatlist(data); break;
             case "edit-song-from-app": this.initEditSongFromApp(data); break;
+            case "set-playlist-thumbnail": this.initSetPlaylistThumbnail(data); break;
             default: break;
         }
 
@@ -151,10 +160,54 @@ class Modals {
         if (textInputs.length > 0) textInputs[0].focus();
     }
 
+    createSongLi(song, sID, parent, audio) {
+        const li = document.createElement("li");
+        li.setAttribute("song-id", sID);
+        parent.appendChild(li);
+        
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox";
+        checkbox.classList.add("no-pointer-events");
+        li.appendChild(checkbox);
+
+        const p = document.createElement("p");
+        p.textContent = `${song.name} by ${song.artist}`;
+        li.appendChild(p);
+
+        const img = document.createElement("img");
+        img.src = "../assets/img/play.png";
+        img.height = 24;
+        li.appendChild(img);
+
+        img.addEventListener("click", () => {
+            if (sID != parseInt(audio.getAttribute("song-id"))) {
+                audio.src = path.join(this.app.mainFolder, "songs", song.src);
+                audio.setAttribute("song-id", sID);
+                audio.play();
+
+            } else {
+                if (audio.paused) audio.play();
+                else audio.pause();
+            }
+
+            [...parent.children].forEach((li) => {
+                const liSID = parseInt(li.getAttribute("song-id"));
+                li.querySelector("img").src = (liSID != sID) ? "../assets/img/play.png" : (audio.paused) ? "../assets/img/play.png" : "../assets/img/pause.png";
+            });
+        });
+
+        li.addEventListener("click", (e) => {
+            if (e.target.tagName == "IMG") return;
+            checkbox.checked = !checkbox.checked;
+        });
+    }
+
     closeCurrent() {
         [...document.querySelectorAll("[modal]")].forEach((el) => {
             el.classList.remove("open");
             el.classList.add("closing");
+
+            [...el.querySelectorAll("audio")].forEach((audio) => audio.pause());
 
             setTimeout(() => {
                 [...el.querySelectorAll("input")].forEach((input) => {
@@ -213,26 +266,14 @@ class Modals {
 
     initRemoveSongsFromApp(data) {
         const songContainer = document.getElementById("remove-songs-from-app-song-container");
+        const audio = document.getElementById("remove-songs-from-app-audio");
+        audio.volume = this.app.listener.audio.volume;
 
         songContainer.innerHTML = "";
 
         for (const sID in data.songs) {
             const song = data.songs[sID];
-
-            const li = document.createElement("li");
-            li.setAttribute("song-id", sID);
-            songContainer.appendChild(li);
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.classList.add("no-pointer-events");
-            li.appendChild(checkbox);
-
-            const p = document.createElement("p");
-            p.textContent = `${song.name} by ${song.artist}`;
-            li.appendChild(p);
-
-            li.addEventListener("click", () => checkbox.checked = !checkbox.checked);
+            this.createSongLi(song, sID, songContainer, audio);
         }
     }
 
@@ -243,26 +284,15 @@ class Modals {
         const playlist = this.app.data.playlists[data.pID];
         const playlistSongs = playlist.songs;
 
+        const audio = document.getElementById("add-songs-to-playlist-audio");
+        audio.volume = this.app.listener.audio.volume;
+
         songContainer.innerHTML = "";
         document.getElementById("add-songs-to-playlist-name").textContent = playlist.name;
 
         Object.keys(this.app.data.songs).filter((sID) => !playlistSongs.includes(parseInt(sID))).forEach((sID) => {
             const song = this.app.data.songs[sID];
-
-            const li = document.createElement("li");
-            li.setAttribute("song-id", sID);
-            songContainer.appendChild(li);
-
-            const checkbox = document.createElement("input");
-            checkbox.type = "checkbox";
-            checkbox.classList.add("no-pointer-events");
-            li.appendChild(checkbox);
-
-            const p = document.createElement("p");
-            p.textContent = `${song.name} by ${song.artist}`;
-            li.appendChild(p);
-
-            li.addEventListener("click", () => checkbox.checked = !checkbox.checked);
+            this.createSongLi(song, sID, songContainer, audio);
         });
     }
 
@@ -279,6 +309,11 @@ class Modals {
         document.getElementById("edit-song-from-app-name").setAttribute("song-id", data.sID);
         document.getElementById("edit-song-from-app-input-name").value = song.name;
         document.getElementById("edit-song-from-app-input-artist").value = song.artist;
+    }
+
+    initSetPlaylistThumbnail(data) {
+        const playlist = this.app.data.playlists[data.pID];
+        document.getElementById("set-playlist-thumbnail-name").textContent = playlist.name;
     }
 
     // MODALS CONFIRM
@@ -400,6 +435,11 @@ class Modals {
                 this.displaySucess(`Modifications for "${song.name}" by "${song.artist}" has been saved`);
             });
         } else this.displayErrors(errors);
+    }
+
+    confirmSetPlaylistThumbnail() {
+        console.log("yes");
+        
     }
  
     // GETTER

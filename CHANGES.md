@@ -1,3 +1,15 @@
+## HEKO-2.1.0
+#### ADDED
+- data backup when closing app
+- gloabal play / pause shortcut
+- gloabal next shortcut
+- gloabal previous shortcut
+- play button for music in remove songs from app modal
+- play button for music in add songs to playlist modal
+- window title's link redirect to current version changelog (instead of last version)
+#### FIXED
+- version checking
+
 ## HEKO-2.0.7
 #### ADDED
 - delay when refreshing

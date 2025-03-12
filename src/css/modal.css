@@ -66,7 +66,7 @@ div.top-modal-container > div.modal > div {
 
 
 
-div.top-modal-container > div.modal input[type="file"] {
+div.top-modal-container > div.modal input[type="file"].drag {
     width: 100vw;
     height: 100vh;
     position: absolute;
@@ -78,11 +78,11 @@ div.top-modal-container > div.modal input[type="file"] {
     z-index: -10;
     border-radius: 0px;
 }
-div.top-modal-container > div.modal input[type="file"].active {
+div.top-modal-container > div.modal input[type="file"].drag.active {
     display: block;
     z-index: 2;
 }
-div.top-modal-container > div.modal input[type="file"] + div.drag-zone {
+div.top-modal-container > div.modal input[type="file"].drag + div.drag-zone {
     width: 100vw;
     height: 0;
     position: absolute;
@@ -96,7 +96,7 @@ div.top-modal-container > div.modal input[type="file"] + div.drag-zone {
     opacity: 0;
     transition: opacity 300ms;
 }
-div.top-modal-container > div.modal input[type="file"].active + div.drag-zone {
+div.top-modal-container > div.modal input[type="file"].drag.active + div.drag-zone {
     height: 100vh;
     opacity: 1;
     background-color: var(--col-1);
@@ -105,8 +105,30 @@ div.top-modal-container > div.modal input[type="file"].active + div.drag-zone {
 
 
 
+div.thumbnail-container {
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: rgb(50,50,50);
+    border: 3px dashed rgba(255,255,255,0.4);
+    border-radius: 0.6rem;
+    cursor: pointer;
+}
+div.thumbnail-preview {
+    width: 50px;
+    aspect-ratio: 1 / 1;
+    background-color: rgba(0,0,0,0.8);
+    border-radius: 0.4rem;
+}
+
+
+
 div.top-modal-container > div.modal h2 {
     font-size: 2rem;
+}
+div.top-modal-container > div.modal h3 {
+    font-size: 1.7rem;
 }
 div.top-modal-container > div.modal input {
     width: 40vw;
@@ -193,64 +215,4 @@ div.top-modal-container > div.modal div.fake-drag-zone:hover {
 }
 div.top-modal-container > div.modal div.fake-drag-zone.contains-file {
     border: 3px solid var(--col-1);
-}
-
-
-
-div.right-modal-container {
-    width: 30rem;
-    height: calc(100vh - var(--frame-height) - var(--header-height));
-    position: absolute;
-    top: calc(var(--frame-height) + var(--header-height));
-    right: -30rem;
-    z-index: 99;
-    overflow: visible;
-}
-div.right-modal-container > div.modal {
-    width: 100%;
-    height: 100%;
-    padding: var(--main-boxes-padding);
-    position: absolute;
-    top: 0;
-    left: 0;
-    gap: 1rem;
-    background-color: var(--bg-col-3);
-    transition: transform 600ms;
-}
-div.right-modal-container > div.modal.open {
-    transform: translateX(-100%);
-}
-div.right-modal-container > #queue-modal {
-    display: grid;
-    grid-template-rows: auto 1fr;
-}
-div.right-modal-container > #queue-modal > ul {
-    overflow-y: scroll;
-    background-color: var(--bg-col-8);
-    border-radius: 0.5rem;
-}
-div.right-modal-container > #queue-modal > ul > li {
-    padding: 0.7rem 0.9rem;
-    display: flex;
-    gap: 1rem;
-    border-top-left-radius: 0.5rem;
-    border-bottom-left-radius: 0.5rem;
-    cursor: pointer;
-}
-div.right-modal-container > #queue-modal > ul > li:hover {
-    background-color: var(--bg-col-2);
-}
-div.right-modal-container > #queue-modal > ul > li > p {
-    font-size: 0.9rem;
-}
-div.right-modal-container > #queue-modal > ul > li > p.details {
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    font-size: 0.9rem;
-}
-div.right-modal-container > #queue-modal > ul > li > p:not(.details) {
-    overflow: visible;
-}
-div.right-modal-container > #queue-modal > ul > li:hover > p {
-    color: var(--col-1);
 }

@@ -126,6 +126,11 @@
                     <div>
                         <h2>Playlist name</h2>
                         <input type="text" id="create-playlist-modal-input">
+                        <div class="thumbnail-container">
+                            <h3>Thumbnail</h3>
+                            <div class="thumbnail-preview"></div>
+                            <input type="file" id="create-playlist-thumbnail-input" hidden>
+                        </div>
                         <div class="button-container">
                             <button class="confirm" id="create-playlist-modal-confirm-button">Create</button>
                             <button class="error">Cancel</button>
@@ -157,11 +162,11 @@
                 <div class="modal" modal="add-song-to-app" id="add-song-to-app-modal">
                     <div>
                         <h2>Add a song</h2>
-                        <input type="file" id="add-song-to-app-file">
+                        <input type="file" id="add-song-to-app-file" class="drag">
                         <div class="drag-zone">Drag file here</div>
                         <input type="text" id="add-song-to-app-name" placeholder="Name">
                         <input type="text" id="add-song-to-app-artist" placeholder="Artist">
-                        <div id="add-song-to-app-fake-drag-zone" class="fake-drag-zone">Drag a file</div>
+                        <div id="add-song-to-app-fake-drag-zone" class="fake-drag-zone">Drag a song</div>
                         <div class="button-container">
                             <button class="confirm" id="add-song-to-app-confirm-button">Add</button>
                             <button class="error">Cancel</button>
@@ -180,6 +185,7 @@
                         </div>
                         <p class="message"></p>
                     </div>
+                    <audio id="remove-songs-from-app-audio" hidden></audio>
                 </div>
                 <div class="modal" modal="add-songs-to-playlist" id="add-songs-to-playlist-modal">
                     <div>
@@ -192,6 +198,7 @@
                         </div>
                         <p class="message"></p>
                     </div>
+                    <audio id="add-songs-to-playlist-audio" hidden></audio>
                 </div>
                 <div class="modal" modal="remove-song-from-playlist" id="remove-song-from-playlist-modal">
                     <div>
@@ -210,6 +217,16 @@
                         <input type="text" id="edit-song-from-app-input-artist">
                         <div class="button-container">
                             <button class="confirm" id="edit-song-from-app-confirm-button">Confirm</button>
+                            <button class="error">Cancel</button>
+                        </div>
+                        <p class="message"></p>
+                    </div>
+                </div>
+                <div class="modal" modal="set-playlist-thumbnail" id="set-playlist-thumbnail-modal">
+                    <div>
+                        <h2>Set "<span id="set-playlist-thumbnail-name"></span>" thumbnail</h2>
+                        <div class="button-container">
+                            <button class="confirm" id="set-playlist-thumbnail-confirm-button">Confirm</button>
                             <button class="error">Cancel</button>
                         </div>
                         <p class="message"></p>

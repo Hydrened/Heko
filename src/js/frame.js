@@ -14,10 +14,10 @@ class Frame {
     initTitle() {
         const versionFile = path.join(__dirname, "..", "version");
         fsp.readFile(versionFile, "utf8").then((version) => {
-            console.log(version);
             this.elements.title.textContent = `Heko ${version}`;
             this.elements.title.addEventListener("click", () => {
-                shell.openExternal("https://github.com/Hydrened/Heko/blob/main/CHANGES.md");
+                const stringifiedVersion = version.replaceAll(".", "");
+                shell.openExternal(`https://github.com/Hydrened/Heko/blob/main/CHANGES.md#heko-${stringifiedVersion}`);
             });
         }).catch((readErr) => console.error("ERROR HK-101 => Could not read version:" + readErr));
     }
