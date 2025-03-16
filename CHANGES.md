@@ -1,3 +1,7 @@
+## HEKO-2.1.1
+#### FIXED
+- loop not looping current song
+
 ## HEKO-2.1.0
 #### ADDED
 - data backup when closing app

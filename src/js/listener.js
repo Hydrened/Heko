@@ -229,6 +229,7 @@ class Listener {
     loopButton() {
         this.loop = !this.loop;
         this.app.elements.footer.center.buttons.loop.classList.toggle("activated");
+        if (this.loop) this.historyPos = 0;
         this.generateQueue(null);
     }
 
@@ -264,7 +265,8 @@ class Listener {
 
         } else {
             if (sID == null) {
-                this.queue = (this.random) ? [songs[randomInRange(0, songs.length - 1)]] : [songs[0]];
+                const currentSID = parseInt(this.audio.getAttribute("song-id")) || 1;
+                this.queue = [currentSID];
             } else this.queue = [sID];
         }
     }
