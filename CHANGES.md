@@ -1,3 +1,9 @@
+## HEKO-2.1.2
+#### FIXED
+- shortcut disabled when writing in song filter input
+- anti spam when confirming an action inside a modal
+- song file input not resetting when closing add song to app modal 
+
 ## HEKO-2.1.1
 #### FIXED
 - loop not looping current song

@@ -25,7 +25,6 @@ section > header > div#current-playlist-thumbnail {
     border-radius: 1rem;
     background-size: cover;
     background-repeat: no-repeat;
-    cursor: pointer;
 }
 section > header > div.current-playlist-details {
     padding: 0.5rem;

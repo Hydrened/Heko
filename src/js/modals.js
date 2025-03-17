@@ -10,6 +10,7 @@ class Modals {
     initVariables() {
         this.file = null;
         this.tabPos = 0;
+        this.valided = false;
     }
 
     initEvents() {
@@ -23,7 +24,6 @@ class Modals {
                 case "add-songs-to-playlist": m.confirmAddSongsToPlaylist(); break;
                 case "remove-song-from-playlist": m.confirmRemoveSongFromPlaylist(); break;
                 case "edit-song-from-app": m.confirmEditSongFromApp(); break;
-                case "set-playlist-thumbnail": m.confirmSetPlaylistThumbnail(); break;
                 default: break;
             }
         }
@@ -125,13 +125,6 @@ class Modals {
                 if (![song.name.toLowerCase(), song.artist.toLowerCase()].some((v) => v.includes(e.target.value.toLowerCase()))) li.classList.add("hidden");
             });
         });
-
-        // CREATE PLAYLIST
-        const createPlaylistThumbnailContainer = document.querySelector("[modal=create-playlist] div.thumbnail-container");
-        const createPlaylistThumbnailInput = document.getElementById("create-playlist-thumbnail-input");
-        createPlaylistThumbnailContainer.addEventListener("click", () => {
-            createPlaylistThumbnailInput.click();
-        });
     }
 
     // EVENTS
@@ -152,7 +145,6 @@ class Modals {
             case "add-songs-to-playlist": this.initAddSongsToPlaylist(data); break;
             case "remove-song-from-playlist": this.initRemoveSongFromPlatlist(data); break;
             case "edit-song-from-app": this.initEditSongFromApp(data); break;
-            case "set-playlist-thumbnail": this.initSetPlaylistThumbnail(data); break;
             default: break;
         }
 
@@ -220,6 +212,7 @@ class Modals {
                 });
 
                 [...el.querySelectorAll("span")].forEach((span) => span.textContent = "");
+                document.getElementById("add-song-to-app-file").dispatchEvent(new Event("change"));
                 el.classList.remove("closing");
             }, 500);
         });
@@ -239,6 +232,7 @@ class Modals {
     }
 
     displaySucess(message) {
+        this.valided = true;
         const el = this.getCurrentModal().querySelector("p.message");
         el.classList.remove("error");
         el.classList.add("success");
@@ -246,7 +240,9 @@ class Modals {
     }
 
     resetMessages() {
-        const el = this.getCurrentModal().querySelector("p.message");
+        const currentModal = this.getCurrentModal();
+        if (currentModal == null) return;
+        const el = currentModal.querySelector("p.message");
         el.textContent = "";
         el.classList.remove("error");
         el.classList.remove("success");
@@ -311,13 +307,10 @@ class Modals {
         document.getElementById("edit-song-from-app-input-artist").value = song.artist;
     }
 
-    initSetPlaylistThumbnail(data) {
-        const playlist = this.app.data.playlists[data.pID];
-        document.getElementById("set-playlist-thumbnail-name").textContent = playlist.name;
-    }
-
     // MODALS CONFIRM
     confirmCreatePlaylist() {
+        if (this.valided) return;
+
         const errors = [];
 
         const name = document.getElementById("create-playlist-modal-input").value;
@@ -333,6 +326,8 @@ class Modals {
     }
 
     confirmRemovePlaylist() {
+        if (this.valided) return;
+
         const pName = document.getElementById("confirm-remove-playlist-name").textContent;
         const pID = this.app.getPlaylistByName(pName).data.id;
         this.app.operations.removePlaylist(pID).then(() => {
@@ -341,6 +336,8 @@ class Modals {
     }
 
     confirmRenamePlaylist() {
+        if (this.valided) return;
+
         const errors = [];
         const pName = document.getElementById("rename-playlist-name").textContent;
         const newName = document.getElementById("rename-playlist-input").value;
@@ -358,6 +355,8 @@ class Modals {
     }
 
     confirmAddSongToApp() {
+        if (this.valided) return;
+
         const errors = [];
 
         const name = document.getElementById("add-song-to-app-name").value;
@@ -380,6 +379,8 @@ class Modals {
     }
 
     confirmRemoveSongsFromApp() {
+        if (this.valided) return;
+
         const errors = [];
         const songsToRemove = [...this.getCurrentModal().querySelectorAll("li[song-id] > input[type=checkbox]")].filter((input) => input.checked).map((i) => parseInt(i.parentElement.getAttribute("song-id")));
 
@@ -393,6 +394,8 @@ class Modals {
     }
 
     confirmAddSongsToPlaylist() {
+        if (this.valided) return;
+
         const errors = [];
         const songsToAdd = [...this.getCurrentModal().querySelectorAll("li[song-id] > input[type=checkbox]")].filter((input) => input.checked).map((i) => parseInt(i.parentElement.getAttribute("song-id")));
         
@@ -406,6 +409,8 @@ class Modals {
     }
 
     confirmRemoveSongFromPlaylist() {
+        if (this.valided) return;
+
         const sID = parseInt(document.getElementById("remove-song-from-playlist-song").getAttribute("song-id"));
         const song = this.app.data.songs[sID];
         const pID = parseInt(document.getElementById("remove-song-from-playlist-playlist").getAttribute("playlist-id"));
@@ -417,6 +422,8 @@ class Modals {
     }
 
     confirmEditSongFromApp() {
+        if (this.valided) return;
+
         const errors = [];
 
         const sID = parseInt(document.getElementById("edit-song-from-app-name").getAttribute("song-id"));
@@ -437,11 +444,6 @@ class Modals {
         } else this.displayErrors(errors);
     }
 
-    confirmSetPlaylistThumbnail() {
-        console.log("yes");
-        
-    }
- 
     // GETTER
     isAModalOpened() {
         return [...document.querySelectorAll("[modal]")].filter((el) => el.classList.contains("open") || el.classList.contains("closing")).length > 0;

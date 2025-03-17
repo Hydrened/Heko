@@ -58,6 +58,7 @@ class Listener {
 
         document.addEventListener("keydown", (e) => {
             if (this.app.modals.isAModalOpened()) return;
+            if (this.app.isWritingInFilter()) return;
 
             switch (e.key.toLowerCase()) {
                 case "m":

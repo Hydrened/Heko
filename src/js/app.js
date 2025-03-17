@@ -264,11 +264,6 @@ class App {
 
         const currentP = this.elements.currentPlaylist;
         if (currentP) {
-            currentP.thumbnail.addEventListener("click", () => {
-                const pID = this.currentPlaylist.data.id;
-                this.modals.open("set-playlist-thumbnail", { pID: pID });
-            });
-
             currentP.addSong.addEventListener("click", () => this.modals.open("add-songs-to-playlist", { pID: (this.currentPlaylist) ? this.currentPlaylist.data.id : null }));
 
             currentP.filter.addEventListener("input", (e) => {
@@ -495,5 +490,9 @@ class App {
 
     isPlaylistParent(pID) {
         return this.playlists.filter((p) => p.data.parent == pID).length > 0;
+    }
+
+    isWritingInFilter() {
+        return document.activeElement == this.elements.currentPlaylist.filter;
     }
 };
