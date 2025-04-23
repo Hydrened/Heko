@@ -56,6 +56,12 @@ class Listener {
             }
         });
 
+        ipcRenderer.on("show-media-data", (e, data) => {
+            if (this.currentSong == null) {
+                return;
+            }
+        });
+
         document.addEventListener("keydown", (e) => {
             if (this.app.modals.isAModalOpened()) return;
             if (this.app.isWritingInFilter()) return;

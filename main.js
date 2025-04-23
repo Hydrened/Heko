@@ -76,6 +76,7 @@ class Application {
             webPreferences: {
                 nodeIntegration: true,
                 contextIsolation: false,
+                devTools: false,
             },
         });
         window.loadFile("src/index.html");
@@ -221,14 +222,17 @@ app.whenReady().then(() => {
 
     globalShortcut.register("MediaPlayPause", () => {
         app.window.webContents.send("song-control", "play");
+        app.window.webContents.send("show-media-data", true);
     });
 
     globalShortcut.register("MediaNextTrack", () => {
         app.window.webContents.send("song-control", "next");
+        app.window.webContents.send("show-media-data", true);
     });
 
     globalShortcut.register("MediaPreviousTrack", () => {
         app.window.webContents.send("song-control", "previous");
+        app.window.webContents.send("show-media-data", true);
     });
 });
 

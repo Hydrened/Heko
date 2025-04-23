@@ -1,3 +1,7 @@
+## HEKO-2.1.3
+#### FIXED
+- disabled console
+
 ## HEKO-2.1.2
 #### FIXED
 - shortcut disabled when writing in song filter input
