@@ -23,4 +23,6 @@
     --main-boxes-padding: 1.5rem;
     --footer-height: 6rem;
     --aside-width: 19rem;
+
+    --default-border: 1px solid rgb(70,70,70);
 }

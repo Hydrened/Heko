@@ -4,6 +4,7 @@ header.frame {
     grid-template-columns: auto 1fr auto;
     background-color: var(--bg-col-2);
     z-index: 999999;
+    border-bottom: var(--default-border);
 }
 
 

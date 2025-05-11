@@ -234,6 +234,15 @@ app.whenReady().then(() => {
         app.window.webContents.send("song-control", "previous");
         app.window.webContents.send("show-media-data", true);
     });
+
+    navigator.mediaSession.metadata = new MediaMetadata({
+        title: "titre",
+        artist: "artist",
+        album: "album",
+        artwork: [
+            { src: "cover.jpg", sizes: "512x512", type: "image/jpeg" }
+        ]
+    });
 });
 
 app.on("will-quit", () => {

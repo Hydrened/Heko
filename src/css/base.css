@@ -109,6 +109,7 @@ div.page {
 }
 body > div.page > header {
     background-color: var(--col-1);
+    border-bottom: var(--default-border);
 }
 
 

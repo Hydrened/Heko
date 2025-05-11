@@ -1,3 +1,7 @@
+## HEKO-2.1.4
+#### STYLE
+- added borders
+
 ## HEKO-2.1.3
 #### FIXED
 - disabled console

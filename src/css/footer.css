@@ -5,6 +5,7 @@ div.page > footer {
     gap: 1rem;
     background-color: var(--bg-col-5);
     transition: filter 400ms;
+    border-top: var(--default-border);
 }
 div.page > footer > article {
     padding-block: var(--main-boxes-padding);
