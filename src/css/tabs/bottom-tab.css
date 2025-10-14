@@ -1,0 +1,79 @@
+.bottom-tab {
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+
+    border-top: var(--default-border);
+    
+    background-color: var(--bg-col-11);
+}
+
+.main-controls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.main-control-buttons-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+}
+
+#toggle-shuffle-button > img,
+#toggle-loop-button > img {
+    width: 1.3rem;
+}
+#previous-song-button > img,
+#next-song-button > img {
+    width: 1.8rem;
+}
+#play-song-button > img,
+#pause-song-button > img {
+    width: 2rem;
+}
+
+#toggle-play-button[playing="false"] > [pause="true"],
+#toggle-play-button[playing="true"] > [pause="false"] {
+    display: none;
+}
+
+.song-slider-container {
+    display: grid;
+    grid-template-columns: 2rem 1fr 2rem;
+    align-items: center;
+    gap: 0.6rem;
+}
+.song-slider-container > p {
+    text-align: center;
+    color: var(--text-col-2);
+}
+
+.secondary-controls-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+}
+
+#pitch-button > img {
+    width: 1.3rem;
+}
+#queue-button > img {
+    width: 1.6rem;
+}
+#toggle-song-volume-button > img {
+    width: 1.5rem;
+}
+
+.volume-controls-container {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+#toggle-song-volume-button[volume="0"] > :not([volume="0"]),
+#toggle-song-volume-button[volume="1"] > :not([volume="1"]),
+#toggle-song-volume-button[volume="2"] > :not([volume="2"]) {
+    display: none;
+}

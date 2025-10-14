@@ -1,5 +1,4 @@
+dist/
 node_modules/
+src/js/
 todo.md
-dist/*
-!dist/*.exe
-errors.md

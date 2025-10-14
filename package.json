@@ -1,42 +1,21 @@
 {
-  "name": "heko.old",
-  "version": "2.1.4",
+  "name": "heko",
+  "version": "3.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "src/js/main/index.js",
   "scripts": {
-    "start": "electron .",
-    "build": "electron-builder"
-  },
-  "build": {
-    "appId": "com.heko.app",
-    "productName": "Heko",
-    "directories": {
-      "output": "dist"
-    },
-    "files": [
-      "main.js",
-      "src/**/*",
-      "assets/**/*",
-      "version"
-    ],
-    "win": {
-      "target": "nsis"
-    },
-    "mac": {
-      "target": "dmg"
-    },
-    "linux": {
-      "target": "AppImage"
-    }
+    "start": "electron ."
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "electron": "^33.2.0",
-    "electron-builder": "^25.1.8"
+    "@types/node": "^24.7.0",
+    "electron": "^38.2.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.9.3"
   },
   "dependencies": {
-    "node-fetch": "^2.7.0"
+    "conf": "^15.0.2"
   }
 }

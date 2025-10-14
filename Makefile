@@ -1,11 +1,10 @@
 all:
-	npm start
+	npm start run
 
-build:
-	npm run build
+m:
+	tsc -p tsconfig.main.json
 
-clean:
-	rmdir /s /q dist
-	mkdir dist
+r:
+	tsc -p tsconfig.renderer.json
 
-rebuild: clean build
+mr: m r

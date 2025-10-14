@@ -1,5 +1,0 @@
-main {
-    display: grid;
-    grid-template-columns: var(--aside-width) 1fr;
-    transition: filter 400ms;
-}

@@ -3,232 +3,139 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Heko</title>
-        <link rel="stylesheet" href="css/root.css">
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/frame.css">
-        <link rel="stylesheet" href="css/contextmenu.css">
-        <link rel="stylesheet" href="css/main.css">
-        <link rel="stylesheet" href="css/aside.css">
-        <link rel="stylesheet" href="css/current-playlist.css">
-        <link rel="stylesheet" href="css/footer.css">
-        <link rel="stylesheet" href="css/modal.css">
-        <link rel="stylesheet" href="css/tooltip.css">
-        <link rel="stylesheet" href="css/slider-menu.css">
-        <script src="js/functions.js"></script>
-        <script src="js/frame.js"></script>
-        <script src="js/tooltip.js"></script>
-        <script src="js/operations.js"></script>
-        <script src="js/modals.js"></script>
-        <script src="js/contextmenu.js"></script>
-        <script src="js/listener.js"></script>
-        <script src="js/playlist.js"></script>
-        <script src="js/app.js"></script>
-        <script src="js/main.js"></script>
+        <link rel="stylesheet" href="css/tabs/tabs.css">
+        <link rel="stylesheet" href="css/tabs/left-tab.css">
+        <link rel="stylesheet" href="css/tabs/right-tab.css">
+        <link rel="stylesheet" href="css/tabs/bottom-tab.css">
+        <link rel="stylesheet" href="css/modals/modal.center.css">
+        <script type="module" src="js/renderer/main.js"></script>
     </head>
     <body>
         <header class="frame">
-            <p id="window-title"></p>
-            <div class="drag-area"></div>
-            <div class="buttons-container">
-                <button>
-                    <svg id="frame-minimize" class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 10v1h8v-1z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
+            <div class="drag-area">
+                <p class="window-title">Heko</p>
+            </div>
+            <div class="button-container">
+                <button id="minimize-window-button">
+                    <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 10v1h8v-1z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
-                <button>
-                    <svg id="frame-maximize" class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 4v8h8V4zm1 1h6v6H5z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
+                <button id="maximize-window-button">
+                    <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 4v8h8V4zm1 1h6v6H5z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
-                <button>
-                    <svg id="frame-close" class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4.795 3.912l-.883.883.147.146L7.117 8 4.06 11.059l-.147.146.883.883.146-.147L8 8.883l3.059 3.058.146.147.883-.883-.147-.146L8.883 8l3.058-3.059.147-.146-.883-.883-.146.147L8 7.117 4.941 4.06z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" fill-rule="evenodd" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
+                <button id="close-window-button">
+                    <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4.795 3.912l-.883.883.147.146L7.117 8 4.06 11.059l-.147.146.883.883.146-.147L8 8.883l3.059 3.058.146.147.883-.883-.147-.146L8.883 8l3.058-3.059.147-.146-.883-.883-.146.147L8 7.117 4.941 4.06z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" fill-rule="evenodd" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
             </div>
         </header>
-        <div class="page">
-            <header></header>
-            <main>
-                <aside>
-                    <header>
-                        <svg class="folder stroke" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 17.5V11.5C7 10.9477 7.44772 10.5 8 10.5H12H14H17H20C20.5523 10.5 21 10.9477 21 11.5V17.5C21 18.0523 20.5523 18.5 20 18.5H8C7.44772 18.5 7 18.0523 7 17.5Z" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: #e8e6e3;"></path> <path d="M20 10.5V8C20 7.44772 19.5523 7 19 7H13.3508C13.1237 7 12.9034 6.92272 12.7261 6.78087L10.7739 5.21913C10.5966 5.07728 10.3763 5 10.1492 5H4C3.44772 5 3 5.44772 3 6V17.5C3 18.0523 3.44772 18.5 4 18.5H8.5" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: #e8e6e3;"></path></svg>
-                        <h2>Playlists</h2>
-                        <button class="plus" id="create-playlist-button">
-                            <svg class="fill main-color-hover" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M9 17a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 10-2 0v6H3a1 1 0 000 2h6v6z" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
-                        </button>
-                    </header>
-                    <ul id="playlists-container"></ul>
-                    <footer>
-                        <svg class="songs stroke" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9 19C9 20.1046 7.65685 21 6 21C4.34315 21 3 20.1046 3 19C3 17.8954 4.34315 17 6 17C7.65685 17 9 17.8954 9 19ZM9 19V5L21 3V17M21 17C21 18.1046 19.6569 19 18 19C16.3431 19 15 18.1046 15 17C15 15.8954 16.3431 15 18 15C19.6569 15 21 15.8954 21 17ZM9 9L21 7" stroke="#000000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-darkreader-inline-stroke="" style="--darkreader-inline-stroke: #e8e6e3;"></path></svg>
-                        <h2>Songs</h2>
-                        <button class="dots" id="manage-songs-open-button">
-                            <svg class="fill main-color-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 10C6.10457 10 7 10.8954 7 12C7 13.1046 6.10457 14 5 14C3.89543 14 3 13.1046 3 12C3 10.8954 3.89543 10 5 10Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path> <path d="M12 10C13.1046 10 14 10.8954 14 12C14 13.1046 13.1046 14 12 14C10.8954 14 10 13.1046 10 12C10 10.8954 10.8954 10 12 10Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path> <path d="M21 12C21 10.8954 20.1046 10 19 10C17.8954 10 17 10.8954 17 12C17 13.1046 17.8954 14 19 14C20.1046 14 21 13.1046 21 12Z" fill="#000000" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
-                        </button>
-                    </footer>
-                </aside>
-                <section id="current-playlist">
-                    <header>
-                        <div id="current-playlist-thumbnail"></div>
-                        <div class="current-playlist-details">
-                            <h1 id="current-playlist-title">Titre</h1>
-                            <div>
-                                <h4 id="current-playlist-nb-song">0 songs</h4>
-                                <h4 id="current-playlist-duration"></h4>
-                                <button class="plus" id="add-songs-to-current-playlist-button">
-                                    <svg class="fill main-color-hover" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" fill="none"><path fill="#000000" fill-rule="evenodd" d="M9 17a1 1 0 102 0v-6h6a1 1 0 100-2h-6V3a1 1 0 10-2 0v6H3a1 1 0 000 2h6v6z" data-darkreader-inline-fill="" style="--darkreader-inline-fill: #000000;"></path></svg>
-                                </button>
-                            </div>
+        <main>
+            <aside class="left-tab">
+                <header>
+                    <img src="assets/folder.svg" class="folder-img">
+                    <h2>Playlists</h2>
+                    <button id="add-playlist-button">
+                        <img src="assets/plus.svg">
+                    </button>
+                </header>
+                <ul id="playlists-container">
+                    <li class="playlist-wrapper">
+                        <div class="playlist-container">
+                            <div class="thumbnail"></div>
+                            <h3>
+                                ALL
+                                <span>604 songs</span>
+                            </h3>
                         </div>
-                    </header>
-                    <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ...">
-                    <div id="current-playlist-table" class="current-playlist-table">
-                        <div class="current-playlist-table-head">
-                            <p id="current-playlist-sort-by-id" class="sorted-by">#</p>
-                            <p id="current-playlist-sort-by-title">Title</p>
-                            <p id="current-playlist-sort-by-artist">Artist</p>
-                            <p id="current-playlist-sort-by-duration">Duration</p>
+                    </li>
+                    <li class="playlist-wrapper">
+                        <div class="playlist-container">
+                            <div class="thumbnail"></div>
+                            <h3>
+                                TYPES
+                                <span>2 playlists</span>
+                            </h3>
                         </div>
-                        <ul id="current-playlist-table-body"></ul>
-                    </div>
-                </section>
-            </main>
-            <footer>
-                <article class="current-song-details">
-                    <h3 id="current-song-name"><span></span></h3>
-                    <h4 id="current-song-artist"><span></span></h4>
+                        <ul class="sub-playlists-container">
+                            <li class="playlist-wrapper">
+                                <div class="playlist-container">
+                                    <div class="thumbnail"></div>
+                                    <h3>
+                                        JPOP & KPOP
+                                        <span>181 songs</span>
+                                    </h3>
+                                </div>
+                            </li>
+                            <li class="playlist-wrapper">
+                                <div class="playlist-container">
+                                    <div class="thumbnail"></div>
+                                    <h3>
+                                        RUSSIAN
+                                        <span>16 songs</span>
+                                    </h3>
+                                </div>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+                <footer>
+                    <img src="assets/music-note.svg" class="music-note-img">
+                    <h2>Songs</h2>
+                    <button id="song-settings-button">
+                        <img src="assets/ellipsis.svg">
+                    </button>
+                </footer>
+            </aside>
+            <section class="right-tab">
+
+            </section>
+            <footer class="bottom-tab">
+                <article class="current-song-details-container">
+                    <h3 id="current-song-name"></h3>
+                    <h4 id="current-song-artist"></h4>
                 </article>
-                <article class="song-controls">
-                    <div class="song-controls-buttons">
-                        <svg id="random-button" tooltip="Shuffle" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                        <svg id="previous-button" tooltip="Previous" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M7 5V19M17 7.329V16.671C17 17.7367 17 18.2695 16.7815 18.5432C16.5916 18.7812 16.3035 18.9197 15.9989 18.9194C15.6487 18.919 15.2327 18.5861 14.4005 17.9204L10.1235 14.4988C9.05578 13.6446 8.52194 13.2176 8.32866 12.7016C8.1592 12.2492 8.1592 11.7508 8.32866 11.2984C8.52194 10.7824 9.05578 10.3554 10.1235 9.50122L14.4005 6.07961C15.2327 5.41387 15.6487 5.081 15.9989 5.08063C16.3035 5.0803 16.5916 5.21876 16.7815 5.45677C17 5.73045 17 6.2633 17 7.329Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                        <svg id="play-button" tooltip="Play" class="fill white-hover" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 23.7109 37.0469 C 22.6327 37.7031 21.4140 37.1875 21.4140 36.0625 L 21.4140 19.9375 C 21.4140 18.8594 22.7030 18.3906 23.7109 18.9766 L 36.8827 26.7812 C 37.8436 27.3437 37.8671 28.6797 36.8827 29.2656 Z"></path></svg>
-                        <svg id="pause-button" tooltip="Pause" class="fill white-hover hidden" viewBox="0 0 56 56" xmlns="http://www.w3.org/2000/svg"><path d="M 27.9999 51.9063 C 41.0546 51.9063 51.9063 41.0781 51.9063 28 C 51.9063 14.9453 41.0312 4.0937 27.9765 4.0937 C 14.8983 4.0937 4.0937 14.9453 4.0937 28 C 4.0937 41.0781 14.9218 51.9063 27.9999 51.9063 Z M 21.8593 36.4609 C 20.7812 36.4609 20.3124 35.8984 20.3124 35.0312 L 20.3124 20.9922 C 20.3124 20.1484 20.7812 19.5625 21.8593 19.5625 L 23.9921 19.5625 C 25.0702 19.5625 25.5390 20.1484 25.5390 20.9922 L 25.5390 35.0312 C 25.5390 35.8984 25.0702 36.4609 23.9921 36.4609 Z M 31.9843 36.4609 C 30.9296 36.4609 30.4140 35.8984 30.4140 35.0312 L 30.4140 20.9922 C 30.4140 20.1484 30.9296 19.5625 31.9843 19.5625 L 34.1171 19.5625 C 35.1718 19.5625 35.6640 20.1484 35.6640 20.9922 L 35.6640 35.0312 C 35.6640 35.8984 35.1718 36.4609 34.1171 36.4609 Z"></path></svg>
-                        <svg id="next-button" tooltip="Next" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M17 5V19M7 7.329V16.671C7 17.7367 7 18.2695 7.21846 18.5432C7.40845 18.7812 7.69654 18.9197 8.00108 18.9194C8.35125 18.919 8.76734 18.5861 9.59951 17.9204L13.8765 14.4988C14.9442 13.6446 15.4781 13.2176 15.6713 12.7016C15.8408 12.2492 15.8408 11.7508 15.6713 11.2984C15.4781 10.7824 14.9442 10.3554 13.8765 9.50122L9.59951 6.07961C8.76734 5.41387 8.35125 5.081 8.00108 5.08063C7.69654 5.0803 7.40845 5.21876 7.21846 5.45677C7 5.73045 7 6.2633 7 7.329Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                        <svg id="loop-button" tooltip="Loop" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18 4L21 7M21 7L18 10M21 7H7C4.79086 7 3 8.79086 3 11M6 20L3 17M3 17L6 14M3 17H17C19.2091 17 21 15.2091 21 13" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
+                <article class="main-controls-container">
+                    <div class="main-control-buttons-container">
+                        <button id="toggle-shuffle-button">
+                            <img src="assets/shuffle.svg">
+                        </button>
+                        <button id="previous-song-button">
+                            <img src="assets/previous.svg">
+                        </button>
+                        <button id="toggle-play-button" playing="false">
+                            <img src="assets/play.svg" pause="false">
+                            <img src="assets/pause.svg" pause="true">
+                        </button>
+                        <button id="next-song-button">
+                            <img src="assets/next.svg">
+                        </button>
+                        <button id="toggle-loop-button">
+                            <img src="assets/loop.svg">
+                        </button>
                     </div>
-                    <div class="song-slider">
-                        <p id="song-position">-:--</p>
-                        <input id="song-slider" type="range" min="0" max="100" step="0.01" value="0">
-                        <p id="song-duration">-:--</p>
+                    <div class="song-slider-container">
+                        <p id="current-song-position">-:--</p>
+                        <input id="song-position-slider" type="range" min="0" max="100", step="0.01" value="0">
+                        <p id="current-song-duration">-:--</p>
                     </div>
                 </article>
-                <article class="other">
-                    <div class="song-volume">
-                        <div>
-                            <svg tooltip="Unmute" id="song-no-volume-logo" class="stroke white-hover" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M22 8.99993L16 14.9999M16 8.99993L22 14.9999M9.63432 4.36561L6.46863 7.5313C6.29568 7.70425 6.2092 7.79073 6.10828 7.85257C6.01881 7.9074 5.92127 7.9478 5.81923 7.9723C5.70414 7.99993 5.58185 7.99993 5.33726 7.99993H3.6C3.03995 7.99993 2.75992 7.99993 2.54601 8.10892C2.35785 8.20479 2.20487 8.35777 2.10899 8.54594C2 8.75985 2 9.03987 2 9.59993V14.3999C2 14.96 2 15.24 2.10899 15.4539C2.20487 15.6421 2.35785 15.7951 2.54601 15.8909C2.75992 15.9999 3.03995 15.9999 3.6 15.9999H5.33726C5.58185 15.9999 5.70414 15.9999 5.81923 16.0276C5.92127 16.0521 6.01881 16.0925 6.10828 16.1473C6.2092 16.2091 6.29568 16.2956 6.46863 16.4686L9.63431 19.6342C10.0627 20.0626 10.2769 20.2768 10.4608 20.2913C10.6203 20.3038 10.7763 20.2392 10.8802 20.1175C11 19.9773 11 19.6744 11 19.0686V4.9313C11 4.32548 11 4.02257 10.8802 3.88231C10.7763 3.76061 10.6203 3.69602 10.4608 3.70858C10.2769 3.72305 10.0627 3.93724 9.63432 4.36561Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                            <svg tooltip="Mute" id="song-low-volume-logo" class="stroke white-hover hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M18.2451 7.99993C19.036 9.13376 19.4998 10.5127 19.4998 11.9999C19.4998 13.4872 19.036 14.8661 18.2451 15.9999M12.1343 4.36561L8.96863 7.5313C8.79568 7.70425 8.7092 7.79073 8.60828 7.85257C8.51881 7.9074 8.42127 7.9478 8.31923 7.9723C8.20414 7.99993 8.08185 7.99993 7.83726 7.99993H6.1C5.53995 7.99993 5.25992 7.99993 5.04601 8.10892C4.85785 8.20479 4.70487 8.35777 4.60899 8.54594C4.5 8.75985 4.5 9.03987 4.5 9.59993V14.3999C4.5 14.96 4.5 15.24 4.60899 15.4539C4.70487 15.6421 4.85785 15.7951 5.04601 15.8909C5.25992 15.9999 5.53995 15.9999 6.1 15.9999H7.83726C8.08185 15.9999 8.20414 15.9999 8.31923 16.0276C8.42127 16.0521 8.51881 16.0925 8.60828 16.1473C8.7092 16.2091 8.79568 16.2956 8.96863 16.4686L12.1343 19.6342C12.5627 20.0626 12.7769 20.2768 12.9608 20.2913C13.1203 20.3038 13.2763 20.2392 13.3802 20.1175C13.5 19.9773 13.5 19.6744 13.5 19.0686V4.9313C13.5 4.32548 13.5 4.02257 13.3802 3.88231C13.2763 3.76061 13.1203 3.69602 12.9608 3.70858C12.7769 3.72305 12.5627 3.93724 12.1343 4.36561Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                            <svg tooltip="Mute" id="song-high-volume-logo" class="stroke white-hover hidden" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M19.7479 4.99993C21.1652 6.97016 22 9.38756 22 11.9999C22 14.6123 21.1652 17.0297 19.7479 18.9999M15.7453 7.99993C16.5362 9.13376 17 10.5127 17 11.9999C17 13.4872 16.5362 14.8661 15.7453 15.9999M9.63432 5.36561L6.46863 8.5313C6.29568 8.70425 6.2092 8.79073 6.10828 8.85257C6.01881 8.9074 5.92127 8.9478 5.81923 8.9723C5.70414 8.99993 5.58185 8.99993 5.33726 8.99993H3.6C3.03995 8.99993 2.75992 8.99993 2.54601 9.10892C2.35785 9.20479 2.20487 9.35777 2.10899 9.54594C2 9.75985 2 10.0399 2 10.5999V13.3999C2 13.96 2 14.24 2.10899 14.4539C2.20487 14.6421 2.35785 14.7951 2.54601 14.8909C2.75992 14.9999 3.03995 14.9999 3.6 14.9999H5.33726C5.58185 14.9999 5.70414 14.9999 5.81923 15.0276C5.92127 15.0521 6.01881 15.0925 6.10828 15.1473C6.2092 15.2091 6.29568 15.2956 6.46863 15.4686L9.63431 18.6342C10.0627 19.0626 10.2769 19.2768 10.4608 19.2913C10.6203 19.3038 10.7763 19.2392 10.8802 19.1175C11 18.9773 11 18.6744 11 18.0686V5.9313C11 5.32548 11 5.02257 10.8802 4.88231C10.7763 4.76061 10.6203 4.69602 10.4608 4.70858C10.2769 4.72305 10.0627 4.93724 9.63432 5.36561Z" stroke="#FF0000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path></svg>
-                        </div>
-                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="0">
+                <article class="secondary-controls-container">
+                    <button id="pitch-button">
+                        <img src="assets/pitch.svg">
+                    </button>
+                    <button id="queue-button">
+                        <img src="assets/queue.svg">
+                    </button>
+                    <div class="volume-controls-container">
+                        <button id="toggle-song-volume-button" volume="2">
+                            <img src="assets/volume-muted.svg" volume="0">
+                            <img src="assets/volume-min.svg" volume="1">
+                            <img src="assets/volume-max.svg" volume="2">
+                        </button>
+                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="50">
                     </div>
                 </article>
             </footer>
-            <div id="success-modal"></div>
-            <div id="error-modal"></div>
-            <div class="top-modal-container">
-                <div class="modal" modal="create-playlist" id="create-playlist-modal">
-                    <div>
-                        <h2>Playlist name</h2>
-                        <input type="text" id="create-playlist-modal-input">
-                        <div class="button-container">
-                            <button class="confirm" id="create-playlist-modal-confirm-button">Create</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="confirm-remove-playlist" id="confirm-remove-playlist-modal">
-                    <div>
-                        <h2>Are you sure you want to remove "<span id="confirm-remove-playlist-name"></span>" ?</h2>
-                        <div class="button-container">
-                            <button class="confirm" id="confirm-remove-playlist-confirm-button">Confirm</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="rename-playlist" id="rename-playlist-modal">
-                    <div>
-                        <h2>New "<span id="rename-playlist-name"></span>" name</h2>
-                        <input type="text" id="rename-playlist-input">
-                        <div class="button-container">
-                            <button class="confirm" id="rename-playlist-confirm-button">Rename</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="add-song-to-app" id="add-song-to-app-modal">
-                    <div>
-                        <h2>Add a song</h2>
-                        <input type="file" id="add-song-to-app-file" class="drag">
-                        <div class="drag-zone">Drag file here</div>
-                        <input type="text" id="add-song-to-app-name" placeholder="Name">
-                        <input type="text" id="add-song-to-app-artist" placeholder="Artist">
-                        <div id="add-song-to-app-fake-drag-zone" class="fake-drag-zone">Drag a song</div>
-                        <div class="button-container">
-                            <button class="confirm" id="add-song-to-app-confirm-button">Add</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="remove-songs-from-app" id="remove-songs-from-app-modal">
-                    <div>
-                        <h2>Select the song(s) you want to remove</h2>
-                        <input type="text" id="remove-songs-from-app-input">
-                        <ul id="remove-songs-from-app-song-container"></ul>
-                        <div class="button-container">
-                            <button class="confirm" id="remove-songs-from-app-confirm-button">Remove song(s)</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                    <audio id="remove-songs-from-app-audio" hidden></audio>
-                </div>
-                <div class="modal" modal="add-songs-to-playlist" id="add-songs-to-playlist-modal">
-                    <div>
-                        <h2>Select the song(s) you want to add to "<span id="add-songs-to-playlist-name"></span>"</h2>
-                        <input type="text" id="add-songs-to-playlist-input">
-                        <ul id="add-songs-to-playlist-song-container"></ul>
-                        <div class="button-container">
-                            <button class="confirm" id="add-songs-to-playlist-confirm-button">Add song(s)</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                    <audio id="add-songs-to-playlist-audio" hidden></audio>
-                </div>
-                <div class="modal" modal="remove-song-from-playlist" id="remove-song-from-playlist-modal">
-                    <div>
-                        <h2>Are you sure you want to remove "<span id="remove-song-from-playlist-song"></span>" from "<span id="remove-song-from-playlist-playlist"></span>"</h2>
-                        <div class="button-container">
-                            <button class="confirm" id="remove-song-from-playlist-confirm-button">Confirm</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="edit-song-from-app" id="edit-song-from-app-modal">
-                    <div>
-                        <h2>Edit "<span id="edit-song-from-app-name"></span>"</h2>
-                        <input type="text" id="edit-song-from-app-input-name">
-                        <input type="text" id="edit-song-from-app-input-artist">
-                        <div class="button-container">
-                            <button class="confirm" id="edit-song-from-app-confirm-button">Confirm</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-                <div class="modal" modal="set-playlist-thumbnail" id="set-playlist-thumbnail-modal">
-                    <div>
-                        <h2>Set "<span id="set-playlist-thumbnail-name"></span>" thumbnail</h2>
-                        <div class="button-container">
-                            <button class="confirm" id="set-playlist-thumbnail-confirm-button">Confirm</button>
-                            <button class="error">Cancel</button>
-                        </div>
-                        <p class="message"></p>
-                    </div>
-                </div>
-            </div>
-            <audio id="audio" hidden></audio>
-        </div>
+        </main>
     </body>
 </html>
