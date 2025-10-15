@@ -62,9 +62,18 @@ export class MainFolder {
         ipcMain.handle("mainFolder-getToken", (_event) => {
             try {
                 return (JSON.parse(fs.readFileSync(tokenPath, "utf-8")) as any).value;
-
-            } catch {
+            }
+            catch {
                 return "";
+            }
+        });
+
+        ipcMain.handle("mainFolder-removeToken", (_event) => {
+            try {
+                fs.unlinkSync(tokenPath);
+            }
+            catch {
+                
             }
         });
     }

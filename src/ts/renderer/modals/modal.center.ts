@@ -74,13 +74,9 @@ export default class CenterModal {
         input.value = row.defaultValue;
         li.appendChild(input);
 
-        input.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key.length > 1 || e.key == ' ' || e.key == '@' || e.key == '.') {
-                return;
-            }
-
-            if (!/^[a-z0-9]$/i.test(e.key)) {
-                e.preventDefault();
+        input.addEventListener("keydown", async (e: KeyboardEvent) => {
+            if (e.key == "Enter") {
+                await this.confirm();
             }
         });
     }
@@ -135,10 +131,10 @@ export default class CenterModal {
             return { label: "", value: "" };
         });
 
-        const err: string | undefined = await this.data.onConfirm(res);
-        if (err != "" && err != undefined) {
+        const modalError: ModalError = await this.data.onConfirm(res);
+        if (modalError != null) {
             this.focusFirstField();
-            this.app.logError(err);
+            this.app.logError(modalError);
             return false;
         }
 

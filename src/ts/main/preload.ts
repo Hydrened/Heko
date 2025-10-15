@@ -25,6 +25,7 @@ declare global {
         mainFolder: {
             saveToken: (token: string) => void;
             getToken: () => string;
+            removeToken: () => void;
         };
     }
 }
@@ -92,5 +93,9 @@ contextBridge.exposeInMainWorld("mainFolder", {
 
     getToken: () => {
         return ipcRenderer.invoke("mainFolder-getToken");
+    },
+
+    removeToken: () => {
+        ipcRenderer.invoke("mainFolder-removeToken");
     },
 });

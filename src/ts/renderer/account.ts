@@ -1,28 +1,45 @@
 import App from "./app.js";
 import CenterModal from "./modals/modal.center.js";
 import * as Bridge from "./utils/utils.bridge.js";
+import * as Requests from "./utils/utils.requests.js";
+import * as Elements from "./utils/utils.elements.js";
 
 export default class Account {
-    modal: CenterModal | null = null;
+    private modal: CenterModal | null = null;
+    private userID: number | null = null;
+    private token: string | null = null;
 
     constructor(private app: App) {
 
     }
 
     public async init(): Promise<void> {
+        this.initEvents();
         await this.checkLoginState();
     }
 
-    private async checkLoginState(): Promise<void> {
-        const token: string = await Bridge.getToken();
+    private initEvents(): void {
+        Elements.account.logoutButton?.addEventListener("click", async () => await this.logout());
+    }
 
-        const validityRes: any = await this.sendTokenValidityRequest(token);
+    private async checkLoginState(): Promise<void> {
+        const token: string = await Bridge.mainFolder.token.get();
+
+        const validityRes: any = await Requests.user.isTokenValid(token);
         if (!validityRes.success) {
             return this.openLoginModal();
         }
 
-        const userID: number = Number(validityRes["user-id"]);
-        console.log("Logged as user-id = " + userID);
+        if (!validityRes.isValid) {
+            return this.openLoginModal();
+        }
+        
+        const userID: number = Number(validityRes.userID);
+
+        this.userID = userID;
+        this.token = token;
+
+        this.logged();
     }
 
     private openLoginModal(): void {
@@ -35,17 +52,22 @@ export default class Account {
             { label: "Password", type: "PASSWORD", defaultValue: "", data: null },
         ];
 
-        const onConfirm: (res: ModalRes) => Promise<string> = async (res: ModalRes) => {
+        const onConfirm: (res: ModalRes) => Promise<ModalError> = async (res: ModalRes) => {
             const email: string = res[0].value;
             const password: string = res[1].value;
 
-            const loginRes: any = await this.sendLoginRequest(email, password);
+            const loginRes: any = await Requests.user.login(email, password);
             if (!loginRes.success) {
                 return loginRes.error;
             }
             
-            await Bridge.saveToken(loginRes.token);
-            return "";
+            await Bridge.mainFolder.token.save(loginRes.token);
+            
+            this.userID = Number(loginRes.userID);
+            this.token = loginRes.token;
+            this.logged();
+
+            return null;
         };
 
         const additionnalButtons: ModalButton[] = [
@@ -76,24 +98,29 @@ export default class Account {
             { label: "Confirm", type: "PASSWORD", defaultValue: "", data: null },
         ];
 
-        const onConfirm: (res: ModalRes) => Promise<string> = async (res: ModalRes) => {
+        const onConfirm: (res: ModalRes) => Promise<ModalError> = async (res: ModalRes) => {
             const name: string = res[0].value;
             const email: string = res[1].value;
             const password: string = res[2].value;
             const confirm: string = res[3].value;
 
-            const registerRes: any = await this.sendRegisterRequest(name, email, password, confirm);
+            const registerRes: any = await Requests.user.register(name, email, password, confirm);
             if (!registerRes.success) {
                 return registerRes.error;
             }
 
-            const loginRes: any = await this.sendLoginRequest(email, password);
+            const loginRes: any = await Requests.user.login(email, password);
             if (!loginRes.success) {
                 return loginRes.error;
             }
 
-            await Bridge.saveToken(loginRes.token);
-            return "";
+            await Bridge.mainFolder.token.save(loginRes.token);
+
+            this.userID = Number(loginRes.userID);
+            this.token = loginRes.token;
+            this.logged();
+
+            return null;
         };
 
         const additionnalButtons: ModalButton[] = [
@@ -112,43 +139,25 @@ export default class Account {
         this.modal = new CenterModal(this.app, modalData);
     }
 
-    private async sendLoginRequest(email: string, password: string): Promise<any> {
-        const res: Response = await fetch("https://killian-simon.fr/heko/login.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                email: email,
-                password: password,
-            }),
-        });
+    private async logged(): Promise<void> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
 
-        return await res.json();
+        this.app.playlists.refresh();
+
+        console.log(`Logged as userID = ${this.userID} and token = ${this.token}`);
     }
 
-    private async sendRegisterRequest(name: string, email: string, password: string, confirm: string): Promise<any> {
-        const res: Response = await fetch("https://killian-simon.fr/heko/register.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                name: name,
-                email: email,
-                password: password,
-                confirm: confirm,
-            }),
-        });
-
-        return await res.json();
+    private async logout(): Promise<void> {
+        await Bridge.mainFolder.token.remove();
+        this.openLoginModal();
     }
 
-    private async sendTokenValidityRequest(token: string): Promise<any> {
-        const res: Response = await fetch("https://killian-simon.fr/heko/is-token-valid.php", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                token: token,
-            }),
-        });
-
-        return await res.json();
+    public getUserData(): UserData {
+        return {
+            id: this.userID,
+            token: this.token,
+        };
     }
 };

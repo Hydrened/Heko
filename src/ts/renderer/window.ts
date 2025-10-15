@@ -17,8 +17,8 @@ export default class Window {
 
         const win = (window as any);
 
-        this.minimizeWindowButton.addEventListener("click", async () => await Bridge.minimizeWindow());
-        this.maximizeWindowButton.addEventListener("click", async () => await Bridge.maximizeWindow());
-        this.closeWindowButton.addEventListener("click", async () => await Bridge.closeWindow());
+        this.minimizeWindowButton.addEventListener("click", async () => await Bridge.win.minimize());
+        this.maximizeWindowButton.addEventListener("click", async () => await Bridge.win.maximize());
+        this.closeWindowButton.addEventListener("click", async () => await Bridge.win.close());
     }
 };

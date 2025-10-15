@@ -15,11 +15,24 @@ interface ModalButton {
     onClick: () => void;
 };
 
+type ModalError = string | null;
+
 interface CenterModalData {
     title: string;
     content: ModalRow[];
-    onConfirm: (res: ModalRes) => Promise<string>;
+    onConfirm: (res: ModalRes) => Promise<ModalError>;
     onCancel: (() => void) | null;
     additionnalButtons: ModalButton[];
     cantClose: boolean;
+};
+
+interface UserData {
+    id: number | null;
+    token: string | null;
+};
+
+interface Playlist {
+    name: string;
+    songs: number;
+    children: number;
 };

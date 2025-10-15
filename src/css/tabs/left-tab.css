@@ -13,7 +13,7 @@
     display: grid;
     grid-template-columns: 2rem 1fr 2rem;
     align-items: center;
-    gap: 1.5rem;
+    gap: 0.7rem;
 }
 
 .left-tab > header > h2,
@@ -50,12 +50,12 @@
 }
 
 .playlist-container > .thumbnail {
-    width: 3.5rem;
-    height: 3.5rem;
+    width: 3rem;
+    height: 3rem;
 
     border-radius: 0.5rem;
     
-    background-color: var(--bg-col-3);
+    background-color: var(--bg-col-5);
 }
 .playlist-container > h3 {
     display: flex;

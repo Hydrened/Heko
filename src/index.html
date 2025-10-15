@@ -87,7 +87,39 @@
                 </footer>
             </aside>
             <section class="right-tab">
-
+                <header>
+                    <div id="current-playlist-thumbnail"></div>
+                    <div class="current-playlist-details-container">
+                        <h1 id="current-playlist-title">Titre</h1>
+                        <div class="current-playlist-bottom-details-container">
+                            <h4 id="current-playlist-song-number">0 songs</h4>
+                            <h4 id="current-playlist-duration">-:--:--</h4>
+                            <button id="add-songs-to-current-playlist-button">
+                                <img src="assets/plus.svg">
+                            </button>
+                        </div>
+                    </div>
+                    <button id="logout-button">
+                        <img src="assets/logout.svg">
+                    </button>
+                </header>
+                <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ...">
+                <div class="current-playlist-table-container">
+                    <div class="current-playlist-table-head-container">
+                        <button id="current-playlist-sort-by-id-button" class="sorted-by">#</button>
+                        <button id="current-playlist-sort-by-title-button">Title</button>
+                        <button id="current-playlist-sort-by-artist-button">Artist</button>
+                        <button id="current-playlist-sort-by-duration-button">Duration</button>
+                    </div>
+                    <ul id="current-playlist-table-body-container">
+                        <li class="current-playlist-table-row">
+                            <p>1</p>
+                            <p>AiAe</p>
+                            <p>Hatsune Miku</p>
+                            <p>3:58</p>
+                        </li>
+                    </ul>
+                </div>
             </section>
             <footer class="bottom-tab">
                 <article class="current-song-details-container">

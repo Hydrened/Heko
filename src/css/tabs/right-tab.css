@@ -1,3 +1,129 @@
 .right-tab {
+    display: flex;
+    flex-direction: column;
+    gap: var(--main-padding);
+
     background-color: var(--bg-col-16);
+}
+
+.right-tab > header {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 2rem
+}
+
+#current-playlist-thumbnail {
+    width: 11rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 1rem;
+
+    background-color: var(--bg-col-8);
+}
+
+.current-playlist-details-container {
+    padding-block: 0.5rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+
+    align-self: end;
+}
+
+#current-playlist-title {
+    font-size: 6rem;
+    text-transform: uppercase;
+}
+
+.current-playlist-bottom-details-container {
+    padding-inline: 1.5rem;
+
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+.current-playlist-bottom-details-container > h4 {
+    color: var(--text-col-2);
+    font-weight: normal;
+}
+#add-songs-to-current-playlist-button > img {
+    width: 1.5rem;
+}
+
+#logout-button {
+    align-self: start;
+}
+#logout-button > img {
+    width: 1.6rem;
+}
+
+#current-playlist-song-filter-input {
+    padding: 0.7rem 0.9rem;
+    
+    font-size: 1rem;
+
+    border-radius: 0.5rem;
+
+    background-color: var(--bg-col-22);
+}
+
+.current-playlist-table-container {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+}
+
+.current-playlist-table-head-container {
+    padding-right: var(--scrollbar-width);
+
+    border-bottom: 2px solid var(--bg-col-35);
+}
+.current-playlist-table-head-container > button {
+    padding: 0.7rem 1rem;
+
+    font-size: 1rem;
+
+    border-top-left-radius: 0.5rem;
+    border-top-right-radius: 0.5rem;
+    
+    cursor: pointer;
+}
+.current-playlist-table-head-container > button:hover,
+.current-playlist-table-head-container > button.sorted-by {
+    color: var(--col-1);
+
+    background-color: var(--bg-col-13);
+}
+
+.current-playlist-table-head-container,
+.current-playlist-table-row {
+    display: grid;
+    grid-template-columns: 4.5rem 10fr 10fr 7rem;
+}
+.current-playlist-table-head-container :is(:nth-child(2), :nth-child(3)),
+.current-playlist-table-row :is(:nth-child(2), :nth-child(3)) {
+    text-align: left;
+}
+
+#current-playlist-table-body-container {
+    overflow-y: scroll;
+}
+.current-playlist-table-row {
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+.current-playlist-table-row:hover {
+    background-color: var(--bg-col-13);
+}
+
+.current-playlist-table-row > p {
+    padding: 0.7rem 1rem;
+    
+    font-size: 0.9rem;
+    text-align: center;
+}
+.current-playlist-table-row:hover > p {
+    color: var(--col-1);
 }

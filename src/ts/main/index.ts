@@ -58,7 +58,8 @@ class Index {
         ipcMain.handle("fs-readdirSync", (_event, dirPath: string) => {
             try {
                 return fs.readdirSync(dirPath);
-            } catch {
+            }
+            catch {
                 return [];
             }
         });

@@ -59,9 +59,10 @@
     --bg-col-50: rgb(100,100,100);
     --bg-success-col: rgb(51,155,51);
     --bg-error-col: rgb(132,34,34);
+    --col-1: rgb(31,114,198);
 
     /* TEXT COLORS */
-    --text-opacity: 0.7;
+    --text-opacity: 0.6;
     --text-col-1: rgba(255,255,255,var(--text-opacity));
     --text-col-2: rgba(255,255,255,0.4);
 

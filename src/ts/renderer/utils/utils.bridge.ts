@@ -1,57 +1,33 @@
-const win = (window as any);
+const w = (window as any);
 
 export async function throwError(message: string): Promise<void> {
-    await win.main.throwError(message);
+    await w.main.throwError(message);
 }
 
-export async function minimizeWindow(): Promise<void> {
-    await win.win.minimize();
-}
+export const win: any = {
+    minimize: async (): Promise<void> => await w.win.minimize(),
+    maximize: async (): Promise<void> => await w.win.maximize(),
+    close: async (): Promise<void> => await w.win.close(),
+};
 
-export async function maximizeWindow(): Promise<void> {
-    await win.win.maximize();
-}
+export const path: any = {
+    getDirname: async (): Promise<string> => await w.path.getDirname(),
+    getDocuments: async (): Promise<string> => await w.path.getDocuments(),
+    join: async (...parts: string[]): Promise<string> => await w.path.join(...parts),
+};
 
-export async function closeWindow(): Promise<void> {
-    await win.win.close();
-}
+export const fs: any = {
+    readFileSync: async (filePath: string): Promise<string> => await w.fs.readFileSync(filePath),
+    readdirSync: async (dirPath: string): Promise<string> => await w.fs.readdirSync(dirPath),
+    writeFileSync: async (filePath: string, data: string): Promise<string> => await w.fs.writeFileSync(filePath, data),
+    existsSync: async (filePath: string): Promise<string> => await w.fs.existsSync(filePath),
+    mkdirSync: async (filePath: string): Promise<string> => await w.fs.mkdirSync(filePath),
+};
 
-export async function getDirname(): Promise<string> {
-    return await win.path.getDirname();
-}
-
-export async function getDocuments(): Promise<string> {
-    return await win.path.getDocuments();
-}
-
-export async function join(...parts: string[]): Promise<string> {
-    return await win.path.join(...parts);
-}
-
-export async function readFileSync(filePath: string): Promise<string> {
-    return await win.fs.readFileSync(filePath);
-}
-
-export async function readdirSync(dirPath: string): Promise<string[]> {
-    return await win.fs.readdirSync(dirPath);
-}
-
-export async function writeFileSync(filePath: string, data: string): Promise<void> {
-    await win.fs.writeFileSync(filePath);
-}
-
-export async function existsSync(filePath: string): Promise<boolean> {
-    return await win.fs.existsSync(filePath);
-}
-
-export async function mkdirSync(filePath: string): Promise<void> {
-    await win.fs.mkdirSync(filePath);
-}
-
-export async function saveToken(filePath: string): Promise<void> {
-    await win.mainFolder.saveToken(filePath);
-}
-
-export async function getToken(): Promise<string> {
-    return await win.mainFolder.getToken();
-}
+export const mainFolder: any = {
+    token: {
+        save: async (filePath: string): Promise<void> => await w.mainFolder.saveToken(filePath),
+        get: async (): Promise<string> => await w.mainFolder.getToken(),
+        remove: async (): Promise<void> => await w.mainFolder.removeToken(),
+    },
+};
