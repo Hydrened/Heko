@@ -4,9 +4,22 @@ export default class CenterModal {
     public container: HTMLElement | null = null;
 
     constructor(private app: App, private data: CenterModalData) {
+        this.initEvents();
         const container: HTMLElement = this.createContainer();
         this.createContent(container);
         this.createFooter(container);
+    }
+
+    private initEvents(): void {
+        if (this.data.cantClose) {
+            return;
+        }
+
+        window.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key == "Escape") {
+                this.close();
+            }
+        });
     }
 
     private createContainer(): HTMLElement {
@@ -112,7 +125,7 @@ export default class CenterModal {
     }
 
     public async confirm(): Promise<boolean> {
-        if (!this.container) {
+        if (this.container == null) {
             return false;
         }
 
@@ -143,7 +156,7 @@ export default class CenterModal {
     }
 
     public close(): void {
-        if (!this.container) {
+        if (this.container == null) {
             return this.app.throwError("Can't close modal: Container is null.");
         }
 
@@ -155,12 +168,12 @@ export default class CenterModal {
     }
 
     private focusFirstField(): void {
-        if (!this.container) {  
+        if (this.container == null) {  
             return this.app.throwError("Can't close modal: Container is null.");
         }
 
         const input: HTMLElement | null = this.container.querySelector("input");
-        if (!input) {
+        if (input == null) {
             return this.app.throwError("Can't focus first modal field: Input is null.");
         }
         

@@ -6,8 +6,8 @@ import * as Elements from "./utils/utils.elements.js";
 
 export default class Account {
     private modal: CenterModal | null = null;
-    private userID: number | null = null;
-    private token: string | null = null;
+    private userID: ID | null = null;
+    private token: Token | null = null;
 
     constructor(private app: App) {
 
@@ -23,7 +23,7 @@ export default class Account {
     }
 
     private async checkLoginState(): Promise<void> {
-        const token: string = await Bridge.mainFolder.token.get();
+        const token: Token = await Bridge.mainFolder.token.get();
 
         const validityRes: any = await Requests.user.isTokenValid(token);
         if (!validityRes.success) {
@@ -34,7 +34,7 @@ export default class Account {
             return this.openLoginModal();
         }
         
-        const userID: number = Number(validityRes.userID);
+        const userID: ID = Number(validityRes.userID);
 
         this.userID = userID;
         this.token = token;
@@ -52,7 +52,7 @@ export default class Account {
             { label: "Password", type: "PASSWORD", defaultValue: "", data: null },
         ];
 
-        const onConfirm: (res: ModalRes) => Promise<ModalError> = async (res: ModalRes) => {
+        const onConfirm = async (res: ModalRes): Promise<ModalError> => {
             const email: string = res[0].value;
             const password: string = res[1].value;
 
@@ -98,7 +98,7 @@ export default class Account {
             { label: "Confirm", type: "PASSWORD", defaultValue: "", data: null },
         ];
 
-        const onConfirm: (res: ModalRes) => Promise<ModalError> = async (res: ModalRes) => {
+        const onConfirm = async (res: ModalRes): Promise<ModalError> => {
             const name: string = res[0].value;
             const email: string = res[1].value;
             const password: string = res[2].value;
@@ -150,7 +150,15 @@ export default class Account {
     }
 
     private async logout(): Promise<void> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
+
         await Bridge.mainFolder.token.remove();
+        this.userID = null;
+        this.token = null;
+
+        this.app.playlists.refresh();
         this.openLoginModal();
     }
 

@@ -78,7 +78,7 @@ class Index {
     }
 
     private createWindow(): void {
-        if (!this.mainFolder.settings) {
+        if (this.mainFolder.settings == null) {
             return;
         }
 
@@ -110,7 +110,7 @@ class Index {
         this.window.loadFile(path.join(__dirname, "..", "..", "index.html"));
 
         this.window.on("close", (e) => {
-            if (!this.window) {
+            if (this.window == null) {
                 return;
             }
 

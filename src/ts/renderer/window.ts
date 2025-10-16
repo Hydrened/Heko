@@ -11,7 +11,7 @@ export default class Window {
     }
 
     private initEvents(): void {
-        if (!this.minimizeWindowButton || !this.maximizeWindowButton || !this.closeWindowButton) {
+        if (this.minimizeWindowButton == null || this.maximizeWindowButton == null || this.closeWindowButton == null) {
             return this.app.throwError("Can't initialize frame buttons.");
         }
 

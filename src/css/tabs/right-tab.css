@@ -1,6 +1,6 @@
 .right-tab {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto auto 1fr;
     gap: var(--main-padding);
 
     background-color: var(--bg-col-16);
@@ -107,6 +107,8 @@
 }
 
 #current-playlist-table-body-container {
+    height: 100%;
+    
     overflow-y: scroll;
 }
 .current-playlist-table-row {

@@ -23,10 +23,10 @@ export default class PlaylistsAddManager {
         const data: CenterModalData = {
             title: "Create a playlist",
             content: content,
-            onConfirm: (res: ModalRes) => this.modalOnConfirm(res),
+            onConfirm: (res: ModalRes): Promise<ModalError> => this.modalOnConfirm(res),
             onCancel: null,
             additionnalButtons: [],
-            cantClose: true,
+            cantClose: false,
         };
 
         this.modal = new CenterModal(this.app, data);
@@ -36,24 +36,24 @@ export default class PlaylistsAddManager {
         const newPlaylistName: string = res[0].value;
 
         if (newPlaylistName.length < 3) {
-            return "Name has to be at least 3 characters long";
+            return "Can't create playlist: Name has to be at least 3 characters long.";
         }
 
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            return "User is not connected";
+            return "Can't create playlist: User is not connected.";
         }
 
         const reqRes: any = await Requests.playlist.get(userData.id, userData.token);
         if (!reqRes.success) {
-            return reqRes.error;
+            return `Can't create playlist: ${reqRes.error}`;
         }
         
         const playlistNames: string[] = reqRes.playlists.map((p: Playlist) => p.name);
         const playlistNameAlreadyExists: boolean = playlistNames.includes(newPlaylistName);
         
         if (playlistNameAlreadyExists) {
-            return `Playlist with name "${newPlaylistName}" already exists`;
+            return `Can't create playlist: Playlist with name "${newPlaylistName}" already exists.`;
         }
 
         await Requests.playlist.add(userData.id, userData.token, newPlaylistName);

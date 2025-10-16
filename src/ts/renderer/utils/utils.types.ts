@@ -1,3 +1,6 @@
+type ID = number;
+type Token = string;
+
 type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD";
 
 interface ModalRow {
@@ -28,11 +31,15 @@ interface CenterModalData {
 
 interface UserData {
     id: number | null;
-    token: string | null;
+    token: Token | null;
 };
 
 interface Playlist {
+    id: number;
     name: string;
+    position: number;
     songs: number;
+    opened: boolean;
     children: number;
+    parentID: number;
 };

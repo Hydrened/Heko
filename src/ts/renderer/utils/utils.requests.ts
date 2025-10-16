@@ -1,3 +1,5 @@
+import "./utils.types.js";
+
 async function request(phpFile: string, data: { [key: string]: any }): Promise<any> {
     const res: Response = await fetch(`https://killian-simon.fr/heko/requests/${phpFile}`, {
         method: "POST",
@@ -9,7 +11,7 @@ async function request(phpFile: string, data: { [key: string]: any }): Promise<a
 }
 
 export const user: any = {
-    isTokenValid: async (token: string): Promise<any> => {
+    isTokenValid: async (token: Token): Promise<any> => {
         return await request("user/is-token-valid.php", { token: token });
     },
 
@@ -23,11 +25,15 @@ export const user: any = {
 };
 
 export const playlist: any = {
-    add: async (userID: number, token: string, name: string): Promise<any> => {
+    add: async (userID: ID, token: Token, name: string): Promise<any> => {
         return await request("playlist/add.php", { userID: userID, token: token, name: name });
     },
 
-    get: async (userID: number, token: string): Promise<any> => {
+    get: async (userID: ID, token: Token): Promise<any> => {
         return await request("playlist/get.php", { userID: userID, token: token });
+    },
+
+    updateOpenedState: async (userID: ID, token: Token, openedPlaylistIDs: number[]): Promise<any> => {
+        return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
     },
 };

@@ -132,7 +132,7 @@ export class MainFolder {
     }
 
     public saveWindowSettings(windowSettings: WindowSettings): void {
-        if (!this.settings) {
+        if (this.settings == null) {
             return;
         }
 
