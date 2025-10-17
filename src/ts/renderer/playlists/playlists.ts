@@ -6,7 +6,7 @@ import PlaylistsRemoveManager from "./playlists.remove.js";
 import PlaylistsMoveManager from "./playlists.move.js";
 import * as Elements from "./../utils/utils.elements.js";
 
-export default class PlaylistsManager {
+export default class PlaylistManager {
     private playlistsRefreshManager: PlaylistsRefreshManager;
     private playlistsAddManager: PlaylistsAddManager;
     private playlistsRenameManager: PlaylistsRenameManager;

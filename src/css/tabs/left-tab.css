@@ -1,4 +1,6 @@
 .left-tab {
+    height: 100%;
+
     display: grid;
     grid-template-rows: auto 1fr auto;
     gap: var(--main-padding);
@@ -34,6 +36,14 @@
     overflow-y: scroll;
 }
 
+.playlist-wrapper {
+    transition: 500ms;
+}
+.playlist-wrapper.spawn {
+    transform: translateX(-50%);
+    opacity: 0;
+}
+
 .playlist-container {
     padding: 0.5rem;
     padding-right: 1rem;
@@ -48,6 +58,7 @@
     border-top-left-radius: 0.7rem;
     border-bottom-left-radius: 0.7rem;
 
+    background-color: var(--bg-col-14);
     z-index: 2;
     cursor: pointer;
     transition: 150ms;
@@ -64,7 +75,7 @@
     
     background-color: var(--bg-col-5);
 }
-.playlist-container > h3 {
+.playlist-container > .details-container {
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -72,7 +83,10 @@
 
     font-size: 1.1rem;
 }
-.playlist-container > h3 > span {
+.playlist-container > .details-container > h3 {
+    font-size: 1.1rem;
+}
+.playlist-container > .details-container > span {
     color: var(--text-col-2);
     font-weight: normal;
     font-size: 0.8rem;

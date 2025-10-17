@@ -1,5 +1,5 @@
 html:has(.center-modal) main > * {
-    opacity: 0.85;
+    opacity: 0.8;
 }
 
 
@@ -30,7 +30,7 @@ html:has(.center-modal) main > * {
     border-radius: 0.7rem;
     border: var(--default-border);
 
-    background-color: var(--bg-col-7);
+    background-color: var(--bg-col-8);
 
     box-shadow: 0 0 1rem black;
 }

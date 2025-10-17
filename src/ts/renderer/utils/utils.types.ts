@@ -1,11 +1,20 @@
 type ID = number;
 type Token = string;
+type Shortcut = string[] | null;
+
+interface UserData {
+    id: ID | null;
+    token: Token | null;
+};
+
+
 
 type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD";
 
 interface ModalRow {
     label: string;
     type: ModalRowType;
+    maxLength: number;
     data: string[] | null;
     defaultValue: string;
 };
@@ -29,17 +38,25 @@ interface CenterModalData {
     cantClose: boolean;
 };
 
-interface UserData {
-    id: number | null;
-    token: Token | null;
+
+
+
+interface ContextmenuRow {
+    title: string;
+    shortcut: Shortcut;
+    onClick: () => void;
+    content: ContextmenuRow[] | null;
 };
 
+
+
 interface Playlist {
-    id: number;
+    id: ID;
+    parentID: ID;
     name: string;
     position: number;
-    songs: number;
     opened: boolean;
+    songs: number;
     children: number;
-    parentID: number;
+    creationDate: number;
 };

@@ -1,11 +1,11 @@
-import PlaylistsManager from "./playlists.js";
+import PlaylistManager from "./playlists.js";
 import App from "../app.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class PlaylistsRefreshManager {
-    constructor(private app: App, private playlists: PlaylistsManager) {
+    constructor(private app: App, private playlists: PlaylistManager) {
 
     }
 
@@ -21,6 +21,20 @@ export default class PlaylistsRefreshManager {
         const playlists: Playlist[] = this.sortPlaylists((getPlaylistsReqRes.playlists as Playlist[]));
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
+
+        if (Elements.playlists.container == null) {
+            return this.app.throwError("Can't refresh  playlists: Playlist container element is null.");
+        }
+
+        [...Elements.playlists.container.children].forEach((liElement: Element, index: number) => {
+            liElement.classList.add("spawn");
+
+            setTimeout(() => {
+                if (liElement != null) {
+                    liElement.classList.remove("spawn");
+                }
+            }, (index + 1) * 50);
+        });
     }
 
     private sortPlaylists(playlists: Playlist[]): Playlist[] {
@@ -60,24 +74,39 @@ export default class PlaylistsRefreshManager {
             return;
         }
 
+        const strPlaylistID: string = String(playlist.id);
+
         const liElement: HTMLElement = document.createElement("li");
-        liElement.setAttribute("playlist-id", String(playlist.id));
+        liElement.classList.add("playlist-wrapper");
+        liElement.setAttribute("playlist-id", strPlaylistID);
 
         const containerElement: HTMLElement = document.createElement("div");
         containerElement.classList.add("playlist-container");
+        containerElement.setAttribute("playlist-id", strPlaylistID);
         liElement.appendChild(containerElement);
+
+        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createPlaylistContextMenu(e, playlist));
 
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");
+        thumbnailElement.setAttribute("playlist-id", strPlaylistID);
         containerElement.appendChild(thumbnailElement);
 
+        const detailsContainerElement: HTMLElement = document.createElement("div");
+        detailsContainerElement.classList.add("details-container");
+        detailsContainerElement.setAttribute("playlist-id", strPlaylistID);
+        containerElement.appendChild(detailsContainerElement);
+
         const titleElement: HTMLElement = document.createElement("h3");
+        titleElement.classList.add("extern-text");
+        titleElement.setAttribute("playlist-id", strPlaylistID);
         titleElement.textContent = playlist.name;
-        containerElement.appendChild(titleElement);
+        detailsContainerElement.appendChild(titleElement);
 
         if (playlist.children > 0) {
             const indicator: HTMLImageElement = document.createElement("img");
             indicator.classList.add("indicator");
+            indicator.setAttribute("playlist-id", strPlaylistID);
             indicator.src = "assets/indicator.svg";
             containerElement.appendChild(indicator);
 
@@ -93,16 +122,18 @@ export default class PlaylistsRefreshManager {
                     return;
                 }
 
-                const openedPlaylistIDs: number[] = this.app.playlists.getPlaylistOpenedStates();
+                const openedPlaylistIDs: number[] = this.app.playlistManager.getPlaylistOpenedStates();
                 await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
             });
         }
 
         const detailsElement: HTMLElement = document.createElement("span");
+        detailsElement.classList.add("extern-text");
+        detailsElement.setAttribute("playlist-id", strPlaylistID);
         detailsElement.textContent = (playlist.children == 0)
-            ? `${playlist.songs} ${Functions.displayWord("song", playlist.songs)}`
-            : `${playlist.children} ${Functions.displayWord("playlist", playlist.children)}`;
-        titleElement.appendChild(detailsElement);
+            ? `${playlist.songs} ${Functions.pluralize("song", playlist.songs)}`
+            : `${playlist.children} ${Functions.pluralize("playlist", playlist.children)}`;
+        detailsContainerElement.appendChild(detailsElement);
 
         const childrenContainerElement: HTMLElement = document.createElement("ul");
         childrenContainerElement.classList.add("children-container");

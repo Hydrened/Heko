@@ -5,6 +5,8 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <link rel="stylesheet" href="css/base.css">
         <link rel="stylesheet" href="css/frame.css">
+        <link rel="stylesheet" href="css/utils.css">
+        <link rel="stylesheet" href="css/contextmenus/contextmenu.css">
         <link rel="stylesheet" href="css/tabs/tabs.css">
         <link rel="stylesheet" href="css/tabs/left-tab.css">
         <link rel="stylesheet" href="css/tabs/right-tab.css">
@@ -51,7 +53,7 @@
                 <header>
                     <div id="current-playlist-thumbnail"></div>
                     <div class="current-playlist-details-container">
-                        <h1 id="current-playlist-title">Titre</h1>
+                        <h1 id="current-playlist-title" class="extern-text">Titre</h1>
                         <div class="current-playlist-bottom-details-container">
                             <h4 id="current-playlist-song-number">0 songs</h4>
                             <h4 id="current-playlist-duration">-:--:--</h4>
@@ -73,19 +75,19 @@
                         <button id="current-playlist-sort-by-duration-button">Duration</button>
                     </div>
                     <ul id="current-playlist-table-body-container">
-                        <li class="current-playlist-table-row">
+                        <!-- <li class="current-playlist-table-row">
                             <p>1</p>
                             <p>AiAe</p>
                             <p>Hatsune Miku</p>
                             <p>3:58</p>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </section>
             <footer class="bottom-tab">
                 <article class="current-song-details-container">
-                    <h3 id="current-song-name"></h3>
-                    <h4 id="current-song-artist"></h4>
+                    <h3 id="current-song-name" class="extern-text"></h3>
+                    <h4 id="current-song-artist" class="extern-text"></h4>
                 </article>
                 <article class="main-controls-container">
                     <div class="main-control-buttons-container">

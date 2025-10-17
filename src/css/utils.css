@@ -1,0 +1,40 @@
+@keyframes loading-shimmer {
+    0% {
+        left: -150%;
+    }
+    100% {
+        left: 150%;
+    }
+}
+.loading {
+    position: relative;
+
+    border-radius: 0.5rem;
+
+    overflow: hidden;
+    overflow-y: hidden !important;
+}
+.loading::after {
+    content: "";
+
+    width: 150%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: -150%;
+
+    background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
+    animation: loading-shimmer 1300ms 300ms infinite;
+}
+
+.extern-text {
+    width: 100%;
+    min-width: 0;
+
+    display: block;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

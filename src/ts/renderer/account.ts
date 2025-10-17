@@ -23,6 +23,17 @@ export default class Account {
     }
 
     private async checkLoginState(): Promise<void> {
+        if (Elements.playlists.container == null) {
+            return this.app.throwError("Can't log: Playlist container element is null.");
+        }
+
+        if (Elements.currentPlaylist.tableBodyContainer == null) {
+            return this.app.throwError("Can't log: Table body element is null.");
+        }
+
+        Elements.playlists.container.classList.add("loading");
+        Elements.currentPlaylist.tableBodyContainer.classList.add("loading");
+
         const token: Token = await Bridge.mainFolder.token.get();
 
         const validityRes: any = await Requests.user.isTokenValid(token);
@@ -48,8 +59,8 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Email", type: "EMAIL", defaultValue: "", data: null },
-            { label: "Password", type: "PASSWORD", defaultValue: "", data: null },
+            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: "", data: null },
+            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
@@ -92,10 +103,10 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", defaultValue: "", data: null },
-            { label: "Email", type: "EMAIL", defaultValue: "", data: null },
-            { label: "Password", type: "PASSWORD", defaultValue: "", data: null },
-            { label: "Confirm", type: "PASSWORD", defaultValue: "", data: null },
+            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: "", data: null },
+            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: "", data: null },
+            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
+            { label: "Confirm", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
@@ -140,11 +151,22 @@ export default class Account {
     }
 
     private async logged(): Promise<void> {
+        if (Elements.playlists.container == null) {
+            return this.app.throwError("Can't log: Playlist container element is null.");
+        }
+
+        if (Elements.currentPlaylist.tableBodyContainer == null) {
+            return this.app.throwError("Can't log: Table body element is null.");
+        }
+
+        Elements.playlists.container.classList.remove("loading");
+        Elements.currentPlaylist.tableBodyContainer.classList.remove("loading");
+
         if (this.userID == null || this.token == null) {
             return;
         }
 
-        this.app.playlists.refresh();
+        await this.app.playlistManager.refresh();
 
         console.log(`Logged as userID = ${this.userID} and token = ${this.token}`);
     }
@@ -158,7 +180,7 @@ export default class Account {
         this.userID = null;
         this.token = null;
 
-        this.app.playlists.refresh();
+        this.app.playlistManager.refresh();
         this.openLoginModal();
     }
 

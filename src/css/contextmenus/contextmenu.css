@@ -1,0 +1,11 @@
+ul.contextmenu {
+    padding: 1rem;
+
+    position: absolute;
+
+    border: var(--default-border);
+    border-radius: 0.5rem;
+
+    background-color: var(--bg-col-2);
+    z-index: 20;
+}

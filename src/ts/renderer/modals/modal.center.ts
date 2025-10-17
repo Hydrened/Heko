@@ -1,4 +1,5 @@
 import App from "./../app.js";
+import * as AntiSpam from "./../utils/utils.anti-spam.js";
 
 export default class CenterModal {
     public container: HTMLElement | null = null;
@@ -51,6 +52,7 @@ export default class CenterModal {
         }
 
         const h1: HTMLElement = document.createElement("h1");
+        h1.classList.add("extern-text");
         h1.textContent = this.data.title;
         modal.appendChild(h1);
 
@@ -79,17 +81,21 @@ export default class CenterModal {
         ul.appendChild(li);
 
         const label: HTMLElement = document.createElement("label");
+        label.classList.add("extern-text");
         label.textContent = `${row.label} :`;
         li.appendChild(label);
 
         const input: HTMLInputElement = document.createElement("input");
         input.type = row.type.toLowerCase();
         input.value = row.defaultValue;
+        input.maxLength = row.maxLength;
         li.appendChild(input);
 
         input.addEventListener("keydown", async (e: KeyboardEvent) => {
             if (e.key == "Enter") {
-                await this.confirm();
+                await AntiSpam.prevent(async () => {
+                    await this.confirm();
+                });
             }
         });
     }
@@ -104,7 +110,11 @@ export default class CenterModal {
         confirmButton.classList.add("confirm-button");
         buttonContainer.appendChild(confirmButton);
         
-        confirmButton.addEventListener("click", async () => await this.confirm());
+        confirmButton.addEventListener("click", async () => {
+            await AntiSpam.prevent(async () => {
+                await this.confirm();
+            });
+        });
 
         this.data.additionnalButtons.forEach((button: ModalButton) => {
             const buttonElement: HTMLElement = document.createElement("button");
@@ -124,9 +134,9 @@ export default class CenterModal {
         }
     }
 
-    public async confirm(): Promise<boolean> {
+    public async confirm(): Promise<void> {
         if (this.container == null) {
-            return false;
+            return;
         }
 
         const res: ModalRes = [...this.container.querySelectorAll(".field-container > li")].map((li: Element) => {
@@ -148,11 +158,10 @@ export default class CenterModal {
         if (modalError != null) {
             this.focusFirstField();
             this.app.logError(modalError);
-            return false;
+            return;
         }
 
         this.close();
-        return true;
     }
 
     public close(): void {

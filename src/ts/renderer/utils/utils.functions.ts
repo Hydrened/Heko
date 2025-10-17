@@ -1,4 +1,4 @@
-export function removeChildren(parent: HTMLElement | null): void {
+export function removeChildren(parent: HTMLElement | Element | null): void {
     if (parent == null) {
         return;
     }
@@ -6,6 +6,6 @@ export function removeChildren(parent: HTMLElement | null): void {
     [...parent.children].reverse().forEach((c: Element) => c.remove());
 }
 
-export function displayWord(singularWord: string, n: number): string {
+export function pluralize(singularWord: string, n: number): string {
     return singularWord + ((n > 1) ? "s" : "");
 }
