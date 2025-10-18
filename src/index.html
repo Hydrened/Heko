@@ -7,6 +7,7 @@
         <link rel="stylesheet" href="css/frame.css">
         <link rel="stylesheet" href="css/utils.css">
         <link rel="stylesheet" href="css/contextmenus/contextmenu.css">
+        <link rel="stylesheet" href="css/contextmenus/contextmenu.parents.css">
         <link rel="stylesheet" href="css/tabs/tabs.css">
         <link rel="stylesheet" href="css/tabs/left-tab.css">
         <link rel="stylesheet" href="css/tabs/right-tab.css">
@@ -53,10 +54,10 @@
                 <header>
                     <div id="current-playlist-thumbnail"></div>
                     <div class="current-playlist-details-container">
-                        <h1 id="current-playlist-title" class="extern-text">Titre</h1>
+                        <h1 id="current-playlist-title" class="extern-text"></h1>
                         <div class="current-playlist-bottom-details-container">
-                            <h4 id="current-playlist-song-number">0 songs</h4>
-                            <h4 id="current-playlist-duration">-:--:--</h4>
+                            <h4 id="current-playlist-song-number"></h4>
+                            <h4 id="current-playlist-duration"><h4>
                             <button id="add-songs-to-current-playlist-button">
                                 <img src="assets/plus.svg">
                             </button>
@@ -74,14 +75,7 @@
                         <button id="current-playlist-sort-by-artist-button">Artist</button>
                         <button id="current-playlist-sort-by-duration-button">Duration</button>
                     </div>
-                    <ul id="current-playlist-table-body-container">
-                        <!-- <li class="current-playlist-table-row">
-                            <p>1</p>
-                            <p>AiAe</p>
-                            <p>Hatsune Miku</p>
-                            <p>3:58</p>
-                        </li> -->
-                    </ul>
+                    <ul id="current-playlist-song-container"></ul>
                 </div>
             </section>
             <footer class="bottom-tab">

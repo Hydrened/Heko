@@ -27,12 +27,12 @@ export default class Account {
             return this.app.throwError("Can't log: Playlist container element is null.");
         }
 
-        if (Elements.currentPlaylist.tableBodyContainer == null) {
+        if (Elements.currentPlaylist.songContainer == null) {
             return this.app.throwError("Can't log: Table body element is null.");
         }
 
         Elements.playlists.container.classList.add("loading");
-        Elements.currentPlaylist.tableBodyContainer.classList.add("loading");
+        Elements.currentPlaylist.songContainer.classList.add("loading");
 
         const token: Token = await Bridge.mainFolder.token.get();
 
@@ -155,12 +155,12 @@ export default class Account {
             return this.app.throwError("Can't log: Playlist container element is null.");
         }
 
-        if (Elements.currentPlaylist.tableBodyContainer == null) {
+        if (Elements.currentPlaylist.songContainer == null) {
             return this.app.throwError("Can't log: Table body element is null.");
         }
 
         Elements.playlists.container.classList.remove("loading");
-        Elements.currentPlaylist.tableBodyContainer.classList.remove("loading");
+        Elements.currentPlaylist.songContainer.classList.remove("loading");
 
         if (this.userID == null || this.token == null) {
             return;
@@ -168,7 +168,17 @@ export default class Account {
 
         await this.app.playlistManager.refresh();
 
-        console.log(`Logged as userID = ${this.userID} and token = ${this.token}`);
+        const firstPlaylistElement: HTMLElement | null = document.querySelector("li.playlist-wrapper:has(> .children-container:empty)");
+        if (firstPlaylistElement == null) {
+            return;
+        }
+
+        const firstPlaylistID: number = Number(firstPlaylistElement.getAttribute("playlist-id"));
+        if (isNaN(firstPlaylistID)) {
+            return;
+        }
+
+        await this.app.playlistManager.open(firstPlaylistID);
     }
 
     private async logout(): Promise<void> {

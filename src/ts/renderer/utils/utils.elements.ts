@@ -1,13 +1,13 @@
-export const playlists: any = {
+export const playlists = {
     addButton: document.querySelector("#add-playlist-button"),
     container: document.querySelector("#playlists-container"),
 };
 
-export const songs: any = {
+export const songs = {
     settingsButton: document.querySelector("#song-settings-button"),
 };
 
-export const currentPlaylist: any = {
+export const currentPlaylist = {
     details: {
         thumbnail: document.querySelector("#current-playlist-thumbnail"),
         title: document.querySelector("#current-playlist-title"),
@@ -26,14 +26,14 @@ export const currentPlaylist: any = {
         durationButton: document.querySelector("#current-playlist-sort-by-duration-button"),
     },
 
-    tableBodyContainer: document.querySelector("#current-playlist-table-body-container"),
+    songContainer: document.querySelector("#current-playlist-song-container"),
 };
 
-export const account: any = {
+export const account = {
     logoutButton: document.querySelector("#logout-button"),
 };
 
-export const currentSong: any = {
+export const currentSong = {
     name: document.querySelector("#current-song-name"),
     artist: document.querySelector("#current-song-artist"),
     position: document.querySelector("#current-song-position"),
@@ -41,7 +41,7 @@ export const currentSong: any = {
     duration: document.querySelector("#current-song-duration"),
 };
 
-export const songControls: any = {
+export const songControls = {
     buttons: {
         toggleShuffleButton: document.querySelector("#toggle-shuffle-button"),
         previousButton: document.querySelector("#previous-song-button"),

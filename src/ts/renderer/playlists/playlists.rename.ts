@@ -5,4 +5,8 @@ export default class PlaylistsRenameManager {
     constructor(private app: App, private playlists: PlaylistManager) {
         
     }
+
+    public async rename(): Promise<void> {
+        
+    }
 };

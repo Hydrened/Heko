@@ -4,6 +4,7 @@
     --main-height: calc(100vh - var(--frame-height));
     --scrollbar-width: 0.5rem;
     --main-padding: 1.15rem;
+    --contextmenu-padding: 0.3rem;
 
     /* BG COLORS */
     --bg-col-0: rgb(0,0,1);

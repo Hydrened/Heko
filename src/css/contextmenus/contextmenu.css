@@ -1,11 +1,61 @@
-ul.contextmenu {
-    padding: 1rem;
+ul.contextmenu,
+ul.contextmenu ul.contextmenu-submenu-container {
+    min-width: 15rem;
+
+    padding: var(--contextmenu-padding);
 
     position: absolute;
 
     border: var(--default-border);
-    border-radius: 0.5rem;
+    border-radius: 0.7rem;
 
-    background-color: var(--bg-col-2);
+    background-color: var(--bg-col-5);
     z-index: 20;
+}
+
+li.contextmenu-row-container {
+    padding: 0.4rem 1.3rem;
+
+    position: relative;
+
+    display: flex;
+    justify-content: space-between;
+    gap: 2rem;
+    
+    font-size: 0.9rem;
+    
+    border-radius: 0.4rem;
+
+    cursor: pointer;
+}
+li.contextmenu-row-container::after {
+    content: "";
+
+    width: calc(100% + var(--contextmenu-padding) * 2);
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: calc(var(--contextmenu-padding) * -1);
+}
+li.contextmenu-row-container:hover {
+    background-color: var(--bg-col-15);
+}
+
+ul.contextmenu span {
+    white-space: nowrap;
+}
+span.contextmenu-row-shortcut {
+    color: var(--text-col-2);
+}
+img.contextmenu-row-submenu-indicator {
+    width: 1rem;
+}
+
+li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {
+    display: none;
+}
+ul.contextmenu-submenu-container {
+    top: calc(var(--contextmenu-padding) * -1);
+    left: calc(100% + var(--contextmenu-padding));
 }

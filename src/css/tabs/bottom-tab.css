@@ -1,4 +1,6 @@
 .bottom-tab {
+    padding: var(--main-padding);
+    
     display: grid;
     grid-template-columns: 2fr 3fr 2fr;
 

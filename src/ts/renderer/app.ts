@@ -2,6 +2,7 @@ import Window from "./window.js";
 import Account from "./account.js";
 import ContextmenuManager from "./contextmenus/contextmenus.js";
 import PlaylistManager from "./playlists/playlists.js";
+import SongManager from "./songs/songs.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import "./utils/utils.types.js";
 
@@ -10,6 +11,7 @@ export default class App {
     public account: Account;
     public contextmenuManager: ContextmenuManager;
     public playlistManager: PlaylistManager;
+    public songManager: SongManager;
     
     private threw: boolean = false;
 
@@ -18,6 +20,7 @@ export default class App {
         this.account = new Account(this);
         this.contextmenuManager = new ContextmenuManager(this);
         this.playlistManager = new PlaylistManager(this);
+        this.songManager = new SongManager(this);
     }
 
     public async init(): Promise<void> {

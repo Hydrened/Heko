@@ -44,7 +44,7 @@ export default class PlaylistsAddManager {
             return "Can't create playlist: User is not connected.";
         }
 
-        const reqRes: any = await Requests.playlist.get(userData.id, userData.token);
+        const reqRes: any = await Requests.playlist.getAll(userData.id, userData.token);
         if (!reqRes.success) {
             return `Can't create playlist: ${reqRes.error}`;
         }

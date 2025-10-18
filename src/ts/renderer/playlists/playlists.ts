@@ -4,6 +4,7 @@ import PlaylistsAddManager from "./playlists.add.js";
 import PlaylistsRenameManager from "./playlists.rename.js";
 import PlaylistsRemoveManager from "./playlists.remove.js";
 import PlaylistsMoveManager from "./playlists.move.js";
+import PlaylistsOpenManager from "./playlists.open.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
@@ -12,6 +13,7 @@ export default class PlaylistManager {
     private playlistsRenameManager: PlaylistsRenameManager;
     private playlistsRemoveManager: PlaylistsRemoveManager;
     private playlistsMoveManager: PlaylistsMoveManager;
+    private playlistsOpenManager: PlaylistsOpenManager;
     
     constructor(private app: App) {
         this.playlistsRefreshManager = new PlaylistsRefreshManager(this.app, this);
@@ -19,10 +21,15 @@ export default class PlaylistManager {
         this.playlistsRenameManager = new PlaylistsRenameManager(this.app, this);
         this.playlistsRemoveManager = new PlaylistsRemoveManager(this.app, this);
         this.playlistsMoveManager = new PlaylistsMoveManager(this.app, this);
+        this.playlistsOpenManager = new PlaylistsOpenManager(this.app, this);
     }
 
     public async refresh(): Promise<void> {
         await this.playlistsRefreshManager.refresh();
+    }
+
+    public async open(playlistID: ID): Promise<void> {
+        await this.playlistsOpenManager.open(playlistID);
     }
 
     public getPlaylistOpenedStates(): number[] {

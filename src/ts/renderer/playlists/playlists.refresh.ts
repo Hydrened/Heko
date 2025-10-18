@@ -17,7 +17,7 @@ export default class PlaylistsRefreshManager {
             return;
         }
 
-        const getPlaylistsReqRes: any = await Requests.playlist.get(userData.id, userData.token);
+        const getPlaylistsReqRes: any = await Requests.playlist.getAll(userData.id, userData.token);
         const playlists: Playlist[] = this.sortPlaylists((getPlaylistsReqRes.playlists as Playlist[]));
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
@@ -85,11 +85,12 @@ export default class PlaylistsRefreshManager {
         containerElement.setAttribute("playlist-id", strPlaylistID);
         liElement.appendChild(containerElement);
 
-        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createPlaylistContextMenu(e, playlist));
+        containerElement.addEventListener("contextmenu", async (e: PointerEvent) => await this.app.contextmenuManager.createPlaylistContextMenu({ x: e.x, y: e.y }, playlist));
 
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");
         thumbnailElement.setAttribute("playlist-id", strPlaylistID);
+        thumbnailElement.style.backgroundImage = `url("${Functions.getThumbnailPath(playlist.thumbnailFileName)}")`;
         containerElement.appendChild(thumbnailElement);
 
         const detailsContainerElement: HTMLElement = document.createElement("div");
@@ -125,6 +126,9 @@ export default class PlaylistsRefreshManager {
                 const openedPlaylistIDs: number[] = this.app.playlistManager.getPlaylistOpenedStates();
                 await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
             });
+            
+        } else {
+            containerElement.addEventListener("click", async () => await this.playlists.open(playlist.id));
         }
 
         const detailsElement: HTMLElement = document.createElement("span");
@@ -150,6 +154,11 @@ export default class PlaylistsRefreshManager {
     private getParentToAppend(playlist: Playlist): Element | null {
         if (playlist.parentID == -1) {
             return Elements.playlists.container;
+        }
+
+        if (Elements.playlists.container == null) {
+            this.app.throwError("Can't get parent to append playlist: Playlist container element is null.");
+            return null;
         }
 
         const liElement: Element | undefined = ([...Elements.playlists.container.querySelectorAll("li")] as Element[]).find((li: Element) => {

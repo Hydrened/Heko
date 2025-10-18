@@ -1,10 +1,16 @@
 import App from "../app.js";
-import * as ContextmenuRows from "./contextmenu.rows.js";
+import ContextmenuRows from "./contextmenu.rows.js";
+import * as Functions from "../utils/utils.functions.js";
+import * as Elements from "../utils/utils.elements.js";
 
 export default class ContextmenuManager {
+    private contextmenuRows: ContextmenuRows;
+
     private currentContextmenuElement: HTMLElement | null = null;
+    private currentParentElement: HTMLElement | null = null;
 
     constructor(private app: App) {
+        this.contextmenuRows = new ContextmenuRows(this.app);
         this.initEvents();
     }
 
@@ -15,7 +21,7 @@ export default class ContextmenuManager {
             }
         });
 
-        window.addEventListener("click", (e) => {
+        window.addEventListener("mousedown", (e) => {
             if (this.currentContextmenuElement == null) {
                 return;
             }
@@ -26,13 +32,13 @@ export default class ContextmenuManager {
         });
     }
 
-    private createContextMenu(e: PointerEvent, rows: ContextmenuRow[]): void {
+    private createContextMenu(position: Position, rows: ContextmenuRow[]): void {
         this.closeContextMenu();
         
         this.currentContextmenuElement = document.createElement("ul");
         this.currentContextmenuElement.classList.add("contextmenu");
-        this.currentContextmenuElement.style.top = `${e.y}px`;
-        this.currentContextmenuElement.style.left = `${e.x}px`;
+        this.currentContextmenuElement.style.top = `${position.y}px`;
+        this.currentContextmenuElement.style.left = `${position.x}px`;
         document.body.appendChild(this.currentContextmenuElement);
 
         rows.forEach((row: ContextmenuRow) => this.createContextMenuRow(this.currentContextmenuElement, row));
@@ -44,26 +50,77 @@ export default class ContextmenuManager {
         }
 
         const rowContainer: HTMLElement = document.createElement("li");
+        rowContainer.classList.add("contextmenu-row-container");
         parent.appendChild(rowContainer);
 
+        if (row.onClick != null) {
+            rowContainer.addEventListener("click", () => {
+                if (row.onClick != null) {
+                    row.onClick();
+                } 
+            });
+        }
+
         const titleElement: HTMLElement = document.createElement("span");
-        titleElement.classList.add("row-title");
+        titleElement.classList.add("contextmenu-row-title");
         titleElement.textContent = row.title;
         rowContainer.appendChild(titleElement);
         
         if (row.shortcut != null) {
+            const shortcutElement: HTMLElement = document.createElement("span");
+            shortcutElement.classList.add("contextmenu-row-shortcut");
+            shortcutElement.textContent = Functions.shortcutToString(row.shortcut);
+            rowContainer.appendChild(shortcutElement);
+        
+        } else if (row.rows != null) {
 
+            if (row.rows.length == 0) {
+                return;
+            }
+
+            const submenuIndicatorElement: HTMLImageElement = document.createElement("img");
+            submenuIndicatorElement.classList.add("contextmenu-row-submenu-indicator");
+            submenuIndicatorElement.src = "assets/indicator.svg";
+            rowContainer.appendChild(submenuIndicatorElement);
+
+            const submenuElement: HTMLElement = document.createElement("ul");
+            submenuElement.classList.add("contextmenu-submenu-container");
+            rowContainer.appendChild(submenuElement);
+
+            row.rows.forEach((r: ContextmenuRow) => this.createContextMenuRow(submenuElement, r));
         }
     }
 
     private closeContextMenu(): void {
-        if (this.currentContextmenuElement != null) {
-            this.currentContextmenuElement.remove();
-            this.currentContextmenuElement = null;
+        if (this.currentContextmenuElement == null) {
+            return;
         }
+
+        if (this.currentParentElement != null) {
+            this.currentParentElement.classList.remove("contextmenu-parent");
+            this.currentParentElement = null;
+        }
+
+        this.currentContextmenuElement.remove();
+        this.currentContextmenuElement = null;
     }
 
-    public createPlaylistContextMenu(e: PointerEvent, playlist: Playlist): void {
-        this.createContextMenu(e, ContextmenuRows.getPlaylistRows(playlist));
+    private setElementToContextmenuParent(element: HTMLElement): void {
+        this.currentParentElement = element;
+        element.classList.add("contextmenu-parent");
+    }
+
+    public async createPlaylistContextMenu(position: Position, playlist: Playlist): Promise<void> {
+        const playlistElement: HTMLElement | null = document.querySelector(`li.playlist-wrapper[playlist-id="${String(playlist.id)}"]`);
+        if (playlistElement == null) {
+            return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.");
+        }
+
+        this.setElementToContextmenuParent(playlistElement);
+        this.createContextMenu(position, await this.contextmenuRows.getPlaylistRows(playlist));
+    }
+
+    public createSongSettingContextMenu(position: Position): void {
+        this.createContextMenu(position, this.contextmenuRows.getSongSettingRows());
     }
 };

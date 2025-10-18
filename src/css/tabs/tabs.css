@@ -6,6 +6,3 @@ main {
 main > .bottom-tab {
     grid-column: span 2;
 }
-main > * {
-    padding: var(--main-padding);
-}

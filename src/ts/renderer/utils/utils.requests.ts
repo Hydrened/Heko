@@ -10,7 +10,7 @@ async function request(phpFile: string, data: { [key: string]: any }): Promise<a
     return await res.json();
 }
 
-export const user: any = {
+export const user = {
     isTokenValid: async (token: Token): Promise<any> => {
         return await request("user/is-token-valid.php", { token: token });
     },
@@ -24,16 +24,26 @@ export const user: any = {
     },
 };
 
-export const playlist: any = {
+export const playlist = {
     add: async (userID: ID, token: Token, name: string): Promise<any> => {
         return await request("playlist/add.php", { userID: userID, token: token, name: name });
     },
 
-    get: async (userID: ID, token: Token): Promise<any> => {
-        return await request("playlist/get.php", { userID: userID, token: token });
+    get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
+        return await request("playlist/get.php", { userID: userID, token: token, playlistID: playlistID });
+    },
+
+    getAll: async (userID: ID, token: Token): Promise<any> => {
+        return await request("playlist/get-all.php", { userID: userID, token: token });
     },
 
     updateOpenedState: async (userID: ID, token: Token, openedPlaylistIDs: number[]): Promise<any> => {
         return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
+    },
+};
+
+export const songs = {
+    get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
+        return await request("songs/get.php", { userID: userID, token: token, playlistID: playlistID });
     },
 };

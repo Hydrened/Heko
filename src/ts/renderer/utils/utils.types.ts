@@ -1,10 +1,25 @@
 type ID = number;
 type Token = string;
-type Shortcut = string[] | null;
 
 interface UserData {
     id: ID | null;
     token: Token | null;
+};
+
+
+
+interface Shortcut {
+    ctrl: boolean;
+    shift: boolean;
+    alt: boolean;
+    key: string;
+};
+
+
+
+interface Position {
+    x: number;
+    y: number;
 };
 
 
@@ -43,20 +58,32 @@ interface CenterModalData {
 
 interface ContextmenuRow {
     title: string;
-    shortcut: Shortcut;
-    onClick: () => void;
-    content: ContextmenuRow[] | null;
+    shortcut: Shortcut | null;
+    onClick: (() => void) | null;
+    rows: ContextmenuRow[] | null;
 };
 
 
 
 interface Playlist {
     id: ID;
+    userID: ID,
     parentID: ID;
     name: string;
     position: number;
+    thumbnailFileName: string;
     opened: boolean;
     songs: number;
     children: number;
-    creationDate: number;
+    creationDate: string;
+};
+
+interface Song {
+    id: ID;
+    playlistID: ID;
+    fileName: string;
+    title: string;
+    artist: string;
+    duration: number;
+    creationDate: string;
 };
