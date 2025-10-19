@@ -1,16 +1,13 @@
 import App from "../app.js";
-import ContextmenuRows from "./contextmenu.rows.js";
+import getPlaylistRows from "./contextmenu.rows.playlist-container.js";
+import getSongSettingRows from "./contextmenu.rows.song-settings.js";
 import * as Functions from "../utils/utils.functions.js";
-import * as Elements from "../utils/utils.elements.js";
 
 export default class ContextmenuManager {
-    private contextmenuRows: ContextmenuRows;
-
     private currentContextmenuElement: HTMLElement | null = null;
     private currentParentElement: HTMLElement | null = null;
 
     constructor(private app: App) {
-        this.contextmenuRows = new ContextmenuRows(this.app);
         this.initEvents();
     }
 
@@ -53,13 +50,13 @@ export default class ContextmenuManager {
         rowContainer.classList.add("contextmenu-row-container");
         parent.appendChild(rowContainer);
 
-        if (row.onClick != null) {
-            rowContainer.addEventListener("click", () => {
-                if (row.onClick != null) {
-                    row.onClick();
-                } 
-            });
-        }
+        rowContainer.addEventListener("click", () => {
+            if (row.onClick != null) {
+                row.onClick();
+            } 
+            
+            this.closeContextMenu();
+        });
 
         const titleElement: HTMLElement = document.createElement("span");
         titleElement.classList.add("contextmenu-row-title");
@@ -117,10 +114,10 @@ export default class ContextmenuManager {
         }
 
         this.setElementToContextmenuParent(playlistElement);
-        this.createContextMenu(position, await this.contextmenuRows.getPlaylistRows(playlist));
+        this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
     }
 
-    public createSongSettingContextMenu(position: Position): void {
-        this.createContextMenu(position, this.contextmenuRows.getSongSettingRows());
+    public async createSongSettingContextMenu(position: Position): Promise<void> {
+        this.createContextMenu(position, await getSongSettingRows(this.app));
     }
 };

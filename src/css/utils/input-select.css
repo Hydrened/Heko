@@ -1,0 +1,45 @@
+input-select {
+    position: relative;
+}
+
+input-select > * {
+    width: 100%;
+}
+
+input-select > ul {
+    max-height: 20rem;
+
+    padding: 0.3rem;
+    padding-right: 0;
+
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    border: var(--default-border);
+    border-radius: 0.7rem;
+
+    background-color: var(--bg-col-5);
+
+    overflow-y: scroll;
+}
+input-select > ul:not(:has(li:not(.hidden))) {
+    display: none;
+}
+
+input-select > ul > li {
+    padding: 0.4rem 0.6rem;
+
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+input-select > ul > li.selected {
+    background-color: var(--bg-col-12);
+}
+input-select > ul > li:hover {
+    background-color: var(--bg-col-15);
+}
+input-select > ul > li.hidden {
+    display: none;
+}

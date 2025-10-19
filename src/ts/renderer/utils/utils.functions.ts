@@ -37,7 +37,7 @@ export function getSongPath(song: Song): string {
     return "https://killian-simon.fr/heko/songs/" + song.fileName;
 }
 
-export function formatDuration(seconds: number) {
+export function formatDuration(seconds: number): string {
     const hrs: number = Math.floor(seconds / 3600);
     const mins: number = Math.floor((seconds % 3600) / 60);
     const secs: number = Math.floor(seconds % 60);

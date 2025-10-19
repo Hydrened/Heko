@@ -18,12 +18,15 @@ export default class PlaylistsRefreshManager {
         }
 
         const getPlaylistsReqRes: any = await Requests.playlist.getAll(userData.id, userData.token);
+        if (!getPlaylistsReqRes.success) {
+            return this.app.throwError(`Can't refresh playlists: ${getPlaylistsReqRes.error}`);
+        }
         const playlists: Playlist[] = this.sortPlaylists((getPlaylistsReqRes.playlists as Playlist[]));
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
         if (Elements.playlists.container == null) {
-            return this.app.throwError("Can't refresh  playlists: Playlist container element is null.");
+            return this.app.throwError("Can't refresh playlists: Playlist container element is null.");
         }
 
         [...Elements.playlists.container.children].forEach((liElement: Element, index: number) => {

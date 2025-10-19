@@ -24,14 +24,14 @@ interface Position {
 
 
 
-type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD";
+type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT";
 
 interface ModalRow {
     label: string;
     type: ModalRowType;
-    maxLength: number;
+    maxLength: number | null;
+    defaultValue: string | null;
     data: string[] | null;
-    defaultValue: string;
 };
 
 type ModalRowRes = { [label: string]: string };
@@ -59,7 +59,7 @@ interface CenterModalData {
 interface ContextmenuRow {
     title: string;
     shortcut: Shortcut | null;
-    onClick: (() => void) | null;
+    onClick: (() => Promise<void>) | null;
     rows: ContextmenuRow[] | null;
 };
 

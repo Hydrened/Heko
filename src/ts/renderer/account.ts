@@ -41,10 +41,6 @@ export default class Account {
             return this.openLoginModal();
         }
 
-        if (!validityRes.isValid) {
-            return this.openLoginModal();
-        }
-        
         const userID: ID = Number(validityRes.userID);
 
         this.userID = userID;
@@ -59,8 +55,8 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: "", data: null },
-            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
+            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: null, data: null },
+            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
@@ -73,7 +69,7 @@ export default class Account {
             }
             
             await Bridge.mainFolder.token.save(loginRes.token);
-            
+
             this.userID = Number(loginRes.userID);
             this.token = loginRes.token;
             this.logged();
@@ -103,10 +99,10 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: "", data: null },
-            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: "", data: null },
-            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
-            { label: "Confirm", type: "PASSWORD", maxLength: 150, defaultValue: "", data: null },
+            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
+            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: null, data: null },
+            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
+            { label: "Confirm", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {

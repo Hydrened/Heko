@@ -1,11 +1,13 @@
 import App from "./../app.js";
 import * as AntiSpam from "./../utils/utils.anti-spam.js";
+import InputSelect from "./../utils/utils.input-select.js";
 
 export default class CenterModal {
-    public container: HTMLElement | null = null;
+    private container: HTMLElement | null = null;
 
     constructor(private app: App, private data: CenterModalData) {
         this.initEvents();
+
         const container: HTMLElement = this.createContainer();
         this.createContent(container);
         this.createFooter(container);
@@ -16,11 +18,24 @@ export default class CenterModal {
             return;
         }
 
-        window.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key == "Escape") {
-                this.close();
-            }
-        });
+        window.addEventListener("keydown", this.keydownEvent);
+    }
+
+    private keydownEvent = (e: KeyboardEvent): void => {
+        if (e.key != "Escape") {
+            return;
+        }
+
+        if (this.container == null) {
+            return this.app.throwError("Can't close modal: Container element is null.");
+        }
+
+        const inSelectInput: boolean = [...this.container.querySelectorAll("input-select > input")].some((e: Element) => document.activeElement == e);
+        if (inSelectInput) {
+            return;
+        }
+
+        this.close();
     }
 
     private createContainer(): HTMLElement {
@@ -65,7 +80,7 @@ export default class CenterModal {
 
     private createContent(container: HTMLElement): void {
         if (this.data.content.length == 0) {
-            return
+            return;
         }
 
         const ul: HTMLElement = document.createElement("ul");
@@ -87,15 +102,32 @@ export default class CenterModal {
 
         const input: HTMLInputElement = document.createElement("input");
         input.type = row.type.toLowerCase();
-        input.value = row.defaultValue;
-        input.maxLength = row.maxLength;
+
+        if (row.defaultValue != null) {
+            input.value = row.defaultValue;
+        }
+
+        if (row.maxLength != null) {
+            input.maxLength = row.maxLength;
+        }
+
         li.appendChild(input);
+
+        if (row.type == "FILE") {
+            CenterModal.createFileInput(input);
+
+        } else if (row.type == "SELECT" && row.data != null) {
+            CenterModal.createSelectInput(input, row.data);
+        }
 
         input.addEventListener("keydown", async (e: KeyboardEvent) => {
             if (e.key == "Enter") {
                 await AntiSpam.prevent(async () => {
                     await this.confirm();
                 });
+            }
+            else if (e.key == "Escape") {
+                setTimeout(() => input.blur(), 0);
             }
         });
     }
@@ -136,7 +168,7 @@ export default class CenterModal {
 
     public async confirm(): Promise<void> {
         if (this.container == null) {
-            return;
+            return this.app.throwError("Can't confirm modal: Container element is null.");
         }
 
         const res: ModalRes = [...this.container.querySelectorAll(".field-container > li")].map((li: Element) => {
@@ -166,14 +198,16 @@ export default class CenterModal {
 
     public close(): void {
         if (this.container == null) {
-            return this.app.throwError("Can't close modal: Container is null.");
+            return this.app.throwError("Can't close modal: Container element is null.");
         }
 
         this.container.remove();
 
-        if (this.data.onCancel) {
+        if (this.data.onCancel != null) {
             this.data.onCancel();
         }
+
+        window.removeEventListener("keydown", this.keydownEvent);
     }
 
     private focusFirstField(): void {
@@ -187,5 +221,80 @@ export default class CenterModal {
         }
         
         input.focus();
+    }
+
+    public static createFileInput(input: HTMLInputElement): void {
+        const inputParentElement: HTMLElement | null = input.parentElement;
+        if (inputParentElement == null) {
+            return;
+        }
+        
+        const containerElement: HTMLElement = document.createElement("input-file-container");
+        inputParentElement.appendChild(containerElement);
+        containerElement.appendChild(input);
+
+        const dropAreaElement: HTMLElement = document.createElement("input-file-drop-area");
+        dropAreaElement.classList.add("extern-text");
+        containerElement.appendChild(dropAreaElement);
+
+        const resetDropAreaText = (): void => {
+            dropAreaElement.classList.remove("has-file");
+            dropAreaElement.textContent = "Drag a file";
+        }
+
+        resetDropAreaText();
+
+        input.addEventListener("change", (e: Event) => {
+            if (input.files == null) {
+                return resetDropAreaText();
+            }
+
+            if (input.files.length == 0) {
+                return resetDropAreaText();
+            }
+
+            dropAreaElement.classList.add("has-file");
+            dropAreaElement.textContent = input.files[0].name;
+        });
+    }
+
+    public static createSelectInput(input: HTMLInputElement, data: string[]): InputSelect {
+        return new InputSelect(input, data);
+    }
+
+    public static getFileFromFileInput(inputIndex: number): File | null {
+        const inputElement: Element | null = [...document.querySelectorAll(".center-modal input")][2];
+        if (inputElement == null) {
+            return null;
+        }
+
+        const inputFileElement: HTMLInputElement = (inputElement as HTMLInputElement);
+        if (inputFileElement.files == null) {
+            return null;
+        }
+
+        return inputFileElement.files[0];
+    }
+
+    public onInput(inputLabel: string, callback: (e: Event) => void): void {
+        if (this.container == null) {
+            return this.app.throwError("Can't set on input event on input: Container element is null.");
+        }
+
+        const inputIndex: number = this.data.content.findIndex((row: ModalRow, index: number) => row.label == inputLabel);
+        const input: HTMLInputElement = [...this.container.querySelectorAll("input")][inputIndex];
+
+        input.addEventListener("input", callback);
+    }
+
+    public onChange(inputSelectLabel: string, callback: (e: Event) => void): void {
+        if (this.container == null) {
+            return this.app.throwError("Can't set on change event on input: Container element is null.");
+        }
+
+        const inputIndex: number = this.data.content.findIndex((row: ModalRow, index: number) => row.label == inputSelectLabel && row.type == "SELECT");
+        const input: HTMLInputElement = [...this.container.querySelectorAll("input")][inputIndex];
+
+        
     }
 };

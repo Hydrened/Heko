@@ -17,7 +17,7 @@ export default class PlaylistsAddManager {
 
     private openModal(): void {
         const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: "", data: null },
+            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
         ];
 
         const data: CenterModalData = {
