@@ -1,8 +1,9 @@
-import App from "./../app.js";
+import PlaylistManager from "./playlists.js";
+import App from "../app.js";
 import * as Elements from "./../utils/utils.elements.js";
 
-export default class SongManager {
-    constructor(private app: App) {
+export default class PlaylistsSongsManager {
+    constructor(private app: App, private playlists: PlaylistManager) {
         this.initEvents();
     }
 

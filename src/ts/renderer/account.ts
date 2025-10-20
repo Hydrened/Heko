@@ -55,8 +55,8 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: null, data: null },
-            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
+            { label: "Email", type: "EMAIL", maxLength: 150 },
+            { label: "Password", type: "PASSWORD", maxLength: 150 },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
@@ -84,7 +84,6 @@ export default class Account {
         const modalData: CenterModalData = {
             title: "Login",
             content: content,
-            onCancel: null,
             onConfirm: onConfirm,
             additionnalButtons: additionnalButtons,
             cantClose: true,
@@ -99,10 +98,10 @@ export default class Account {
         }
 
         const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
-            { label: "Email", type: "EMAIL", maxLength: 150, defaultValue: null, data: null },
-            { label: "Password", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
-            { label: "Confirm", type: "PASSWORD", maxLength: 150, defaultValue: null, data: null },
+            { label: "Name", type: "TEXT", maxLength: 150 },
+            { label: "Email", type: "EMAIL", maxLength: 150 },
+            { label: "Password", type: "PASSWORD", maxLength: 150 },
+            { label: "Confirm", type: "PASSWORD", maxLength: 150 },
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
@@ -137,7 +136,6 @@ export default class Account {
         const modalData: CenterModalData = {
             title: "Register",
             content: content,
-            onCancel: null,
             onConfirm: onConfirm,
             additionnalButtons: additionnalButtons,
             cantClose: true,

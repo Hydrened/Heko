@@ -98,6 +98,11 @@ ul {
     list-style: none;
 }
 
+button.disabled {
+    opacity: 0.5;
+    user-select: none;
+    pointer-events: none;
+}
 button > img {
     cursor: pointer;
     transition: 150ms;
@@ -130,5 +135,5 @@ main {
     border-radius: 0.25rem;
 }
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--bg-col-16);
+    background: var(--bg-col-50);
 }

@@ -17,15 +17,13 @@ export default class PlaylistsAddManager {
 
     private openModal(): void {
         const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
+            { label: "Name", type: "TEXT", maxLength: 150 },
         ];
 
         const data: CenterModalData = {
             title: "Create a playlist",
             content: content,
             onConfirm: (res: ModalRes): Promise<ModalError> => this.modalOnConfirm(res),
-            onCancel: null,
-            additionnalButtons: [],
             cantClose: false,
         };
 
@@ -44,12 +42,12 @@ export default class PlaylistsAddManager {
             return "Can't create playlist: User is not connected.";
         }
 
-        const reqRes: any = await Requests.playlist.getAll(userData.id, userData.token);
-        if (!reqRes.success) {
-            return `Can't create playlist: ${reqRes.error}`;
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            return `Can't create playlist: ${getAllPlaylistsFromUserReqRes.error}`;
         }
         
-        const playlistNames: string[] = reqRes.playlists.map((p: Playlist) => p.name);
+        const playlistNames: string[] = getAllPlaylistsFromUserReqRes.playlists.map((p: Playlist) => p.name);
         const playlistNameAlreadyExists: boolean = playlistNames.includes(newPlaylistName);
         
         if (playlistNameAlreadyExists) {

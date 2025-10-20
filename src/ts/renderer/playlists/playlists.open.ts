@@ -5,7 +5,7 @@ import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class PlaylistsOpenManager {
-    private currentPlaylist: Playlist | null = null
+    public currentPlaylist: Playlist | null = null;
     private currentSongs: Song[] = [];
 
     constructor(private app: App, private playlists: PlaylistManager) {
@@ -20,9 +20,9 @@ export default class PlaylistsOpenManager {
             return;
         }
 
-        const getSongsReqRes: any = await Requests.songs.get(userData.id, userData.token, playlistID);
-        if (!getSongsReqRes.success) {
-            return this.app.throwError(`Can't open playlist: ${getSongsReqRes.error}`);
+        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, playlistID);
+        if (!getSongsFromPlaylistReqRes.success) {
+            return this.app.throwError(`Can't open playlist: ${getSongsFromPlaylistReqRes.error}`);
         }
 
         const getPlaylistReqRes: any = await Requests.playlist.get(userData.id, userData.token, playlistID);
@@ -31,7 +31,7 @@ export default class PlaylistsOpenManager {
         }
 
         this.currentPlaylist = (getPlaylistReqRes.playlist as Playlist);
-        this.currentSongs = (getSongsReqRes.songs as Song[]);
+        this.currentSongs = (getSongsFromPlaylistReqRes.songs as Song[]);
         this.refresh();
     }
 
@@ -96,6 +96,8 @@ export default class PlaylistsOpenManager {
             const liElement: HTMLElement = document.createElement("li");
             liElement.classList.add("current-playlist-table-row");
             Elements.currentPlaylist.songContainer.appendChild(liElement);
+
+            liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu({ x: e.x, y: e.y }, song));
 
             const formatDuration: string = Functions.formatDuration(song.duration);
 

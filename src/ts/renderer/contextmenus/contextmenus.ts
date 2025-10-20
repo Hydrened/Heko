@@ -1,6 +1,6 @@
 import App from "../app.js";
-import getPlaylistRows from "./contextmenu.rows.playlist-container.js";
 import getSongSettingRows from "./contextmenu.rows.song-settings.js";
+import getSongRows from "./contextmenu.rows.song.js";
 import * as Functions from "../utils/utils.functions.js";
 
 export default class ContextmenuManager {
@@ -113,11 +113,15 @@ export default class ContextmenuManager {
             return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.");
         }
 
-        this.setElementToContextmenuParent(playlistElement);
-        this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
+        // this.setElementToContextmenuParent(playlistElement);
+        // this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
     }
 
     public async createSongSettingContextMenu(position: Position): Promise<void> {
         this.createContextMenu(position, await getSongSettingRows(this.app));
+    }
+
+    public async createSongContextMenu(position: Position, song: Song): Promise<void> {
+        this.createContextMenu(position, await getSongRows(this.app, song));
     }
 };

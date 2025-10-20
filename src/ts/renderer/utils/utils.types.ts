@@ -25,16 +25,21 @@ interface Position {
 
 
 type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT";
+type ModalRowData = string[];
 
 interface ModalRow {
     label: string;
     type: ModalRowType;
-    maxLength: number | null;
-    defaultValue: string | null;
-    data: string[] | null;
+    maxLength?: number;
+    defaultValue?: string;
+    data?: ModalRowData;
 };
 
-type ModalRowRes = { [label: string]: string };
+interface ModalRowRes {
+    label: string;
+    value: string;
+    index?: number;
+};
 type ModalRes = ModalRowRes[];
 
 interface ModalButton {
@@ -46,10 +51,10 @@ type ModalError = string | null;
 
 interface CenterModalData {
     title: string;
-    content: ModalRow[];
+    content?: ModalRow[];
     onConfirm: (res: ModalRes) => Promise<ModalError>;
-    onCancel: (() => void) | null;
-    additionnalButtons: ModalButton[];
+    onCancel?: () => void;
+    additionnalButtons?: ModalButton[];
     cantClose: boolean;
 };
 
@@ -58,9 +63,9 @@ interface CenterModalData {
 
 interface ContextmenuRow {
     title: string;
-    shortcut: Shortcut | null;
-    onClick: (() => Promise<void>) | null;
-    rows: ContextmenuRow[] | null;
+    shortcut?: Shortcut;
+    onClick?: () => Promise<void>;
+    rows?: ContextmenuRow[];
 };
 
 

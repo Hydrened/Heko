@@ -2,7 +2,7 @@ export default class InputSelect {
     private list: HTMLElement | null = null;
     private selected: number = -1;
 
-    constructor(private input: HTMLInputElement, private data: string[]) {
+    constructor(private input: HTMLInputElement, private data: ModalRowData) {
         this.initEvents();
         this.initContainer();
     }
@@ -58,7 +58,6 @@ export default class InputSelect {
 
             const li: HTMLElement = document.createElement("li");
             li.textContent = entry;
-            li.setAttribute("id", `${index}`);
             li.classList.add("input-select-li");
             li.classList.add("hidden");
             this.list.appendChild(li);
@@ -79,6 +78,7 @@ export default class InputSelect {
         this.selected = -1;
 
         const text: string = this.input.value.toLowerCase();
+        this.input.removeAttribute("index");
 
         this.data.forEach((entry: string, index: number) => {
             if (this.list == null) {
@@ -88,7 +88,16 @@ export default class InputSelect {
             const li: Element = this.list.children[index];
             li.classList.remove("selected");
 
-            (entry.toLowerCase().includes(text)) ? li.classList.remove("hidden") : li.classList.add("hidden");
+            if (entry.toLowerCase().includes(text)) {
+                li.classList.remove("hidden");
+            }
+            else {
+                li.classList.add("hidden");
+            }
+
+            if (entry.toLowerCase() == text) {
+                this.input.setAttribute("index", String(index));
+            }
         });
     }
 

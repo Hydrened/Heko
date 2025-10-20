@@ -150,7 +150,6 @@ button.close-button > img {
     border-radius: 0.5rem;
 
     background-color: var(--bg-col-20);
-
     cursor: pointer;
 }
 .center-modal > .container > div.button-container > button:hover {

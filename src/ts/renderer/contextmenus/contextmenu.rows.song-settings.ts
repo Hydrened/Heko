@@ -37,11 +37,12 @@ async function addSongOnConfirm(app: App, res: ModalRes): Promise<ModalError> {
         return uploadSongReqRes.error;
     }
 
-    const addSongReqRes: any = await Requests.song.add(userData.id, userData.token, title, artist, uploadSongReqRes.fileName);
-    if (!addSongReqRes.success) {
-        return addSongReqRes.error;
+    const addSongToAppReqRes: any = await Requests.song.addToApp(userData.id, userData.token, title, artist, uploadSongReqRes.fileName);
+    if (!addSongToAppReqRes.success) {
+        return addSongToAppReqRes.error;
     }
 
+    app.playlistManager.refresh();
     return null;
 }
 
@@ -49,22 +50,18 @@ function getAddSongModalData(app: App): CenterModalData {
     return {
         title: "Add song to Heko",
         content: [
-            { label: "Title", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
-            { label: "Artist", type: "TEXT", maxLength: 150, defaultValue: null, data: null },
-            { label: "Song file", type: "FILE", maxLength: null, defaultValue: null, data: null },
+            { label: "Title", type: "TEXT", maxLength: 150 },
+            { label: "Artist", type: "TEXT", maxLength: 150 },
+            { label: "Song file", type: "FILE" },
         ],
-        onConfirm: (res: ModalRes) => addSongOnConfirm(app, res),
-        onCancel: null,
-        additionnalButtons: [],
+        onConfirm: async (res: ModalRes) => await addSongOnConfirm(app, res),
         cantClose: false,
     };
 }
 
-async function removeSongOnConfirm(app: App, res: ModalRes, songTitles: string[]): Promise<ModalError> {
-    const title: string = res[0].value;
-
-    const isTitleValid: boolean = songTitles.some((t: string) => t == title);
-    if (!isTitleValid) {
+async function removeSongOnConfirm(app: App, res: ModalRes, songs: Song[]): Promise<ModalError> {
+    const songIndex: number | undefined = res[0].index;
+    if (songIndex == undefined) {
         return "Song title is not valid.";
     }
 
@@ -73,11 +70,14 @@ async function removeSongOnConfirm(app: App, res: ModalRes, songTitles: string[]
         return "User is not connected.";
     }
 
-    const removeSongReqRes: any = await Requests.song.remove(userData.id, userData.token, 0);
-    if (!removeSongReqRes.success) {
-        return removeSongReqRes.error;
+    const song: Song = songs[songIndex];
+    
+    const removeSongFromAppReqRes: any = await Requests.song.removeFromApp(userData.id, userData.token, song.id, song.fileName);
+    if (!removeSongFromAppReqRes.success) {
+        return removeSongFromAppReqRes.error;
     }
 
+    app.playlistManager.refresh();
     return null;
 }
 
@@ -87,11 +87,9 @@ function getRemoveSongModalData(app: App, songs: Song[]): CenterModalData {
     return {
         title: "Remove song from Heko",
         content: [
-            { label: "Title", type: "SELECT", maxLength: 150, defaultValue: null, data: songTitles },
+            { label: "Title", type: "SELECT", maxLength: 150, data: songTitles },
         ],
-        onConfirm: async (res: ModalRes) => await removeSongOnConfirm(app, res, songTitles),
-        onCancel: null,
-        additionnalButtons: [],
+        onConfirm: async (res: ModalRes) => await removeSongOnConfirm(app, res, songs),
         cantClose: false,
     };
 }
@@ -99,11 +97,11 @@ function getRemoveSongModalData(app: App, songs: Song[]): CenterModalData {
 export default async function getSongSettingRows(app: App): Promise<ContextmenuRow[]> {
     return [
 
-        { title: "Add song to Heko", shortcut: null, onClick: async () => {
+        { title: "Add song to Heko", onClick: async () => {
             new CenterModal(app, getAddSongModalData(app));
-        }, rows: null },
+        } },
 
-        { title: "Remove song from Heko", shortcut: null, onClick: async () => {
+        { title: "Remove song from Heko", onClick: async () => {
 
             const userData: UserData = app.account.getUserData();
             if (userData.id == null || userData.token == null) {
@@ -116,13 +114,7 @@ export default async function getSongSettingRows(app: App): Promise<ContextmenuR
             }
 
             const songs: Song[] = (songsFromUserReqRes.songs as Song[]);
-
-            const modal: CenterModal = new CenterModal(app, getRemoveSongModalData(app, songs));
-            modal.onChange("Title", (e: Event) => {
-                console.log(e);
-            });
-            
-        }, rows: null },
-
+            new CenterModal(app, getRemoveSongModalData(app, songs));
+        } },
     ];
 }

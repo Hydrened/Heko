@@ -17,11 +17,11 @@ export default class PlaylistsRefreshManager {
             return;
         }
 
-        const getPlaylistsReqRes: any = await Requests.playlist.getAll(userData.id, userData.token);
-        if (!getPlaylistsReqRes.success) {
-            return this.app.throwError(`Can't refresh playlists: ${getPlaylistsReqRes.error}`);
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            return this.app.throwError(`Can't refresh playlists: ${getAllPlaylistsFromUserReqRes.error}`);
         }
-        const playlists: Playlist[] = this.sortPlaylists((getPlaylistsReqRes.playlists as Playlist[]));
+        const playlists: Playlist[] = this.sortPlaylists((getAllPlaylistsFromUserReqRes.playlists as Playlist[]));
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
@@ -38,6 +38,18 @@ export default class PlaylistsRefreshManager {
                 }
             }, (index + 1) * 50);
         });
+
+        if (Elements.currentPlaylist.addSongsButton == null) {
+            return this.app.throwError("Can't refresh add song to playlist button: Add song to playlist modal button is null.");
+        }
+
+        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
+        if (!getAllSongsFromUserReqRes.success) {
+            return this.app.throwError("Can't refresh add song to playlist button: User is not logged in.");
+        }
+
+        const hasUserSongs: boolean = (getAllSongsFromUserReqRes.songs.length > 0);
+        (hasUserSongs) ? Elements.currentPlaylist.addSongsButton.classList.remove("disabled") : Elements.currentPlaylist.addSongsButton.classList.add("disabled");
     }
 
     private sortPlaylists(playlists: Playlist[]): Playlist[] {

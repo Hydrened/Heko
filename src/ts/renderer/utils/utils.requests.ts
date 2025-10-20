@@ -43,39 +43,45 @@ export const playlist = {
         return await request("playlist/add.php", { userID: userID, token: token, name: name });
     },
 
+    updateOpenedState: async (userID: ID, token: Token, openedPlaylistIDs: number[]): Promise<any> => {
+        return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
+    },
+
     get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
         return await request("playlist/get.php", { userID: userID, token: token, playlistID: playlistID });
     },
 
-    getAll: async (userID: ID, token: Token): Promise<any> => {
-        return await request("playlist/get-all.php", { userID: userID, token: token });
-    },
-
-    updateOpenedState: async (userID: ID, token: Token, openedPlaylistIDs: number[]): Promise<any> => {
-        return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
-    },
-};
-
-export const songs = {
-    get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
-        return await request("songs/get.php", { userID: userID, token: token, playlistID: playlistID });
+    getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
+        return await request("playlist/get-all-from-user.php", { userID: userID, token: token });
     },
 };
 
 export const song = {
+    addToApp: async (userID: ID, token: Token, title: string, artist: string, songFileName: string): Promise<any> => {
+        return await request("song/add-to-app.php", { userID: userID, token: token, title: title, artist: artist, songFileName: songFileName });
+    },
+
+    addToPlaylist: async (userID: ID, token: Token, songID: ID, playlistID: ID): Promise<any> => {
+        return await request("song/add-to-playlist.php", { userID: userID, token: token, songID: songID, playlistID: playlistID });
+    },
+
     upload: async (userID: ID, token: Token, songFile: File): Promise<any> => {
         return await uploadFile("song/upload.php", userID, token, songFile);
     },
 
-    add: async (userID: ID, token: Token, title: string, artist: string, songFileName: string): Promise<any> => {
-        return await request("song/add.php", { userID: userID, token: token, title: title, artist: artist, songFileName: songFileName });
+    removeFromApp: async (userID: ID, token: Token, songID: ID, songFileName: string): Promise<any> => {
+        return await request("song/remove-from-app.php", { userID: userID, token: token, songID: songID, songFileName: songFileName });
+    },
+
+    removeFromPlaylist: async (userID: ID, token: Token, songID: ID): Promise<any> => {
+        return await request("song/remove-from-playlist.php", { userID: userID, token: token, songID: songID });
     },
 
     getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
         return await request("song/get-all-from-user.php", { userID: userID, token: token });
     },
 
-    remove: async (userID: ID, token: Token, songID: ID): Promise<any> => {
-        return await request("song/remove.php", { userID: userID, token: token, songID: songID });
+    getFromPlaylist: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
+        return await request("song/get-from-playlist.php", { userID: userID, token: token, playlistID: playlistID });
     },
 };
