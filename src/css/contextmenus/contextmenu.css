@@ -28,6 +28,11 @@ li.contextmenu-row-container {
 
     cursor: pointer;
 }
+li.contextmenu-row-container.disabled {
+    opacity: 0.5;
+    user-select: none;
+    pointer-events: none;
+}
 li.contextmenu-row-container::after {
     content: "";
 

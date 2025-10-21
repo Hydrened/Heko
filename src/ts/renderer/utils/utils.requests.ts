@@ -85,3 +85,13 @@ export const song = {
         return await request("song/get-from-playlist.php", { userID: userID, token: token, playlistID: playlistID });
     },
 };
+
+export const artist = {
+    add: async (userID: ID, token: Token, name: string): Promise<any> => {
+        return await request("artist/add.php", { userID: userID, token: token, name: name });
+    },
+
+    getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
+        return await request("artist/get-all-from-user.php", { userID: userID, token: token });
+    },
+};

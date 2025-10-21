@@ -1,5 +1,6 @@
 import App from "./app.js";
 import CenterModal from "./modals/modal.center.js";
+import ModalTop from "./modals/modal.top.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
 import * as Elements from "./utils/utils.elements.js";
@@ -60,18 +61,18 @@ export default class Account {
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
-            const email: string = res[0].value;
-            const password: string = res[1].value;
+            const email: string = res.rows["Email"].value;
+            const password: string = res.rows["Password"].value;
 
-            const loginRes: any = await Requests.user.login(email, password);
-            if (!loginRes.success) {
-                return loginRes.error;
+            const loginReqRes: any = await Requests.user.login(email, password);
+            if (!loginReqRes.success) {
+                return loginReqRes.error;
             }
             
-            await Bridge.mainFolder.token.save(loginRes.token);
+            await Bridge.mainFolder.token.save(loginReqRes.token);
 
-            this.userID = Number(loginRes.userID);
-            this.token = loginRes.token;
+            this.userID = Number(loginReqRes.userID);
+            this.token = loginReqRes.token;
             this.logged();
 
             return null;
@@ -105,26 +106,28 @@ export default class Account {
         ];
 
         const onConfirm = async (res: ModalRes): Promise<ModalError> => {
-            const name: string = res[0].value;
-            const email: string = res[1].value;
-            const password: string = res[2].value;
-            const confirm: string = res[3].value;
+            const name: string = res.rows["Name"].value;
+            const email: string = res.rows["Email"].value;
+            const password: string = res.rows["Password"].value;
+            const confirm: string = res.rows["Confirm"].value;
 
-            const registerRes: any = await Requests.user.register(name, email, password, confirm);
-            if (!registerRes.success) {
-                return registerRes.error;
+            const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
+            if (!registerReqRes.success) {
+                return registerReqRes.error;
             }
 
-            const loginRes: any = await Requests.user.login(email, password);
-            if (!loginRes.success) {
-                return loginRes.error;
+            const loginReqRes: any = await Requests.user.login(email, password);
+            if (!loginReqRes.success) {
+                return loginReqRes.error;
             }
 
-            await Bridge.mainFolder.token.save(loginRes.token);
+            await Bridge.mainFolder.token.save(loginReqRes.token);
 
-            this.userID = Number(loginRes.userID);
-            this.token = loginRes.token;
+            this.userID = Number(loginReqRes.userID);
+            this.token = loginReqRes.token;
             this.logged();
+
+            ModalTop.create("SUCCESS", "Account successfully created.");
 
             return null;
         };
@@ -160,19 +163,14 @@ export default class Account {
             return;
         }
 
+        const playlists: Playlist[] = await this.app.playlistManager.getSortedPlaylists();
+
+        const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
+        if (firstSongPlaylist != undefined) {
+            await this.app.playlistManager.open(firstSongPlaylist.id);
+        }
+        
         await this.app.playlistManager.refresh();
-
-        const firstPlaylistElement: HTMLElement | null = document.querySelector("li.playlist-wrapper:has(> .children-container:empty)");
-        if (firstPlaylistElement == null) {
-            return;
-        }
-
-        const firstPlaylistID: number = Number(firstPlaylistElement.getAttribute("playlist-id"));
-        if (isNaN(firstPlaylistID)) {
-            return;
-        }
-
-        await this.app.playlistManager.open(firstPlaylistID);
     }
 
     private async logout(): Promise<void> {
@@ -184,7 +182,7 @@ export default class Account {
         this.userID = null;
         this.token = null;
 
-        this.app.playlistManager.refresh();
+        await this.app.playlistManager.refresh();
         this.openLoginModal();
     }
 

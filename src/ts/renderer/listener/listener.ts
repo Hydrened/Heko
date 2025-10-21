@@ -29,6 +29,6 @@ export default class ListenerManager {
     }
 
     public refresh(): void {
-        this.listenerRefreshManager.refresh();
+        // this.listenerRefreshManager.refresh();
     }
 };

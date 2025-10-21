@@ -10,18 +10,14 @@ export default class PlaylistsRefreshManager {
     }
 
     public async refresh(): Promise<void> {
+        await this.refreshPlaylistContainer();
+        await this.refreshAddSongToPlaylistButton();
+    }
+
+    private async refreshPlaylistContainer(): Promise<void> {
         Functions.removeChildren(Elements.playlists.container);
-
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return;
-        }
-
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-        if (!getAllPlaylistsFromUserReqRes.success) {
-            return this.app.throwError(`Can't refresh playlists: ${getAllPlaylistsFromUserReqRes.error}`);
-        }
-        const playlists: Playlist[] = this.sortPlaylists((getAllPlaylistsFromUserReqRes.playlists as Playlist[]));
+        
+        const playlists: Playlist[] = await this.getSortedPlaylists();
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
@@ -38,21 +34,54 @@ export default class PlaylistsRefreshManager {
                 }
             }, (index + 1) * 50);
         });
+    }
+
+    public async refreshAddSongToPlaylistButton(): Promise<void> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            return;
+        }
 
         if (Elements.currentPlaylist.addSongsButton == null) {
             return this.app.throwError("Can't refresh add song to playlist button: Add song to playlist modal button is null.");
         }
 
-        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
-        if (!getAllSongsFromUserReqRes.success) {
-            return this.app.throwError("Can't refresh add song to playlist button: User is not logged in.");
+        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentPlaylist();
+        if (currentPlaylist == null) {
+            return;
         }
 
-        const hasUserSongs: boolean = (getAllSongsFromUserReqRes.songs.length > 0);
-        (hasUserSongs) ? Elements.currentPlaylist.addSongsButton.classList.remove("disabled") : Elements.currentPlaylist.addSongsButton.classList.add("disabled");
+        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentPlaylist.id);
+        if (!getSongsFromPlaylistReqRes.success) {
+            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
+        }
+
+        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
+        if (!getAllSongsFromUserReqRes.success) {
+            return this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
+        }
+
+        const playlistSongIDs: number[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.id);
+        const everyUserSongIDs: number[] = (getAllSongsFromUserReqRes.songs as Song[]).map((song: Song) => song.id);
+
+        const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
+        (canUserAddSongs) ? Elements.currentPlaylist.addSongsButton.classList.remove("disabled") : Elements.currentPlaylist.addSongsButton.classList.add("disabled");
     }
 
-    private sortPlaylists(playlists: Playlist[]): Playlist[] {
+    public async getSortedPlaylists(): Promise<Playlist[]> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            return [];
+        }
+
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
+            return [];
+        }
+
+        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
+
         const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
 
         for (const playlist of playlists) {
@@ -139,7 +168,11 @@ export default class PlaylistsRefreshManager {
                 }
 
                 const openedPlaylistIDs: number[] = this.app.playlistManager.getPlaylistOpenedStates();
-                await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
+
+                const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
+                if (!updatePlaylistOpenedStatesReqRes.success) {
+                    return this.app.throwError(`Can't update playlist opened states: ${updatePlaylistOpenedStatesReqRes.error}`);
+                }
             });
             
         } else {

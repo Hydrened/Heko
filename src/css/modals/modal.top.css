@@ -1,0 +1,34 @@
+top-modal-container {
+    width: 20rem;
+
+    padding: 1rem;
+
+    position: absolute;
+    top: calc(var(--frame-height) + 1rem);
+    left: 50%;
+
+    text-align: center;
+
+    border: 1px solid transparent;
+    border-radius: 0.8rem;
+
+    box-shadow: 0 0 1rem black;
+    background-color: var(--bg-col-5);
+    transform: translateX(-50%);
+    cursor: pointer;
+}
+
+top-modal-container.success {
+    border-color: var(--bg-success-col);
+}
+top-modal-container.error {
+    border-color: var(--bg-error-col);
+}
+
+@keyframes top-modal-container-closing {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+top-modal-container.closing {
+    animation: top-modal-container-closing 500ms forwards;
+}

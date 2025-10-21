@@ -22,17 +22,21 @@ export default class PlaylistsOpenManager {
 
         const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, playlistID);
         if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't open playlist: ${getSongsFromPlaylistReqRes.error}`);
+            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
         }
 
         const getPlaylistReqRes: any = await Requests.playlist.get(userData.id, userData.token, playlistID);
         if (!getPlaylistReqRes.success) {
-            return this.app.throwError(`Can't open playlist: ${getPlaylistReqRes.error}`);
+            return this.app.throwError(`Can't get playlist: ${getPlaylistReqRes.error}`);
         }
 
         this.currentPlaylist = (getPlaylistReqRes.playlist as Playlist);
         this.currentSongs = (getSongsFromPlaylistReqRes.songs as Song[]);
         this.refresh();
+    }
+
+    public close(): void {
+        
     }
 
     private reset() {
@@ -82,6 +86,8 @@ export default class PlaylistsOpenManager {
         const playlistDuration: number = this.currentSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
         Elements.currentPlaylist.details.duration.textContent = formatPlatlistDuration;
+
+        this.playlists.playlistsRefreshManager.refreshAddSongToPlaylistButton();
     }
 
     private refreshSongContainer(): void {

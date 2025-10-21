@@ -33,8 +33,4 @@ export default class App {
             this.threw = true;
         }
     }
-
-    public logError(message: string): void {
-        console.error(message);
-    }
 };

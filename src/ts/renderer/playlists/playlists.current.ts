@@ -3,6 +3,7 @@ import App from "../app.js";
 import CenterModal from "../modals/modal.center.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
+import ModalTop from "../modals/modal.top.js";
 
 export default class PlaylistsCurrentManager {
     constructor(private app: App, private playlists: PlaylistManager) {
@@ -30,12 +31,12 @@ export default class PlaylistsCurrentManager {
 
         const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
         if (!getAllSongsFromUserReqRes.success) {
-            return this.app.throwError(`Can't open add song to playlist modal: ${getAllSongsFromUserReqRes.error}`);
+            return this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
         }
 
         const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentPlaylist.id);
         if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't open add song to playlist modal: ${getSongsFromPlaylistReqRes.error}`);
+            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
         }
 
         const songTitlesFromPlaylist: string[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.title);
@@ -46,7 +47,7 @@ export default class PlaylistsCurrentManager {
         const songTitlesToAdd: string[] = songsLeft.map((song: Song) => song.title);
 
         const content: ModalRow[] = [
-            { label: "Song title", type: "SELECT", data: songTitlesToAdd },
+            { label: "Title", type: "SELECT", data: songTitlesToAdd },
         ];
 
         const data: CenterModalData = {
@@ -62,29 +63,36 @@ export default class PlaylistsCurrentManager {
     private async addSongToPlaylistOnConfirm(res: ModalRes, songs: Song[]): Promise<ModalError> {
         const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentPlaylist();
         if (currentPlaylist == null) {
-            return "Current playlist is null.";
+            return {
+                error: "Current playlist is null.",
+            };
         }
 
-        const rowRes: ModalRowRes = res[0];
-
-        const songIndex: number | undefined = rowRes.index;
+        const songIndex: number | undefined = res.rows["Title"].index;
         if (songIndex == undefined) {
-            return "Song is not valid.";
+            return {
+                fieldName: "Title",
+                error: "Song is not valid.",
+            };
         }
 
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            return "User is not logged in.";
+            return {
+                error: "User is not logged in.",
+            };
         }
 
         const song: Song = songs[songIndex];
 
         const addSongToPlaylistReqRes: any = await Requests.song.addToPlaylist(userData.id, userData.token, song.id, currentPlaylist.id);
         if (!addSongToPlaylistReqRes.success) {
-            return addSongToPlaylistReqRes.error;
+            this.app.throwError(`Can't add song to playlist: ${addSongToPlaylistReqRes.error}`);
+            return null;
         }
 
-        this.app.playlistManager.refresh();
+        await this.app.playlistManager.refresh();
+        ModalTop.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${currentPlaylist.name}".`);
         return null;
     }
 };

@@ -22,6 +22,7 @@ input-select > ul {
     background-color: var(--bg-col-5);
 
     overflow-y: scroll;
+    z-index: 10;
 }
 input-select > ul:not(:has(li:not(.hidden))) {
     display: none;

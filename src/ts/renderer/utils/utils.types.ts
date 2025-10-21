@@ -1,3 +1,5 @@
+interface CenterModal {};
+
 type ID = number;
 type Token = string;
 
@@ -36,18 +38,28 @@ interface ModalRow {
 };
 
 interface ModalRowRes {
-    label: string;
     value: string;
     index?: number;
 };
-type ModalRes = ModalRowRes[];
+
+type ModalRowsRes = { [fieldName: string]: ModalRowRes };
+
+interface ModalRes {
+    modal: CenterModal;
+    rows: ModalRowsRes;
+};
 
 interface ModalButton {
     title: string;
     onClick: () => void;
 };
 
-type ModalError = string | null;
+interface ModalFieldError {
+    fieldName?: string;
+    error: string;
+};
+
+type ModalError = ModalFieldError | null;
 
 interface CenterModalData {
     title: string;
@@ -60,12 +72,16 @@ interface CenterModalData {
 
 
 
+type TopModalType = "SUCCESS" | "ERROR";
+
+
 
 interface ContextmenuRow {
     title: string;
     shortcut?: Shortcut;
     onClick?: () => Promise<void>;
     rows?: ContextmenuRow[];
+    disabled: boolean;
 };
 
 
@@ -91,4 +107,10 @@ interface Song {
     artist: string;
     duration: number;
     creationDate: string;
+};
+
+interface Artist {
+    id: ID;
+    userID: ID;
+    name: string;
 };

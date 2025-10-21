@@ -1,0 +1,49 @@
+@keyframes loading-modal-container-opening {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
+loading-modal-container {
+    width: 100vw;
+    height: 100vh;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 1.5rem;
+
+    background-color: rgba(0,0,0,0.7);
+    animation: loading-modal-container-opening 500ms forwards;
+    z-index: 999;
+}
+
+
+
+@keyframes loading-modal-container-closing {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
+}
+loading-modal-container.closing {
+    animation: loading-modal-container-closing 500ms forwards;
+}
+
+
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+.loading-spinner {
+    width: 40px;
+    aspect-ratio: 1 / 1;
+
+    border: var(--loading-modal-spinner-width) solid transparent;
+    border-top: var(--loading-modal-spinner-width) solid var(--col-1);
+    border-radius: 50%;
+    
+    animation: spin 800ms linear infinite;
+}

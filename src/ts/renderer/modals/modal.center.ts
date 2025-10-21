@@ -1,16 +1,33 @@
 import App from "./../app.js";
-import * as AntiSpam from "./../utils/utils.anti-spam.js";
 import InputSelect from "./../utils/utils.input-select.js";
+import ModalTop from "./modal.top.js";
+import * as AntiSpam from "./../utils/utils.anti-spam.js";
 
 export default class CenterModal {
     private container: HTMLElement | null = null;
+    private closing: boolean = false;
 
     constructor(private app: App, private data: CenterModalData) {
+        this.checkErrors();
         this.initEvents();
 
         const container: HTMLElement = this.createContainer();
         this.createContent(container);
         this.createFooter(container);
+    }
+
+    private checkErrors(): void {
+        if (this.data.content == undefined) {
+            return;
+        }
+
+        this.data.content.reduce((acc: string[], row: ModalRow) => {
+            if (acc.includes(row.label)) {
+                this.app.throwError("Can't create center modal: Modal contains fields with same name.");
+            }
+            acc.push(row.label);
+            return acc;
+        }, []);
     }
 
     private initEvents(): void {
@@ -58,6 +75,7 @@ export default class CenterModal {
         if (!this.data.cantClose) {
             const closeButton: HTMLElement = document.createElement("button");
             closeButton.classList.add("close-button"),
+            closeButton.setAttribute("tabindex", "-1");
             modal.appendChild(closeButton);
             const crossImg: HTMLImageElement = document.createElement("img");
             crossImg.src = "assets/remove.svg";
@@ -172,22 +190,28 @@ export default class CenterModal {
     }
 
     public async confirm(): Promise<void> {
+        if (this.closing) {
+            return;
+        }
+
         if (this.container == null) {
             return this.app.throwError("Can't confirm modal: Container element is null.");
         }
 
-        const res: ModalRes = [...this.container.querySelectorAll(".field-container > li")].map((li: Element) => {
+        this.removeErrors();
+
+        const rows: ModalRowsRes = {};
+        [...this.container.querySelectorAll(".field-container > li")].forEach((li: Element) => {
 
             const label: HTMLElement | null = li.querySelector("label");
             const input: HTMLInputElement | null = li.querySelector("input");
 
             if (label == null || input == null) {
                 this.app.throwError("Can't confirm modal: Label element or input element is null.");
-                return { label: "", value: "" };
+                return;
             }
 
             const rowRes: ModalRowRes = {
-                label: label.textContent.slice(0, -2),
                 value: input.value,
             };
 
@@ -196,17 +220,60 @@ export default class CenterModal {
                 rowRes.index = index;
             }
 
-            return rowRes;
+            return rows[label.textContent.substring(0, label.textContent.length - 2)] = rowRes;
         });
+
+        const res: ModalRes = {
+            modal: this,
+            rows: rows,
+        };
 
         const modalError: ModalError = await this.data.onConfirm(res);
         if (modalError != null) {
             this.focusFirstField();
-            this.app.logError(modalError);
+            this.displayError(modalError.fieldName, modalError.error);
             return;
         }
 
         this.close();
+    }
+
+    private displayError(fieldName: string | undefined, message: string): void {
+        if (fieldName == undefined) {
+            return ModalTop.create("ERROR", message);
+        }
+
+        fieldName += " :";
+
+        const errorBase: string = "Can't display modal error";
+
+        if (this.container == null) {
+            return this.app.throwError(`${errorBase}: Container element is null.`);
+        }
+
+        const labelElement: HTMLElement | undefined = [...this.container.querySelectorAll("label")].find((element: HTMLElement) => element.textContent == fieldName);
+        if (labelElement == undefined) {
+            return this.app.throwError(`${errorBase}: Label element is null.`);
+        }
+
+        const rowContainer: HTMLElement | null = labelElement.parentElement;
+        if (rowContainer == null) {
+            return this.app.throwError(`${errorBase}: Row container element is null.`);
+        }
+
+        const errorElement: HTMLElement = document.createElement("error");
+        errorElement.textContent = message;
+        rowContainer.appendChild(errorElement);
+    }
+
+    private removeErrors(): void {
+        const errorBase: string = "Can't remove modal errors";
+
+        if (this.container == null) {
+            return this.app.throwError(`${errorBase}: Container element is null.`);
+        }
+
+        [...this.container.querySelectorAll("error")].forEach((error: Element) => error.remove());
     }
 
     public close(): void {
@@ -214,18 +281,21 @@ export default class CenterModal {
             return this.app.throwError("Can't close modal: Container element is null.");
         }
 
-        this.container.remove();
+        const container: HTMLElement = this.container;
+        container.classList.add("closing");
+        this.closing = true;
 
         if (this.data.onCancel != null) {
             this.data.onCancel();
         }
 
         window.removeEventListener("keydown", this.keydownEvent);
+        setTimeout(() => container.remove(), 500);
     }
 
     private focusFirstField(): void {
         if (this.container == null) {  
-            return this.app.throwError("Can't close modal: Container is null.");
+            return this.app.throwError("Can't focus first modal input: Container is null.");
         }
 
         const input: HTMLElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
@@ -267,6 +337,9 @@ export default class CenterModal {
             dropAreaElement.classList.add("has-file");
             dropAreaElement.textContent = input.files[0].name;
         });
+
+        input.addEventListener("dragenter", () => dropAreaElement.classList.add("dragover"));
+        input.addEventListener("dragleave", () => dropAreaElement.classList.remove("dragover"));
     }
 
     public static createSelectInput(input: HTMLInputElement, data: ModalRowData): InputSelect {

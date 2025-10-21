@@ -10,7 +10,7 @@ import PlaylistsCurrentManager from "./playlists.current.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
-    private playlistsRefreshManager: PlaylistsRefreshManager;
+    public playlistsRefreshManager: PlaylistsRefreshManager;
     private playlistsAddManager: PlaylistsAddManager;
     private playlistsRenameManager: PlaylistsRenameManager;
     private playlistsRemoveManager: PlaylistsRemoveManager;
@@ -72,5 +72,9 @@ export default class PlaylistManager {
 
     public getCurrentPlaylist(): Playlist | null {
         return this.playlistsOpenManager.currentPlaylist;
+    }
+
+    public async getSortedPlaylists(): Promise<Playlist[]> {
+        return await this.playlistsRefreshManager.getSortedPlaylists();
     }
 };

@@ -14,6 +14,8 @@
         <link rel="stylesheet" href="css/tabs/right-tab.css">
         <link rel="stylesheet" href="css/tabs/bottom-tab.css">
         <link rel="stylesheet" href="css/modals/modal.center.css">
+        <link rel="stylesheet" href="css/modals/modal.loading.css">
+        <link rel="stylesheet" href="css/modals/modal.top.css">
         <script type="module" src="js/renderer/main.js"></script>
     </head>
     <body>
@@ -22,13 +24,13 @@
                 <p class="window-title">Heko</p>
             </div>
             <div class="button-container">
-                <button id="minimize-window-button">
+                <button id="minimize-window-button" tabindex="-1">
                     <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 10v1h8v-1z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
-                <button id="maximize-window-button">
+                <button id="maximize-window-button" tabindex="-1">
                     <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4 4v8h8V4zm1 1h6v6H5z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
-                <button id="close-window-button">
+                <button id="close-window-button" tabindex="-1">
                     <svg class="fill" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg" fill="#000000"><path d="M4.795 3.912l-.883.883.147.146L7.117 8 4.06 11.059l-.147.146.883.883.146-.147L8 8.883l3.059 3.058.146.147.883-.883-.147-.146L8.883 8l3.058-3.059.147-.146-.883-.883-.146.147L8 7.117 4.941 4.06z" style="line-height: normal; font-variant-ligatures: normal; font-variant-position: normal; font-variant-caps: normal; font-variant-numeric: normal; font-variant-alternates: normal; font-feature-settings: normal; text-indent: 0px; text-align: start; text-decoration-line: none; text-decoration-style: solid; text-decoration-color: rgb(0, 0, 0); text-transform: none; text-orientation: mixed; isolation: auto; mix-blend-mode: normal; --darkreader-inline-color: #e8e6e3; --darkreader-inline-fill: #60686c;" color="#000000" font-weight="400" font-family="sans-serif" white-space="normal" overflow="visible" fill="#FF0000" fill-rule="evenodd" data-darkreader-inline-color="" data-darkreader-inline-fill=""></path></svg>
                 </button>
             </div>
@@ -38,7 +40,7 @@
                 <header>
                     <img src="assets/folder.svg" class="folder-img">
                     <h2>Playlists</h2>
-                    <button id="add-playlist-button">
+                    <button id="add-playlist-button" tabindex="-1">
                         <img src="assets/plus.svg">
                     </button>
                 </header>
@@ -46,7 +48,7 @@
                 <footer>
                     <img src="assets/music-note.svg" class="music-note-img">
                     <h2>Songs</h2>
-                    <button id="song-settings-button">
+                    <button id="song-settings-button" tabindex="-1">
                         <img src="assets/ellipsis.svg">
                     </button>
                 </footer>
@@ -59,22 +61,22 @@
                         <div class="current-playlist-bottom-details-container">
                             <h4 id="current-playlist-song-number"></h4>
                             <h4 id="current-playlist-duration"><h4>
-                            <button id="add-songs-to-current-playlist-button">
+                            <button id="add-songs-to-current-playlist-button" class="disabled" tabindex="-1">
                                 <img src="assets/plus.svg">
                             </button>
                         </div>
                     </div>
-                    <button id="logout-button">
+                    <button id="logout-button" tabindex="-1">
                         <img src="assets/logout.svg">
                     </button>
                 </header>
-                <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ...">
+                <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
                 <div class="current-playlist-table-container">
                     <div class="current-playlist-table-head-container">
-                        <button id="current-playlist-sort-by-id-button" class="sorted-by">#</button>
-                        <button id="current-playlist-sort-by-title-button">Title</button>
-                        <button id="current-playlist-sort-by-artist-button">Artist</button>
-                        <button id="current-playlist-sort-by-duration-button">Duration</button>
+                        <button id="current-playlist-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
+                        <button id="current-playlist-sort-by-title-button" tabindex="-1">Title</button>
+                        <button id="current-playlist-sort-by-artist-button" tabindex="-1">Artist</button>
+                        <button id="current-playlist-sort-by-duration-button" tabindex="-1">Duration</button>
                     </div>
                     <ul id="current-playlist-song-container"></ul>
                 </div>
@@ -86,43 +88,43 @@
                 </article>
                 <article class="main-controls-container">
                     <div class="main-control-buttons-container">
-                        <button id="toggle-shuffle-button">
+                        <button id="toggle-shuffle-button" tabindex="-1">
                             <img src="assets/shuffle.svg">
                         </button>
-                        <button id="previous-song-button">
+                        <button id="previous-song-button" tabindex="-1">
                             <img src="assets/previous.svg">
                         </button>
-                        <button id="toggle-play-button" playing="false">
+                        <button id="toggle-play-button" playing="false" tabindex="-1">
                             <img src="assets/play.svg" pause="false">
                             <img src="assets/pause.svg" pause="true">
                         </button>
-                        <button id="next-song-button">
+                        <button id="next-song-button" tabindex="-1">
                             <img src="assets/next.svg">
                         </button>
-                        <button id="toggle-loop-button">
+                        <button id="toggle-loop-button" tabindex="-1">
                             <img src="assets/loop.svg">
                         </button>
                     </div>
                     <div class="song-slider-container">
                         <p id="current-song-position"></p>
-                        <input id="song-position-slider" type="range" min="0" max="100", step="0.01" value="0">
+                        <input id="song-position-slider" type="range" min="0" max="100", step="0.01" value="0" tabindex="-1">
                         <p id="current-song-duration"></p>
                     </div>
                 </article>
                 <article class="secondary-controls-container">
-                    <button id="pitch-button">
+                    <button id="pitch-button" tabindex="-1">
                         <img src="assets/pitch.svg">
                     </button>
-                    <button id="queue-button">
+                    <button id="queue-button" tabindex="-1">
                         <img src="assets/queue.svg">
                     </button>
                     <div class="volume-controls-container">
-                        <button id="toggle-song-volume-button" volume="2">
+                        <button id="toggle-song-volume-button" volume="2" tabindex="-1">
                             <img src="assets/volume-muted.svg" volume="0">
                             <img src="assets/volume-min.svg" volume="1">
                             <img src="assets/volume-max.svg" volume="2">
                         </button>
-                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="50">
+                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="50" tabindex="-1">
                     </div>
                 </article>
             </footer>

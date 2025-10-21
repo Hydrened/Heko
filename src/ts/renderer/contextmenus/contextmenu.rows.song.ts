@@ -1,27 +1,32 @@
+import ModalTop from "../modals/modal.top.js";
 import App from "./../app.js";
 import CenterModal from "./../modals/modal.center.js";
 import * as Requests from "./../utils/utils.requests.js";
 
-async function removeSongOnConfirm(app: App, songID: ID): Promise<ModalError> {
+async function removeSongOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
 
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
-        return "User is not connected.";
+        return {
+            error: "User is not connected.",
+        };
     }
 
-    const removeSongFromPlaylistReqRes: any = await Requests.song.removeFromPlaylist(userData.id, userData.token, songID);
+    const removeSongFromPlaylistReqRes: any = await Requests.song.removeFromPlaylist(userData.id, userData.token, song.id);
     if (!removeSongFromPlaylistReqRes.success) {
-        return removeSongFromPlaylistReqRes.error;
+        app.throwError(`Can't remove song from playlist: ${removeSongFromPlaylistReqRes.error}`);
+        return null;
     }
 
-    app.playlistManager.refresh();    
+    await app.playlistManager.refresh();
+    ModalTop.create("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from playlist "${playlist.name}".`);
     return null;
 }
 
 function getRemoveSongFromPlaylistModalData(app: App, currentPlaylist: Playlist, song: Song): CenterModalData {
     return {
         title: `Are you sure you want to remove song "${song.title}" by "${song.artist}" from playlist "${currentPlaylist.name}"`,
-        onConfirm: async (res: ModalRes) => await removeSongOnConfirm(app, song.id),
+        onConfirm: async (res: ModalRes) => await removeSongOnConfirm(app, currentPlaylist, song),
         cantClose: false,
     };
 }
@@ -34,14 +39,13 @@ export default async function getSongRows(app: App, song: Song): Promise<Context
     }
 
     return [
-
         // { title: "Add to queue", onClick: async () => {
             
         // } },
 
         { title: "Remove from playlist", onClick: async () => {
             new CenterModal(app, getRemoveSongFromPlaylistModalData(app, currentPlaylist, song));
-        } },
+        }, disabled: false },
 
         // { title: "Add to other playlist", onClick: async () => {
             
@@ -50,6 +54,5 @@ export default async function getSongRows(app: App, song: Song): Promise<Context
         // { title: "Edit song", onClick: async () => {
             
         // } },
-
     ];
 }

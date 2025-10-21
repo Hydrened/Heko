@@ -50,6 +50,10 @@ export default class ContextmenuManager {
         rowContainer.classList.add("contextmenu-row-container");
         parent.appendChild(rowContainer);
 
+        if (row.disabled) {
+            rowContainer.classList.add("disabled");
+        }
+
         rowContainer.addEventListener("click", () => {
             if (row.onClick != null) {
                 row.onClick();
