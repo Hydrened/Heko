@@ -1,6 +1,6 @@
-import ModalTop from "../modals/modal.top.js";
 import App from "./../app.js";
 import CenterModal from "./../modals/modal.center.js";
+import ModalTop from "./../modals/modal.top.js";
 import * as Requests from "./../utils/utils.requests.js";
 
 async function removeSongOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
@@ -32,7 +32,7 @@ function getRemoveSongFromPlaylistModalData(app: App, currentPlaylist: Playlist,
 }
 
 export default async function getSongRows(app: App, song: Song): Promise<ContextmenuRow[]> {
-    const currentPlaylist: Playlist | null = app.playlistManager.getCurrentPlaylist();
+    const currentPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentPlaylist == null) {
         app.throwError("Can't get song contextmenu rows: Current playlist is null.");
         return [];

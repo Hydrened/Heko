@@ -1,5 +1,5 @@
 import PlaylistManager from "./playlists.js";
-import App from "../app.js";
+import App from "./../app.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsSongsManager {

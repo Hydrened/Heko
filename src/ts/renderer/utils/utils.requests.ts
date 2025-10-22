@@ -47,6 +47,22 @@ export const playlist = {
         return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
     },
 
+    remove: async (userID: ID, token: Token, playlistIDs: ID[]): Promise<any> => {
+        return await request("playlist/remove.php", { userID: userID, token: token, playlistIDs: playlistIDs });
+    },
+
+    rename: async (userID: ID, token: Token, playlistID: ID, newPlaylistName: string): Promise<any> => {
+        return await request("playlist/rename.php", { userID: userID, token: token, playlistID: playlistID, newPlaylistName: newPlaylistName });
+    },
+    
+    duplicate: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
+        return await request("playlist/duplicate.php", { userID: userID, token: token, playlistID: playlistID });
+    },
+
+    moveIn: async (userID: ID, token: Token, parentPlaylistID: ID, playlistID: ID): Promise<any> => {
+        return await request("playlist/move-in.php", { userID: userID, token: token, parentPlaylistID: parentPlaylistID, playlistID: playlistID });
+    },
+
     get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
         return await request("playlist/get.php", { userID: userID, token: token, playlistID: playlistID });
     },

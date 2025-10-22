@@ -1,5 +1,5 @@
 import PlaylistManager from "./playlists.js";
-import App from "../app.js";
+import App from "./../app.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
@@ -46,7 +46,7 @@ export default class PlaylistsRefreshManager {
             return this.app.throwError("Can't refresh add song to playlist button: Add song to playlist modal button is null.");
         }
 
-        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentPlaylist();
+        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentPlaylist == null) {
             return;
         }
@@ -129,7 +129,7 @@ export default class PlaylistsRefreshManager {
         containerElement.setAttribute("playlist-id", strPlaylistID);
         liElement.appendChild(containerElement);
 
-        containerElement.addEventListener("contextmenu", async (e: PointerEvent) => await this.app.contextmenuManager.createPlaylistContextMenu({ x: e.x, y: e.y }, playlist));
+        containerElement.addEventListener("contextmenu", async (e: PointerEvent) => await this.app.contextmenuManager.createPlaylistContextMenu((e as Position), playlist));
 
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");

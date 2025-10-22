@@ -1,8 +1,8 @@
 import App from "./../app.js";
 import CenterModal from "./../modals/modal.center.js";
+import ModalTop from "../modals/modal.top.js";
 import LoadingModal from "../modals/modal.loading.js";
 import * as Requests from "./../utils/utils.requests.js";
-import ModalTop from "../modals/modal.top.js";
 
 async function addSongOnConfirm(app: App, userID: ID, token: Token, artistNames: string[], res: ModalRes): Promise<ModalError> {
     const title: string = res.rows["Title"].value;

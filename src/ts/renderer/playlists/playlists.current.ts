@@ -1,9 +1,9 @@
 import PlaylistManager from "./playlists.js";
-import App from "../app.js";
+import App from "./../app.js";
 import CenterModal from "../modals/modal.center.js";
+import ModalTop from "../modals/modal.top.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
-import ModalTop from "../modals/modal.top.js";
 
 export default class PlaylistsCurrentManager {
     constructor(private app: App, private playlists: PlaylistManager) {
@@ -19,7 +19,7 @@ export default class PlaylistsCurrentManager {
     }
 
     private async openAddSongToPlaylistModal(): Promise<void> {
-        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentPlaylist();
+        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentPlaylist == null) {
             return this.app.throwError("Can't open add song to playlist modal: Current playlist is null.");
         }
@@ -61,7 +61,7 @@ export default class PlaylistsCurrentManager {
     }
 
     private async addSongToPlaylistOnConfirm(res: ModalRes, songs: Song[]): Promise<ModalError> {
-        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentPlaylist();
+        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentPlaylist == null) {
             return {
                 error: "Current playlist is null.",

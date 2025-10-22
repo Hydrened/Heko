@@ -1,3 +1,5 @@
+import "./../utils/utils.types.js";
+
 export default class ModalTop {
     private container: HTMLElement | null = null;
 

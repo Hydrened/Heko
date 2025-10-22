@@ -1,6 +1,8 @@
-import App from "../app.js";
+import getPlaylistRows from "./contextmenu.rows.playlist.js";
+import getPlaylistContainerRows from "./contextmenu.playlist-container.js";
 import getSongSettingRows from "./contextmenu.rows.song-settings.js";
 import getSongRows from "./contextmenu.rows.song.js";
+import App from "../app.js";
 import * as Functions from "../utils/utils.functions.js";
 
 export default class ContextmenuManager {
@@ -50,7 +52,8 @@ export default class ContextmenuManager {
         rowContainer.classList.add("contextmenu-row-container");
         parent.appendChild(rowContainer);
 
-        if (row.disabled) {
+        const isRowUseless: boolean = (row.onClick == undefined && ((row.rows != undefined) ? (row.rows.length == 0) : true));
+        if (row.disabled || isRowUseless) {
             rowContainer.classList.add("disabled");
         }
 
@@ -111,14 +114,18 @@ export default class ContextmenuManager {
         element.classList.add("contextmenu-parent");
     }
 
+    public createPlaylistContainerContextmenu(position: Position, openModalCall: () => void): void {
+        this.createContextMenu(position, getPlaylistContainerRows(this.app, openModalCall));
+    }
+
     public async createPlaylistContextMenu(position: Position, playlist: Playlist): Promise<void> {
         const playlistElement: HTMLElement | null = document.querySelector(`li.playlist-wrapper[playlist-id="${String(playlist.id)}"]`);
         if (playlistElement == null) {
             return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.");
         }
 
-        // this.setElementToContextmenuParent(playlistElement);
-        // this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
+        this.setElementToContextmenuParent(playlistElement);
+        this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
     }
 
     public async createSongSettingContextMenu(position: Position): Promise<void> {

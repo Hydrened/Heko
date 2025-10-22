@@ -1,9 +1,9 @@
 import PlaylistManager from "./playlists.js";
-import App from "../app.js";
+import App from "./../app.js";
 import CenterModal from "../modals/modal.center.js";
+import ModalTop from "../modals/modal.top.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
-import ModalTop from "../modals/modal.top.js";
 
 export default class PlaylistsAddManager {
     modal: CenterModal | null = null;
@@ -18,6 +18,18 @@ export default class PlaylistsAddManager {
         }
 
         Elements.playlists.addButton.addEventListener("click", () => this.openModal());
+
+        if (Elements.playlists.container == null) {
+            return this.app.throwError("Can't init playlist container events: Playlist container element is null.");
+        }
+
+        (Elements.playlists.container as HTMLElement).addEventListener("contextmenu", (e: PointerEvent) => {
+            if (e.target != Elements.playlists.container) {
+                return;
+            }
+
+            this.app.contextmenuManager.createPlaylistContainerContextmenu((e as Position), () => this.openModal());
+        });
     }
 
     private openModal(): void {

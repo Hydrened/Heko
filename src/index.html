@@ -88,7 +88,7 @@
                 </article>
                 <article class="main-controls-container">
                     <div class="main-control-buttons-container">
-                        <button id="toggle-shuffle-button" tabindex="-1">
+                        <button id="toggle-shuffle-button" shuffle="false" tabindex="-1">
                             <img src="assets/shuffle.svg">
                         </button>
                         <button id="previous-song-button" tabindex="-1">
@@ -101,7 +101,7 @@
                         <button id="next-song-button" tabindex="-1">
                             <img src="assets/next.svg">
                         </button>
-                        <button id="toggle-loop-button" tabindex="-1">
+                        <button id="toggle-loop-button" loop="false" tabindex="-1">
                             <img src="assets/loop.svg">
                         </button>
                     </div>
@@ -112,12 +112,15 @@
                     </div>
                 </article>
                 <article class="secondary-controls-container">
-                    <button id="pitch-button" tabindex="-1">
+                    <!-- <button id="pitch-button" tabindex="-1">
+                        <img src="assets/pitch.svg">
+                    </button>
+                    <button id="speed-button" tabindex="-1">
                         <img src="assets/pitch.svg">
                     </button>
                     <button id="queue-button" tabindex="-1">
                         <img src="assets/queue.svg">
-                    </button>
+                    </button> -->
                     <div class="volume-controls-container">
                         <button id="toggle-song-volume-button" volume="2" tabindex="-1">
                             <img src="assets/volume-muted.svg" volume="0">

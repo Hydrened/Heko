@@ -114,3 +114,7 @@ interface Artist {
     userID: ID;
     name: string;
 };
+
+
+
+type Queue = Song[];

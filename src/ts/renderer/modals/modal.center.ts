@@ -1,6 +1,6 @@
+import ModalTop from "./modal.top.js";
 import App from "./../app.js";
 import InputSelect from "./../utils/utils.input-select.js";
-import ModalTop from "./modal.top.js";
 import * as AntiSpam from "./../utils/utils.anti-spam.js";
 
 export default class CenterModal {
@@ -298,9 +298,10 @@ export default class CenterModal {
             return this.app.throwError("Can't focus first modal input: Container is null.");
         }
 
-        const input: HTMLElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
+        const input: HTMLInputElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
         if (input != null) {
             input.focus();
+            input.select();
         }
     }
 

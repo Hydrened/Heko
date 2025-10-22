@@ -1,5 +1,5 @@
 import PlaylistManager from "./playlists.js";
-import App from "../app.js";
+import App from "./../app.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
@@ -87,7 +87,7 @@ export default class PlaylistsOpenManager {
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
         Elements.currentPlaylist.details.duration.textContent = formatPlatlistDuration;
 
-        this.playlists.playlistsRefreshManager.refreshAddSongToPlaylistButton();
+        this.playlists.refreshManager.refreshAddSongToPlaylistButton();
     }
 
     private refreshSongContainer(): void {
@@ -103,7 +103,7 @@ export default class PlaylistsOpenManager {
             liElement.classList.add("current-playlist-table-row");
             Elements.currentPlaylist.songContainer.appendChild(liElement);
 
-            liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu({ x: e.x, y: e.y }, song));
+            liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu((e as Position), song));
 
             const formatDuration: string = Functions.formatDuration(song.duration);
 

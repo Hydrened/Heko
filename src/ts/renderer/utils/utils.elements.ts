@@ -36,9 +36,6 @@ export const account = {
 export const currentSong = {
     name: document.querySelector("#current-song-name"),
     artist: document.querySelector("#current-song-artist"),
-    position: document.querySelector("#current-song-position"),
-    slider: document.querySelector("#song-position-slider"),
-    duration: document.querySelector("#current-song-duration"),
 };
 
 export const songControls = {
@@ -48,6 +45,12 @@ export const songControls = {
         togglePlayButton: document.querySelector("#toggle-play-button"),
         nextButton: document.querySelector("#next-song-button"),
         toggleLoopButton: document.querySelector("#toggle-loop-button"),
+    },
+
+    progressBar: {
+        position: document.querySelector("#current-song-position"),
+        slider: document.querySelector("#song-position-slider"),
+        duration: document.querySelector("#current-song-duration"),
     },
 
     special: {
