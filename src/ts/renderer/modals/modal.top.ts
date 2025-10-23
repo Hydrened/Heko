@@ -3,6 +3,7 @@ import "./../utils/utils.types.js";
 export default class ModalTop {
     private container: HTMLElement | null = null;
 
+    // INIT
     private constructor(private type: TopModalType, private message: string) {
         this.open();
     }
@@ -11,6 +12,7 @@ export default class ModalTop {
         new ModalTop(type, message);
     }
 
+    // EVENTS
     private open(): void {
         this.container = document.createElement("top-modal-container");
         this.container.classList.add(this.type.toLowerCase());

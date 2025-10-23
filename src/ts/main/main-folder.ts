@@ -10,15 +10,8 @@ export interface WindowSettings {
     f: boolean;
 };
 
-interface Settings {
-    volume: number;
-    loop: boolean;
-    shuffle: boolean;
-    window: WindowSettings;
-};
-
 export class MainFolder {
-    public settings: Settings | null = null;
+    public settings: WindowSettings | null = null;
     private name:  string = "Heko-new";
 
     constructor() {
@@ -32,20 +25,15 @@ export class MainFolder {
         const dataFolderPath: string = path.join(mainFolderPath, "data");
         this.checkFolder(dataFolderPath);
 
-        const defaultSettings: Settings = {
-            volume: 50,
-            loop: false,
-            shuffle: false,
-            window: {
-                x: 0,
-                y: 0,
-                w: 1280,
-                h: 720,
-                f: false,
-            },
+        const defaultSettings: WindowSettings = {
+            x: 0,
+            y: 0,
+            w: 1280,
+            h: 720,
+            f: false,
         };
         const settingsPath: string = path.join(dataFolderPath, "settings.json");
-        this.settings = this.checkFile(settingsPath, defaultSettings) as Settings;
+        this.settings = this.checkFile(settingsPath, defaultSettings) as WindowSettings;
 
         const tokenPath: string = path.join(dataFolderPath, "token");
         this.checkFile(tokenPath, { value: "" });
@@ -136,7 +124,7 @@ export class MainFolder {
             return;
         }
 
-        this.settings.window = windowSettings;
+        this.settings = windowSettings;
 
         const documents: string = app.getPath("documents");
         const settingsPath: string = path.join(documents, this.name, "data", "settings.json");

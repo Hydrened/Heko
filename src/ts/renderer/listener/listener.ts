@@ -1,4 +1,3 @@
-import ListenerSongManager from "./listener.song.js";
 import ListenerRefreshManager from "./listener.refresh.js";
 import ListenerQueueManager from "./listener.queue.js";
 import ListenerVolumeManager from "./listener.volume.js";
@@ -7,30 +6,38 @@ import App from "./../app.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerManager {
-    private songManager: ListenerSongManager;
+    private audioElement: HTMLAudioElement;
+
     private refreshManager: ListenerRefreshManager;
     private queueManager: ListenerQueueManager;
     private volumeManager: ListenerVolumeManager;
     private editManager: ListenerEditManager;
 
+    // INIT
     constructor(private app: App) {
-        this.songManager = new ListenerSongManager(this.app, this);
+        this.audioElement = new Audio();
+
         this.refreshManager = new ListenerRefreshManager(this.app, this);
-        this.queueManager = new ListenerQueueManager(this.app, this);
-        this.volumeManager = new ListenerVolumeManager(this.app, this);
-        this.editManager = new ListenerEditManager(this.app, this);
+        this.queueManager = new ListenerQueueManager(this.app, this, this.audioElement);
+        this.volumeManager = new ListenerVolumeManager(this.app, this, this.audioElement);
+        this.editManager = new ListenerEditManager(this.app, this, this.audioElement);
 
         this.initEvents();
     }
 
     private initEvents(): void {
+        this.initSongControlButtonEvent();
+        this.initSongProgressbarEvents();
+    }
+
+    private initSongControlButtonEvent(): void {
         interface ElementEvent { element: Element | null; event: () => void; };
         const elementEvents: ElementEvent[] = [
-            { element: Elements.songControls.buttons.togglePlayButton, event: async () => await this.togglePlayButton() },
-            { element: Elements.songControls.buttons.previousButton, event: () => this.previousButton() },
-            { element: Elements.songControls.buttons.nextButton, event: () => this.nextButton() },
-            { element: Elements.songControls.buttons.toggleShuffleButton, event: () => this.toggleShuffleButton() },
-            { element: Elements.songControls.buttons.toggleLoopButton, event: () => this.toggleLoopButton() },
+            { element: Elements.songControls.buttons.togglePlayButton, event: async () => await this.queueManager.togglePlayButton() },
+            { element: Elements.songControls.buttons.previousButton, event: () => this.queueManager.previousButton() },
+            { element: Elements.songControls.buttons.nextButton, event: () => this.queueManager.nextButton() },
+            { element: Elements.songControls.buttons.toggleShuffleButton, event: async () => await this.queueManager.toggleShuffleButton() },
+            { element: Elements.songControls.buttons.toggleLoopButton, event: async () => await this.queueManager.toggleLoopButton() },
         ];
 
         elementEvents.forEach((elementEvent: ElementEvent) => {
@@ -40,9 +47,11 @@ export default class ListenerManager {
 
             elementEvent.element.addEventListener("click", () => elementEvent.event());
         });
+    }
 
+    private initSongProgressbarEvents(): void {
         if (Elements.songControls.progressBar.slider == null) {
-            return this.app.throwError("Can't init listener events: Progressbar slider element is null.");
+            return this.app.throwError("Can't init song progressbar events: Progressbar slider element is null.");
         }
 
         Elements.songControls.progressBar.slider.addEventListener("input", () => {
@@ -50,76 +59,31 @@ export default class ListenerManager {
         });
     }
 
-    private async togglePlayButton(): Promise<void> {
-        const isPlaying: boolean = this.getPlayState();
-
-        const currentListeningPlaylist: Playlist | null = this.getCurrentListeningPlaylist();
-        const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
-
-        if (!isPlaying) {
-            const cantInit: boolean = (currentListeningPlaylist == null && currentOpenedPlaylist == null);
-            if (cantInit) {
-                return;
-            }
-
-            const hasToInit: boolean = (currentListeningPlaylist == null && currentOpenedPlaylist != null);
-            if (hasToInit) {
-                await this.queueManager.init(currentOpenedPlaylist!);
-            }
-        }
-        
-        this.songManager.togglePlayState();
+    // EVENTS
+    public refresh(): void {
+        this.refreshManager.refresh(this.queueManager.getCurrentSong());
     }
 
-    private previousButton(): void {
-        
+    public async loggedIn(): Promise<void> {
+        await this.queueManager.load();
+        await this.editManager.load();
+        await this.volumeManager.load();
     }
 
-    private nextButton(): void {
-        
-    }
-
-    private toggleShuffleButton(): void {
-        
-    }
-
-    private toggleLoopButton(): void {
-        
-    }
-
-    private getButtonState(element: Element | null, prop: string): boolean {
-        const errorBase: string = `Can't get ${prop} state`;
-
-        if (element == null) {
-            this.app.throwError(`${errorBase}: Toggle ${prop} button element is null.`);
-            return false;
-        }
-
-        if (!element.hasAttribute(prop)) {
-            this.app.throwError(`${errorBase}: Toggle ${prop} button has no ${prop} attribute.`);
-            return false;
-        }
-
-        return (element.getAttribute(prop) == "true");
-    }
-
-    public getPlayState(): boolean {
-        return this.getButtonState(Elements.songControls.buttons.togglePlayButton, "playing");
-    }
-
+    // GETTERS
     public getShuffleState(): boolean {
-        return this.getButtonState(Elements.songControls.buttons.toggleShuffleButton, "shuffle");
+        return this.queueManager.getShuffleState();
     }
 
     public getLoopState(): boolean {
-        return this.getButtonState(Elements.songControls.buttons.toggleLoopButton, "loop");
+        return this.queueManager.getLoopState();
     }
 
-    public getCurrentListeningPlaylist(): Playlist | null {
-        return this.queueManager.getCurrentPlaylist();
+    public getSpeed(): number {
+        return this.editManager.getSpeed();
     }
 
-    public getCurrentSong(): Song | null {
-        return this.songManager.currentSong;
+    public getVolume(): number {
+        return this.volumeManager.getVolume();
     }
 };

@@ -9,7 +9,9 @@ export default class Account {
     private modal: CenterModal | null = null;
     private userID: ID | null = null;
     private token: Token | null = null;
+    private settings: UserSettings | null = null;
 
+    // INIT
     constructor(private app: App) {
 
     }
@@ -19,22 +21,7 @@ export default class Account {
         await this.checkLoginState();
     }
 
-    private initEvents(): void {
-        Elements.account.logoutButton?.addEventListener("click", async () => await this.logout());
-    }
-
     private async checkLoginState(): Promise<void> {
-        if (Elements.playlists.container == null) {
-            return this.app.throwError("Can't log: Playlist container element is null.");
-        }
-
-        if (Elements.currentPlaylist.songContainer == null) {
-            return this.app.throwError("Can't log: Table body element is null.");
-        }
-
-        Elements.playlists.container.classList.add("loading");
-        Elements.currentPlaylist.songContainer.classList.add("loading");
-
         const token: Token = await Bridge.mainFolder.token.get();
 
         const validityRes: any = await Requests.user.isTokenValid(token);
@@ -47,9 +34,71 @@ export default class Account {
         this.userID = userID;
         this.token = token;
 
-        this.logged();
+        this.loggedIn();
     }
 
+    private initEvents(): void {
+        if (Elements.account.logoutButton == null) {
+            return this.app.throwError("Can't init count events: Logout button element is null.");
+        }
+
+        Elements.account.logoutButton.addEventListener("click", async () => await this.loggedOut());
+    }
+
+    private async loadSettings(): Promise<any> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
+
+        const getUserSettingsReqRes: any = await Requests.user.getSettings(this.userID, this.token);
+        if (!getUserSettingsReqRes.success) {
+            return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`);
+        }
+
+        this.settings = {
+            userID: this.userID,
+            shuffle: (getUserSettingsReqRes.settings.shuffle == 1),
+            loop: (getUserSettingsReqRes.settings.loop == 1),
+            speed: getUserSettingsReqRes.settings.speed,
+            volume: getUserSettingsReqRes.settings.volume,
+        };
+    }
+
+    // LOG EVENTS
+    private async loggedIn(): Promise<void> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
+
+        const playlists: Playlist[] = await this.app.playlistManager.getSortedPlaylists();
+
+        const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
+        if (firstSongPlaylist != undefined) {
+            await this.app.playlistManager.open(firstSongPlaylist.id);
+        }
+        
+        await this.loadSettings();
+        await this.app.playlistManager.refresh();
+
+        await this.app.loggedIn();
+    }
+
+    private async loggedOut(): Promise<void> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
+
+        await Bridge.mainFolder.token.remove();
+        this.userID = null;
+        this.token = null;
+
+        await this.app.playlistManager.refresh();
+        this.openLoginModal();
+
+        await this.app.loggedOut();
+    }
+
+    // OPEN MODALS
     private openLoginModal(): void {
         if (this.modal != null) {
             this.modal.close();
@@ -66,14 +115,16 @@ export default class Account {
 
             const loginReqRes: any = await Requests.user.login(email, password);
             if (!loginReqRes.success) {
-                return loginReqRes.error;
+                return {
+                    error: loginReqRes.error,
+                };
             }
             
             await Bridge.mainFolder.token.save(loginReqRes.token);
 
             this.userID = Number(loginReqRes.userID);
             this.token = loginReqRes.token;
-            this.logged();
+            this.loggedIn();
 
             return null;
         };
@@ -113,19 +164,23 @@ export default class Account {
 
             const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
             if (!registerReqRes.success) {
-                return registerReqRes.error;
+                return {
+                    error: registerReqRes.error,
+                };
             }
 
             const loginReqRes: any = await Requests.user.login(email, password);
             if (!loginReqRes.success) {
-                return loginReqRes.error;
+                return {
+                    error: loginReqRes.error,
+                };
             }
 
             await Bridge.mainFolder.token.save(loginReqRes.token);
 
             this.userID = Number(loginReqRes.userID);
             this.token = loginReqRes.token;
-            this.logged();
+            this.loggedIn();
 
             ModalTop.create("SUCCESS", "Account successfully created.");
 
@@ -147,49 +202,21 @@ export default class Account {
         this.modal = new CenterModal(this.app, modalData);
     }
 
-    private async logged(): Promise<void> {
-        if (Elements.playlists.container == null) {
-            return this.app.throwError("Can't log: Playlist container element is null.");
-        }
-
-        if (Elements.currentPlaylist.songContainer == null) {
-            return this.app.throwError("Can't log: Table body element is null.");
-        }
-
-        Elements.playlists.container.classList.remove("loading");
-        Elements.currentPlaylist.songContainer.classList.remove("loading");
-
-        if (this.userID == null || this.token == null) {
-            return;
-        }
-
-        const playlists: Playlist[] = await this.app.playlistManager.getSortedPlaylists();
-
-        const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
-        if (firstSongPlaylist != undefined) {
-            await this.app.playlistManager.open(firstSongPlaylist.id);
-        }
-        
-        await this.app.playlistManager.refresh();
-    }
-
-    private async logout(): Promise<void> {
-        if (this.userID == null || this.token == null) {
-            return;
-        }
-
-        await Bridge.mainFolder.token.remove();
-        this.userID = null;
-        this.token = null;
-
-        await this.app.playlistManager.refresh();
-        this.openLoginModal();
-    }
-
+    // GETTERS
     public getUserData(): UserData {
         return {
             id: this.userID,
             token: this.token,
+        };
+    }
+
+    public getSettings(): UserSettings {
+        return {
+            userID: (this.settings ? this.settings.userID : -1),
+            loop: (this.settings ? this.settings.loop : false),
+            shuffle: (this.settings ? this.settings.shuffle : false),
+            speed: (this.settings ? this.settings.speed : -1),
+            volume: (this.settings ? this.settings.volume : -1),
         };
     }
 };

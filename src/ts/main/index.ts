@@ -82,7 +82,7 @@ class Index {
             return;
         }
 
-        const onOpenWindowSettings: WindowSettings = this.mainFolder.settings?.window;
+        const onOpenWindowSettings: WindowSettings = this.mainFolder.settings;
 
         this.window = new BrowserWindow({
             x: onOpenWindowSettings.x,
@@ -109,10 +109,17 @@ class Index {
         
         this.window.loadFile(path.join(__dirname, "..", "..", "index.html"));
 
-        this.window.on("close", (e) => {
+        this.window.on("close", async (e) => {
             if (this.window == null) {
                 return;
             }
+
+            e.preventDefault();
+
+            await new Promise<void>((resolve) => {
+                ipcMain.once("app:before-close:done", () => resolve());
+                this.window!.webContents.send("app:before-close");
+            })
 
             const bounds: Electron.Rectangle = this.window.getBounds();
             const fullscreen: boolean = this.window.isMaximized();
@@ -126,6 +133,8 @@ class Index {
             };
 
             this.mainFolder.saveWindowSettings(onCloseWindowSettings);
+
+            this.window.destroy();
         });
     }
 };

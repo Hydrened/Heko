@@ -8,13 +8,14 @@ import PlaylistsCurrentManager from "./playlists.current.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
-    public refreshManager: PlaylistsRefreshManager;
+    private refreshManager: PlaylistsRefreshManager;
     private addManager: PlaylistsAddManager;
     private moveManager: PlaylistsMoveManager;
     private openManager: PlaylistsOpenManager;
     private songsManager: PlaylistsSongsManager;
     private currentManager: PlaylistsCurrentManager;
     
+    // INIT
     constructor(private app: App) {
         this.refreshManager = new PlaylistsRefreshManager(this.app, this);
         this.addManager = new PlaylistsAddManager(this.app, this);
@@ -24,6 +25,7 @@ export default class PlaylistManager {
         this.currentManager = new PlaylistsCurrentManager(this.app, this);
     }
 
+    // EVENTS
     public async refresh(): Promise<void> {
         await this.refreshManager.refresh();
 
@@ -33,10 +35,15 @@ export default class PlaylistManager {
         }
     }
 
+    public async refreshAddSongToPlaylistButton(): Promise<void> {
+        await this.refreshManager.refreshAddSongToPlaylistButton();
+    }
+
     public async open(playlistID: ID): Promise<void> {
         await this.openManager.open(playlistID);
     }
 
+    // GETTER
     public getPlaylistOpenedStates(): number[] {
         if (Elements.playlists.container == null) {
             this.app.throwError("Can't get playlist opened states: Container is null.");

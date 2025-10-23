@@ -5,10 +5,12 @@ import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class PlaylistsRefreshManager {
+    // INIT
     constructor(private app: App, private playlists: PlaylistManager) {
 
     }
 
+    // REFRESH EVENTS
     public async refresh(): Promise<void> {
         await this.refreshPlaylistContainer();
         await this.refreshAddSongToPlaylistButton();
@@ -66,51 +68,6 @@ export default class PlaylistsRefreshManager {
 
         const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
         (canUserAddSongs) ? Elements.currentPlaylist.addSongsButton.classList.remove("disabled") : Elements.currentPlaylist.addSongsButton.classList.add("disabled");
-    }
-
-    public async getSortedPlaylists(): Promise<Playlist[]> {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return [];
-        }
-
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-        if (!getAllPlaylistsFromUserReqRes.success) {
-            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
-            return [];
-        }
-
-        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
-
-        const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
-
-        for (const playlist of playlists) {
-            if (!playlistsByParent.has(playlist.parentID)) {
-                playlistsByParent.set(playlist.parentID, []);
-            }
-
-            playlistsByParent.get(playlist.parentID)!.push(playlist);
-        }
-
-        const res: Playlist[] = [];
-
-        const addWithChildren = (parentID: number): void => {
-            const playlistGroup: Playlist[] | undefined = playlistsByParent.get(parentID);
-            if (playlistGroup == undefined) {
-                return;
-            }
-
-            playlistGroup.sort((a, b) => a.position - b.position);
-
-            for (const playlist of playlistGroup) {
-                res.push(playlist);
-                addWithChildren(playlist.id);
-            }
-        };
-
-        addWithChildren(-1);
-
-        return res;
     }
 
     private createPlaylist(playlist: Playlist): void {
@@ -199,6 +156,7 @@ export default class PlaylistsRefreshManager {
         parent.appendChild(liElement);
     }
 
+    // GETTERS
     private getParentToAppend(playlist: Playlist): Element | null {
         if (playlist.parentID == -1) {
             return Elements.playlists.container;
@@ -227,5 +185,50 @@ export default class PlaylistsRefreshManager {
         }
 
         return liElement.querySelector("ul.children-container");
+    }
+
+    public async getSortedPlaylists(): Promise<Playlist[]> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            return [];
+        }
+
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
+            return [];
+        }
+
+        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
+
+        const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
+
+        for (const playlist of playlists) {
+            if (!playlistsByParent.has(playlist.parentID)) {
+                playlistsByParent.set(playlist.parentID, []);
+            }
+
+            playlistsByParent.get(playlist.parentID)!.push(playlist);
+        }
+
+        const res: Playlist[] = [];
+
+        const addWithChildren = (parentID: number): void => {
+            const playlistGroup: Playlist[] | undefined = playlistsByParent.get(parentID);
+            if (playlistGroup == undefined) {
+                return;
+            }
+
+            playlistGroup.sort((a, b) => a.position - b.position);
+
+            for (const playlist of playlistGroup) {
+                res.push(playlist);
+                addWithChildren(playlist.id);
+            }
+        };
+
+        addWithChildren(-1);
+
+        return res;
     }
 };

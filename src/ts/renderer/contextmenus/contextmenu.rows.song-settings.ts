@@ -4,7 +4,7 @@ import ModalTop from "../modals/modal.top.js";
 import LoadingModal from "../modals/modal.loading.js";
 import * as Requests from "./../utils/utils.requests.js";
 
-async function addSongOnConfirm(app: App, userID: ID, token: Token, artistNames: string[], res: ModalRes): Promise<ModalError> {
+async function addSongOnConfirm(app: App, userID: ID, token: Token, userSongs: Song[], artistNames: string[], res: ModalRes): Promise<ModalError> {
     const title: string = res.rows["Title"].value;
     if (title.length < 1) {
         return {
@@ -18,6 +18,14 @@ async function addSongOnConfirm(app: App, userID: ID, token: Token, artistNames:
         return {
             fieldName: "Artist",
             error: "Artist has to be at least 1 character long.",
+        };
+    }
+
+    const songAlreadyExists: boolean = userSongs.some((song: Song) => song.title == title && song.artist == artist);
+    if (songAlreadyExists) {
+        return {
+            fieldName: "Title",
+            error: "Song with same title and artist already exists.",
         };
     }
 
@@ -69,7 +77,7 @@ async function addSongOnConfirm(app: App, userID: ID, token: Token, artistNames:
     return null;
 }
 
-async function getAddSongModalData(app: App, userID: ID, token: Token): Promise<CenterModalData> {
+async function getAddSongModalData(app: App, userID: ID, token: Token, userSongs: Song[]): Promise<CenterModalData> {
     const getArtistsFromUserReqRes: any = await Requests.artist.getAllFromUser(userID, token);
     if (!getArtistsFromUserReqRes.success) {
         app.throwError(`Can't get artists from user: ${getArtistsFromUserReqRes.error}`);
@@ -85,7 +93,7 @@ async function getAddSongModalData(app: App, userID: ID, token: Token): Promise<
             { label: "Artist", type: "SELECT", maxLength: 150, data: artistNames },
             { label: "Song file", type: "FILE" },
         ],
-        onConfirm: async (res: ModalRes) => await addSongOnConfirm(app, userID, token, artistNames, res),
+        onConfirm: async (res: ModalRes) => await addSongOnConfirm(app, userID, token, userSongs, artistNames, res),
         cantClose: false,
     };
 }
@@ -141,16 +149,16 @@ export default async function getSongSettingRows(app: App): Promise<ContextmenuR
         return [];
     }
 
-    const songs: Song[] = (songsFromUserReqRes.songs as Song[]);
-    const hasUserSongs: boolean = (songs.length > 0);
+    const userSongs: Song[] = (songsFromUserReqRes.songs as Song[]);
+    const hasUserSongs: boolean = (userSongs.length > 0);
 
     return [
         { title: "Add song to Heko", onClick: async () => {
-            new CenterModal(app, await getAddSongModalData(app, userID, token));
+            new CenterModal(app, await getAddSongModalData(app, userID, token, userSongs));
         }, disabled: false },
 
         { title: "Remove song from Heko", onClick: async () => {
-            new CenterModal(app, getRemoveSongModalData(app, userID, token,songs));
+            new CenterModal(app, getRemoveSongModalData(app, userID, token, userSongs));
         }, disabled: !hasUserSongs },
     ];
 }

@@ -1,6 +1,7 @@
 export default class LoadingModal {
     private container: HTMLElement | null = null;
 
+    // INIT
     private constructor(private title: string) {
         this.open();
     }
@@ -12,6 +13,7 @@ export default class LoadingModal {
         return res;
     }
 
+    // EVENTS
     private open(): void {
         this.container = document.createElement("loading-modal-container");
         document.body.appendChild(this.container);

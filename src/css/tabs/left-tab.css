@@ -43,7 +43,8 @@
 }
 
 #playlists-container {
-    padding: var(--main-padding) 0 var(--main-padding) var(--main-padding);
+    padding: calc(var(--main-padding) * 0.65);
+    padding-right: 0;
     overflow-y: scroll;
 }
 

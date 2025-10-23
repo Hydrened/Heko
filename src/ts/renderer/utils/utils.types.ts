@@ -8,6 +8,14 @@ interface UserData {
     token: Token | null;
 };
 
+interface UserSettings {
+    userID: ID | null;
+    shuffle: boolean;
+    loop: boolean;
+    speed: number;
+    volume: number;
+};
+
 
 
 interface Shortcut {

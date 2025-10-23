@@ -1,3 +1,4 @@
+import AppPath from "./utils.app-path.js";
 import "./utils.types.js";
 
 export function removeChildren(parent: HTMLElement | Element | null): void {
@@ -30,11 +31,11 @@ export function shortcutToString(shortcut: Shortcut): string {
 }
 
 export function getThumbnailPath(thumbnailFileName: string): string {
-    return "https://killian-simon.fr/heko/thumbnails/" + thumbnailFileName;
+    return `${AppPath}/thumbnails/${thumbnailFileName}`;
 }
 
 export function getSongPath(song: Song): string {
-    return "https://killian-simon.fr/heko/songs/" + song.fileName;
+    return `${AppPath}/songs/${song.fileName}`;
 }
 
 export function formatDuration(seconds: number): string {
@@ -47,4 +48,12 @@ export function formatDuration(seconds: number): string {
     }
 
     return `${mins}:${secs.toString().padStart(2, "0")}`;
+}
+
+export function randomIntInRange(min: number, max: number): number {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+}
+
+export function randomValueFromArray<T>(values: T[]): T {
+    return values[randomIntInRange(0, values.length - 1)];
 }

@@ -94,6 +94,7 @@
 
 html {
     background-color: var(--bg-col-1);
+    overflow-x: hidden;
 }
 
 ul {

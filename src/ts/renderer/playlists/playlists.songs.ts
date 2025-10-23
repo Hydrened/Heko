@@ -3,6 +3,7 @@ import App from "./../app.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsSongsManager {
+    // INIT
     constructor(private app: App, private playlists: PlaylistManager) {
         this.initEvents();
     }
@@ -15,6 +16,7 @@ export default class PlaylistsSongsManager {
         Elements.songs.settingsButton.addEventListener("click", async () => await this.openSettingButtonContextMenu());
     }
 
+    // EVENTS
     private async openSettingButtonContextMenu(): Promise<void> {
         if (Elements.songs.settingsButton == null) {
             return this.app.throwError("Can't open setting button context menu: Song settings button element is null.");

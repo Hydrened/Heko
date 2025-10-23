@@ -26,6 +26,10 @@
 #toggle-loop-button > img {
     width: 1.3rem;
 }
+#toggle-shuffle-button > img[shuffle="true"],
+#toggle-loop-button > img[loop="true"] {
+    opacity: 1;
+}
 #previous-song-button > img,
 #next-song-button > img {
     width: 1.8rem;
@@ -35,8 +39,12 @@
     width: 2rem;
 }
 
-#toggle-play-button[playing="false"] > [pause="true"],
-#toggle-play-button[playing="true"] > [pause="false"] {
+#toggle-shuffle-button[shuffle="false"] > [shuffle="true"],
+#toggle-shuffle-button[shuffle="true"] > [shuffle="false"],
+#toggle-loop-button[loop="false"] > [loop="true"],
+#toggle-loop-button[loop="true"] > [loop="false"],
+#toggle-play-button[playing="false"] > [playing="true"],
+#toggle-play-button[playing="true"] > [playing="false"] {
     display: none;
 }
 
@@ -58,11 +66,13 @@
     gap: 2rem;
 }
 
-#pitch-button > img {
-    width: 1.3rem;
+#speed-button > img {
+    width: 1.4rem;
 }
 #queue-button > img {
     width: 1.6rem;
+    position: relative;
+    top: -0.1rem;
 }
 #toggle-song-volume-button > img {
     width: 1.5rem;
@@ -78,4 +88,19 @@
 #toggle-song-volume-button[volume="1"] > :not([volume="1"]),
 #toggle-song-volume-button[volume="2"] > :not([volume="2"]) {
     display: none;
+}
+
+.current-song-details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 0.4rem;
+}
+#current-song-title {
+    font-size: 1.4rem;
+}
+#current-song-artist {
+    font-size: 1rem;
+    color: var(--text-col-2);
+    font-weight: normal;
 }

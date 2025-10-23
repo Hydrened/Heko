@@ -7,6 +7,7 @@ export default class CenterModal {
     private container: HTMLElement | null = null;
     private closing: boolean = false;
 
+    // INIT
     constructor(private app: App, private data: CenterModalData) {
         this.checkErrors();
         this.initEvents();
@@ -189,6 +190,24 @@ export default class CenterModal {
         }
     }
 
+    // EVENTS
+    public close(): void {
+        if (this.container == null) {
+            return this.app.throwError("Can't close modal: Container element is null.");
+        }
+
+        const container: HTMLElement = this.container;
+        container.classList.add("closing");
+        this.closing = true;
+
+        if (this.data.onCancel != null) {
+            this.data.onCancel();
+        }
+
+        window.removeEventListener("keydown", this.keydownEvent);
+        setTimeout(() => container.remove(), 500);
+    }
+
     public async confirm(): Promise<void> {
         if (this.closing) {
             return;
@@ -238,6 +257,19 @@ export default class CenterModal {
         this.close();
     }
 
+    // INPUT EVENTS
+    private focusFirstField(): void {
+        if (this.container == null) {  
+            return this.app.throwError("Can't focus first modal input: Container is null.");
+        }
+
+        const input: HTMLInputElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
+        if (input != null) {
+            input.focus();
+            input.select();
+        }
+    }
+
     private displayError(fieldName: string | undefined, message: string): void {
         if (fieldName == undefined) {
             return ModalTop.create("ERROR", message);
@@ -274,35 +306,6 @@ export default class CenterModal {
         }
 
         [...this.container.querySelectorAll("error")].forEach((error: Element) => error.remove());
-    }
-
-    public close(): void {
-        if (this.container == null) {
-            return this.app.throwError("Can't close modal: Container element is null.");
-        }
-
-        const container: HTMLElement = this.container;
-        container.classList.add("closing");
-        this.closing = true;
-
-        if (this.data.onCancel != null) {
-            this.data.onCancel();
-        }
-
-        window.removeEventListener("keydown", this.keydownEvent);
-        setTimeout(() => container.remove(), 500);
-    }
-
-    private focusFirstField(): void {
-        if (this.container == null) {  
-            return this.app.throwError("Can't focus first modal input: Container is null.");
-        }
-
-        const input: HTMLInputElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
-        if (input != null) {
-            input.focus();
-            input.select();
-        }
     }
 
     public static createFileInput(input: HTMLInputElement): void {
@@ -347,6 +350,7 @@ export default class CenterModal {
         return new InputSelect(input, data);
     }
 
+    // GETTERS
     public static getFileFromFileInput(inputIndex: number): File | null {
         const inputElement: Element | null = [...document.querySelectorAll(".center-modal input")][2];
         if (inputElement == null) {

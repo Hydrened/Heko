@@ -6,6 +6,7 @@ import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsCurrentManager {
+    // INIT
     constructor(private app: App, private playlists: PlaylistManager) {
         this.initEvents();
     }
@@ -18,6 +19,7 @@ export default class PlaylistsCurrentManager {
         Elements.currentPlaylist.addSongsButton.addEventListener("click", async () => await this.openAddSongToPlaylistModal());
     }
 
+    // EVENTS
     private async openAddSongToPlaylistModal(): Promise<void> {
         const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentPlaylist == null) {

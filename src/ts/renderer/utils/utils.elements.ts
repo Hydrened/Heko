@@ -8,6 +8,8 @@ export const songs = {
 };
 
 export const currentPlaylist = {
+    container: document.querySelector("#current-playlist-container"),
+
     details: {
         thumbnail: document.querySelector("#current-playlist-thumbnail"),
         title: document.querySelector("#current-playlist-title"),
@@ -34,7 +36,7 @@ export const account = {
 };
 
 export const currentSong = {
-    name: document.querySelector("#current-song-name"),
+    title: document.querySelector("#current-song-title"),
     artist: document.querySelector("#current-song-artist"),
 };
 

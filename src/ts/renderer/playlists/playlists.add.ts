@@ -6,8 +6,9 @@ import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsAddManager {
-    modal: CenterModal | null = null;
+    private modal: CenterModal | null = null;
 
+    // INIT
     constructor(private app: App, private playlists: PlaylistManager) {
         this.initEvents();
     }
@@ -32,6 +33,7 @@ export default class PlaylistsAddManager {
         });
     }
 
+    // EVENTS
     private openModal(): void {
         const content: ModalRow[] = [
             { label: "Name", type: "TEXT", maxLength: 150 },

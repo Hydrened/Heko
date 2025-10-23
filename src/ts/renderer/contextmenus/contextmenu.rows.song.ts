@@ -4,7 +4,6 @@ import ModalTop from "./../modals/modal.top.js";
 import * as Requests from "./../utils/utils.requests.js";
 
 async function removeSongOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
-
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         return {

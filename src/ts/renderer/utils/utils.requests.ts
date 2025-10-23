@@ -1,7 +1,8 @@
+import AppPath from "./../utils/utils.app-path.js";
 import "./utils.types.js";
 
 async function request(phpFile: string, data: { [key: string]: any }): Promise<any> {
-    const res: Response = await fetch(`https://killian-simon.fr/heko/requests/${phpFile}`, {
+    const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
@@ -16,7 +17,7 @@ async function uploadFile(phpFile: string, userID: ID, token: Token, songFile: F
     formData.append("token", token);
     formData.append("songFile", songFile);
 
-    const res = await fetch(`https://killian-simon.fr/heko/requests/${phpFile}`, {
+    const res = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
         body: formData,
     });
@@ -35,6 +36,14 @@ export const user = {
 
     register: async (name: string, email: string, password: string, confirm: string): Promise<any> => {
         return await request("user/register.php", { name: name, email: email, password: password, confirm: confirm });
+    },
+
+    getSettings: async (userID: ID, token: Token): Promise<any> => {
+        return await request("user/get-settings.php", { userID: userID, token: token });
+    },
+    
+    saveSettings: async (userID: ID, token: Token, settings: UserSettings): Promise<any> => {
+        return await request("user/save-settings.php", { userID: userID, token: token, settings: settings });
     },
 };
 

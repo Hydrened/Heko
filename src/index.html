@@ -54,55 +54,59 @@
                 </footer>
             </aside>
             <section class="right-tab">
-                <header>
-                    <div id="current-playlist-thumbnail"></div>
-                    <div class="current-playlist-details-container">
-                        <h1 id="current-playlist-title" class="extern-text"></h1>
-                        <div class="current-playlist-bottom-details-container">
-                            <h4 id="current-playlist-song-number"></h4>
-                            <h4 id="current-playlist-duration"><h4>
-                            <button id="add-songs-to-current-playlist-button" class="disabled" tabindex="-1">
-                                <img src="assets/plus.svg">
-                            </button>
+                <article id="current-playlist-container">
+                    <header>
+                        <div id="current-playlist-thumbnail"></div>
+                        <div class="current-playlist-details-container">
+                            <h1 id="current-playlist-title" class="extern-text"></h1>
+                            <div class="current-playlist-bottom-details-container">
+                                <h4 id="current-playlist-song-number"></h4>
+                                <h4 id="current-playlist-duration"><h4>
+                                <button id="add-songs-to-current-playlist-button" class="disabled" tabindex="-1">
+                                    <img src="assets/plus.svg">
+                                </button>
+                            </div>
                         </div>
+                        <button id="logout-button" tabindex="-1">
+                            <img src="assets/logout.svg">
+                        </button>
+                    </header>
+                    <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
+                    <div class="current-playlist-table-container">
+                        <div class="current-playlist-table-head-container">
+                            <button id="current-playlist-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
+                            <button id="current-playlist-sort-by-title-button" tabindex="-1">Title</button>
+                            <button id="current-playlist-sort-by-artist-button" tabindex="-1">Artist</button>
+                            <button id="current-playlist-sort-by-duration-button" tabindex="-1">Duration</button>
+                        </div>
+                        <ul id="current-playlist-song-container"></ul>
                     </div>
-                    <button id="logout-button" tabindex="-1">
-                        <img src="assets/logout.svg">
-                    </button>
-                </header>
-                <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
-                <div class="current-playlist-table-container">
-                    <div class="current-playlist-table-head-container">
-                        <button id="current-playlist-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
-                        <button id="current-playlist-sort-by-title-button" tabindex="-1">Title</button>
-                        <button id="current-playlist-sort-by-artist-button" tabindex="-1">Artist</button>
-                        <button id="current-playlist-sort-by-duration-button" tabindex="-1">Duration</button>
-                    </div>
-                    <ul id="current-playlist-song-container"></ul>
-                </div>
+                </article>
             </section>
             <footer class="bottom-tab">
                 <article class="current-song-details-container">
-                    <h3 id="current-song-name" class="extern-text"></h3>
+                    <h3 id="current-song-title" class="extern-text"></h3>
                     <h4 id="current-song-artist" class="extern-text"></h4>
                 </article>
                 <article class="main-controls-container">
                     <div class="main-control-buttons-container">
                         <button id="toggle-shuffle-button" shuffle="false" tabindex="-1">
-                            <img src="assets/shuffle.svg">
+                            <img src="assets/shuffle-false.svg" shuffle="false">
+                            <img src="assets/shuffle-true.svg" shuffle="true">
                         </button>
                         <button id="previous-song-button" tabindex="-1">
                             <img src="assets/previous.svg">
                         </button>
                         <button id="toggle-play-button" playing="false" tabindex="-1">
-                            <img src="assets/play.svg" pause="false">
-                            <img src="assets/pause.svg" pause="true">
+                            <img src="assets/play.svg" playing="false">
+                            <img src="assets/pause.svg" playing="true">
                         </button>
                         <button id="next-song-button" tabindex="-1">
                             <img src="assets/next.svg">
                         </button>
                         <button id="toggle-loop-button" loop="false" tabindex="-1">
-                            <img src="assets/loop.svg">
+                            <img src="assets/loop-false.svg" loop="false">
+                            <img src="assets/loop-true.svg" loop="true">
                         </button>
                     </div>
                     <div class="song-slider-container">
@@ -112,22 +116,19 @@
                     </div>
                 </article>
                 <article class="secondary-controls-container">
-                    <!-- <button id="pitch-button" tabindex="-1">
-                        <img src="assets/pitch.svg">
-                    </button>
                     <button id="speed-button" tabindex="-1">
-                        <img src="assets/pitch.svg">
+                        <img src="assets/speed.svg">
                     </button>
                     <button id="queue-button" tabindex="-1">
                         <img src="assets/queue.svg">
-                    </button> -->
+                    </button>
                     <div class="volume-controls-container">
-                        <button id="toggle-song-volume-button" volume="2" tabindex="-1">
+                        <button id="toggle-song-volume-button" volume="0" tabindex="-1">
                             <img src="assets/volume-muted.svg" volume="0">
                             <img src="assets/volume-min.svg" volume="1">
                             <img src="assets/volume-max.svg" volume="2">
                         </button>
-                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="50" tabindex="-1">
+                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="0" tabindex="-1">
                     </div>
                 </article>
             </footer>

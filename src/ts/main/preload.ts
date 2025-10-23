@@ -30,6 +30,15 @@ declare global {
     }
 }
 
+contextBridge.exposeInMainWorld("electronAPI", {
+    onBeforeClose: (callback: () => Promise<void>) => {
+        ipcRenderer.on("app:before-close", async () => {
+            await callback();
+            ipcRenderer.send("app:before-close:done");
+        });
+    }
+});
+
 contextBridge.exposeInMainWorld("main", {
     throwError: (message: string) => {
         ipcRenderer.invoke("main-throwError", message);

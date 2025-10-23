@@ -9,6 +9,7 @@ export default class ContextmenuManager {
     private currentContextmenuElement: HTMLElement | null = null;
     private currentParentElement: HTMLElement | null = null;
 
+    // INIT
     constructor(private app: App) {
         this.initEvents();
     }
@@ -31,6 +32,7 @@ export default class ContextmenuManager {
         });
     }
 
+    // PRIVATE CREATE EVENTS
     private createContextMenu(position: Position, rows: ContextmenuRow[]): void {
         this.closeContextMenu();
         
@@ -114,6 +116,7 @@ export default class ContextmenuManager {
         element.classList.add("contextmenu-parent");
     }
 
+    // PUBLIC CREATE EVENTS
     public createPlaylistContainerContextmenu(position: Position, openModalCall: () => void): void {
         this.createContextMenu(position, getPlaylistContainerRows(this.app, openModalCall));
     }
