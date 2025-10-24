@@ -4,30 +4,19 @@ import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
 
-export default class PlaylistsRefreshManager {
-    // INIT
+export default class PlaylistsRefreshCotnainerManager {
     constructor(private app: App, private playlists: PlaylistManager) {
 
     }
 
-    // REFRESH EVENTS
     public async refresh(): Promise<void> {
-        await this.refreshPlaylistContainer();
-        await this.refreshAddSongToPlaylistButton();
-    }
-
-    private async refreshPlaylistContainer(): Promise<void> {
         Functions.removeChildren(Elements.playlists.container);
         
-        const playlists: Playlist[] = await this.getSortedPlaylists();
+        const playlists: Playlist[] = await this.playlists.getSortedPlaylists();
         
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
-        if (Elements.playlists.container == null) {
-            return this.app.throwError("Can't refresh playlists: Playlist container element is null.");
-        }
-
-        [...Elements.playlists.container.children].forEach((liElement: Element, index: number) => {
+        [...Elements.playlists.container!.children].forEach((liElement: Element, index: number) => {
             liElement.classList.add("spawn");
 
             setTimeout(() => {
@@ -38,43 +27,7 @@ export default class PlaylistsRefreshManager {
         });
     }
 
-    public async refreshAddSongToPlaylistButton(): Promise<void> {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return;
-        }
-
-        if (Elements.currentPlaylist.addSongsButton == null) {
-            return this.app.throwError("Can't refresh add song to playlist button: Add song to playlist modal button is null.");
-        }
-
-        const currentPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
-        if (currentPlaylist == null) {
-            return;
-        }
-
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentPlaylist.id);
-        if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
-        }
-
-        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
-        if (!getAllSongsFromUserReqRes.success) {
-            return this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
-        }
-
-        const playlistSongIDs: number[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.id);
-        const everyUserSongIDs: number[] = (getAllSongsFromUserReqRes.songs as Song[]).map((song: Song) => song.id);
-
-        const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
-        (canUserAddSongs) ? Elements.currentPlaylist.addSongsButton.classList.remove("disabled") : Elements.currentPlaylist.addSongsButton.classList.add("disabled");
-    }
-
     private createPlaylist(playlist: Playlist): void {
-        if (Elements.playlists.container == null) {
-            return;
-        }
-
         const strPlaylistID: string = String(playlist.id);
 
         const liElement: HTMLElement = document.createElement("li");
@@ -124,7 +77,7 @@ export default class PlaylistsRefreshManager {
                     return;
                 }
 
-                const openedPlaylistIDs: number[] = this.app.playlistManager.getPlaylistOpenedStates();
+                const openedPlaylistIDs: number[] = this.playlists.getPlaylistOpenedStates();
 
                 const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
                 if (!updatePlaylistOpenedStatesReqRes.success) {
@@ -156,18 +109,12 @@ export default class PlaylistsRefreshManager {
         parent.appendChild(liElement);
     }
 
-    // GETTERS
     private getParentToAppend(playlist: Playlist): Element | null {
         if (playlist.parentID == -1) {
             return Elements.playlists.container;
         }
 
-        if (Elements.playlists.container == null) {
-            this.app.throwError("Can't get parent to append playlist: Playlist container element is null.");
-            return null;
-        }
-
-        const liElement: Element | undefined = ([...Elements.playlists.container.querySelectorAll("li")] as Element[]).find((li: Element) => {
+        const liElement: Element | undefined = ([...Elements.playlists.container!.querySelectorAll("li")] as Element[]).find((li: Element) => {
             if (!li.hasAttribute("playlist-id")) {
                 return false;
             }
@@ -185,50 +132,5 @@ export default class PlaylistsRefreshManager {
         }
 
         return liElement.querySelector("ul.children-container");
-    }
-
-    public async getSortedPlaylists(): Promise<Playlist[]> {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return [];
-        }
-
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-        if (!getAllPlaylistsFromUserReqRes.success) {
-            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
-            return [];
-        }
-
-        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
-
-        const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
-
-        for (const playlist of playlists) {
-            if (!playlistsByParent.has(playlist.parentID)) {
-                playlistsByParent.set(playlist.parentID, []);
-            }
-
-            playlistsByParent.get(playlist.parentID)!.push(playlist);
-        }
-
-        const res: Playlist[] = [];
-
-        const addWithChildren = (parentID: number): void => {
-            const playlistGroup: Playlist[] | undefined = playlistsByParent.get(parentID);
-            if (playlistGroup == undefined) {
-                return;
-            }
-
-            playlistGroup.sort((a, b) => a.position - b.position);
-
-            for (const playlist of playlistGroup) {
-                res.push(playlist);
-                addWithChildren(playlist.id);
-            }
-        };
-
-        addWithChildren(-1);
-
-        return res;
     }
 };

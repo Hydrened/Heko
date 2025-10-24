@@ -42,14 +42,29 @@ export default class App {
         }
     }
 
+    // ON LOGIN
     public async loggedIn(): Promise<void> {
         await this.listenerManager.loggedIn();
+        await this.playlistManager.refreshPlaylistsContainerTab();
+        await this.openFirstPlaylist();
     }
 
+    public async openFirstPlaylist(): Promise<void> {
+        const playlists: Playlist[] = await this.playlistManager.getSortedPlaylists();
+
+        const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
+        if (firstSongPlaylist != undefined) {
+            await this.playlistManager.open(firstSongPlaylist.id);
+        }
+    }
+
+    // ON LOGOUT
     public async loggedOut(): Promise<void> {
-        
+        await this.playlistManager.refreshPlaylistsContainerTab();
+        this.playlistManager.close();
     } 
 
+    // ON CLOSE
     public async saveSettings(): Promise<void> {
         const userData: UserData = this.account.getUserData();
         if (userData.id == null || userData.token == null) {

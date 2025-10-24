@@ -1,4 +1,4 @@
-interface CenterModal {};
+type CenterModal = import("./../modals/modal.center.js").default;
 
 type ID = number;
 type Token = string;
@@ -42,19 +42,8 @@ interface ModalRow {
     type: ModalRowType;
     maxLength?: number;
     defaultValue?: string;
+    onChange?: (modal: CenterModal) => void;
     data?: ModalRowData;
-};
-
-interface ModalRowRes {
-    value: string;
-    index?: number;
-};
-
-type ModalRowsRes = { [fieldName: string]: ModalRowRes };
-
-interface ModalRes {
-    modal: CenterModal;
-    rows: ModalRowsRes;
 };
 
 interface ModalButton {
@@ -72,7 +61,7 @@ type ModalError = ModalFieldError | null;
 interface CenterModalData {
     title: string;
     content?: ModalRow[];
-    onConfirm: (res: ModalRes) => Promise<ModalError>;
+    onConfirm: (modal: CenterModal) => Promise<ModalError>;
     onCancel?: () => void;
     additionnalButtons?: ModalButton[];
     cantClose: boolean;

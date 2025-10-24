@@ -1,6 +1,6 @@
 import App from "./app.js";
 import CenterModal from "./modals/modal.center.js";
-import ModalTop from "./modals/modal.top.js";
+import TopModal from "./modals/modal.top.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
 import * as Elements from "./utils/utils.elements.js";
@@ -34,15 +34,11 @@ export default class Account {
         this.userID = userID;
         this.token = token;
 
-        this.loggedIn();
+        await this.loggedIn();
     }
 
     private initEvents(): void {
-        if (Elements.account.logoutButton == null) {
-            return this.app.throwError("Can't init count events: Logout button element is null.");
-        }
-
-        Elements.account.logoutButton.addEventListener("click", async () => await this.loggedOut());
+        Elements.account.logoutButton!.addEventListener("click", async () => await this.loggedOut());
     }
 
     private async loadSettings(): Promise<any> {
@@ -70,16 +66,7 @@ export default class Account {
             return;
         }
 
-        const playlists: Playlist[] = await this.app.playlistManager.getSortedPlaylists();
-
-        const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
-        if (firstSongPlaylist != undefined) {
-            await this.app.playlistManager.open(firstSongPlaylist.id);
-        }
-        
         await this.loadSettings();
-        await this.app.playlistManager.refresh();
-
         await this.app.loggedIn();
     }
 
@@ -92,9 +79,7 @@ export default class Account {
         this.userID = null;
         this.token = null;
 
-        await this.app.playlistManager.refresh();
         this.openLoginModal();
-
         await this.app.loggedOut();
     }
 
@@ -109,9 +94,9 @@ export default class Account {
             { label: "Password", type: "PASSWORD", maxLength: 150 },
         ];
 
-        const onConfirm = async (res: ModalRes): Promise<ModalError> => {
-            const email: string = res.rows["Email"].value;
-            const password: string = res.rows["Password"].value;
+        const onConfirm = async (modal: CenterModal): Promise<ModalError> => {
+            const email: string = modal.getFieldValue("Email");
+            const password: string = modal.getFieldValue("Password");
 
             const loginReqRes: any = await Requests.user.login(email, password);
             if (!loginReqRes.success) {
@@ -156,11 +141,11 @@ export default class Account {
             { label: "Confirm", type: "PASSWORD", maxLength: 150 },
         ];
 
-        const onConfirm = async (res: ModalRes): Promise<ModalError> => {
-            const name: string = res.rows["Name"].value;
-            const email: string = res.rows["Email"].value;
-            const password: string = res.rows["Password"].value;
-            const confirm: string = res.rows["Confirm"].value;
+        const onConfirm = async (modal: CenterModal): Promise<ModalError> => {
+            const name: string = modal.getFieldValue("Name");
+            const email: string = modal.getFieldValue("Email");
+            const password: string = modal.getFieldValue("Password");
+            const confirm: string = modal.getFieldValue("Confirm");
 
             const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
             if (!registerReqRes.success) {
@@ -182,7 +167,7 @@ export default class Account {
             this.token = loginReqRes.token;
             this.loggedIn();
 
-            ModalTop.create("SUCCESS", "Account successfully created.");
+            TopModal.create("SUCCESS", "Account successfully created.");
 
             return null;
         };

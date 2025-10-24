@@ -31,30 +31,22 @@ export default class ListenerManager {
     }
 
     private initSongControlButtonEvent(): void {
-        interface ElementEvent { element: Element | null; event: () => void; };
+        interface ElementEvent { element: Element; event: () => void; };
         const elementEvents: ElementEvent[] = [
-            { element: Elements.songControls.buttons.togglePlayButton, event: async () => await this.queueManager.togglePlayButton() },
-            { element: Elements.songControls.buttons.previousButton, event: () => this.queueManager.previousButton() },
-            { element: Elements.songControls.buttons.nextButton, event: () => this.queueManager.nextButton() },
-            { element: Elements.songControls.buttons.toggleShuffleButton, event: async () => await this.queueManager.toggleShuffleButton() },
-            { element: Elements.songControls.buttons.toggleLoopButton, event: async () => await this.queueManager.toggleLoopButton() },
+            { element: Elements.songControls.buttons.togglePlayButton!, event: async () => await this.queueManager.togglePlayButton() },
+            { element: Elements.songControls.buttons.previousButton!, event: () => this.queueManager.previousButton() },
+            { element: Elements.songControls.buttons.nextButton!, event: () => this.queueManager.nextButton() },
+            { element: Elements.songControls.buttons.toggleShuffleButton!, event: async () => await this.queueManager.toggleShuffleButton() },
+            { element: Elements.songControls.buttons.toggleLoopButton!, event: async () => await this.queueManager.toggleLoopButton() },
         ];
 
         elementEvents.forEach((elementEvent: ElementEvent) => {
-            if (elementEvent.element == null) {
-                return this.app.throwError("Can't init listener events: One of the control button elements is null.");
-            }
-
             elementEvent.element.addEventListener("click", () => elementEvent.event());
         });
     }
 
     private initSongProgressbarEvents(): void {
-        if (Elements.songControls.progressBar.slider == null) {
-            return this.app.throwError("Can't init song progressbar events: Progressbar slider element is null.");
-        }
-
-        Elements.songControls.progressBar.slider.addEventListener("input", () => {
+        Elements.songControls.progressBar.slider!.addEventListener("input", () => {
 
         });
     }

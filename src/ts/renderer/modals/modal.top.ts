@@ -1,6 +1,6 @@
 import "./../utils/utils.types.js";
 
-export default class ModalTop {
+export default class TopModal {
     private container: HTMLElement | null = null;
 
     // INIT
@@ -9,7 +9,7 @@ export default class ModalTop {
     }
 
     public static create(type: TopModalType, message: string): void {
-        new ModalTop(type, message);
+        new TopModal(type, message);
     }
 
     // EVENTS
@@ -21,7 +21,7 @@ export default class ModalTop {
 
         this.container.addEventListener("click", () => this.close());
 
-        setTimeout(() => this.close(), 5000);
+        setTimeout(() => this.close(), 7000);
     }
 
     private close(): void {

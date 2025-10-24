@@ -4,7 +4,7 @@ export default class InputSelect {
     private list: HTMLElement | null = null;
     private selected: number = -1;
 
-    constructor(private input: HTMLInputElement, private data: ModalRowData) {
+    constructor(private input: HTMLInputElement, private data: string[]) {
         this.initEvents();
         this.initContainer();
     }
@@ -65,7 +65,7 @@ export default class InputSelect {
             this.list.appendChild(li);
 
             li.addEventListener("mousedown", (e: MouseEvent) => {
-                this.input.value = entry;
+                this.setInputValue(entry);
                 this.filter();
                 this.onBlur();
             });
@@ -168,7 +168,12 @@ export default class InputSelect {
             return;
         }
 
-        this.input.value = selectedLi.textContent;
+        this.setInputValue(selectedLi.textContent);
         setTimeout(() => this.input.blur(), 0);
+    }
+
+    private setInputValue(value: string): void {
+        this.input.value = value;
+        this.input.dispatchEvent(new Event("input", { bubbles: true }));
     }
 };

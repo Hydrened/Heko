@@ -1,6 +1,6 @@
 ul.contextmenu,
 ul.contextmenu ul.contextmenu-submenu-container {
-    min-width: 15rem;
+    width: 15rem;
 
     padding: var(--contextmenu-padding);
 

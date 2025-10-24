@@ -1,4 +1,4 @@
-import ModalTop from "./modal.top.js";
+import TopModal from "./modal.top.js";
 import App from "./../app.js";
 import InputSelect from "./../utils/utils.input-select.js";
 import * as AntiSpam from "./../utils/utils.anti-spam.js";
@@ -26,6 +26,7 @@ export default class CenterModal {
             if (acc.includes(row.label)) {
                 this.app.throwError("Can't create center modal: Modal contains fields with same name.");
             }
+            
             acc.push(row.label);
             return acc;
         }, []);
@@ -125,11 +126,11 @@ export default class CenterModal {
         const input: HTMLInputElement = document.createElement("input");
         input.type = row.type.toLowerCase();
 
-        if (row.defaultValue != null) {
+        if (row.defaultValue != undefined) {
             input.value = row.defaultValue;
         }
 
-        if (row.maxLength != null) {
+        if (row.maxLength != undefined) {
             input.maxLength = row.maxLength;
         }
 
@@ -138,7 +139,7 @@ export default class CenterModal {
         if (row.type == "FILE") {
             CenterModal.createFileInput(input);
 
-        } else if (row.type == "SELECT" && row.data != null) {
+        } else if (row.type == "SELECT" && row.data != undefined) {
             CenterModal.createSelectInput(input, row.data);
         }
 
@@ -152,6 +153,10 @@ export default class CenterModal {
                 setTimeout(() => input.blur(), 0);
             }
         });
+
+        if (row.onChange != undefined) {
+            input.addEventListener("input", () => row.onChange!(this));
+        }
     }
 
     private createFooter(container: HTMLElement): void {
@@ -219,35 +224,7 @@ export default class CenterModal {
 
         this.removeErrors();
 
-        const rows: ModalRowsRes = {};
-        [...this.container.querySelectorAll(".field-container > li")].forEach((li: Element) => {
-
-            const label: HTMLElement | null = li.querySelector("label");
-            const input: HTMLInputElement | null = li.querySelector("input");
-
-            if (label == null || input == null) {
-                this.app.throwError("Can't confirm modal: Label element or input element is null.");
-                return;
-            }
-
-            const rowRes: ModalRowRes = {
-                value: input.value,
-            };
-
-            const index: number | null = (input.hasAttribute("index") ? Number(input.getAttribute("index")) : null);
-            if (index != null) {
-                rowRes.index = index;
-            }
-
-            return rows[label.textContent.substring(0, label.textContent.length - 2)] = rowRes;
-        });
-
-        const res: ModalRes = {
-            modal: this,
-            rows: rows,
-        };
-
-        const modalError: ModalError = await this.data.onConfirm(res);
+        const modalError: ModalError = await this.data.onConfirm(this);
         if (modalError != null) {
             this.focusFirstField();
             this.displayError(modalError.fieldName, modalError.error);
@@ -263,7 +240,7 @@ export default class CenterModal {
             return this.app.throwError("Can't focus first modal input: Container is null.");
         }
 
-        const input: HTMLInputElement | null = this.container.querySelector(":not(input-select:has(> input)) > input");
+        const input: HTMLInputElement | null = this.container.querySelector("input");
         if (input != null) {
             input.focus();
             input.select();
@@ -272,25 +249,12 @@ export default class CenterModal {
 
     private displayError(fieldName: string | undefined, message: string): void {
         if (fieldName == undefined) {
-            return ModalTop.create("ERROR", message);
+            return TopModal.create("ERROR", message);
         }
 
-        fieldName += " :";
-
-        const errorBase: string = "Can't display modal error";
-
-        if (this.container == null) {
-            return this.app.throwError(`${errorBase}: Container element is null.`);
-        }
-
-        const labelElement: HTMLElement | undefined = [...this.container.querySelectorAll("label")].find((element: HTMLElement) => element.textContent == fieldName);
-        if (labelElement == undefined) {
-            return this.app.throwError(`${errorBase}: Label element is null.`);
-        }
-
-        const rowContainer: HTMLElement | null = labelElement.parentElement;
+        const rowContainer: HTMLElement | null = CenterModal.getFieldRowContainer(fieldName);
         if (rowContainer == null) {
-            return this.app.throwError(`${errorBase}: Row container element is null.`);
+            return this.app.throwError("Can't display modal error: Row container element is null.");
         }
 
         const errorElement: HTMLElement = document.createElement("error");
@@ -351,8 +315,28 @@ export default class CenterModal {
     }
 
     // GETTERS
-    public static getFileFromFileInput(inputIndex: number): File | null {
-        const inputElement: Element | null = [...document.querySelectorAll(".center-modal input")][2];
+    private static getFieldRowContainer(fieldName: string): HTMLElement | null {
+        fieldName += " :";
+
+        const labelElement: Element | undefined = [...document.body.querySelectorAll(".center-modal label")].find((element: Element) => element.textContent == fieldName);
+        if (labelElement == undefined) {
+            return null;
+        }
+
+        return labelElement.parentElement;
+    }
+
+    private static getFieldInput(fieldName: string): HTMLInputElement | null {
+        const rowContainer: HTMLElement | null = this.getFieldRowContainer(fieldName);
+        if (rowContainer == null) {
+            return null;
+        }
+
+        return rowContainer.querySelector("input");
+    }
+
+    public static getFileFromFileInput(fieldName: string): File | null {
+        const inputElement: HTMLInputElement | null = this.getFieldInput(fieldName);
         if (inputElement == null) {
             return null;
         }
@@ -363,5 +347,51 @@ export default class CenterModal {
         }
 
         return inputFileElement.files[0];
+    }
+
+    public static getFileSize(file: File): number {
+        return file.size / (1024 * 1024);
+    }
+
+    public getFieldValue(fieldName: string): string {
+        const input: HTMLInputElement | null = CenterModal.getFieldInput(fieldName);
+        if (input == null) {
+            this.app.throwError("Can't get field value: Input element is null.");
+            return "";
+        }
+
+        return input.value;
+    }
+
+    public getFieldValueIndex(fieldName: string): number | undefined {
+        const errorBase: string = "Can't get field value index";
+
+        const input: HTMLInputElement | null = CenterModal.getFieldInput(fieldName);
+        if (input == null) {
+            this.app.throwError(`${errorBase}: Input element is null.`);
+            return undefined;
+        }
+
+        if (!input.hasAttribute("index")) {
+            return undefined;
+        }
+
+        const index: number = Number(input.getAttribute("index"));
+        if (isNaN(index)) {
+            return undefined;
+        }
+
+        return index;
+    }
+
+    // SETTERS
+    public setFieldValue(fieldName: string, value: string): void {
+        const input: HTMLInputElement | null = CenterModal.getFieldInput(fieldName);
+        if (input == null) {
+            return this.app.throwError("Can't set field value: Input element is null.");
+        }
+
+        input.value = value;
+        input.dispatchEvent(new Event("input", { bubbles: true }));
     }
 };

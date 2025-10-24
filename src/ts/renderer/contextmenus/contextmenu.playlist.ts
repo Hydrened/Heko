@@ -1,10 +1,10 @@
 import App from "./../app.js";
 import CenterModal from "./../modals/modal.center.js";
-import ModalTop from "./../modals/modal.top.js";
+import TopModal from "./../modals/modal.top.js";
 import * as Requests from "./../utils/utils.requests.js";
 
-async function renamePlaylistOnConfirm(app: App, userID: ID, token: Token, playlist: Playlist, res: ModalRes): Promise<ModalError> {
-    const newPlaylistName: string = res.rows["New name"].value;
+async function renamePlaylistOnConfirm(app: App, userID: ID, token: Token, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
+    const newPlaylistName: string = modal.getFieldValue("New name");
 
     const renamePlaylistReqRes: any = await Requests.playlist.rename(userID, token, playlist.id, newPlaylistName);
     if (!renamePlaylistReqRes.success) {
@@ -12,8 +12,12 @@ async function renamePlaylistOnConfirm(app: App, userID: ID, token: Token, playl
         return null;
     }
     
-    await app.playlistManager.refresh();
-    ModalTop.create("SUCCESS", `Successfully renamed playlist "${playlist.name}" to "${newPlaylistName}".`);
+    app.playlistManager.refreshPlaylistsContainerTab();
+    if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
+        app.playlistManager.refreshOpenedPlaylistTab();
+    }
+
+    TopModal.create("SUCCESS", `Successfully renamed playlist "${playlist.name}" to "${newPlaylistName}".`);
     return null;
 }
 
@@ -23,12 +27,12 @@ function getRenamePlaylistModalData(app: App, userID: ID, token: Token, playlist
         content: [
             { label: "New name", type: "TEXT", defaultValue: playlist.name, maxLength: 150 },
         ],
-        onConfirm: async (res: ModalRes) => await renamePlaylistOnConfirm(app, userID, token, playlist, res),
+        onConfirm: async (modal: CenterModal) => await renamePlaylistOnConfirm(app, userID, token, playlist, modal),
         cantClose: false,
     };
 }
 
-async function removePlaylistOnConfirm(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist, res: ModalRes): Promise<ModalError> {
+async function removePlaylistOnConfirm(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const childrenIDs: ID[] = getPlaylistChildrenIDs(userPlaylists, playlist.id);
 
     const removePlaylistReqRes: any = await Requests.playlist.remove(userID, token, childrenIDs.concat(playlist.id));
@@ -37,15 +41,20 @@ async function removePlaylistOnConfirm(app: App, userID: ID, token: Token, userP
         return null;
     }
     
-    await app.playlistManager.refresh();
-    ModalTop.create("SUCCESS", `Successfully removed playlist "${playlist.name}".`);
+    app.playlistManager.refreshPlaylistsContainerTab();
+    if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
+        app.playlistManager.close();
+        app.openFirstPlaylist();
+    }
+
+    TopModal.create("SUCCESS", `Successfully removed playlist "${playlist.name}".`);
     return null;
 }
 
 function getRemovePlaylistModalData(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist): CenterModalData {
     return {
         title: `Are you sure you want to remove playlist "${playlist.name}"? Children playlist(s) will also be deleted.`,
-        onConfirm: async (res: ModalRes) => await removePlaylistOnConfirm(app, userID, token, userPlaylists, playlist, res),
+        onConfirm: async (modal: CenterModal) => await removePlaylistOnConfirm(app, userID, token, userPlaylists, playlist, modal),
         cantClose: false,
     };
 }
@@ -56,8 +65,11 @@ async function duplicatePlaylistOnClick(app: App, userID: ID, token: Token, play
         return app.throwError(`Can't duplicate playlist: ${duplicatePlaylistReqRes.error}`);
     }
     
-    await app.playlistManager.refresh();
-    ModalTop.create("SUCCESS", `Successfully duplicated playlist "${playlist.name}".`);
+    const newPlaylistID: number = (duplicatePlaylistReqRes.playlistID as number);
+
+    app.playlistManager.refreshPlaylistsContainerTab();
+    app.playlistManager.open(newPlaylistID);
+    TopModal.create("SUCCESS", `Successfully duplicated playlist "${playlist.name}".`);
 }
 
 function getPlaylistChildrenIDs(playlists: Playlist[], parentID: ID): ID[] {
@@ -115,11 +127,11 @@ async function playlistMoveToOnClick(app: App, userID: ID, token: Token, parentP
         return app.throwError(`Can't get playlists from user: ${movePlaylistInPlaylistReqRes.error}`);
     }
 
-    await app.playlistManager.refresh();
-    ModalTop.create("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
+    app.playlistManager.refreshPlaylistsContainerTab();
+    TopModal.create("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
 }
 
-export default async function getPlaylistRows(app: App, playlist: Playlist): Promise<ContextmenuRow[]> {
+export async function getPlaylistRows(app: App, playlist: Playlist): Promise<ContextmenuRow[]> {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         app.throwError("Can't get playlist contextmenu rows: User is not connected.");

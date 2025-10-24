@@ -1,58 +1,58 @@
 import App from "../app.js";
-import PlaylistsRefreshManager from "./playlists.refresh.js";
-import PlaylistsAddManager from "./playlists.add.js";
-import PlaylistsMoveManager from "./playlists.move.js";
+import PlaylistsEventManager from "./playlist.events.js";
+import PlaylistsRefreshContainerManager from "./playlist.refresh.container.js";
+import PlaylistsRefreshOpenedManager from "./playlist.refresh.opened.js";
 import PlaylistsOpenManager from "./playlists.open.js";
-import PlaylistsSongsManager from "./playlists.songs.js";
-import PlaylistsCurrentManager from "./playlists.current.js";
+import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
-    private refreshManager: PlaylistsRefreshManager;
-    private addManager: PlaylistsAddManager;
-    private moveManager: PlaylistsMoveManager;
+    private playlistEventManager: PlaylistsEventManager;
+    private refreshContainerManager: PlaylistsRefreshContainerManager;
+    private refreshOpenedManager: PlaylistsRefreshOpenedManager;
     private openManager: PlaylistsOpenManager;
-    private songsManager: PlaylistsSongsManager;
-    private currentManager: PlaylistsCurrentManager;
-    
+
+    private currentOpenedPlaylist: Playlist | null = null;
+    private currentOpenedPlaylistSongs: Song[] = [];
+
     // INIT
     constructor(private app: App) {
-        this.refreshManager = new PlaylistsRefreshManager(this.app, this);
-        this.addManager = new PlaylistsAddManager(this.app, this);
-        this.moveManager = new PlaylistsMoveManager(this.app, this);
+        this.playlistEventManager = new PlaylistsEventManager(this.app, this);
+        this.refreshContainerManager = new PlaylistsRefreshContainerManager(this.app, this);
+        this.refreshOpenedManager = new PlaylistsRefreshOpenedManager(this.app, this);
         this.openManager = new PlaylistsOpenManager(this.app, this);
-        this.songsManager = new PlaylistsSongsManager(this.app, this);
-        this.currentManager = new PlaylistsCurrentManager(this.app, this);
     }
 
     // EVENTS
-    public async refresh(): Promise<void> {
-        await this.refreshManager.refresh();
-
-        const currentPlaylist: Playlist | null = this.openManager.currentPlaylist;
-        if (currentPlaylist != null) {
-            await this.open(currentPlaylist.id);
-        }
+    public async refreshPlaylistsContainerTab(): Promise<void> {
+        await this.refreshContainerManager.refresh();
     }
 
-    public async refreshAddSongToPlaylistButton(): Promise<void> {
-        await this.refreshManager.refreshAddSongToPlaylistButton();
+    public async refreshOpenedPlaylistTab(): Promise<void> {
+        await this.refreshOpenedManager.refresh();
     }
 
     public async open(playlistID: ID): Promise<void> {
         await this.openManager.open(playlistID);
     }
 
-    // GETTER
-    public getPlaylistOpenedStates(): number[] {
-        if (Elements.playlists.container == null) {
-            this.app.throwError("Can't get playlist opened states: Container is null.");
-            return [];
-        }
+    public close(): void {
+        this.openManager.close();
+    }
 
+    // GETTERS
+    public getCurrentOpenedPlaylist(): Playlist | null {
+        return this.currentOpenedPlaylist;
+    }
+
+    public getCurrentOpenedPlaylistSongs(): Song[] {
+        return this.currentOpenedPlaylistSongs;
+    }
+
+    public getPlaylistOpenedStates(): number[] {
         const res: number[] = [];
 
-        [...Elements.playlists.container.querySelectorAll("li")].forEach((li: Element) => {
+        [...Elements.playlists.container!.querySelectorAll("li")].forEach((li: Element) => {
             if (!li.hasAttribute("playlist-id")) {
                 return;
             }
@@ -71,11 +71,57 @@ export default class PlaylistManager {
         return res;
     }
 
-    public getCurrentOpenedPlaylist(): Playlist | null {
-        return this.openManager.currentPlaylist;
+    public async getSortedPlaylists(): Promise<Playlist[]> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            return [];
+        }
+
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
+            return [];
+        }
+
+        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
+
+        const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
+
+        for (const playlist of playlists) {
+            if (!playlistsByParent.has(playlist.parentID)) {
+                playlistsByParent.set(playlist.parentID, []);
+            }
+
+            playlistsByParent.get(playlist.parentID)!.push(playlist);
+        }
+
+        const res: Playlist[] = [];
+
+        const addWithChildren = (parentID: number): void => {
+            const playlistGroup: Playlist[] | undefined = playlistsByParent.get(parentID);
+            if (playlistGroup == undefined) {
+                return;
+            }
+
+            playlistGroup.sort((a, b) => a.position - b.position);
+
+            for (const playlist of playlistGroup) {
+                res.push(playlist);
+                addWithChildren(playlist.id);
+            }
+        };
+
+        addWithChildren(-1);
+
+        return res;
     }
 
-    public async getSortedPlaylists(): Promise<Playlist[]> {
-        return await this.refreshManager.getSortedPlaylists();
+    // SETTERS
+    public setCurrentOpenedPlaylist(playlist: Playlist): void {
+        this.currentOpenedPlaylist = structuredClone(playlist);
+    }
+
+    public setCurrentOpenedPlaylistSongs(songs: Song[]): void {
+        this.currentOpenedPlaylistSongs = structuredClone(songs);
     }
 };

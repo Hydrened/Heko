@@ -24,11 +24,7 @@ export default class ListenerQueueManager {
 
     private initEvents(): void {
         this.audioElement.addEventListener("ended", () => {
-            if (Elements.songControls.buttons.nextButton == null) {
-                return this.app.throwError("Can't go to next song: Next song button element is null.");
-            }
-
-            Elements.songControls.buttons.nextButton.dispatchEvent(new Event("click"));
+            Elements.songControls.buttons.nextButton!.dispatchEvent(new Event("click"));
         });
     }
 

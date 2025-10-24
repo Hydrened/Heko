@@ -12,20 +12,12 @@ export default class ListenerVolumeManager {
     }
 
     private initEvents(): void {
-        if (Elements.songControls.volume.slider == null) {
-            return this.app.throwError("Can't init volume events: Volume slider element is null.");
-        }
-
-        Elements.songControls.volume.slider.addEventListener("input", (e: Event) => {
+        Elements.songControls.volume.slider!.addEventListener("input", (e: Event) => {
             const sliderValue: number = parseFloat((Elements.songControls.volume.slider as HTMLInputElement).value);
             this.setVolume(sliderValue);
         });
 
-        if (Elements.songControls.volume.toggleButton == null) {
-            return this.app.throwError("Can't init volume events: Volume button element is null.");
-        }
-
-        Elements.songControls.volume.toggleButton.addEventListener("click", () => {
+        Elements.songControls.volume.toggleButton!.addEventListener("click", () => {
             if (this.audioElement.volume != 0) {
                 this.oldVolume = this.volume;
                 this.setVolume(0);
@@ -47,19 +39,11 @@ export default class ListenerVolumeManager {
 
     // EVENTS
     private refreshVolumeLogo(): void {
-        if (Elements.songControls.volume.toggleButton == null) {
-            return this.app.throwError("Can't refresh volume button: Volume button element is null.");
-        }
-
         const volumeIndex: number = ((this.volume <= 0) ? 0 : (this.volume < 75) ? 1 : 2);
-        Elements.songControls.volume.toggleButton.setAttribute("volume", String(volumeIndex));
+        Elements.songControls.volume.toggleButton!.setAttribute("volume", String(volumeIndex));
     }
 
     private refreshVolumeSlider(): void {
-        if (Elements.songControls.volume.slider == null) {
-            return this.app.throwError("Can't refresh volume slider: Volume slider element is null.");
-        }
-
         (Elements.songControls.volume.slider as HTMLInputElement).value = String(this.volume);
     }
 

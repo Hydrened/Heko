@@ -91,7 +91,7 @@ class Index {
             width: onOpenWindowSettings.w,
             height: onOpenWindowSettings.h,
 
-            minWidth: 850,
+            minWidth: 950,
             minHeight: 720,
 
             frame: false,
