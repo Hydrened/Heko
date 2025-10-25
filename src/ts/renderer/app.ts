@@ -36,15 +36,14 @@ export default class App {
 
     public throwError(message: string): void {
         if (!this.threw) {
-            console.error("THROW", message);
-            // Bridge.throwError(message);
-            // this.threw = true;
+            Bridge.throwError(message);
+            this.threw = true;
         }
     }
 
     // ON LOGIN
     public async loggedIn(): Promise<void> {
-        await this.listenerManager.loggedIn();
+        this.listenerManager.loggedIn();
         await this.playlistManager.refreshPlaylistsContainerTab();
         await this.openFirstPlaylist();
     }
@@ -62,13 +61,14 @@ export default class App {
     public async loggedOut(): Promise<void> {
         await this.playlistManager.refreshPlaylistsContainerTab();
         this.playlistManager.close();
+        this.listenerManager.loggedOut();
     } 
 
     // ON CLOSE
     public async saveSettings(): Promise<void> {
         const userData: UserData = this.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            return this.throwError("Can't save settings: User is not logged in.");
+            return;
         }
 
         const settings: UserSettings = {

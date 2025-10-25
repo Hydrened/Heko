@@ -182,6 +182,7 @@ async function removeSongOnConfirm(app: App, userID: ID, token: Token, modal: Ce
         return null;
     }
 
+    app.playlistManager.refreshPlaylistsContainerTab();
     app.playlistManager.refreshOpenedPlaylistTab();
     TopModal.create("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from Heko.`);
     return null;

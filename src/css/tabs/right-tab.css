@@ -109,13 +109,13 @@
     border-top-left-radius: 0.5rem;
     border-top-right-radius: 0.5rem;
     
-    cursor: pointer;
+    /* cursor: pointer; */
 }
 .current-playlist-table-head-container > button:hover,
 .current-playlist-table-head-container > button.sorted-by {
-    color: var(--col-1);
+    /* color: var(--col-1);
 
-    background-color: var(--bg-col-13);
+    background-color: var(--bg-col-13); */
 }
 
 .current-playlist-table-head-container,
@@ -140,6 +140,9 @@
 }
 .current-playlist-table-row:hover {
     background-color: var(--bg-col-13);
+}
+.current-playlist-table-row.listening {
+    background-color: var(--bg-col-11);
 }
 
 .current-playlist-table-row > p {

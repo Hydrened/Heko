@@ -14,6 +14,8 @@ export function pluralize(singularWord: string, n: number): string {
 }
 
 export function shortcutToString(shortcut: Shortcut): string {
+    return ""; // temp
+
     const buffer: string[] = [];
 
     if (shortcut.ctrl) {

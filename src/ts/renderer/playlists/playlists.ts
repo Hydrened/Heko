@@ -34,6 +34,7 @@ export default class PlaylistManager {
 
     public async open(playlistID: ID): Promise<void> {
         await this.openManager.open(playlistID);
+        this.app.listenerManager.refresh();
     }
 
     public close(): void {

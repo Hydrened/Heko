@@ -120,12 +120,22 @@ export default class PlaylistsRefreshOpenedManager {
     private refreshPlaylistSongs(): void {
         Functions.removeChildren(Elements.currentPlaylist.songContainer);
         
+        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
+
         const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
         currentOpenedPlaylistSongs.forEach((song: Song, index: number) => {
             const liElement: HTMLElement = document.createElement("li");
+            liElement.setAttribute("playlist-id", String(currentOpenedPlaylist.id));
+            liElement.setAttribute("song-id", String(song.id));
             liElement.classList.add("current-playlist-table-row");
             Elements.currentPlaylist.songContainer!.appendChild(liElement);
 
+            liElement.addEventListener("click", () => {
+                this.app.listenerManager.initQueue(currentOpenedPlaylist, song);
+            });
             liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu((e as Position), song, liElement));
 
             const formatDuration: string = Functions.formatDuration(song.duration);

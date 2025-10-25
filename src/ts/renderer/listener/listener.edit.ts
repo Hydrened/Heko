@@ -15,7 +15,7 @@ export default class ListenerEditManager {
         // slider event
     }
 
-    public async load(): Promise<void> {
+    public load(): void {
         const settings: UserSettings = this.app.account.getSettings();
         this.speed = settings.speed;
 

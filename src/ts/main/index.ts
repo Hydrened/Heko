@@ -99,8 +99,9 @@ class Index {
             webPreferences: {
                 preload: path.join(__dirname, "preload.js"),
                 contextIsolation: true,
-                nodeIntegration: false
-            }
+                nodeIntegration: false,
+                devTools: false,
+            },
         });
 
         if (onOpenWindowSettings.f) {
@@ -135,6 +136,12 @@ class Index {
             this.mainFolder.saveWindowSettings(onCloseWindowSettings);
 
             this.window.destroy();
+        });
+
+        this.window.webContents.on("before-input-event", (event, input: Electron.Input) => {
+            if ((input.control || input.meta) && input.key.toLowerCase() == "r") {
+                event.preventDefault();
+            }
         });
     }
 };

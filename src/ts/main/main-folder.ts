@@ -12,14 +12,12 @@ export interface WindowSettings {
 
 export class MainFolder {
     public settings: WindowSettings | null = null;
-    private name:  string = "Heko-new";
+    private name:  string = "Heko";
 
     constructor() {
         this.initEvents();
 
-        const documents: string = app.getPath("documents");
-
-        const mainFolderPath: string = path.join(documents, this.name);
+        const mainFolderPath: string = this.getMainPath();
         this.checkFolder(mainFolderPath);
 
         const dataFolderPath: string = path.join(mainFolderPath, "data");
@@ -40,8 +38,7 @@ export class MainFolder {
     }
 
     private initEvents(): void {
-        const documents: string = app.getPath("documents");
-        const tokenPath: string = path.join(documents, this.name, "data", "token");
+        const tokenPath: string = path.join(this.getMainPath(), "data", "token");
 
         ipcMain.handle("mainFolder-saveToken", (_event, token: string) => {
             fs.writeFileSync(tokenPath, JSON.stringify({ value: token } as any));
@@ -67,10 +64,8 @@ export class MainFolder {
     }
 
     private checkFolder(folderPath: string): void {
-        const exists: boolean = fs.existsSync(folderPath);
-
-        if (!exists) {
-            fs.mkdirSync(folderPath);
+        if (!fs.existsSync(folderPath)) {
+            fs.mkdirSync(folderPath, { recursive: true });
         }
     }
 
@@ -126,8 +121,17 @@ export class MainFolder {
 
         this.settings = windowSettings;
 
-        const documents: string = app.getPath("documents");
-        const settingsPath: string = path.join(documents, this.name, "data", "settings.json");
+        const settingsPath: string = path.join(this.getMainPath(), "data", "settings.json");
         fs.writeFileSync(settingsPath, JSON.stringify(this.settings));
+    }
+    
+    private getMainPath(): string {
+        const localAppData: string | undefined = process.env.LOCALAPPDATA;
+
+        if (localAppData == undefined) {
+            throw new Error("Can't get localdata path.");
+        }
+
+        return path.join(localAppData, this.name);
     }
 };

@@ -2,8 +2,8 @@ import ListenerRefreshManager from "./listener.refresh.js";
 import ListenerQueueManager from "./listener.queue.js";
 import ListenerVolumeManager from "./listener.volume.js";
 import ListenerEditManager from "./listener.edit.js";
+import ListenerEventManager from "./listener.events.js";
 import App from "./../app.js";
-import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerManager {
     private audioElement: HTMLAudioElement;
@@ -12,6 +12,7 @@ export default class ListenerManager {
     private queueManager: ListenerQueueManager;
     private volumeManager: ListenerVolumeManager;
     private editManager: ListenerEditManager;
+    private eventManager: ListenerEventManager;
 
     // INIT
     constructor(private app: App) {
@@ -21,48 +22,69 @@ export default class ListenerManager {
         this.queueManager = new ListenerQueueManager(this.app, this, this.audioElement);
         this.volumeManager = new ListenerVolumeManager(this.app, this, this.audioElement);
         this.editManager = new ListenerEditManager(this.app, this, this.audioElement);
-
-        this.initEvents();
-    }
-
-    private initEvents(): void {
-        this.initSongControlButtonEvent();
-        this.initSongProgressbarEvents();
-    }
-
-    private initSongControlButtonEvent(): void {
-        interface ElementEvent { element: Element; event: () => void; };
-        const elementEvents: ElementEvent[] = [
-            { element: Elements.songControls.buttons.togglePlayButton!, event: async () => await this.queueManager.togglePlayButton() },
-            { element: Elements.songControls.buttons.previousButton!, event: () => this.queueManager.previousButton() },
-            { element: Elements.songControls.buttons.nextButton!, event: () => this.queueManager.nextButton() },
-            { element: Elements.songControls.buttons.toggleShuffleButton!, event: async () => await this.queueManager.toggleShuffleButton() },
-            { element: Elements.songControls.buttons.toggleLoopButton!, event: async () => await this.queueManager.toggleLoopButton() },
-        ];
-
-        elementEvents.forEach((elementEvent: ElementEvent) => {
-            elementEvent.element.addEventListener("click", () => elementEvent.event());
-        });
-    }
-
-    private initSongProgressbarEvents(): void {
-        Elements.songControls.progressBar.slider!.addEventListener("input", () => {
-
-        });
+        this.eventManager = new ListenerEventManager(this.app, this);
     }
 
     // EVENTS
     public refresh(): void {
-        this.refreshManager.refresh(this.queueManager.getCurrentSong());
+        const currentSong: Song | null = this.queueManager.getCurrentSong();
+        this.refreshManager.refresh(currentSong);   
     }
 
-    public async loggedIn(): Promise<void> {
-        await this.queueManager.load();
-        await this.editManager.load();
-        await this.volumeManager.load();
+    public loggedIn(): void {
+        this.queueManager.load();
+        this.editManager.load();
+        this.volumeManager.load();
+    }
+
+    public loggedOut(): void {
+        this.audioElement.src = "";
+        this.refreshManager.refresh(null);
+        this.queueManager.reset();
+    }
+
+    public async initQueue(playlist: Playlist, firstSong: Song | null): Promise<void> {
+        await this.queueManager.init(playlist, firstSong);
+    }
+
+    public addSongToQueue(song: Song): void {
+        this.queueManager.addSong(song);
+    }
+
+    // BUTTON EVENTS
+    public async togglePlayButton(): Promise<void> {
+        await this.queueManager.togglePlayButton();
+    }
+
+    public previousButton(): void {
+        this.queueManager.previousButton();
+    }
+
+    public nextButton(): void {
+        this.queueManager.nextButton();
+    }
+
+    public toggleShuffleButton(): void {
+        this.queueManager.toggleShuffleButton();
+    }
+
+    public toggleLoopButton(): void {
+        this.queueManager.toggleLoopButton();
     }
 
     // GETTERS
+    public getAudioElement(): HTMLAudioElement {
+        return this.audioElement;
+    }
+
+    public getCurrentListeningPlaylist(): Playlist | null {
+        return this.queueManager.getCurrentListeningPlaylist();
+    }
+
+    public getCurrentSong(): Song | null {
+        return this.queueManager.getCurrentSong();
+    }
+
     public getShuffleState(): boolean {
         return this.queueManager.getShuffleState();
     }

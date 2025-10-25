@@ -126,6 +126,10 @@ main {
     height: var(--main-height);
 }
 
+input {
+    accent-color: var(--col-1);
+}
+
 ::-webkit-scrollbar {
     width: var(--scrollbar-width);
 }

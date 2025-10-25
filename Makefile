@@ -8,3 +8,6 @@ r:
 	tsc -p tsconfig.renderer.json
 
 mr: m r
+
+build:
+	npm run build

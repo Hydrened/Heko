@@ -8,7 +8,7 @@ import * as Elements from "./../utils/utils.elements.js";
 export default class ListenerQueueManager {
     private queue: Queue = [];
     private currentQueueIndex: number = 0;
-    private historySize: number = 0;
+    private manuallyAddedToQueue: Queue = [];
 
     private currentListeningPlaylist: Playlist | null = null;
     private currentSongs: Song[] | null = null;
@@ -28,79 +28,111 @@ export default class ListenerQueueManager {
         });
     }
 
-    public async load(): Promise<void> {
+    public load(): void {
         const settings: UserSettings = this.app.account.getSettings();
-        await this.setShuffle(settings.shuffle);
-        await this.setLoop(settings.loop);
+        this.setShuffle(settings.shuffle);
+        this.setLoop(settings.loop);
+    }
+
+    public reset(): void {
+        this.queue = [];
+        this.currentQueueIndex = 0;
+        this.manuallyAddedToQueue = [];
+
+        this.currentListeningPlaylist = null;
+        this.currentSongs = null;
+
+        this.setPlaying(false);
+        this.setShuffle(false);
+        this.setLoop(false);
     }
 
     // QUEUE EVENTS
-    private async init(playlist: Playlist): Promise<void> {
+    public async init(playlist: Playlist, firstSong: Song | null): Promise<void> {
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
             return this.app.throwError("Can't init queue: User is not logged in.");
         }
 
-        this.currentListeningPlaylist = structuredClone(playlist);
+        this.currentListeningPlaylist = playlist;
 
         const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, this.currentListeningPlaylist.id);
         if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Caan't init queue: ${getSongsFromPlaylistReqRes.error}`);
+            return this.app.throwError(`Can't init queue: ${getSongsFromPlaylistReqRes.error}`);
         }
 
         this.currentSongs = (getSongsFromPlaylistReqRes.songs as Song[]);
-        this.recreate();
+        if (this.currentSongs.length == 0) {
+            this.currentListeningPlaylist = null;
+            return;
+        }
+
+        this.recreate(firstSong);
 
         this.setPlaying(true);
-        this.setAudioSrc(this.getCurrentSong());
+
+        const currentSong: Song | null = this.getCurrentSong();
+        if (currentSong == null) {
+            return this.app.throwError("Can't set audio src: Current song is null.");
+        }
+
+        this.setAudioSrc(currentSong);
     }
 
-    private recreate(): void {
+    private recreate(firstSong: Song | null): void {
         if (!this.canPlay()) {
             return;
         }
 
+        this.currentQueueIndex = 0;
+        this.queue = [];
+
+        if (firstSong != null) {
+            this.queue.push(firstSong);
+        }
+
         const songs: Song[] = structuredClone(this.currentSongs!);
 
-        if (this.loop) {
-            const currentSong = this.queue[this.currentQueueIndex] ?? songs[0];
-            this.queue = songs.map(() => currentSong);
-            return;
-        }
-
-        if (this.shuffle) {
-            this.queue = songs.map(() => Functions.randomValueFromArray<Song>(songs));
-        }
-        else {
-            this.queue = songs;
+        for (let i = 0; i < songs.length; i++) {
+            this.fillQueue();
         }
     }
 
     private fillQueue(): void {
-        if (!this.canPlay()) {
-            return;
-        }
-
         const songs: Song[] = structuredClone(this.currentSongs!);
-        const currentLastSong: Song = this.queue[this.queue.length - 1];
-        
+
         if (this.loop) {
-            this.queue.push(currentLastSong);
+            const previousSong: Song = ((this.queue.length == 0) ? songs[0] : this.queue[this.queue.length - 1]);
+            this.queue.push(previousSong);
             return;
         }
 
         if (this.shuffle) {
-            this.queue.push(Functions.randomValueFromArray<Song>(songs));
+            const randomSong: Song = Functions.randomValueFromArray<Song>(songs);
+            this.queue.push(randomSong);
+            return;
         }
-        else {
-            const songToAddIndex: number = songs.findIndex((song: Song) => song.id == currentLastSong.id);
-            if (songToAddIndex == -1) {
-                return this.app.throwError("Can't fill queue: Current song was not found.");
-            }
 
-            const nextIndex = ((songToAddIndex + 1) % songs.length);
-            this.queue.push(songs[nextIndex]);
+        const previousSong: Song | null = ((this.queue.length == 0) ? null : this.queue[this.queue.length - 1]);
+        if (previousSong == null) {
+            this.queue.push(songs[0]);
+            return;
         }
+
+        const songIndex: number = songs.findIndex((song: Song) => song.id == previousSong.id);
+        if (songIndex == -1) {
+            return this.app.throwError("Can't fill queue: Can't find last song index.");
+        }
+
+        const nextIndex: number = ((songIndex + 1) % songs.length);
+        const nextSong: Song = songs[nextIndex];
+        this.queue.push(nextSong);
+
+        this.logQueue();
+    }
+
+    public addSong(song: Song): void {
+        this.manuallyAddedToQueue.push(song);
     }
 
     // BUTTON EVENTS
@@ -115,8 +147,12 @@ export default class ListenerQueueManager {
 
             const hasToInit: boolean = (this.currentListeningPlaylist == null && currentOpenedPlaylist != null);
             if (hasToInit) {
-                return await this.init(currentOpenedPlaylist!);
+                return await this.init(currentOpenedPlaylist!, null);
             }
+        }
+
+        if (this.currentSongs?.length == 0) {
+            return;
         }
 
         this.setPlaying(!this.playing);
@@ -133,7 +169,13 @@ export default class ListenerQueueManager {
         }
 
         this.currentQueueIndex = Math.max(0, this.currentQueueIndex - 1);
-        this.setAudioSrc(this.getCurrentSong());
+
+        const previousSong: Song | null = this.getCurrentSong();
+        if (previousSong == null) {
+            return this.app.throwError("Can't go to previous song: Previous song is null");
+        }
+
+        this.setAudioSrc(previousSong);
     }
 
     public nextButton(): void {
@@ -141,25 +183,39 @@ export default class ListenerQueueManager {
             return;
         }
 
+        if (this.manuallyAddedToQueue.length > 0) {
+            this.queue.splice(this.currentQueueIndex + 1, 0, this.manuallyAddedToQueue[0]);
+            this.manuallyAddedToQueue.shift();
+        }
+
         this.currentQueueIndex++;
-        this.setAudioSrc(this.getCurrentSong());
 
-        this.historySize = Math.max(this.historySize, this.currentQueueIndex);
-        const queueSize: number = this.queue.length - this.historySize;
+        if (this.currentSongs!.length == 1) {
+            this.recreate(null);
+            return;
+        }
 
-        if (queueSize != this.currentSongs!.length) {
+        const nextSong: Song | null = this.getCurrentSong();
+        if (nextSong == null) {
+            return this.app.throwError("Can't go to next song: Next song is null");
+        }
+
+        this.setAudioSrc(nextSong);
+
+        const queueSize: number = this.queue.length - this.currentQueueIndex;
+        if (queueSize < this.currentSongs!.length + 1) {
             this.fillQueue();
         }
     }
 
-    public async toggleShuffleButton(): Promise<void> {
-        await this.setShuffle(!this.shuffle);
-        this.recreate();
+    public toggleShuffleButton(): void {
+        this.setShuffle(!this.shuffle);
+        this.recreate(this.getCurrentSong());
     }
 
-    public async toggleLoopButton(): Promise<void> {
-        await this.setLoop(!this.loop);
-        this.recreate();
+    public toggleLoopButton(): void {
+        this.setLoop(!this.loop);
+        this.recreate(this.getCurrentSong());
     }
 
     // GETTERS
@@ -167,9 +223,13 @@ export default class ListenerQueueManager {
         return this.audioElement;
     }
 
-    public getCurrentSong(): Song {
+    public getCurrentListeningPlaylist(): Playlist | null {
+        return this.currentListeningPlaylist;
+    }
+
+    public getCurrentSong(): Song | null {
         if (this.currentQueueIndex >= this.queue.length) {
-            this.app.throwError("Can't get current song: Current queue index is out of range.");
+            return null;
         }
 
         return this.queue[this.currentQueueIndex];
@@ -181,13 +241,13 @@ export default class ListenerQueueManager {
             return false;
         }
 
-        return (this.currentSongs!.length != 0)
+        return (this.currentSongs!.length != 0);
     }
 
     // SETTERS
     private setAudioSrc(song: Song): void {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
-        (this.playing) ? this.audioElement.play() : this.audioElement.pause();
+        this.audioElement.play();
         this.listener.refresh();
     }
 
@@ -197,12 +257,12 @@ export default class ListenerQueueManager {
         (this.playing) ? this.audioElement.play() : this.audioElement.pause();
     }
 
-    private async setShuffle(state: boolean): Promise<void> {
+    private setShuffle(state: boolean): void {
         this.shuffle = state;
         this.setButtonState(Elements.songControls.buttons.toggleShuffleButton, state, "shuffle");
     }
 
-    private async setLoop(state: boolean): Promise<void> {
+    private setLoop(state: boolean): void {
         this.loop = state;
         this.setButtonState(Elements.songControls.buttons.toggleLoopButton, state, "loop");
     }
@@ -221,5 +281,24 @@ export default class ListenerQueueManager {
 
     public getLoopState(): boolean {
         return this.loop;
+    }
+
+    // DEBUG
+    private logQueue(): void {
+        return;
+
+        console.log("----------------------------------");
+
+        const currentSong: Song | null = this.getCurrentSong();
+        if (currentSong == null) {
+            this.app.throwError("Can't log queue: Current song is null.");
+        }
+
+        console.log(`Current song: ${currentSong!.title}`);
+
+        console.log(`Next songs:`);
+        this.queue.slice(this.currentQueueIndex).forEach((song: Song, index: number) => {
+            console.log(`${index + 1}: ${song.title}`);
+        });
     }
 };

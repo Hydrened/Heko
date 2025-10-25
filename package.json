@@ -4,7 +4,8 @@
   "description": "",
   "main": "src/js/main/index.js",
   "scripts": {
-    "start": "electron ."
+    "start": "electron .",
+    "build": "electron-builder"
   },
   "keywords": [],
   "author": "",
@@ -12,8 +13,29 @@
   "devDependencies": {
     "@types/node": "^24.7.0",
     "electron": "^38.2.2",
+    "electron-builder": "^26.0.12",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
+  },
+  "build": {
+    "appId": "com.heko.app",
+    "productName": "Heko",
+    "files": [
+      "src/**/*",
+      "package.json"
+    ],
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": "nsis"
+    },
+    "linux": {
+      "target": "AppImage"
+    },
+    "mac": {
+      "target": "dmg"
+    }
   },
   "dependencies": {
     "conf": "^15.0.2"

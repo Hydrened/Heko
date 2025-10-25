@@ -31,7 +31,7 @@ export default class ListenerVolumeManager {
         });
     }
 
-    public async load(): Promise<void> {
+    public load(): void {
         const settings: UserSettings = this.app.account.getSettings();
         this.setVolume(settings.volume);
         this.refreshVolumeSlider();
