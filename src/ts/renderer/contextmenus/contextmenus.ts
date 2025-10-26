@@ -1,3 +1,4 @@
+import { getAccountRows } from "./contextmenu.account.js";
 import { getPlaylistContainerRows } from "./contextmenu.playlist-container.js";
 import { getPlaylistRows } from "./contextmenu.playlist.js";
 import { getSongSettingRows } from "./contextmenu.song-settings.js";
@@ -10,9 +11,14 @@ export default class ContextmenuManager {
     private currentContextmenuElement: HTMLElement | null = null;
     private currentParentElement: HTMLElement | null = null;
 
+    private padding: number = 0;
+    private width: number = 0;
+    private rowHeight: number = 0;
+
     // INIT
     constructor(private app: App) {
         this.initEvents();
+        this.loadCssVariables();
     }
 
     private initEvents(): void {
@@ -33,17 +39,40 @@ export default class ContextmenuManager {
         });
     }
 
+    private loadCssVariables(): void {
+        this.padding = Functions.getCssVariable("contextmenu-padding", "PIXEL");
+        this.width = Functions.getCssVariable("contextmenu-width", "PIXEL");
+        this.rowHeight = Functions.getCssVariable("contextmenu-row-height", "PIXEL");
+    }
+
     // PRIVATE CREATE EVENTS
     private createContextMenu(position: Position, rows: ContextmenuRow[]): void {
         this.closeContextMenu();
         
         this.currentContextmenuElement = document.createElement("ul");
+
+        const windowWidth: number = window.innerWidth;
+        const windowHeight: number = window.innerHeight;
+        const height: number = this.getContextmenuHeight(rows.length);
+        
+        if (position.x + this.width > windowWidth) {
+            position.x -= this.width;
+            this.currentContextmenuElement.classList.add("right");
+        }
+        if (position.y + height > windowHeight) {
+            position.y -= height;
+        }
+
         this.currentContextmenuElement.classList.add("contextmenu");
         this.currentContextmenuElement.style.top = `${position.y}px`;
         this.currentContextmenuElement.style.left = `${position.x}px`;
         document.body.appendChild(this.currentContextmenuElement);
 
         rows.forEach((row: ContextmenuRow) => this.createContextMenuRow(this.currentContextmenuElement, row));
+    }
+
+    private getContextmenuHeight(nbRows: number): number {
+        return (this.padding * 2 + this.rowHeight * nbRows);
     }
 
     private createContextMenuRow(parent: HTMLElement | null, row: ContextmenuRow): void {
@@ -118,6 +147,10 @@ export default class ContextmenuManager {
     }
 
     // PUBLIC CREATE EVENTS
+    public createAccountContextmenu(position: Position): void {
+        this.createContextMenu(position, getAccountRows(this.app));
+    }
+
     public createPlaylistContainerContextmenu(position: Position): void {
         this.createContextMenu(position, getPlaylistContainerRows(this.app));
     }

@@ -32,7 +32,7 @@ export const currentPlaylist = {
 };
 
 export const account = {
-    logoutButton: document.querySelector("#logout-button"),
+    accountButton: document.querySelector("#account-button"),
 };
 
 export const currentSong = {

@@ -1,7 +1,5 @@
 .right-tab {
     padding: var(--main-padding);
-
-    background-color: var(--bg-col-16);
 }
 
 
@@ -38,7 +36,7 @@
 
     border-radius: 1rem;
 
-    background-color: var(--bg-col-8);
+    background-color: var(--bg-bo-6);
     background-size: contain;
     background-repeat: no-repeat;
 }
@@ -73,10 +71,10 @@
     width: 1.5rem;
 }
 
-#logout-button {
+#account-button {
     align-self: start;
 }
-#logout-button > img {
+#account-button > img {
     width: 1.6rem;
 }
 
@@ -85,9 +83,9 @@
     
     font-size: 1rem;
 
-    border-radius: 0.5rem;
+    border-radius: 0.7rem;
 
-    background-color: var(--bg-col-22);
+    background-color: rgba(0,0,0,0.25);
 }
 
 .current-playlist-table-container {
@@ -99,7 +97,7 @@
 .current-playlist-table-head-container {
     padding-right: var(--scrollbar-width);
 
-    border-bottom: 2px solid var(--bg-col-35);
+    border-bottom: 2px solid var(--bg-wo-10);
 }
 .current-playlist-table-head-container > button {
     padding: 0.7rem 1rem;
@@ -113,7 +111,7 @@
 }
 .current-playlist-table-head-container > button:hover,
 .current-playlist-table-head-container > button.sorted-by {
-    /* color: var(--col-1);
+    /* color: var(--main-col-1);
 
     background-color: var(--bg-col-13); */
 }
@@ -138,11 +136,14 @@
 
     cursor: pointer;
 }
+.current-playlist-table-row.hidden {
+    display: none;
+}
 .current-playlist-table-row:hover {
-    background-color: var(--bg-col-13);
+    background-color: var(--bg-bo-3);
 }
 .current-playlist-table-row.listening {
-    background-color: var(--bg-col-11);
+    background-color: var(--bg-bo-5);
 }
 
 .current-playlist-table-row > p {
@@ -150,9 +151,6 @@
     
     font-size: 0.9rem;
     text-align: center;
-}
-.current-playlist-table-row:hover > p {
-    color: var(--col-1);
 }
 
 @media screen and (width < 1000px) {

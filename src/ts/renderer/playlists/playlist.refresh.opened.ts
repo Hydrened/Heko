@@ -85,6 +85,8 @@ export default class PlaylistsRefreshOpenedManager {
         const playlistDuration: number = currentOpenedPlaylistSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
         Elements.currentPlaylist.details.duration!.textContent = formatPlatlistDuration;
+
+        (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value = "";
     }
 
     private async refreshAddSongButton(): Promise<void> {

@@ -6,7 +6,7 @@
 
     border-right: var(--default-border);
 
-    background-color: var(--bg-col-14);
+    background-color: var(--bg-bo-1);
 }
 
 .left-tab > header {
@@ -16,8 +16,7 @@
     border-top: var(--default-border);
 }
 
-.left-tab > header,
-.left-tab > footer {
+.left-tab > :is(header, footer) {
     padding: var(--main-padding);
 
     display: grid;
@@ -25,11 +24,10 @@
     align-items: center;
     gap: 0.7rem;
 
-    background-color: var(--bg-col-12);
+    background-color: var(--bg-bo-3);
 }
 
-.left-tab > header > h2,
-.left-tab > footer > h2 {
+.left-tab > :is(header > h2, footer > h2) {
     font-size: 1.3rem;
 }
 
@@ -71,13 +69,12 @@
     border-top-left-radius: 0.7rem;
     border-bottom-left-radius: 0.7rem;
 
-    background-color: var(--bg-col-14);
     z-index: 2;
     cursor: pointer;
     transition: 150ms;
 }
 .playlist-container:hover {
-    background-color: var(--bg-col-11);
+    background-color: var(--bg-wo-4);
 }
 
 .playlist-container > .thumbnail {
@@ -86,7 +83,7 @@
 
     border-radius: 0.5rem;
     
-    background-color: var(--bg-col-5);
+    background-color: var(--bg-bo-8);
     background-size: contain;
     background-repeat: no-repeat;
 }

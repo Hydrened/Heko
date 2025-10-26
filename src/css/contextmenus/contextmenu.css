@@ -1,6 +1,6 @@
 ul.contextmenu,
 ul.contextmenu ul.contextmenu-submenu-container {
-    width: 15rem;
+    width: var(--contextmenu-width);
 
     padding: var(--contextmenu-padding);
 
@@ -9,11 +9,28 @@ ul.contextmenu ul.contextmenu-submenu-container {
     border: var(--default-border);
     border-radius: 0.7rem;
 
-    background-color: var(--bg-col-5);
+    background: var(--main-gradient);
     z-index: 20;
+}
+ul.contextmenu::before,
+ul.contextmenu ul.contextmenu-submenu-container::before{
+    content: "";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border-radius: inherit;
+
+    background-color: var(--bg-bo-8);
 }
 
 li.contextmenu-row-container {
+    height: var(--contextmenu-row-height);
+
     padding: 0.4rem 1.3rem;
 
     position: relative;
@@ -44,7 +61,7 @@ li.contextmenu-row-container::after {
     left: calc(var(--contextmenu-padding) * -1);
 }
 li.contextmenu-row-container:hover {
-    background-color: var(--bg-col-15);
+    background-color: var(--bg-wo-8);
 }
 
 ul.contextmenu span {
@@ -63,4 +80,7 @@ li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {
 ul.contextmenu-submenu-container {
     top: calc(var(--contextmenu-padding) * -1);
     left: calc(100% + var(--contextmenu-padding));
+}
+.right ul.contextmenu-submenu-container {
+    left: calc(-100% - var(--contextmenu-padding) * 3 - 1px);
 }

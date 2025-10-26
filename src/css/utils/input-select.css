@@ -19,7 +19,7 @@ input-select > ul {
     border: var(--default-border);
     border-radius: 0.7rem;
 
-    background-color: var(--bg-col-5);
+    background-color: black;
 
     overflow-y: scroll;
     z-index: 10;
@@ -36,10 +36,10 @@ input-select > ul > li {
     cursor: pointer;
 }
 input-select > ul > li.selected {
-    background-color: var(--bg-col-12);
+    background-color: var(--bg-wo-3);
 }
 input-select > ul > li:hover {
-    background-color: var(--bg-col-15);
+    background-color: var(--bg-wo-5);
 }
 input-select > ul > li.hidden {
     display: none;

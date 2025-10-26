@@ -38,7 +38,10 @@ export default class Account {
     }
 
     private initEvents(): void {
-        Elements.account.logoutButton!.addEventListener("click", async () => await this.loggedOut());
+        Elements.account.accountButton!.addEventListener("click", () => {
+            const rect: DOMRect = Elements.account.accountButton!.getBoundingClientRect();
+            this.app.contextmenuManager.createAccountContextmenu({ x: rect.x, y: rect.y });
+        });
     }
 
     private async loadSettings(): Promise<any> {
@@ -70,7 +73,7 @@ export default class Account {
         await this.app.loggedIn();
     }
 
-    private async loggedOut(): Promise<void> {
+    public async logout(): Promise<void> {
         if (this.userID == null || this.token == null) {
             return;
         }

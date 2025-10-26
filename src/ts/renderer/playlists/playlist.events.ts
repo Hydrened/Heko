@@ -31,6 +31,36 @@ export default class PlaylistsEventManager {
     }
 
     private initOpenedPlaylistEvents(): void {
+        Elements.currentPlaylist.songFilterInput!.addEventListener("input", () => {
+            const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
+
+            const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
+            currentOpenedPlaylistSongs.forEach((song: Song) => {
+                const titleIncludes: boolean = song.title.toLowerCase().includes(value);
+                const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+
+                const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer!.children].find((li: Element) => {
+                    if (!li.hasAttribute("song-id")) {
+                        return false;
+                    }
+
+                    const songID: number = Number(li.getAttribute("song-id"));
+                    return (songID == song.id);
+                });
+
+                if (liElement == undefined) {
+                    return false;
+                }
+
+                if (titleIncludes || artistIncludes) {
+                    liElement.classList.remove("hidden");
+                }
+                else {
+                    liElement.classList.add("hidden");
+                }
+            });
+        });
+
         (Elements.currentPlaylist.songContainer as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => {
             if (e.target != Elements.currentPlaylist.songContainer) {
                 return;

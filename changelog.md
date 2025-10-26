@@ -1,3 +1,10 @@
+## HEKO-3.0.1
+#### ADDED
+- song filter
+#### FIXED
+- modal file input cursor bug
+- contextmenu out of window
+
 ## HEKO-3.0.0
 #### REMAKE CODE FROM SCRATCH
 #### ADDED

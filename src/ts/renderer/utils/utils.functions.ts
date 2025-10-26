@@ -59,3 +59,20 @@ export function randomIntInRange(min: number, max: number): number {
 export function randomValueFromArray<T>(values: T[]): T {
     return values[randomIntInRange(0, values.length - 1)];
 }
+
+type CssVariableType = "PIXEL" | "MS_DURATION";
+
+export function getCssVariable(variable: string, type: CssVariableType | null): any {
+    const res: string = getComputedStyle(document.documentElement).getPropertyValue(`--${variable}`).trim();
+
+    if (type == null) {
+        return res;
+    }
+
+    switch (type) {
+        case "PIXEL":
+        case "MS_DURATION": return Number(res.substring(0, res.length - 2));
+        
+        default: return res;
+    }
+}

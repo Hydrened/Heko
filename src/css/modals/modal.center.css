@@ -1,5 +1,5 @@
 html:has(.center-modal) main > * {
-    opacity: 0.8;
+
 }
 
 
@@ -56,11 +56,28 @@ html:has(.center-modal) main > * {
     border-radius: 0.7rem;
     border: var(--default-border);
 
-    background-color: var(--bg-col-8);
-
+    background: var(--main-gradient);
     box-shadow: 0 0 1rem black;
     animation: center-modal-opening 500ms forwards;
 }
+.center-modal::before {
+    content: "";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border-radius: inherit;
+
+    background-color: var(--bg-bo-6);
+    z-index: -1;
+}
+
+
+
 .center-modal > h1 {
     padding: 1rem 1.2rem;
     padding-right: 2.5rem;
@@ -111,7 +128,7 @@ button.close-button > img {
 
     border-radius: 0.6rem;
 
-    background-color: var(--bg-col-13);
+    background-color: var(--bg-bo-8);
 }
 .center-modal input:focus {
     box-shadow: inset 0 0 0 1px var(--border-col-1);
@@ -123,6 +140,8 @@ button.close-button > img {
     height: 5rem;
 
     position: relative;
+
+    overflow: hidden;
 }
 .center-modal input-file-container > * {
     width: 100%;
@@ -131,8 +150,15 @@ button.close-button > img {
     position: absolute;
     top: 0;
     left: 0;
+    
+    cursor: pointer;
 }
 .center-modal input-file-container > input {
+    height: calc(100% + 3rem);
+
+    position: absolute;
+    top: -3rem;
+
     z-index: 1;
     opacity: 0;
     cursor: pointer;
@@ -145,9 +171,9 @@ button.close-button > img {
     font-size: 1rem;
 
     border-radius: 0.6rem;
-    border: 1px dashed var(--bg-col-35);
+    border: 1px dashed var(--bg-wo-30);
 
-    background-color: var(--bg-col-5);
+    background-color: var(--bg-bo-8);
     transition: 150ms;
 }
 .center-modal li:has(error) input-file-drop-area {
@@ -160,7 +186,7 @@ button.close-button > img {
 .center-modal input-file-drop-area.dragover,
 .center-modal input-file-container:has(input:focus) input-file-drop-area,
 .center-modal input-file-container:hover > input-file-drop-area {
-    border-color: var(--col-1);
+    border-color: var(--main-col-1);
 }
 .center-modal error {
     color: var(--text-error-col);
@@ -181,12 +207,12 @@ button.close-button > img {
 
     border-radius: 0.5rem;
 
-    background-color: var(--bg-col-20);
+    background-color: var(--bg-bo-9);
     cursor: pointer;
 }
 .center-modal > .container > div.button-container > button:focus,
 .center-modal > .container > div.button-container > button:hover {
-    background-color: var(--bg-col-38);
+    background-color: var(--bg-wo-20);
 }
 .center-modal > .container > div.button-container > button.confirm-button:focus,
 .center-modal > .container > div.button-container > button.confirm-button:hover {

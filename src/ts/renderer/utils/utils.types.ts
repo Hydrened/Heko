@@ -1,4 +1,9 @@
-type CenterModal = import("./../modals/modal.center.js").default;
+interface Position {
+    x: number;
+    y: number;
+};
+
+
 
 type ID = number;
 type Token = string;
@@ -27,12 +32,9 @@ interface Shortcut {
 
 
 
-interface Position {
-    x: number;
-    y: number;
-};
+type CenterModal = import("./../modals/modal.center.js").default;
 
-
+type TopModalType = "SUCCESS" | "ERROR";
 
 type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT";
 type ModalRowData = string[];
@@ -66,10 +68,6 @@ interface CenterModalData {
     additionnalButtons?: ModalButton[];
     cantClose: boolean;
 };
-
-
-
-type TopModalType = "SUCCESS" | "ERROR";
 
 
 
