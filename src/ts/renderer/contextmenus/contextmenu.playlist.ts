@@ -35,7 +35,16 @@ function getRenamePlaylistModalData(app: App, userID: ID, token: Token, playlist
 async function removePlaylistOnConfirm(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const childrenIDs: ID[] = getPlaylistChildrenIDs(userPlaylists, playlist.id);
 
-    const removePlaylistReqRes: any = await Requests.playlist.remove(userID, token, childrenIDs.concat(playlist.id));
+    const getPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userID, token);
+    if (!getPlaylistsFromUserReqRes.success) {
+        app.throwError(`Can't get playlists from user: ${getPlaylistsFromUserReqRes.error}`);
+        return null;
+    }
+
+    const playlists: Playlist[] = (getPlaylistsFromUserReqRes.playlists as Playlist[]);
+    const thumbnailFileNames: string[] = playlists.filter((p: Playlist) => (childrenIDs.includes(p.id) || p.id == playlist.id)).map((p: Playlist) => p.thumbnailFileName);
+
+    const removePlaylistReqRes: any = await Requests.playlist.remove(userID, token, childrenIDs.concat(playlist.id), thumbnailFileNames);
     if (!removePlaylistReqRes.success) {
         app.throwError(`Can't remove playlist: ${removePlaylistReqRes.error}`);
         return null;
@@ -131,6 +140,19 @@ async function playlistMoveToOnClick(app: App, userID: ID, token: Token, parentP
     TopModal.create("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
 }
 
+function getPlaylistMerge(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist): ContextmenuRow[] {
+    return userPlaylists.filter((userPlaylist: Playlist) => {
+        
+
+    }).map((userPlaylist: Playlist) => {
+        return {
+            title: userPlaylist.name,
+            onClick: async () => {},
+            disabled: false,
+        };
+    });
+}
+
 export async function getPlaylistRows(app: App, playlist: Playlist): Promise<ContextmenuRow[]> {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
@@ -148,6 +170,8 @@ export async function getPlaylistRows(app: App, playlist: Playlist): Promise<Con
     }
 
     const userPlaylists: Playlist[] = (getPlaylistsFromUserReqRes.playlists as Playlist[]);
+    const disableMoveIn: boolean = (userPlaylists.length == 0);
+    const disableMerge: boolean = (false && (userPlaylists.length == 0));
 
     return [
         { title: "Rename", shortcut: { ctrl: false, shift: false, alt: false, key: "F2" }, onClick: async () => {
@@ -162,6 +186,8 @@ export async function getPlaylistRows(app: App, playlist: Playlist): Promise<Con
             await duplicatePlaylistOnClick(app, userID, token, playlist);
         }, disabled: false },
 
-        { title: "Move in", rows: getPlaylistMoveInRows(app, userID, token, userPlaylists, playlist), disabled: false },
+        { title: "Move in", rows: getPlaylistMoveInRows(app, userID, token, userPlaylists, playlist), disabled: disableMoveIn },
+
+        { title: "Merge", rows: getPlaylistMerge(app, userID, token, userPlaylists, playlist), disabled: disableMerge },
     ];
 }

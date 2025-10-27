@@ -41,8 +41,8 @@
 
     /* TEXT COLORS */
     --text-opacity: 0.6;
-    --text-col-1: rgba(255,255,255,var(--text-opacity));
-    --text-col-2: rgba(255,255,255,0.4);
+    --text-col-1: rgb(180,180,180);
+    --text-col-2: rgba(120,120,120);
     --text-error-col: rgb(187,53,53);
 
     /* BORDER */

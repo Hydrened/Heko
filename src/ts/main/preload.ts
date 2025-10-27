@@ -1,97 +1,51 @@
 import { contextBridge, ipcRenderer } from "electron";
 
-declare global {
-    interface Window {
-        main: {
-            throwError: (message: string) => void;
-        };
-        win: {
-            minimize: () => void;
-            maximize: () => void;
-            close: () => void;
-        };
-        path: {
-            getDirname: () => string;
-            getDocuments: () => string;
-            join: (...parts: string[]) => string;
-        };
-        fs: {
-            readFileSync: (filePath: string) => string;
-            readdirSync: (dirPath: string) => string[];
-            writeFileSync: (filePath: string, data: string) => void;
-            existsSync: (filePath: string) => boolean;
-            mkdirSync: (filePath: string) => void;
-        };
-        mainFolder: {
-            saveToken: (token: string) => void;
-            getToken: () => string;
-            removeToken: () => void;
-        };
-    }
-}
-
-contextBridge.exposeInMainWorld("electronAPI", {
-    onBeforeClose: (callback: () => Promise<void>) => {
-        ipcRenderer.on("app:before-close", async () => {
+contextBridge.exposeInMainWorld("mainEvents", {
+    onClose: (callback: () => Promise<void>): void => {
+        ipcRenderer.on("mainEvents-onClose", async () => {
             await callback();
-            ipcRenderer.send("app:before-close:done");
+            ipcRenderer.send("mainEvents-onClose-done");
         });
-    }
+    },
+
+    onPreviousButton: (callback: () => void): void => {
+        ipcRenderer.on("mainEvents-previousButton", () => callback());
+    },
+
+    onPlayButton: (callback: () => void): void => {
+        ipcRenderer.on("mainEvents-playButton", () => callback());
+    },
+
+    onNextButton: (callback: () => void): void => {
+        ipcRenderer.on("mainEvents-nextButton", () => callback());
+    },
 });
 
 contextBridge.exposeInMainWorld("main", {
-    throwError: (message: string) => {
+    throwError: (message: string): void => {
         ipcRenderer.invoke("main-throwError", message);
     },
 });
 
-contextBridge.exposeInMainWorld("path", {
-    getDirname: () => {
-        return ipcRenderer.invoke("path-getDirname");
-    },
-
-    getDocuments: () => {
-        return ipcRenderer.invoke("path-getDocuments");
-    },
-
-    join: (...parts: string[]) => {
-        return ipcRenderer.invoke("path-join", ...parts);
-    },
-});
-
-contextBridge.exposeInMainWorld("fs", {
-    readFileSync: (filePath: string) => {
-        return ipcRenderer.invoke("fs-readFileSync", filePath);
-    },
-
-    readdirSync: (dirPath: string) => {
-        return ipcRenderer.invoke("fs-readdirSync", dirPath);
-    },
-
-    writeFileSync: (filePath: string, data: string) => {
-        ipcRenderer.invoke("fs-writeFileSync", filePath, data);
-    },
-
-    existsSync: (filePath: string) => {
-        return ipcRenderer.invoke("fs-existsSync", filePath);
-    },
-
-    mkdirSync: (filePath: string) => {
-        ipcRenderer.invoke("fs-mkdirSync", filePath);
-    },
-});
-
 contextBridge.exposeInMainWorld("win", {
-    minimize: () => {
+    minimize: (): void => {
         ipcRenderer.invoke("win-minimize");
     },
 
-    maximize: () => {
+    maximize: (): void => {
         ipcRenderer.invoke("win-maximize");
     },
 
-    close: () => {
+    close: (): void => {
         ipcRenderer.invoke("win-close");
+    },
+
+    setThumbarPlayButton: (type: string): void => {
+        ipcRenderer.invoke("win-set-thumbar-play-button", type);
+    },
+
+    setTitle: (title: string): void => {
+        ipcRenderer.invoke("win-set-title", title);
     },
 });
 
@@ -100,11 +54,11 @@ contextBridge.exposeInMainWorld("mainFolder", {
         ipcRenderer.invoke("mainFolder-saveToken", token);
     },
 
-    getToken: () => {
+    getToken: (): Promise<string> => {
         return ipcRenderer.invoke("mainFolder-getToken");
     },
 
-    removeToken: () => {
+    removeToken: (): void => {
         ipcRenderer.invoke("mainFolder-removeToken");
     },
 });

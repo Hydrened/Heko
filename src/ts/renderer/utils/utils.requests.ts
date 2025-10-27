@@ -13,11 +13,11 @@ async function request(phpFile: string, data: { [key: string]: any }): Promise<a
     return await res.json();
 }
 
-async function uploadFile(phpFile: string, userID: ID, token: Token, songFile: File): Promise<any> {
+async function uploadFile(phpFile: string, userID: ID, token: Token, file: File): Promise<any> {
     const formData = new FormData();
     formData.append("userID", String(userID));
     formData.append("token", token);
-    formData.append("songFile", songFile);
+    formData.append("file", file);
 
     const res = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
@@ -50,16 +50,20 @@ export const user = {
 };
 
 export const playlist = {
-    add: async (userID: ID, token: Token, name: string): Promise<any> => {
-        return await request("playlist/add.php", { userID: userID, token: token, name: name });
+    add: async (userID: ID, token: Token, name: string, thumbnailFileName: string): Promise<any> => {
+        return await request("playlist/add.php", { userID: userID, token: token, name: name, thumbnailFileName: thumbnailFileName });
+    },
+
+    uploadThumbnail: async (userID: ID, token: Token, thumbnailFile: File): Promise<any> => {
+        return await uploadFile("playlist/upload-thumbnail.php", userID, token, thumbnailFile );
     },
 
     updateOpenedState: async (userID: ID, token: Token, openedPlaylistIDs: number[]): Promise<any> => {
         return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
     },
 
-    remove: async (userID: ID, token: Token, playlistIDs: ID[]): Promise<any> => {
-        return await request("playlist/remove.php", { userID: userID, token: token, playlistIDs: playlistIDs });
+    remove: async (userID: ID, token: Token, playlistIDs: ID[], thumbnailFileNames: string[]): Promise<any> => {
+        return await request("playlist/remove.php", { userID: userID, token: token, playlistIDs: playlistIDs, thumbnailFileNames: thumbnailFileNames });
     },
 
     rename: async (userID: ID, token: Token, playlistID: ID, newPlaylistName: string): Promise<any> => {

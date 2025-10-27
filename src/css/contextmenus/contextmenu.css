@@ -71,7 +71,7 @@ span.contextmenu-row-shortcut {
     color: var(--text-col-2);
 }
 img.contextmenu-row-submenu-indicator {
-    width: 1rem;
+    width: 2rem;
 }
 
 li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {

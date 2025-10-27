@@ -55,17 +55,20 @@ export default class ContextmenuManager {
         const windowHeight: number = window.innerHeight;
         const height: number = this.getContextmenuHeight(rows.length);
         
-        if (position.x + this.width > windowWidth) {
-            position.x -= this.width;
+        let x = position.x;
+        let y = position.y;
+
+        if (x + this.width > windowWidth) {
+            x -= this.width;
             this.currentContextmenuElement.classList.add("right");
         }
-        if (position.y + height > windowHeight) {
-            position.y -= height;
+        if (y + height > windowHeight) {
+            y -= height;
         }
 
         this.currentContextmenuElement.classList.add("contextmenu");
-        this.currentContextmenuElement.style.top = `${position.y}px`;
-        this.currentContextmenuElement.style.left = `${position.x}px`;
+        this.currentContextmenuElement.style.top = `${y}px`;
+        this.currentContextmenuElement.style.left = `${x}px`;
         document.body.appendChild(this.currentContextmenuElement);
 
         rows.forEach((row: ContextmenuRow) => this.createContextMenuRow(this.currentContextmenuElement, row));
@@ -99,6 +102,7 @@ export default class ContextmenuManager {
 
         const titleElement: HTMLElement = document.createElement("span");
         titleElement.classList.add("contextmenu-row-title");
+        titleElement.classList.add("extern-text");
         titleElement.textContent = row.title;
         rowContainer.appendChild(titleElement);
         

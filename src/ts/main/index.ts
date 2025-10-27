@@ -1,90 +1,37 @@
-import { app, BrowserWindow, ipcMain, dialog } from "electron";
+import { app, BrowserWindow, ipcMain, dialog , nativeImage } from "electron";
 import * as path from "path";
-import * as fs from "fs";
 import { MainFolder, WindowSettings } from "./main-folder.js";
 
 class Index {
-    window: BrowserWindow | null = null;
-    mainFolder: MainFolder;
+    private window: BrowserWindow | null = null;
+    private mainFolder: MainFolder;
+    private thumbarButtons: Electron.ThumbarButton[] = [];
 
     constructor() {
         this.mainFolder = new MainFolder();
-        this.initEvents();
-        this.createWindow();
-    }
 
-    private initEvents(): void {
-        this.initWindowEvents();
-        this.initMainEvents();
-        this.initPathEvents();
-        this.initFsEvents();
-    }
+        try {
+            this.createWindow();
+            this.initWindowEvents();
+            this.initRendererEvents();
 
-    private initWindowEvents(): void {
-        app.on("window-all-closed", () => {
-            if (process.platform !== "darwin") {
-                app.quit();
-            }
-        });
-        
-        ipcMain.handle("win-minimize", (_event) => this.window?.minimize());
-        ipcMain.handle("win-maximize", (_event) => this.window?.maximize());
-        ipcMain.handle("win-close", (_event) => this.window?.close());
-    }
-
-    private initMainEvents(): void {
-        ipcMain.handle("main-throwError", (_event, message: string) => { 
-            dialog.showErrorBox("Error", message);
-            this.window?.close();
-        });
-    }
-
-    private initPathEvents(): void {
-        ipcMain.handle("path-getDirname", (_event) => __dirname);
-        ipcMain.handle("path-getDocuments", (_event) => app.getPath("documents"));
-        ipcMain.handle("path-join", (_event, ...parts: string[]) => path.join(...parts));
-    }
-
-    private initFsEvents(): void {
-        ipcMain.handle("fs-readFileSync", (_event, filePath: string) => {
-            try {
-                return fs.readFileSync(filePath, "utf-8");
-            }
-            catch {
-                return "";
-            }
-        });
-
-        ipcMain.handle("fs-readdirSync", (_event, dirPath: string) => {
-            try {
-                return fs.readdirSync(dirPath);
-            }
-            catch {
-                return [];
-            }
-        });
-
-        ipcMain.handle("fs-writeFileSync", (_event, filePath: string, data: string) => {
-            fs.writeFileSync(filePath, data);
-        });
-
-        ipcMain.handle("fs-existsSync", (_event, filePath: string) => {
-            return fs.existsSync(filePath);
-        });
-
-        ipcMain.handle("fs-mkdirSync", (_event, filePath: string) => {
-            fs.mkdirSync(filePath);
-        });
+        } catch (err:  unknown) {
+            const error: string = ((err instanceof Error) ? err.message : String(err));
+            dialog.showErrorBox("Error", error);
+            this.window?.destroy();
+        }
     }
 
     private createWindow(): void {
         if (this.mainFolder.settings == null) {
-            return;
+            throw new Error("Can't open window: Window settings are null.");
         }
 
         const onOpenWindowSettings: WindowSettings = this.mainFolder.settings;
 
         this.window = new BrowserWindow({
+            title: "Heko",
+
             x: onOpenWindowSettings.x,
             y: onOpenWindowSettings.y,
 
@@ -110,17 +57,61 @@ class Index {
         
         this.window.loadFile(path.join(__dirname, "..", "..", "index.html"));
 
+        this.thumbarButtons = [
+            {
+                tooltip: "Previous",
+                icon: nativeImage.createFromPath(path.join(app.getAppPath(), "src", "assets", "window-previous.png")),
+                click: () => {
+                    if (this.window == null) {
+                        throw new Error("Can't call previous button event: Window is null.");
+                    }
+
+                    this.window.webContents.send("mainEvents-previousButton");
+                },
+            },
+            {
+                tooltip: "Play",
+                icon: nativeImage.createFromPath(path.join(app.getAppPath(), "src", "assets", "window-play.png")),
+                click: () => {
+                    if (this.window == null) {
+                        throw new Error("Can't call play button event: Window is null.");
+                    }
+
+                    this.window.webContents.send("mainEvents-playButton");
+                },
+            },
+            {
+                tooltip: "Next",
+                icon: nativeImage.createFromPath(path.join(app.getAppPath(), "src", "assets", "window-next.png")),
+                click: () => {
+                    if (this.window == null) {
+                        throw new Error("Can't call next button evnet: Window is null.");
+                    }
+
+                    this.window.webContents.send("mainEvents-nextButton");
+                },
+            }
+        ];
+
+        this.window.setThumbarButtons(this.thumbarButtons);
+    }
+
+    private initWindowEvents(): void {
+        if (this.window == null) {
+            throw new Error("Can't init window events: Window is null.");
+        }
+
         this.window.on("close", async (e) => {
             if (this.window == null) {
-                return;
+                throw new Error("Can't save window position: Window is null.");
             }
 
             e.preventDefault();
 
             await new Promise<void>((resolve) => {
-                ipcMain.once("app:before-close:done", () => resolve());
-                this.window!.webContents.send("app:before-close");
-            })
+                ipcMain.once("mainEvents-onClose-done", () => resolve());
+                this.window!.webContents.send("mainEvents-onClose");
+            });
 
             const bounds: Electron.Rectangle = this.window.getBounds();
             const fullscreen: boolean = this.window.isMaximized();
@@ -142,6 +133,66 @@ class Index {
             if ((input.control || input.meta) && input.key.toLowerCase() == "r") {
                 event.preventDefault();
             }
+        });
+    }
+
+    private initRendererEvents(): void {
+        this.initRendererWindowEvents();
+        this.initRendererMainEvents();
+    }
+
+    private initRendererWindowEvents(): void {
+        app.on("window-all-closed", () => {
+            if (process.platform !== "darwin") {
+                app.quit();
+            }
+        });
+        
+        ipcMain.handle("win-minimize", (e: Electron.IpcMainInvokeEvent) => {
+            if (this.window == null) {
+                throw new Error("Can't minimize window: Window is null.");
+            }
+
+            this.window.minimize();
+        });
+        ipcMain.handle("win-maximize", (e: Electron.IpcMainInvokeEvent) => {
+            if (this.window == null) {
+                throw new Error("Can't maximize window: Window is null.");
+            }
+
+            this.window.maximize();
+        });
+        ipcMain.handle("win-close", (e: Electron.IpcMainInvokeEvent) => {
+            if (this.window == null) {
+                throw new Error("Can't close window: Window is null.");
+            }
+
+            this.window.close();
+        });
+
+        ipcMain.handle("win-set-thumbar-play-button", (e: Electron.IpcMainInvokeEvent, type: string) => {
+            if (this.window == null) {
+                throw new Error("Can't set thumbar play button: Window is null.");
+            }
+
+            this.thumbarButtons[1].tooltip = type.slice(0, 1).toUpperCase() + type.slice(1);
+            this.thumbarButtons[1].icon = nativeImage.createFromPath(path.join(app.getAppPath(), "src", "assets", `window-${type}.png`)),
+            this.window.setThumbarButtons(this.thumbarButtons);
+        });
+
+        ipcMain.handle("win-set-title", (e: Electron.IpcMainInvokeEvent, title: string) => {
+            if (this.window == null) {
+                throw new Error("Can't set window title: Window is null.");
+            }
+
+            this.window.setTitle(title);
+        });
+    }
+
+    private initRendererMainEvents(): void {
+        ipcMain.handle("main-throwError", (_event, message: string) => { 
+            dialog.showErrorBox("Error", message);
+            this.window?.close();
         });
     }
 };

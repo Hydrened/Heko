@@ -86,7 +86,17 @@ export default class PlaylistsRefreshCotnainerManager {
             });
             
         } else {
-            containerElement.addEventListener("click", async () => await this.playlists.open(playlist.id));
+            containerElement.addEventListener("click", async () => {
+                
+                const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
+                if (currentOpenedPlaylist != null) {
+                    if (currentOpenedPlaylist.id == playlist.id) {
+                        return;
+                    }
+                }
+
+                await this.playlists.open(playlist.id);
+            });
         }
 
         const detailsElement: HTMLElement = document.createElement("span");

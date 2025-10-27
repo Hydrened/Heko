@@ -31,6 +31,19 @@ export default class PlaylistsEventManager {
     }
 
     private initOpenedPlaylistEvents(): void {
+        // Elements.currentPlaylist.details.thumbnail!.addEventListener("click", () => {
+        //     const data: CenterModalData = {
+        //         title: "",
+        //         content: [
+        //             { label: "", type: "FILE" },
+        //         ],
+        //         onConfirm: () => {},
+        //         cantClose: false,
+        //     };
+
+        //     new CenterModal(this.app, data);
+        // });
+
         Elements.currentPlaylist.songFilterInput!.addEventListener("input", () => {
             const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
 

@@ -1,3 +1,12 @@
+## HEKO-3.0.2
+#### ADDED
+- window thumbar song control buttons
+- set playlist thumbnail
+#### FIXED
+- open current opened playlist
+- contextmenu text overflow x
+- next song button not working in playlist with only on song
+
 ## HEKO-3.0.1
 #### ADDED
 - song filter

@@ -39,6 +39,8 @@
     background-color: var(--bg-bo-6);
     background-size: contain;
     background-repeat: no-repeat;
+
+    cursor: pointer;
 }
 
 .current-playlist-details-container {

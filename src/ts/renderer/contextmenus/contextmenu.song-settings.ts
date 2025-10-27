@@ -60,7 +60,7 @@ async function addSongOnConfirm(app: App, userID: ID, token: Token, userSongs: S
         }
     }
 
-    const uploadSongReqRes: any = await LoadingModal.create<any>("Uploading file", Requests.song.upload(userID, token, file));
+    const uploadSongReqRes: any = await LoadingModal.create<any>("Uploading song", Requests.song.upload(userID, token, file));
     if (!uploadSongReqRes.success) {
         app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`);
         return null;

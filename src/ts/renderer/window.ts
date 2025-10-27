@@ -15,8 +15,6 @@ export default class Window {
             return this.app.throwError("Can't initialize frame buttons.");
         }
 
-        const win = (window as any);
-
         this.minimizeWindowButton.addEventListener("click", async () => await Bridge.win.minimize());
         this.maximizeWindowButton.addEventListener("click", async () => await Bridge.win.maximize());
         this.closeWindowButton.addEventListener("click", async () => await Bridge.win.close());

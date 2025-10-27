@@ -22,7 +22,7 @@ export default class Account {
     }
 
     private async checkLoginState(): Promise<void> {
-        const token: Token = await Bridge.mainFolder.token.get();
+        const token: Token = await Bridge.token.get();
 
         const validityRes: any = await Requests.user.isTokenValid(token);
         if (!validityRes.success) {
@@ -78,7 +78,7 @@ export default class Account {
             return;
         }
 
-        await Bridge.mainFolder.token.remove();
+        await Bridge.token.remove();
         this.userID = null;
         this.token = null;
 
@@ -108,7 +108,7 @@ export default class Account {
                 };
             }
             
-            await Bridge.mainFolder.token.save(loginReqRes.token);
+            await Bridge.token.save(loginReqRes.token);
 
             this.userID = Number(loginReqRes.userID);
             this.token = loginReqRes.token;
@@ -164,7 +164,7 @@ export default class Account {
                 };
             }
 
-            await Bridge.mainFolder.token.save(loginReqRes.token);
+            await Bridge.token.save(loginReqRes.token);
 
             this.userID = Number(loginReqRes.userID);
             this.token = loginReqRes.token;

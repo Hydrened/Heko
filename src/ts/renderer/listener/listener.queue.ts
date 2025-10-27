@@ -1,6 +1,7 @@
 import ListenerManager from "./listener.js";
 import App from "./../app.js";
 import AppPath from "./../utils/utils.app-path.js";
+import * as Bridge from "./../utils/utils.bridge.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
@@ -26,6 +27,10 @@ export default class ListenerQueueManager {
         this.audioElement.addEventListener("ended", () => {
             Elements.songControls.buttons.nextButton!.dispatchEvent(new Event("click"));
         });
+
+        Bridge.mainEvents.onPreviousButton(() => this.previousButton());
+        Bridge.mainEvents.onPlayButton(async () => await this.togglePlayButton());
+        Bridge.mainEvents.onNextButton(() => this.nextButton());
     }
 
     public load(): void {
@@ -192,6 +197,7 @@ export default class ListenerQueueManager {
 
         if (this.currentSongs!.length == 1) {
             this.recreate(null);
+            this.audioElement.currentTime = 0;
             return;
         }
 
@@ -249,12 +255,16 @@ export default class ListenerQueueManager {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
         this.audioElement.play();
         this.listener.refresh();
+        Bridge.win.setTitle(song.title);
     }
 
     private setPlaying(state: boolean): void {
         this.playing = state;
         this.setButtonState(Elements.songControls.buttons.togglePlayButton, state, "playing");
         (this.playing) ? this.audioElement.play() : this.audioElement.pause();
+
+        const prop: string = (state ? "pause" : "play");
+        Bridge.win.setThumbarPlayButton(prop);
     }
 
     private setShuffle(state: boolean): void {

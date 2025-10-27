@@ -1,6 +1,7 @@
 import App from "./../app.js";
 import CenterModal from "./../modals/modal.center.js";
 import TopModal from "./../modals/modal.top.js";
+import LoadingModal from "../modals/modal.loading.js";
 import * as Requests from "./../utils/utils.requests.js";
 
 async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
@@ -12,23 +13,23 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         };
     }
     
-    // const file: File | null = CenterModal.getFileFromFileInput("Thumbnail");
-    // if (file != null) {
-    //     if (!file.type.includes("image/")) {
-    //         return {
-    //             fieldName: "Thumbnail",
-    //             error: "File format is not supported.",
-    //         };
-    //     }
+    const file: File | null = CenterModal.getFileFromFileInput("Thumbnail");
+    if (file != null) {
+        if (!file.type.includes("image/")) {
+            return {
+                fieldName: "Thumbnail",
+                error: "File format is not supported.",
+            };
+        }
 
-    //     const fileSize: number = CenterModal.getFileSize(file);
-    //     if (fileSize > 10) {
-    //         return {
-    //             fieldName: "Thumbnail",
-    //             error: "File is too large (max 10 mo).",
-    //         };
-    //     }
-    // }
+        const fileSize: number = CenterModal.getFileSize(file);
+        if (fileSize > 10) {
+            return {
+                fieldName: "Thumbnail",
+                error: "File is too large (max 10 mo).",
+            };
+        }
+    }
 
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
@@ -53,7 +54,18 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         };
     }
 
-    const addPlaylistReqRes: any = await Requests.playlist.add(userData.id, userData.token, newPlaylistName);
+    let thumbnailFileName: string = "";
+    if (file != null) {
+        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.playlist.uploadThumbnail(userData.id, userData.token, file));
+        if (!uploadPlaylistThumbnailReqRes.success) {
+            app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
+            return null;
+        }
+
+        thumbnailFileName = uploadPlaylistThumbnailReqRes.fileName;
+    }
+
+    const addPlaylistReqRes: any = await Requests.playlist.add(userData.id, userData.token, newPlaylistName, thumbnailFileName);
     if (!addPlaylistReqRes.success) {
         app.throwError(`Can't add playlist: ${addPlaylistReqRes.error}`);
         return null;
@@ -71,7 +83,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
 export function getCreatePlaylistModalData(app: App): CenterModalData {
     const content: ModalRow[] = [
         { label: "Name", type: "TEXT", maxLength: 150 },
-        // { label: "Thumbnail", type: "FILE" },
+        { label: "Thumbnail", type: "FILE" },
     ];
 
     return {
