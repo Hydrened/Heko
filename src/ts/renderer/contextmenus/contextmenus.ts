@@ -1,10 +1,10 @@
-import { getAccountRows } from "./contextmenu.account.js";
-import { getPlaylistContainerRows } from "./contextmenu.playlist-container.js";
-import { getPlaylistRows } from "./contextmenu.playlist.js";
-import { getSongSettingRows } from "./contextmenu.song-settings.js";
-import { getSongContainerRows } from "./contextmenu.song-container.js";
-import { getSongRows } from "./contextmenu.song.js";
 import App from "../app.js";
+import { getAccountRows } from "./contextmenu.rows/account.js";
+import { getPlaylistContainerRows } from "./contextmenu.rows/playlist-container.js";
+import { getPlaylistRows } from "./contextmenu.rows/playlist.js";
+import { getSongSettingRows } from "./contextmenu.rows/song-settings.js";
+import { getSongContainerRows } from "./contextmenu.rows/song-container.js";
+import { getSongRows } from "./contextmenu.rows/song.js";
 import * as Functions from "../utils/utils.functions.js";
 
 export default class ContextmenuManager {

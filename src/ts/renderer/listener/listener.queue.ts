@@ -1,9 +1,9 @@
-import ListenerManager from "./listener.js";
 import App from "./../app.js";
 import AppPath from "./../utils/utils.app-path.js";
+import ListenerManager from "./listener.js";
 import * as Bridge from "./../utils/utils.bridge.js";
-import * as Functions from "./../utils/utils.functions.js";
 import * as Requests from "./../utils/utils.requests.js";
+import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerQueueManager {

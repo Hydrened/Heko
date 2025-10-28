@@ -105,7 +105,6 @@ interface Song {
 };
 
 interface Artist {
-    id: ID;
     userID: ID;
     name: string;
 };

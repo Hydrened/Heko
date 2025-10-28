@@ -1,6 +1,7 @@
 import App from "./app.js";
 import CenterModal from "./modals/modal.center.js";
-import TopModal from "./modals/modal.top.js";
+import openLoginModal from "./modals/modal.center.open/login.js";
+import openRegisterModal from "./modals/modal.center.open/register.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
 import * as Elements from "./utils/utils.elements.js";
@@ -64,7 +65,7 @@ export default class Account {
     }
 
     // LOG EVENTS
-    private async loggedIn(): Promise<void> {
+    public async loggedIn(): Promise<void> {
         if (this.userID == null || this.token == null) {
             return;
         }
@@ -87,107 +88,20 @@ export default class Account {
     }
 
     // OPEN MODALS
-    private openLoginModal(): void {
+    public openLoginModal(): void {
         if (this.modal != null) {
             this.modal.close();
         }
 
-        const content: ModalRow[] = [
-            { label: "Email", type: "EMAIL", maxLength: 150 },
-            { label: "Password", type: "PASSWORD", maxLength: 150 },
-        ];
-
-        const onConfirm = async (modal: CenterModal): Promise<ModalError> => {
-            const email: string = modal.getFieldValue("Email");
-            const password: string = modal.getFieldValue("Password");
-
-            const loginReqRes: any = await Requests.user.login(email, password);
-            if (!loginReqRes.success) {
-                return {
-                    error: loginReqRes.error,
-                };
-            }
-            
-            await Bridge.token.save(loginReqRes.token);
-
-            this.userID = Number(loginReqRes.userID);
-            this.token = loginReqRes.token;
-            this.loggedIn();
-
-            return null;
-        };
-
-        const additionnalButtons: ModalButton[] = [
-            { title: "Register", onClick: () => this.openRegisterModal() },
-        ];
-
-        const modalData: CenterModalData = {
-            title: "Login",
-            content: content,
-            onConfirm: onConfirm,
-            additionnalButtons: additionnalButtons,
-            cantClose: true,
-        };
-
-        this.modal = new CenterModal(this.app, modalData);
+        this.modal = openLoginModal(this.app);
     }
 
-    private openRegisterModal(): void {
+    public openRegisterModal(): void {
         if (this.modal != null) {
             this.modal.close();
         }
 
-        const content: ModalRow[] = [
-            { label: "Name", type: "TEXT", maxLength: 150 },
-            { label: "Email", type: "EMAIL", maxLength: 150 },
-            { label: "Password", type: "PASSWORD", maxLength: 150 },
-            { label: "Confirm", type: "PASSWORD", maxLength: 150 },
-        ];
-
-        const onConfirm = async (modal: CenterModal): Promise<ModalError> => {
-            const name: string = modal.getFieldValue("Name");
-            const email: string = modal.getFieldValue("Email");
-            const password: string = modal.getFieldValue("Password");
-            const confirm: string = modal.getFieldValue("Confirm");
-
-            const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
-            if (!registerReqRes.success) {
-                return {
-                    error: registerReqRes.error,
-                };
-            }
-
-            const loginReqRes: any = await Requests.user.login(email, password);
-            if (!loginReqRes.success) {
-                return {
-                    error: loginReqRes.error,
-                };
-            }
-
-            await Bridge.token.save(loginReqRes.token);
-
-            this.userID = Number(loginReqRes.userID);
-            this.token = loginReqRes.token;
-            this.loggedIn();
-
-            TopModal.create("SUCCESS", "Account successfully created.");
-
-            return null;
-        };
-
-        const additionnalButtons: ModalButton[] = [
-            { title: "Login", onClick: () => this.openLoginModal() },
-        ];
-
-        const modalData: CenterModalData = {
-            title: "Register",
-            content: content,
-            onConfirm: onConfirm,
-            additionnalButtons: additionnalButtons,
-            cantClose: true,
-        };
-
-        this.modal = new CenterModal(this.app, modalData);
+        this.modal = openRegisterModal(this.app);
     }
 
     // GETTERS
@@ -206,5 +120,11 @@ export default class Account {
             speed: (this.settings ? this.settings.speed : -1),
             volume: (this.settings ? this.settings.volume : -1),
         };
+    }
+
+    // SETTERS
+    public setUserData(userID: ID, token: Token): void {
+        this.userID = userID;
+        this.token = token;
     }
 };

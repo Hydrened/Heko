@@ -117,6 +117,49 @@ export default class PlaylistManager {
         return res;
     }
 
+    public async getSongsLeft(): Promise<Song[]> {
+        const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return [];
+        }
+
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            this.app.throwError("Can't get songs left: User is not logged in.");
+            return [];
+        }
+
+        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
+        if (!getAllSongsFromUserReqRes.success) {
+            this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
+            return [];
+        }
+    
+        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentOpenedPlaylist.id);
+        if (!getSongsFromPlaylistReqRes.success) {
+            this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
+            return [];
+        }
+    
+        const songTitlesFromPlaylist: string[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.title);
+    
+        return (getAllSongsFromUserReqRes.songs as Song[]).filter((song: Song) => {
+            return !songTitlesFromPlaylist.includes(song.title);
+        });
+    }
+
+    public static getPlaylistChildrenIDs(playlists: Playlist[], parentID: ID): ID[] {
+        const children = playlists.filter((playlist: Playlist) => playlist.parentID == parentID);
+        const res: ID[] = [];
+    
+        for (const child of children) {
+            res.push(child.id);
+            res.push(...this.getPlaylistChildrenIDs(playlists, child.id));
+        }
+    
+        return res;
+    }
+
     // SETTERS
     public setCurrentOpenedPlaylist(playlist: Playlist): void {
         this.currentOpenedPlaylist = structuredClone(playlist);

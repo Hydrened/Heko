@@ -1,5 +1,7 @@
 .right-tab {
     padding: var(--main-padding);
+
+    position: relative
 }
 
 
@@ -26,7 +28,7 @@
 
 #current-playlist-container > header {
     display: grid;
-    grid-template-columns: auto 1fr auto;
+    grid-template-columns: auto 1fr;
     gap: 2rem;
 }
 
@@ -37,6 +39,7 @@
     border-radius: 1rem;
 
     background-color: var(--bg-bo-6);
+    background-position: center center;
     background-size: contain;
     background-repeat: no-repeat;
 
@@ -74,6 +77,10 @@
 }
 
 #account-button {
+    position: absolute;
+    top: var(--main-padding);
+    right: var(--main-padding);
+
     align-self: start;
 }
 #account-button > img {

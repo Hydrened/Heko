@@ -5,6 +5,7 @@ export async function throwError(message: string): Promise<void> {
 }
 
 export const mainEvents = {
+    onClose: (callback: () => Promise<void>): void => w.mainEvents.onClose(callback),
     onPreviousButton: async (callback: () => void): Promise<void> => await w.mainEvents.onPreviousButton(callback),
     onPlayButton: async (callback: () => void): Promise<void> => await w.mainEvents.onPlayButton(callback),
     onNextButton: async (callback: () => void): Promise<void> => await w.mainEvents.onNextButton(callback),

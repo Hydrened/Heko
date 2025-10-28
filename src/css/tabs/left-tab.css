@@ -86,6 +86,7 @@
     background-color: var(--bg-bo-8);
     background-size: contain;
     background-repeat: no-repeat;
+    background-position: center center;
 }
 .playlist-container > .details-container {
     display: flex;

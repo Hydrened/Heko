@@ -8,8 +8,6 @@ import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
 import "./utils/utils.types.js";
 
-const w: any = (window as any);
-
 export default class App {
     private window: Window;
     public account: Account;
@@ -34,7 +32,7 @@ export default class App {
     }
 
     private initEvents(): void {
-        w.mainEvents.onClose(async () => await this.saveSettings());
+        Bridge.mainEvents.onClose(async () => await this.saveSettings());
     }
 
     public async init(): Promise<void> {

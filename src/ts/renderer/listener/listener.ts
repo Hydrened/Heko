@@ -1,9 +1,9 @@
+import App from "./../app.js";
 import ListenerRefreshManager from "./listener.refresh.js";
 import ListenerQueueManager from "./listener.queue.js";
 import ListenerVolumeManager from "./listener.volume.js";
 import ListenerEditManager from "./listener.edit.js";
 import ListenerEventManager from "./listener.events.js";
-import App from "./../app.js";
 
 export default class ListenerManager {
     private audioElement: HTMLAudioElement;

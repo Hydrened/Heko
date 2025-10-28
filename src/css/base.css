@@ -102,8 +102,20 @@ main {
     height: var(--main-height);
 }
 
-input {
+input[type="range"] {
+    position: relative;
+
     accent-color: var(--main-col-1);
+}
+input[type="range"]::after {
+    content: "";
+
+    width: 100%;
+    height: 500%;
+
+    position: absolute;
+    top: -200%;
+    left: 0;
 }
 
 ::-webkit-scrollbar {

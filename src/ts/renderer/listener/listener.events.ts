@@ -1,5 +1,5 @@
-import ListenerManager from "./listener.js";
 import App from "./../app.js";
+import ListenerManager from "./listener.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 

@@ -1,8 +1,8 @@
-import App from "./../app.js";
-import CenterModal from "./../modals/modal.center.js";
-import TopModal from "./../modals/modal.top.js";
-import LoadingModal from "../modals/modal.loading.js";
-import * as Requests from "./../utils/utils.requests.js";
+import App from "../../app.js";
+import CenterModal from "../modal.center.js";
+import LoadingModal from "../modal.loading.js";
+import TopModal from "../modal.top.js";
+import * as Requests from "../../utils/utils.requests.js";
 
 async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("Name");
@@ -34,13 +34,13 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         return {
-            error: "User is not connected.",
+            error: "User is not logged in.",
         };
     }
 
     const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
     if (!getAllPlaylistsFromUserReqRes.success) {
-        app.throwError(`Can't get every playlist from user: ${getAllPlaylistsFromUserReqRes.error}`);
+        app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
         return null;
     }
     
@@ -56,7 +56,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
 
     let thumbnailFileName: string = "";
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.playlist.uploadThumbnail(userData.id, userData.token, file));
+        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(userData.id, userData.token, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -80,24 +80,18 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
     return null;
 }
 
-export function getCreatePlaylistModalData(app: App): CenterModalData {
+export default function openCreatePlaylistModal(app: App): void {
     const content: ModalRow[] = [
         { label: "Name", type: "TEXT", maxLength: 150 },
         { label: "Thumbnail", type: "FILE" },
     ];
 
-    return {
+    const data: CenterModalData = {
         title: "Create a playlist",
         content: content,
         onConfirm: (modal: CenterModal): Promise<ModalError> => createPlaylistOnConfirm(app, modal),
         cantClose: false,
     };
-}
 
-export function getPlaylistContainerRows(app: App): ContextmenuRow[] {
-    return [
-        { title: "Create playlist", shortcut: { ctrl: true, shift: true, alt: false, key: "N" }, onClick: async () => {
-            new CenterModal(app, getCreatePlaylistModalData(app));
-        }, disabled: false },
-    ];
+    new CenterModal(app, data);
 }

@@ -1,5 +1,5 @@
-import ListenerManager from "./listener.js";
 import App from "./../app.js";
+import ListenerManager from "./listener.js";
 
 export default class ListenerEditManager {
     private speed: number = 1;

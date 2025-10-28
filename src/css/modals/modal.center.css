@@ -49,7 +49,7 @@ html:has(.center-modal) main > * {
     }
 }
 .center-modal {
-    width: 30rem;
+    width: 35rem;
 
     position: relative;
 

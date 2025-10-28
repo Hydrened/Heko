@@ -1,5 +1,5 @@
-import PlaylistManager from "./playlists.js";
 import App from "./../app.js";
+import PlaylistManager from "./playlists.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 

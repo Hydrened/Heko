@@ -1,8 +1,8 @@
-import PlaylistManager from "./playlists.js";
 import App from "./../app.js";
+import PlaylistManager from "./playlists.js";
 import * as Requests from "./../utils/utils.requests.js";
-import * as Elements from "./../utils/utils.elements.js";
 import * as Functions from "./../utils/utils.functions.js";
+import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsRefreshOpenedManager {
     constructor(private app: App, private playlists: PlaylistManager) {

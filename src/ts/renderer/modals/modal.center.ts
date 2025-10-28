@@ -1,5 +1,5 @@
-import TopModal from "./modal.top.js";
 import App from "./../app.js";
+import TopModal from "./modal.top.js";
 import InputSelect from "./../utils/utils.input-select.js";
 import * as AntiSpam from "./../utils/utils.anti-spam.js";
 
@@ -393,5 +393,6 @@ export default class CenterModal {
 
         input.value = value;
         input.dispatchEvent(new Event("input", { bubbles: true }));
+        input.dispatchEvent(new Event("blur", { bubbles: true }));
     }
 };

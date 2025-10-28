@@ -1,8 +1,8 @@
-import PlaylistManager from "./playlists.js";
 import App from "./../app.js";
-import CenterModal from "./../modals/modal.center.js";
-import { getCreatePlaylistModalData } from "./../contextmenus/contextmenu.playlist-container.js";
-import { getAddSongModalData, getSongsLeft } from "../contextmenus/contextmenu.song-container.js";
+import PlaylistManager from "./playlists.js";
+import openUpdateThumbnailModal from "./../modals/modal.center.open/update-playlist-thumbnail.js";
+import openCreatePlaylistModal from "./../modals/modal.center.open/create-playlist.js";
+import openAddSongToPlaylistModal from "./../modals/modal.center.open/add-song-to-playlist.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsEventManager {
@@ -12,9 +12,7 @@ export default class PlaylistsEventManager {
     }
 
     private initPlaylistContainerEvents(): void {
-        Elements.playlists.addButton!.addEventListener("click", () => {
-            new CenterModal(this.app, getCreatePlaylistModalData(this.app));
-        });
+        Elements.playlists.addButton!.addEventListener("click", () => openCreatePlaylistModal(this.app));
 
         (Elements.playlists.container as HTMLElement).addEventListener("contextmenu", (e: PointerEvent) => {
             if (e.target != Elements.playlists.container) {
@@ -31,76 +29,68 @@ export default class PlaylistsEventManager {
     }
 
     private initOpenedPlaylistEvents(): void {
-        // Elements.currentPlaylist.details.thumbnail!.addEventListener("click", () => {
-        //     const data: CenterModalData = {
-        //         title: "",
-        //         content: [
-        //             { label: "", type: "FILE" },
-        //         ],
-        //         onConfirm: () => {},
-        //         cantClose: false,
-        //     };
+        Elements.currentPlaylist.details.thumbnail!.addEventListener("click", () => openUpdateThumbnailModal(this.app));
 
-        //     new CenterModal(this.app, data);
-        // });
+        const input: HTMLInputElement = (Elements.currentPlaylist.songFilterInput as HTMLInputElement);
 
-        Elements.currentPlaylist.songFilterInput!.addEventListener("input", () => {
-            const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
+        input.addEventListener("input", () => this.openedPlaylistInputFilterOnInput());
+        input.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key == "Escape") {
+                input.blur();
+                input.value = "";
+                input.dispatchEvent(new Event("input"));
+            }
+        });
 
-            const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
-            currentOpenedPlaylistSongs.forEach((song: Song) => {
-                const titleIncludes: boolean = song.title.toLowerCase().includes(value);
-                const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+        (Elements.currentPlaylist.songContainer as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
 
-                const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer!.children].find((li: Element) => {
-                    if (!li.hasAttribute("song-id")) {
-                        return false;
-                    }
+        Elements.currentPlaylist.addSongsButton!.addEventListener("click", async () => {
+            const songsLeft: Song[] = await this.playlists.getSongsLeft();
+            openAddSongToPlaylistModal(this.app, songsLeft);
+        });
+    }
 
-                    const songID: number = Number(li.getAttribute("song-id"));
-                    return (songID == song.id);
-                });
+    // OPENED PLAYLIST EVENTS
+    private openedPlaylistInputFilterOnInput(): void {
+        const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
 
-                if (liElement == undefined) {
+        const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
+        currentOpenedPlaylistSongs.forEach((song: Song) => {
+            const titleIncludes: boolean = song.title.toLowerCase().includes(value);
+            const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+
+            const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer!.children].find((li: Element) => {
+                if (!li.hasAttribute("song-id")) {
                     return false;
                 }
 
-                if (titleIncludes || artistIncludes) {
-                    liElement.classList.remove("hidden");
-                }
-                else {
-                    liElement.classList.add("hidden");
-                }
+                const songID: number = Number(li.getAttribute("song-id"));
+                return (songID == song.id);
             });
+
+            if (liElement == undefined) {
+                return false;
+            }
+
+            if (titleIncludes || artistIncludes) {
+                liElement.classList.remove("hidden");
+            }
+            else {
+                liElement.classList.add("hidden");
+            }
         });
+    }
 
-        (Elements.currentPlaylist.songContainer as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => {
-            if (e.target != Elements.currentPlaylist.songContainer) {
-                return;
-            }
+    private openedPlaylistSongContainerOnContextmenu(e: PointerEvent): void {
+        if (e.target != Elements.currentPlaylist.songContainer) {
+            return;
+        }
 
-            const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-            if (currentOpenedPlaylist == null) {
-                return;
-            }
+        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
 
-            this.app.contextmenuManager.createSongContainerContextMenu((e as Position), currentOpenedPlaylist);
-        });
-
-        Elements.currentPlaylist.addSongsButton!.addEventListener("click", async () => {
-            const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-            if (currentOpenedPlaylist == null) {
-                return;
-            }
-
-            const userData: UserData = this.app.account.getUserData();
-            if (userData.id == null || userData.token == null) {
-                this.app.throwError("Can't open add song to playlist modal: User is not logged in.");
-                return [];
-            }
-
-            const songsLeft: Song[] = await getSongsLeft(this.app, userData.id, userData.token, currentOpenedPlaylist);
-            new CenterModal(this.app, getAddSongModalData(this.app, userData.id, userData.token, currentOpenedPlaylist, songsLeft));
-        });
+        this.app.contextmenuManager.createSongContainerContextMenu((e as Position), currentOpenedPlaylist);
     }
 };

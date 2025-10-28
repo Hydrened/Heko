@@ -1,3 +1,14 @@
+## HEKO-3.0.3
+#### ADDED
+- update / remove playlist thumbnail
+- song filter input reset & blur shortcut
+#### FIXED
+- playlist thumbnail not centered
+- adding song in parent playlist
+- account button not accessible when user has no playlists
+- artist list not updating when updating song artist 
+- doubles in artist list when adding or editing a song
+
 ## HEKO-3.0.2
 #### ADDED
 - window thumbar song control buttons
