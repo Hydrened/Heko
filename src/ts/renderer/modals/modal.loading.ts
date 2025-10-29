@@ -1,3 +1,5 @@
+import * as Functions from "./../utils/utils.functions.js";
+
 export default class LoadingModal {
     private container: HTMLElement | null = null;
 
@@ -35,6 +37,6 @@ export default class LoadingModal {
         const container: HTMLElement = this.container;
         container.classList.add("closing");
 
-        setTimeout(() => container.remove(), 500);
+        setTimeout(() => container.remove(), Number(Functions.getCssVariable("loading-modal-closing-duration", "MS_DURATION")));
     }
 };

@@ -3,6 +3,13 @@ main {
     grid-template-columns: 19rem 1fr;
     grid-template-rows: 1fr 95px;
 }
+main:has(settings-container.opened) {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr;
+}
+main:has(settings-container.opened) > *:not(settings-container) {
+    display: none;
+}
 main > .bottom-tab {
     grid-column: span 2;
 }

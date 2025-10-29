@@ -1,8 +1,8 @@
-import App from "../../app.js";
+import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
-import CenterModal from "../modal.center.js";
-import TopModal from "../modal.top.js";
-import * as Requests from "../../utils/utils.requests.js";
+import CenterModal from "./../modal.center.js";
+import TopModal from "./../modal.top.js";
+import * as Requests from "./../../utils/utils.requests.js";
 
 async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const userData: UserData = app.account.getUserData();

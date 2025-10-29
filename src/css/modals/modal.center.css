@@ -1,10 +1,8 @@
-html:has(.center-modal) main > * {
-
-}
-
-
-
 /* MAIN MODAL */
+@keyframes center-modal-container-opening {
+    0% { opacity: 0; }
+    100% { opacity: 1; }
+}
 .center-modal-container {
     width: 100vw;
     height: 100vh;
@@ -17,23 +15,16 @@ html:has(.center-modal) main > * {
     justify-content: center;
     align-items: center;
 
+    background-color: var(--bg-bo-2);
     z-index: var(--main-modal-index);
+    animation: center-modal-container-opening 500ms forwards;
 }
-
-
-
-@keyframes center-modal-closing {
-    0% {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    100% {
-        opacity: 0;
-        transform: translateY(-10rem);
-    }
+@keyframes center-modal-container-closing {
+    0% { opacity: 1; }
+    100% { opacity: 0; }
 }
 .center-modal-container.closing {
-    animation: center-modal-closing 500ms forwards;
+    animation: center-modal-container-closing var(--center-modal-closing-duration) forwards;
 }
 
 
@@ -59,6 +50,13 @@ html:has(.center-modal) main > * {
     background: var(--main-gradient);
     box-shadow: 0 0 1rem black;
     animation: center-modal-opening 500ms forwards;
+}
+@keyframes center-modal-closing {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-10rem); }
+}
+.closing > .center-modal {
+    animation: center-modal-closing var(--center-modal-closing-duration) forwards;
 }
 .center-modal::before {
     content: "";

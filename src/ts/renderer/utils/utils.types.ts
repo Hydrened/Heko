@@ -30,6 +30,8 @@ interface Shortcut {
     key: string;
 };
 
+type ShortcutMap = { [name: string]: Shortcut };
+
 
 
 type CenterModal = import("./../modals/modal.center.js").default;

@@ -35,8 +35,8 @@ li.contextmenu-row-container {
 
     position: relative;
 
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: repeat(2, auto);
     gap: 2rem;
     
     font-size: 0.9rem;
@@ -44,6 +44,9 @@ li.contextmenu-row-container {
     border-radius: 0.4rem;
 
     cursor: pointer;
+}
+li.contextmenu-row-container:has(.contextmenu-row-submenu-indicator) {
+    grid-template-columns: 1fr auto;
 }
 li.contextmenu-row-container.disabled {
     opacity: 0.5;
@@ -68,10 +71,11 @@ ul.contextmenu span {
     white-space: nowrap;
 }
 span.contextmenu-row-shortcut {
+    text-align: right;
     color: var(--text-col-2);
 }
 img.contextmenu-row-submenu-indicator {
-    width: 2rem;
+    width: 1rem;
 }
 
 li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {

@@ -3,12 +3,34 @@ import PlaylistManager from "./playlists.js";
 import openUpdateThumbnailModal from "./../modals/modal.center.open/update-playlist-thumbnail.js";
 import openCreatePlaylistModal from "./../modals/modal.center.open/create-playlist.js";
 import openAddSongToPlaylistModal from "./../modals/modal.center.open/add-song-to-playlist.js";
+import { getPlaylistRows, getPlaylistRowShortcuts } from "./../contextmenus/contextmenu.rows/playlist.js";
+import { getPlaylistContainerRows, getPlaylistContainerShortcuts } from "./../contextmenus/contextmenu.rows/playlist-container.js";
+import { getSongContainerShortcuts, getSongContainerRows } from "./../contextmenus/contextmenu.rows/song-container.js";
+import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsEventManager {
     constructor(private app: App, private playlists: PlaylistManager) {
+        this.initContextmenuShortcuts();
         this.initPlaylistContainerEvents();
         this.initOpenedPlaylistEvents();
+    }
+
+    private initContextmenuShortcuts(): void {
+        let prevent: boolean = false;
+
+        document.addEventListener("keydown", async (e: KeyboardEvent) => {
+            if (prevent) {
+                return;
+            }
+
+            prevent = true;
+
+            await this.playlistContrainerShortcuts(e);
+            await this.openedPlaylistShortcuts(e);
+
+            prevent = false;
+        });
     }
 
     private initPlaylistContainerEvents(): void {
@@ -25,6 +47,11 @@ export default class PlaylistsEventManager {
         Elements.songs.settingsButton!.addEventListener("click", async () => {
             const rect: DOMRect = Elements.songs.settingsButton!.getBoundingClientRect();
             await this.app.contextmenuManager.createSongSettingContextMenu({ x: rect.x + rect.width, y: rect.y });
+        });
+
+        Elements.currentPlaylist.addSongsButton!.addEventListener("click", async () => {
+            const songsLeft: Song[] = await this.playlists.getSongsLeft();
+            openAddSongToPlaylistModal(this.app, songsLeft);
         });
     }
 
@@ -44,13 +71,32 @@ export default class PlaylistsEventManager {
 
         (Elements.currentPlaylist.songContainer as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
 
-        Elements.currentPlaylist.addSongsButton!.addEventListener("click", async () => {
-            const songsLeft: Song[] = await this.playlists.getSongsLeft();
-            openAddSongToPlaylistModal(this.app, songsLeft);
-        });
+    }
+
+    // PLAYLIST CONTAINER EVENTS
+    private async playlistContrainerShortcuts(e: KeyboardEvent): Promise<void> {
+        if (Functions.isCenterModalAlreadyOpened()) {
+            return;
+        }
+
+        await Functions.testShortcuts(e, getPlaylistContainerShortcuts(), getPlaylistContainerRows, this.app);
     }
 
     // OPENED PLAYLIST EVENTS
+    private async openedPlaylistShortcuts(e: KeyboardEvent): Promise<void> {
+        if (Functions.isCenterModalAlreadyOpened()) {
+            return;
+        }
+
+        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
+
+        await Functions.testShortcuts(e, getPlaylistRowShortcuts(), getPlaylistRows, this.app, currentOpenedPlaylist);
+        await Functions.testShortcuts(e, getSongContainerShortcuts(), getSongContainerRows, this.app);
+    }
+
     private openedPlaylistInputFilterOnInput(): void {
         const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
 
@@ -86,11 +132,6 @@ export default class PlaylistsEventManager {
             return;
         }
 
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-        if (currentOpenedPlaylist == null) {
-            return;
-        }
-
-        this.app.contextmenuManager.createSongContainerContextMenu((e as Position), currentOpenedPlaylist);
+        this.app.contextmenuManager.createSongContainerContextMenu((e as Position));
     }
 };

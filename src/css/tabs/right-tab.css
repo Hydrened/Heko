@@ -1,7 +1,9 @@
 .right-tab {
     padding: var(--main-padding);
 
-    position: relative
+    position: relative;
+    
+    overflow-x: hidden;
 }
 
 
@@ -17,7 +19,7 @@
     gap: var(--main-padding);
 
     opacity: 0;
-    transition: 500ms;
+    transition: var(--playlist-open-duration);
 }
 #current-playlist-container.opened {
     opacity: 1;

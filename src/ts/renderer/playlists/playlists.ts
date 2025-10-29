@@ -1,8 +1,9 @@
-import App from "../app.js";
-import PlaylistsEventManager from "./playlist.events.js";
+import App from "./../app.js";
+import PlaylistsEventManager from "./playlists.events.js";
 import PlaylistsRefreshContainerManager from "./playlist.refresh.container.js";
 import PlaylistsRefreshOpenedManager from "./playlist.refresh.opened.js";
 import PlaylistsOpenManager from "./playlists.open.js";
+import PlaylistsMoveManager from "./playlist.move.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -11,6 +12,7 @@ export default class PlaylistManager {
     private refreshContainerManager: PlaylistsRefreshContainerManager;
     private refreshOpenedManager: PlaylistsRefreshOpenedManager;
     private openManager: PlaylistsOpenManager;
+    private moveManager: PlaylistsMoveManager;
 
     private currentOpenedPlaylist: Playlist | null = null;
     private currentOpenedPlaylistSongs: Song[] = [];
@@ -21,6 +23,7 @@ export default class PlaylistManager {
         this.refreshContainerManager = new PlaylistsRefreshContainerManager(this.app, this);
         this.refreshOpenedManager = new PlaylistsRefreshOpenedManager(this.app, this);
         this.openManager = new PlaylistsOpenManager(this.app, this);
+        this.moveManager = new PlaylistsMoveManager(this.app, this);
     }
 
     // EVENTS

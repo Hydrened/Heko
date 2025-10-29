@@ -9,12 +9,16 @@
     background-color: var(--bg-bo-1);
 }
 
+
+
 .left-tab > header {
     border-bottom: var(--default-border);
 }
 .left-tab > footer {
     border-top: var(--default-border);
 }
+
+
 
 .left-tab > :is(header, footer) {
     padding: var(--main-padding);
@@ -27,9 +31,13 @@
     background-color: var(--bg-bo-3);
 }
 
+
+
 .left-tab > :is(header > h2, footer > h2) {
     font-size: 1.3rem;
 }
+
+
 
 .music-note-img,
 .folder-img {
@@ -40,11 +48,16 @@
     width: 1.5rem;
 }
 
+
+
 #playlists-container {
     padding: calc(var(--main-padding) * 0.65);
     padding-right: 0;
+
     overflow-y: scroll;
 }
+
+
 
 .playlist-wrapper {
     transition: 500ms;
@@ -54,6 +67,8 @@
     transform: translateX(-50%);
     opacity: 0;
 }
+
+
 
 .playlist-container {
     padding: 0.5rem;
@@ -76,6 +91,60 @@
 .playlist-container:hover {
     background-color: var(--bg-wo-4);
 }
+.playlist-container.pre-move {
+    cursor: grab;
+}
+.playlist-container.locked {
+    opacity: 0.5;
+    background-color: var(--bg-bo-4);
+}
+.playlist-container.moving {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border-radius: 0.7rem;
+
+    background: var(--main-gradient);
+    transition: 0ms;
+    cursor: grabbing;
+}
+.playlist-container.moving::after {
+    content: "";
+
+    width: 100%;
+    height: 100%;
+    
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    border: var(--default-border);
+    border-radius: inherit;
+
+    background-color: var(--bg-wo-3);
+    z-index: -1;
+}
+.playlist-container.insert-after::before,
+.playlist-container.insert-before::before {
+    content: "";
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    z-index: 1;
+}
+.playlist-container.insert-after::before {
+    border-bottom: 1px solid rgb(150,150,150);
+}
+.playlist-container.insert-before::before {
+    border-top: 1px solid rgb(150,150,150);
+}
+
+
 
 .playlist-container > .thumbnail {
     width: 3rem;
@@ -113,6 +182,8 @@
     rotate: 90deg;
 }
 
+
+
 .children-container {
     max-height: 500vh;
     margin-left: 1rem;
@@ -123,9 +194,13 @@
     transition: 350ms;
 }
 
+
+
 .children-container:empty {
     display: none;
 }
+
+
 
 .playlist-container:not(.opened) + .children-container {
     max-height: 0;

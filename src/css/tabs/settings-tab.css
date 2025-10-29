@@ -1,17 +1,9 @@
 settings-container {
-    width: 100vw;
-    height: calc(100vh - var(--frame-height));
-
-    position: absolute;
-    top: var(--frame-height);
-    left: 0;
-
     display: grid;
     grid-template-columns: 1fr 3fr;
-    
-    background: var(--main-gradient);
-    z-index: 10;
-
+    grid-template-rows: 1fr;
+}
+settings-container:not(.opened) {
     display: none;
 }
 
@@ -56,9 +48,12 @@ ul.settings-menus-container > :is(li.selected, li:hover) {
 settings-container > section {
     display: flex;
     flex-direction: column;
-    overflow-y: scroll;
+
+    overflow-y: auto;
 }
 settings-container > section > article {
+    flex: 1 0 auto;
+
     padding: 1.5rem;
 
     display: flex;
@@ -72,8 +67,7 @@ settings-container > section > article {
 
 
 
-
-
+/* 
 ul.settings-section-container {
     display: flex;
     flex-direction: column;
@@ -91,4 +85,4 @@ ul.setting-row-container {
 }
 ul.setting-row-container > li {
     border: 1px solid red;
-}
+} */

@@ -35,19 +35,7 @@ export default class App {
         Bridge.mainEvents.onClose(async () => await this.saveSettings());
     }
 
-    public async init(): Promise<void> {
-        await this.account.init();
-    }
-
-    public throwError(message: string): void {
-        if (!this.threw) {
-            Bridge.throwError(message);
-            this.threw = true;
-        }
-    }
-
-    // ON CLOSE
-    public async saveSettings(): Promise<void> {
+    private async saveSettings(): Promise<void> {
         const userData: UserData = this.account.getUserData();
         if (userData.id == null || userData.token == null) {
             return;
@@ -64,6 +52,17 @@ export default class App {
         const saveUserSettingsReqRes: any = await Requests.user.saveSettings(userData.id, userData.token, settings);
         if (!saveUserSettingsReqRes.success) {
             return this.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
+        }
+    }
+
+    public async init(): Promise<void> {
+        await this.account.init();
+    }
+
+    public throwError(message: string): void {
+        if (!this.threw) {
+            Bridge.throwError(message);
+            this.threw = true;
         }
     }
 

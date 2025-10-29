@@ -1,11 +1,11 @@
-import App from "../app.js";
+import App from "./../app.js";
 import { getAccountRows } from "./contextmenu.rows/account.js";
 import { getPlaylistContainerRows } from "./contextmenu.rows/playlist-container.js";
 import { getPlaylistRows } from "./contextmenu.rows/playlist.js";
 import { getSongSettingRows } from "./contextmenu.rows/song-settings.js";
 import { getSongContainerRows } from "./contextmenu.rows/song-container.js";
 import { getSongRows } from "./contextmenu.rows/song.js";
-import * as Functions from "../utils/utils.functions.js";
+import * as Functions from "./../utils/utils.functions.js";
 
 export default class ContextmenuManager {
     private currentContextmenuElement: HTMLElement | null = null;
@@ -173,8 +173,8 @@ export default class ContextmenuManager {
         this.createContextMenu(position, await getSongSettingRows(this.app));
     }
 
-    public async createSongContainerContextMenu(position: Position, openedPlaylist: Playlist): Promise<void> {
-        this.createContextMenu(position, await getSongContainerRows(this.app, openedPlaylist));
+    public async createSongContainerContextMenu(position: Position): Promise<void> {
+        this.createContextMenu(position, await getSongContainerRows(this.app));
     }
 
     public async createSongContextMenu(position: Position, song: Song, songElement: HTMLElement): Promise<void> {

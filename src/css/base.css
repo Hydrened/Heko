@@ -6,7 +6,7 @@
     --main-padding: 1.15rem;
     --loading-modal-spinner-width: 4px;
     --contextmenu-padding: 0.3rem;
-    --contextmenu-width: 240px;
+    --contextmenu-width: 280px;
     --contextmenu-row-height: 29px;
 
     /* BG COLORS */
@@ -48,6 +48,15 @@
     /* BORDER */
     --border-col-1: rgba(255,255,255,0.1);
     --default-border: 1px solid var(--border-col-1);
+
+    /* DURATIONS */
+    --center-modal-closing-duration: 500ms;
+    --top-modal-closing-duration: 500ms;
+    --loading-modal-closing-duration: 500ms;
+    --playlist-open-duration: 500ms;
+
+    /* INDEXES */
+    --main-modal-index: 999;
 }
 
 *, *::before, *::after {
@@ -70,7 +79,6 @@
 
 html {
     background: var(--main-gradient);
-    overflow-x: hidden;
 }
 
 ul {
@@ -82,11 +90,20 @@ button.disabled {
     user-select: none;
     pointer-events: none;
 }
-button > img {
+button:has(img) {
+    aspect-ratio: 1 / 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
     cursor: pointer;
+}
+button > img {
+    position: relative;
     transition: 150ms;
 }
-button > img:hover {
+button:hover > img {
     opacity: 1;
 }
 img {

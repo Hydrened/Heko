@@ -1,3 +1,13 @@
+## HEKO-3.0.4
+#### ADDED
+- song control shortcuts
+- no inputs modals enter shortcut
+- contextmenu shortcuts
+#### FIXED
+- pause the song when adjusting the audio current time with the slider
+- remove playlist with thumbnail duplicated crash
+- 1 song playlist long not working
+
 ## HEKO-3.0.3
 #### ADDED
 - update / remove playlist thumbnail

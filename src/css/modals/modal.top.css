@@ -44,5 +44,5 @@ top-modal-container.error {
     100% { opacity: 0; }
 }
 top-modal-container.closing {
-    animation: top-modal-container-closing 500ms forwards;
+    animation: top-modal-container-closing var(--top-modal-closing-duration) forwards;
 }

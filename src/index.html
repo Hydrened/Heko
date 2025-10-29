@@ -9,11 +9,11 @@
         <link rel="stylesheet" href="css/utils/input-select.css">
         <link rel="stylesheet" href="css/contextmenus/contextmenu.css">
         <link rel="stylesheet" href="css/contextmenus/contextmenu.parents.css">
-        <link rel="stylesheet" href="css/settings/settings.css">
         <link rel="stylesheet" href="css/tabs/tabs.css">
         <link rel="stylesheet" href="css/tabs/left-tab.css">
         <link rel="stylesheet" href="css/tabs/right-tab.css">
         <link rel="stylesheet" href="css/tabs/bottom-tab.css">
+        <link rel="stylesheet" href="css/tabs/settings-tab.css">
         <link rel="stylesheet" href="css/modals/modal.center.css">
         <link rel="stylesheet" href="css/modals/modal.loading.css">
         <link rel="stylesheet" href="css/modals/modal.top.css">
@@ -133,89 +133,89 @@
                     </div>
                 </article>
             </footer>
+            <settings-container class="">
+                <aside>
+                    <h1>Settings</h1>
+                    <ul class="settings-menus-container">
+                        <li>Account</li>
+                        <li>Apparence</li>
+                        <li>Preferences</li>
+                        <li>Shortcuts</li>
+                    </ul>
+                </aside>
+                <section>
+                    <article>
+                        <h1>Account</h1>
+                        <ul class="settings-section-container">
+                            <li>
+                                <h2 class="settings-section-title">Details</h2>
+                                <ul class="setting-row-container">
+                                    <li>
+                                        <p>Name: <span id="settings-user-name"></span></p>
+                                    </li>
+                                    <li>
+                                        <p>Email: <span id="settings-user-email"></span></p>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </article>
+                    <article>
+                        <h1>Apparence</h1>
+                        <ul class="settings-section-container">
+                            <li>
+                                <h2 class="settings-section-title">Templates</h2>
+                                <div>Theme 1</div>
+                                <div>Theme 2</div>
+                                <div>Theme 3</div>
+                                <!-- theme squares -->
+                            </li>
+                            <li>
+                                <h2 class="settings-section-title">Custom</h2>
+                                <ul class="setting-row-container">
+                                    <li>
+                                        <label>Main color</label>
+                                        <div></div>
+                                    </li>
+                                    <li>
+                                        <label>Gradient color 1</label>
+                                        <div></div>
+                                    </li>
+                                    <li>
+                                        <label>Gradient color 2</label>
+                                        <div></div>
+                                    </li>
+                                    <li>
+                                        <label>Gradient rotation</label>
+                                        <input type="number">
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </article>
+                    <article>
+                        <h1>Preferences</h1>
+                        <ul class="settings-section-container">
+                            <li>
+                                <div>
+                                    <label>Hide success top modal</label>
+                                    <input type="checkbox">
+                                </div>
+                                <div>
+                                    <label for="a">Volume easing</label>
+                                    <input name="a" type="radio">
+                                    <input name="a" type="radio">
+                                    <input name="a" type="radio">
+                                </div>
+                            </li>
+                        </ul>
+                    </article>
+                    <article>
+                        <h1>Shortcuts</h1>
+                        <ul class="settings-section-container"></ul>
+                    </article>
+                </section>
+            </settings-container>
         </main>
-        <settings-container>
-            <aside>
-                <h1>Settings</h1>
-                <ul class="settings-menus-container">
-                    <li>Account</li>
-                    <li>Apparence</li>
-                    <li>Preferences</li>
-                    <li>Shortcuts</li>
-                </ul>
-            </aside>
-            <section>
-                <article>
-                    <h1>Account</h1>
-                    <ul class="settings-section-container">
-                        <li>
-                            <h2 class="settings-section-title">Details</h2>
-                            <ul class="setting-row-container">
-                                <li>
-                                    <p>Name: <span id="settings-user-name"></span></p>
-                                </li>
-                                <li>
-                                    <p>Email: <span id="settings-user-email"></span></p>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </article>
-                <article>
-                    <h1>Apparence</h1>
-                    <ul class="settings-section-container">
-                        <li>
-                            <h2 class="settings-section-title">Templates</h2>
-                            <div>Theme 1</div>
-                            <div>Theme 2</div>
-                            <div>Theme 3</div>
-                            <!-- theme squares -->
-                        </li>
-                        <li>
-                            <h2 class="settings-section-title">Custom</h2>
-                            <ul class="setting-row-container">
-                                <li>
-                                    <label>Main color</label>
-                                    <div></div>
-                                </li>
-                                <li>
-                                    <label>Gradient color 1</label>
-                                    <div></div>
-                                </li>
-                                <li>
-                                    <label>Gradient color 2</label>
-                                    <div></div>
-                                </li>
-                                <li>
-                                    <label>Gradient rotation</label>
-                                    <input type="number">
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </article>
-                <article>
-                    <h1>Preferences</h1>
-                    <ul class="settings-section-container">
-                        <li>
-                            <div>
-                                <label>Hide success top modal</label>
-                                <input type="checkbox">
-                            </div>
-                            <div>
-                                <label for="a">Volume easing</label>
-                                <input name="a" type="radio">
-                                <input name="a" type="radio">
-                                <input name="a" type="radio">
-                            </div>
-                        </li>
-                    </ul>
-                </article>
-                <article>
-                    <h1>Shortcuts</h1>
-                    <ul class="settings-section-container"></ul>
-                </article>
-            </section>
-        </settings-container>
     </body>
 </html>

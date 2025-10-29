@@ -14,8 +14,6 @@ export function pluralize(singularWord: string, n: number): string {
 }
 
 export function shortcutToString(shortcut: Shortcut): string {
-    return ""; // temp
-
     const buffer: string[] = [];
 
     if (shortcut.ctrl) {
@@ -30,6 +28,44 @@ export function shortcutToString(shortcut: Shortcut): string {
     buffer.push(shortcut.key);
 
     return buffer.join("+");
+}
+
+export function testShortcut(e: KeyboardEvent, shortcut: Shortcut): boolean {
+    const ctrl: boolean = (shortcut.ctrl == e.ctrlKey);
+    const alt: boolean = (shortcut.alt == e.altKey);
+    const shift: boolean = (shortcut.shift == e.shiftKey);
+    const key: boolean = (shortcut.key.toLowerCase() == e.key.toLowerCase());
+
+    return (ctrl && alt && shift && key);
+}
+
+export async function testShortcuts(e: KeyboardEvent, shortcuts: ShortcutMap, contextmenuRowsPromise: (...args: any[]) => ContextmenuRow[] | Promise<ContextmenuRow[]>, ...args: any[]): Promise<boolean> {
+    const shortCutIsValid: boolean = Object.values(shortcuts).some((shortcut: Shortcut) => testShortcut(e, shortcut));
+    if (!shortCutIsValid) {
+        return false;
+    }
+
+    const contextmenuRows: ContextmenuRow[] = await contextmenuRowsPromise(...args);
+    return contextmenuRows.some((row: ContextmenuRow) => {
+        if (row.disabled) {
+            return false;
+        }
+
+        if (row.onClick == undefined) {
+            return false;
+        }
+
+        if (row.shortcut == undefined) {
+            return false;
+        }
+
+        if (!testShortcut(e, row.shortcut)) {
+            return false;
+        }
+
+        row.onClick();
+        return true;
+    });
 }
 
 export function getThumbnailPath(thumbnailFileName: string): string {
@@ -75,4 +111,8 @@ export function getCssVariable(variable: string, type: CssVariableType | null): 
         
         default: return res;
     }
+}
+
+export function isCenterModalAlreadyOpened(): boolean {
+    return (document.querySelector(".center-modal-container") != null);
 }

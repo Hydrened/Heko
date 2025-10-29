@@ -72,6 +72,10 @@ export default class ListenerManager {
         this.queueManager.toggleLoopButton();
     }
 
+    public toggleMuteButton(): void {
+        this.volumeManager.toggleMuteButton();
+    }
+
     // GETTERS
     public getAudioElement(): HTMLAudioElement {
         return this.audioElement;
@@ -99,5 +103,10 @@ export default class ListenerManager {
 
     public getVolume(): number {
         return this.volumeManager.getVolume();
+    }
+
+    // SETTERS
+    public setVolume(percentageVolume: number): void {
+        this.volumeManager.setVolume(Math.max(0, Math.min(100, percentageVolume)));
     }
 };

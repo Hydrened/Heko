@@ -1,3 +1,4 @@
+import * as Functions from "./../utils/utils.functions.js";
 import "./../utils/utils.types.js";
 
 export default class TopModal {
@@ -30,6 +31,6 @@ export default class TopModal {
         }
 
         this.container.classList.add("closing");
-        setTimeout(() => this.container?.remove(), 500);
+        setTimeout(() => this.container?.remove(), Number(Functions.getCssVariable("top-modal-closing-duration", "MS_DURATION")));
     }
 };

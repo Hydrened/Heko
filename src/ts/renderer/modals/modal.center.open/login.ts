@@ -1,7 +1,7 @@
-import App from "../../app.js";
-import CenterModal from "../modal.center.js";
-import * as Bridge from "../../utils/utils.bridge.js";
-import * as Requests from "../../utils/utils.requests.js";
+import App from "./../../app.js";
+import CenterModal from "./../modal.center.js";
+import * as Bridge from "./../../utils/utils.bridge.js";
+import * as Requests from "./../../utils/utils.requests.js";
 
 async function loginModalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const email: string = modal.getFieldValue("Email");

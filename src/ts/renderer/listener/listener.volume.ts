@@ -17,18 +17,7 @@ export default class ListenerVolumeManager {
             this.setVolume(sliderValue);
         });
 
-        Elements.songControls.volume.toggleButton!.addEventListener("click", () => {
-            if (this.audioElement.volume != 0) {
-                this.oldVolume = this.volume;
-                this.setVolume(0);
-            }
-            else {
-                this.setVolume(this.oldVolume);
-                this.oldVolume = 0;
-            }
-
-            this.refreshVolumeSlider();
-        });
+        Elements.songControls.volume.toggleButton!.addEventListener("click", () => this.toggleMuteButton());
     }
 
     public load(): void {
@@ -47,17 +36,33 @@ export default class ListenerVolumeManager {
         (Elements.songControls.volume.slider as HTMLInputElement).value = String(this.volume);
     }
 
+    // BUTTON EVENTS
+    public toggleMuteButton(): void {
+        if (this.audioElement.volume != 0) {
+            this.oldVolume = this.volume;
+            this.setVolume(0);
+        }
+        else {
+            this.setVolume(this.oldVolume);
+            this.oldVolume = 0;
+        }
+
+        this.refreshVolumeSlider();
+    }
+
     // GETTERS
     public getVolume(): number {
         return this.volume;
     }
 
     // SETTERS
-    private setVolume(percentageVolume: number) {
+    public setVolume(percentageVolume: number) {
         this.volume = percentageVolume;
 
         const volume: number = Math.pow((percentageVolume * 0.01), 2);
         this.audioElement.volume = volume;
+
+        (Elements.songControls.volume.slider as HTMLInputElement).value = String(percentageVolume);
 
         this.refreshVolumeLogo();
     }

@@ -27,10 +27,6 @@ export default class ListenerQueueManager {
         this.audioElement.addEventListener("ended", () => {
             Elements.songControls.buttons.nextButton!.dispatchEvent(new Event("click"));
         });
-
-        Bridge.mainEvents.onPreviousButton(() => this.previousButton());
-        Bridge.mainEvents.onPlayButton(async () => await this.togglePlayButton());
-        Bridge.mainEvents.onNextButton(() => this.nextButton());
     }
 
     public load(): void {
@@ -198,6 +194,7 @@ export default class ListenerQueueManager {
         if (this.currentSongs!.length == 1) {
             this.recreate(null);
             this.audioElement.currentTime = 0;
+            this.audioElement.play();
             return;
         }
 

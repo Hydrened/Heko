@@ -2,15 +2,18 @@ import App from "./../app.js";
 import TopModal from "./modal.top.js";
 import InputSelect from "./../utils/utils.input-select.js";
 import * as AntiSpam from "./../utils/utils.anti-spam.js";
+import * as Functions from "./../utils/utils.functions.js";
 
 export default class CenterModal {
     private container: HTMLElement | null = null;
     private closing: boolean = false;
+    private closingDuration: number = 0;
 
     // INIT
     constructor(private app: App, private data: CenterModalData) {
         this.checkErrors();
         this.initEvents();
+        this.loadCssVariables();
 
         const container: HTMLElement = this.createContainer();
         this.createContent(container);
@@ -40,21 +43,35 @@ export default class CenterModal {
         window.addEventListener("keydown", this.keydownEvent);
     }
 
-    private keydownEvent = (e: KeyboardEvent): void => {
-        if (e.key != "Escape") {
-            return;
-        }
+    private loadCssVariables(): void {
+        this.closingDuration = Number(Functions.getCssVariable("center-modal-closing-duration", "MS_DURATION"));
+    }
 
-        if (this.container == null) {
-            return this.app.throwError("Can't close modal: Container element is null.");
-        }
+    private keydownEvent = async (e: KeyboardEvent): Promise<void> => {
+        if (e.key == "Escape") {
+            if (this.container == null) {
+                return this.app.throwError("Can't close modal: Container element is null.");
+            }
 
-        const inSelectInput: boolean = [...this.container.querySelectorAll("input-select > input")].some((e: Element) => document.activeElement == e);
-        if (inSelectInput) {
-            return;
-        }
+            const inSelectInput: boolean = [...this.container.querySelectorAll("input-select > input")].some((e: Element) => document.activeElement == e);
+            if (inSelectInput) {
+                return;
+            }
 
-        this.close();
+            this.close();
+        }
+        else if (e.key == "Enter") {
+            const element: HTMLElement = (e.target as HTMLElement);
+            if (element.tagName == "INPUT") {
+                if ((element as HTMLInputElement).type == "file") {
+                    return;
+                }
+            }
+
+            await AntiSpam.prevent(async () => {
+                await this.confirm();
+            });
+        }
     }
 
     private createContainer(): HTMLElement {
@@ -144,12 +161,7 @@ export default class CenterModal {
         }
 
         input.addEventListener("keydown", async (e: KeyboardEvent) => {
-            if (e.key == "Enter") {
-                await AntiSpam.prevent(async () => {
-                    await this.confirm();
-                });
-            }
-            else if (e.key == "Escape") {
+            if (e.key == "Escape") {
                 setTimeout(() => input.blur(), 0);
             }
         });
@@ -210,7 +222,7 @@ export default class CenterModal {
         }
 
         window.removeEventListener("keydown", this.keydownEvent);
-        setTimeout(() => container.remove(), 500);
+        setTimeout(() => container.remove(), this.closingDuration);
     }
 
     public async confirm(): Promise<void> {

@@ -1,7 +1,7 @@
-import App from "../../app.js";
-import CenterModal from "../modal.center.js";
-import TopModal from "../modal.top.js";
-import * as Requests from "../../utils/utils.requests.js";
+import App from "./../../app.js";
+import CenterModal from "./../modal.center.js";
+import TopModal from "./../modal.top.js";
+import * as Requests from "./../../utils/utils.requests.js";
 
 async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, song: Song): Promise<ModalError> {
     const userData: UserData = app.account.getUserData();

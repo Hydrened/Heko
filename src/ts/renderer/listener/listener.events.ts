@@ -1,5 +1,6 @@
 import App from "./../app.js";
 import ListenerManager from "./listener.js";
+import * as Bridge from "./../utils/utils.bridge.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -12,6 +13,7 @@ export default class ListenerEventManager {
     private initEvents(): void {
         this.initSongControlButtonEvent();
         this.initSongProgressbarEvents();
+        this.initShortcuts();
     }
 
     private initSongControlButtonEvent(): void {
@@ -27,6 +29,10 @@ export default class ListenerEventManager {
         elementEvents.forEach((elementEvent: ElementEvent) => {
             elementEvent.element.addEventListener("click", () => elementEvent.event());
         });
+
+        Bridge.mainEvents.onPreviousButton(() => this.listener.previousButton());
+        Bridge.mainEvents.onPlayButton(async () => await this.listener.togglePlayButton());
+        Bridge.mainEvents.onNextButton(() => this.listener.nextButton());
     }
 
     private initSongProgressbarEvents(): void {
@@ -41,6 +47,16 @@ export default class ListenerEventManager {
 
             const audioElement: HTMLAudioElement = this.listener.getAudioElement();
             audioElement.currentTime = newCurrentTime;
+            audioElement.volume = 0;
+        });
+
+        Elements.songControls.progressBar.slider!.addEventListener("mouseup", (e: Event) => {
+            const currentSong: Song | null = this.listener.getCurrentSong();
+            if (currentSong == null) {
+                return;
+            }
+
+            this.listener.setVolume(this.listener.getVolume());
         });
     }
 
@@ -58,5 +74,73 @@ export default class ListenerEventManager {
         (Elements.songControls.progressBar.slider as HTMLInputElement).value = sliderValue;
 
         setTimeout(() => this.initRefreshLoop(), 100);
+    }
+
+    private initShortcuts(): void {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if ((e.target as HTMLElement).tagName == "INPUT") {
+                return;
+            }
+
+            if (e.key == " ") {
+                this.app.listenerManager.togglePlayButton();
+            }
+
+            else if (e.key == "ArrowLeft" && e.ctrlKey) {
+                this.app.listenerManager.previousButton();
+            }
+
+            else if (e.key == "ArrowRight" && e.ctrlKey) {
+                this.app.listenerManager.nextButton();
+            }
+
+            else if (e.key == "ArrowLeft" && !e.ctrlKey) {
+                const audioElement: HTMLAudioElement = this.app.listenerManager.getAudioElement();
+                if (audioElement.src == "") {
+                    return;
+                }
+                audioElement.currentTime = Math.max(0, audioElement.currentTime - 5);
+            }
+
+            else if (e.key == "ArrowRight" && !e.ctrlKey) {
+                const audioElement: HTMLAudioElement = this.app.listenerManager.getAudioElement();
+                if (audioElement.src == "") {
+                    return;
+                }
+                audioElement.currentTime = Math.min(audioElement.duration, audioElement.currentTime + 5);
+            }
+
+            else if (/^[0-9]$/.test(e.key)) {
+                const multiplier: number = (Number(e.key) * 0.1);
+                
+                const audioElement: HTMLAudioElement = this.app.listenerManager.getAudioElement();
+                if (audioElement.src == "") {
+                    return;
+                }
+                audioElement.currentTime = (audioElement.duration * multiplier);
+            }
+
+            else if (e.key.toLowerCase() == "s" && e.ctrlKey) {
+                this.app.listenerManager.toggleShuffleButton();
+            }
+
+            else if (e.key.toLowerCase() == "l" && e.ctrlKey) {
+                this.app.listenerManager.toggleLoopButton();
+            }
+
+            else if (e.key == "ArrowDown" && !e.ctrlKey) {
+                const currentVolume: number = this.app.listenerManager.getVolume();
+                this.app.listenerManager.setVolume(currentVolume - 5);
+            }
+
+            else if (e.key == "ArrowUp" && !e.ctrlKey) {
+                const currentVolume: number = this.app.listenerManager.getVolume();
+                this.app.listenerManager.setVolume(currentVolume + 5);
+            }
+
+            else if (e.key.toLowerCase() == "m" && !e.ctrlKey) {
+                this.app.listenerManager.toggleMuteButton();
+            }
+        });
     }
 };

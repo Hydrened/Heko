@@ -28,7 +28,7 @@ loading-modal-container {
     100% { opacity: 0; }
 }
 loading-modal-container.closing {
-    animation: loading-modal-container-closing 500ms forwards;
+    animation: loading-modal-container-closing var(--loading-modal-closing-duration) forwards;
 }
 
 

@@ -1,8 +1,8 @@
-import App from "../../app.js";
-import CenterModal from "../modal.center.js";
-import LoadingModal from "../modal.loading.js";
-import TopModal from "../modal.top.js";
-import * as Requests from "../../utils/utils.requests.js";
+import App from "./../../app.js";
+import CenterModal from "./../modal.center.js";
+import LoadingModal from "./../modal.loading.js";
+import TopModal from "./../modal.top.js";
+import * as Requests from "./../../utils/utils.requests.js";
 
 async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("Name");

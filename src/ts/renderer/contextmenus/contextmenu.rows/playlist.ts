@@ -81,6 +81,16 @@ function getPlaylistMerge(app: App, userID: ID, token: Token, userPlaylists: Pla
     return [];
 }
 
+export function getPlaylistRowShortcuts(): ShortcutMap {
+    const res: ShortcutMap = {};
+
+    res["rename"] = { ctrl: false, shift: false, alt: false, key: "F2" };
+    res["remove"] = { ctrl: false, shift: false, alt: false, key: "Delete" };
+    res["duplicate"] = { ctrl: true, shift: false, alt: false, key: "D" };
+
+    return res;
+}
+
 export async function getPlaylistRows(app: App, playlist: Playlist): Promise<ContextmenuRow[]> {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
@@ -101,16 +111,18 @@ export async function getPlaylistRows(app: App, playlist: Playlist): Promise<Con
     const disableMoveIn: boolean = (userPlaylists.length == 0);
     const disableMerge: boolean = (userPlaylists.length == 0);
 
+    const shortcuts: ShortcutMap = getPlaylistRowShortcuts();
+
     return [
-        { title: "Rename", shortcut: { ctrl: false, shift: false, alt: false, key: "F2" }, onClick: async () => {
+        { title: "Rename", shortcut: shortcuts["rename"], onClick: async () => {
             openRenamePlaylistModal(app, playlist);
         }, disabled: false },
 
-        { title: "Remove", shortcut: { ctrl: false, shift: false, alt: false, key: "Suppr" }, onClick: async () => {
+        { title: "Remove", shortcut: shortcuts["remove"], onClick: async () => {
             openRemovePlaylistModal(app, userPlaylists, playlist);
         }, disabled: false },
 
-        { title: "Duplicate", shortcut: { ctrl: true, shift: false, alt: false, key: "D" }, onClick: async () => {
+        { title: "Duplicate", shortcut: shortcuts["duplicate"], onClick: async () => {
             await duplicatePlaylistOnClick(app, userID, token, playlist);
         }, disabled: false },
 
