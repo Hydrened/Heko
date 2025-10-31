@@ -1,7 +1,7 @@
 import AppPath from "./../utils/utils.app-path.js";
 import "./utils.types.js";
 
-async function request(phpFile: string, data: { [key: string]: any }): Promise<any> {
+async function request(phpFile: string, data: { [key: string]: any } = {}): Promise<any> {
     const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -24,6 +24,12 @@ async function uploadFile(phpFile: string, userID: ID, token: Token, file: File)
 
     return await res.json();
 }
+
+export const app = {
+    getResponse: async (): Promise<any> => {
+        return await request("app/get-response.php");
+    },
+};
 
 export const user = {
     isTokenValid: async (token: Token): Promise<any> => {
@@ -56,6 +62,10 @@ export const playlist = {
         return await request("playlist/update-opened-state.php", { userID: userID, token: token, openedPlaylistIDs: openedPlaylistIDs });
     },
 
+    updatePosition: async (userID: ID, token: Token, playlistID: ID, position: number): Promise<any> => {
+        return await request("playlist/update-position.php", { userID: userID, token: token, playlistID: playlistID, position: position });
+    },
+
     remove: async (userID: ID, token: Token, playlistIDs: ID[], thumbnailFileNames: string[]): Promise<any> => {
         return await request("playlist/remove.php", { userID: userID, token: token, playlistIDs: playlistIDs, thumbnailFileNames: thumbnailFileNames });
     },
@@ -72,16 +82,8 @@ export const playlist = {
         return await request("playlist/move-in.php", { userID: userID, token: token, parentPlaylistID: parentPlaylistID, playlistID: playlistID });
     },
 
-    get: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
-        return await request("playlist/get.php", { userID: userID, token: token, playlistID: playlistID });
-    },
-
-    getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
-        return await request("playlist/get-all-from-user.php", { userID: userID, token: token });
-    },
-
-    getWhereSongInNotIn: async (userID: ID, token: Token, songID: ID): Promise<any> => {
-        return await request("playlist/get-where-song-is-not-in.php", { userID: userID, token: token, songID: songID });
+    get: async (userID: ID, token: Token): Promise<any> => {
+        return await request("playlist/get.php", { userID: userID, token: token });
     },
 };
 
@@ -124,17 +126,7 @@ export const song = {
         return await request("song/edit.php", { userID: userID, token: token, songID: songID, title: title, artist: artist });
     },
 
-    getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
-        return await request("song/get-all-from-user.php", { userID: userID, token: token });
-    },
-
-    getFromPlaylist: async (userID: ID, token: Token, playlistID: ID): Promise<any> => {
-        return await request("song/get-from-playlist.php", { userID: userID, token: token, playlistID: playlistID });
-    },
-};
-
-export const artist = {
-    getAllFromUser: async (userID: ID, token: Token): Promise<any> => {
-        return await request("artist/get-all-from-user.php", { userID: userID, token: token });
+    get: async (userID: ID, token: Token): Promise<any> => {
+        return await request("song/get.php", { userID: userID, token: token });
     },
 };

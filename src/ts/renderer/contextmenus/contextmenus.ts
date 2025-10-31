@@ -159,26 +159,26 @@ export default class ContextmenuManager {
         this.createContextMenu(position, getPlaylistContainerRows(this.app));
     }
 
-    public async createPlaylistContextMenu(position: Position, playlist: Playlist): Promise<void> {
+    public createPlaylistContextMenu(position: Position, playlist: Playlist): void {
         const playlistElement: HTMLElement | null = document.querySelector(`li.playlist-wrapper[playlist-id="${String(playlist.id)}"]`);
         if (playlistElement == null) {
             return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.");
         }
 
         this.setElementToContextmenuParent(playlistElement);
-        this.createContextMenu(position, await getPlaylistRows(this.app, playlist));
+        this.createContextMenu(position, getPlaylistRows(this.app, playlist));
     }
 
-    public async createSongSettingContextMenu(position: Position): Promise<void> {
-        this.createContextMenu(position, await getSongSettingRows(this.app));
+    public createSongSettingContextMenu(position: Position): void {
+        this.createContextMenu(position, getSongSettingRows(this.app));
     }
 
-    public async createSongContainerContextMenu(position: Position): Promise<void> {
-        this.createContextMenu(position, await getSongContainerRows(this.app));
+    public createSongContainerContextMenu(position: Position): void {
+        this.createContextMenu(position, getSongContainerRows(this.app));
     }
 
-    public async createSongContextMenu(position: Position, song: Song, songElement: HTMLElement): Promise<void> {
+    public createSongContextMenu(position: Position, song: Song, songElement: HTMLElement): void {
         this.setElementToContextmenuParent(songElement);
-        this.createContextMenu(position, await getSongRows(this.app, song));
+        this.createContextMenu(position, getSongRows(this.app, song));
     }
 };

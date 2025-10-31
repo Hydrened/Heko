@@ -12,16 +12,33 @@ async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal:
 
     const newPlaylistName: string = modal.getFieldValue("New name");
 
+    if (newPlaylistName.length < 3) {
+        return {
+            error: "Playlist anme has to be at least 3 characters long.",
+            fieldName: "New name",
+        };
+    }
+
+    const playlistNames: string[] = app.playlistManager.getPlaylistBuffer().map((p: Playlist) => p.name);
+    if (playlistNames.includes(newPlaylistName)) {
+        return {
+            error: `Playlist named "${newPlaylistName}" already exists.`,
+            fieldName: "New name",
+        };
+    }
+
     const renamePlaylistReqRes: any = await Requests.playlist.rename(userData.id, userData.token, playlist.id, newPlaylistName);
     if (!renamePlaylistReqRes.success) {
         app.throwError(`Can't rename playlist: ${renamePlaylistReqRes.error}`);
         return null;
     }
     
-    app.playlistManager.refreshPlaylistsContainerTab();
-    if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
-        app.playlistManager.refreshOpenedPlaylistTab();
-    }
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
+            app.playlistManager.refreshOpenedPlaylistTab();
+        }
+    });
 
     TopModal.create("SUCCESS", `Successfully renamed playlist "${playlist.name}" to "${newPlaylistName}".`);
     return null;

@@ -70,27 +70,22 @@ async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: Ce
         return null;
     }
 
+    app.playlistManager.refreshSongBuffer();
     app.playlistManager.refreshOpenedPlaylistTab();
+    
     TopModal.create("SUCCESS", `Successfully added song "${title}" by "${artist}" to Heko.`);
     return null;
 }
 
-export default async function openAddSongToAppModal(app: App, userSongs: Song[]): Promise<void> {
+export default function openAddSongToAppModal(app: App, userSongs: Song[]): void {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         return app.throwError("Can't open add song to app modal: User is not logged in.");
     }
 
-    const getArtistsFromUserReqRes: any = await Requests.artist.getAllFromUser(userData.id, userData.token);
-    if (!getArtistsFromUserReqRes.success) {
-        return app.throwError(`Can't get artists from user: ${getArtistsFromUserReqRes.error}`);
-    }
-
-    const artistNames: string[] = [...new Set(["Unknown"].concat((getArtistsFromUserReqRes.artists as Artist[]).map((artist: Artist) => artist.name)))];
-
     const content: ModalRow[] = [
         { label: "Title", type: "TEXT", maxLength: 150 },
-        { label: "Artist", type: "SELECT", maxLength: 150, data: artistNames },
+        { label: "Artist", type: "SELECT", maxLength: 150, data: app.playlistManager.getArtistNames() },
         { label: "Song file", type: "FILE" },
     ];
 

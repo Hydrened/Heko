@@ -3,14 +3,12 @@ import openAddSongToPlaylistModal from "./../../modals/modal.center.open/add-son
 
 export function getSongContainerShortcuts(): ShortcutMap {
     const res: ShortcutMap = {};
-
     res["add-song"] = { ctrl: true, shift: false, alt: false, key: "N" };
-
     return res;
 }
 
-export async function getSongContainerRows(app: App): Promise<ContextmenuRow[]> {
-    const songsLeft: Song[] = await app.playlistManager.getSongsLeft();
+export function getSongContainerRows(app: App): ContextmenuRow[] {
+    const songsLeft: Song[] = app.playlistManager.getSongsLeft();
     const disableAddSong: boolean = (songsLeft.length == 0);
 
     const shortcuts: ShortcutMap = getSongContainerShortcuts();

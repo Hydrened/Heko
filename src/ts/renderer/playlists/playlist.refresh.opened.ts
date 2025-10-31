@@ -1,6 +1,5 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
-import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -9,16 +8,16 @@ export default class PlaylistsRefreshOpenedManager {
 
     }
 
-    public async refresh(): Promise<void> {
-        await this.updateCurrentOpenedPlaylist();
-        await this.updateCurrentOpenedPlaylistSongs();
+    public refresh(): void {
+        this.updateCurrentOpenedPlaylist();
+        this.updateCurrentOpenedPlaylistSongs();
 
         this.refreshDetails();
-        await this.refreshAddSongButton();
+        this.refreshAddSongButton();
         this.refreshPlaylistSongs();
     }
 
-    private async updateCurrentOpenedPlaylist(): Promise<void> {
+    private updateCurrentOpenedPlaylist(): void {
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
@@ -28,18 +27,16 @@ export default class PlaylistsRefreshOpenedManager {
 
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            return this.app.throwError(`${errorBase}: User is  not logged in.`);
+            return this.app.throwError(`${errorBase}: User is not logged in.`);
         }
 
-        const getPlaylistReqRes: any = await Requests.playlist.get(userData.id, userData.token, currentOpenedPlaylist.id);
-        if (!getPlaylistReqRes.success) {
-            return this.app.throwError(`${errorBase}: ${getPlaylistReqRes.error}`);
+        const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(currentOpenedPlaylist.id);
+        if (playlist != undefined) {
+            this.playlists.setCurrentOpenedPlaylist(playlist);
         }
-
-        this.playlists.setCurrentOpenedPlaylist((getPlaylistReqRes.playlist as Playlist));
     }
 
-    private async updateCurrentOpenedPlaylistSongs(): Promise<void> {
+    private updateCurrentOpenedPlaylistSongs(): void {
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
@@ -49,24 +46,19 @@ export default class PlaylistsRefreshOpenedManager {
 
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            return this.app.throwError(`${errorBase}: User is  not logged in.`);
+            return this.app.throwError(`${errorBase}: User is not logged in.`);
         }
 
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentOpenedPlaylist.id);
-        if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`${errorBase}: ${getSongsFromPlaylistReqRes.error}`);
-        }
-
-        this.playlists.setCurrentOpenedPlaylistSongs((getSongsFromPlaylistReqRes.songs as Song[]));
+        this.playlists.setCurrentOpenedPlaylistSongs(this.playlists.getSongsFromPlaylist(currentOpenedPlaylist.id));
     }
 
     private refreshDetails(): void {
         const thumbnailElement: HTMLElement = (Elements.currentPlaylist.details.thumbnail as HTMLElement);
         thumbnailElement.style.backgroundImage = "";
-        Elements.currentPlaylist.details.title!.textContent = "";
-        Elements.currentPlaylist.details.songNumber!.textContent = "";
-        Elements.currentPlaylist.details.duration!.textContent = "";
-        Elements.currentPlaylist.addSongsButton!.classList.add("disabled");
+        Elements.currentPlaylist.details.title.textContent = "";
+        Elements.currentPlaylist.details.songNumber.textContent = "";
+        Elements.currentPlaylist.details.duration.textContent = "";
+        Elements.currentPlaylist.addSongsButton.classList.add("disabled");
 
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
         const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
@@ -77,19 +69,19 @@ export default class PlaylistsRefreshOpenedManager {
         const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(currentOpenedPlaylist.thumbnailFileName)}")`;
         thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
 
-        Elements.currentPlaylist.details.title!.textContent = currentOpenedPlaylist.name;
+        Elements.currentPlaylist.details.title.textContent = currentOpenedPlaylist.name;
 
         const nbSongs: number = currentOpenedPlaylist.songs;
-        Elements.currentPlaylist.details.songNumber!.textContent = `${nbSongs} ${Functions.pluralize("song", nbSongs)}`;
+        Elements.currentPlaylist.details.songNumber.textContent = `${nbSongs} ${Functions.pluralize("song", nbSongs)}`;
 
         const playlistDuration: number = currentOpenedPlaylistSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
-        Elements.currentPlaylist.details.duration!.textContent = formatPlatlistDuration;
+        Elements.currentPlaylist.details.duration.textContent = formatPlatlistDuration;
 
         (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value = "";
     }
 
-    private async refreshAddSongButton(): Promise<void> {
+    private refreshAddSongButton(): void {
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
@@ -100,22 +92,12 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentOpenedPlaylist.id);
-        if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
-        }
-
-        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
-        if (!getAllSongsFromUserReqRes.success) {
-            return this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
-        }
-
-        const playlistSongIDs: number[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.id);
-        const everyUserSongIDs: number[] = (getAllSongsFromUserReqRes.songs as Song[]).map((song: Song) => song.id);
+        const playlistSongIDs: number[] = this.playlists.getSongsFromPlaylist(currentOpenedPlaylist.id).map((song: Song) => song.id);
+        const everyUserSongIDs: number[] = (this.playlists.getSongBuffer()).map((song: Song) => song.id);
 
         const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
         if (canUserAddSongs) {
-            Elements.currentPlaylist.addSongsButton!.classList.remove("disabled");
+            Elements.currentPlaylist.addSongsButton.classList.remove("disabled");
         }
     }
 
@@ -133,7 +115,7 @@ export default class PlaylistsRefreshOpenedManager {
             liElement.setAttribute("playlist-id", String(currentOpenedPlaylist.id));
             liElement.setAttribute("song-id", String(song.id));
             liElement.classList.add("current-playlist-table-row");
-            Elements.currentPlaylist.songContainer!.appendChild(liElement);
+            Elements.currentPlaylist.songContainer.appendChild(liElement);
 
             liElement.addEventListener("click", () => {
                 this.app.listenerManager.initQueue(currentOpenedPlaylist, song);

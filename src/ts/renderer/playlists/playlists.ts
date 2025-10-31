@@ -8,11 +8,14 @@ import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
-    private playlistEventManager: PlaylistsEventManager;
-    private refreshContainerManager: PlaylistsRefreshContainerManager;
-    private refreshOpenedManager: PlaylistsRefreshOpenedManager;
-    private openManager: PlaylistsOpenManager;
-    private moveManager: PlaylistsMoveManager;
+    private readonly playlistEventManager: PlaylistsEventManager;
+    private readonly refreshContainerManager: PlaylistsRefreshContainerManager;
+    private readonly refreshOpenedManager: PlaylistsRefreshOpenedManager;
+    private readonly openManager: PlaylistsOpenManager;
+    private readonly moveManager: PlaylistsMoveManager;
+
+    private playlistBuffer: Playlist[] = [];
+    private songBuffer: Song[] = [];
 
     private currentOpenedPlaylist: Playlist | null = null;
     private currentOpenedPlaylistSongs: Song[] = [];
@@ -27,12 +30,53 @@ export default class PlaylistManager {
     }
 
     // EVENTS
-    public async refreshPlaylistsContainerTab(): Promise<void> {
-        await this.refreshContainerManager.refresh();
+    public async loggedIn(): Promise<void> {
+        await this.refreshPlaylistBuffer();
+        await this.refreshSongBuffer();
+        
+        this.refreshPlaylistsContainerTab();
     }
 
-    public async refreshOpenedPlaylistTab(): Promise<void> {
-        await this.refreshOpenedManager.refresh();
+    public refreshPlaylistsContainerTab(): void {
+        this.refreshContainerManager.refresh();
+    }
+
+    public refreshOpenedPlaylistTab(): void {
+        this.refreshOpenedManager.refresh();
+    }
+
+    public async refreshPlaylistBuffer(): Promise<void> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            this.playlistBuffer = [];
+            return;
+        }
+
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.get(userData.id, userData.token);
+        if (!getAllPlaylistsFromUserReqRes.success) {
+            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
+            this.playlistBuffer = [];
+            return;
+        }
+        
+        this.playlistBuffer = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
+    }
+
+    public async refreshSongBuffer(): Promise<void> {
+        const userData: UserData = this.app.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            this.songBuffer = [];
+            return;
+        }
+
+        const getAllSongsFromUserReqRes: any = await Requests.song.get(userData.id, userData.token);
+        if (!getAllSongsFromUserReqRes.success) {
+            this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
+            this.songBuffer = [];
+            return;
+        }
+        
+        this.songBuffer = (getAllSongsFromUserReqRes.songs as Song[]);
     }
 
     public async open(playlistID: ID): Promise<void> {
@@ -45,6 +89,63 @@ export default class PlaylistManager {
     }
 
     // GETTERS
+    public getPlaylistBuffer(): Playlist[] {
+        return this.playlistBuffer;
+    }
+
+    public getPlaylistFromID(playlistID: ID): Playlist | undefined {
+        return this.playlistBuffer.find((playlist: Playlist) => playlist.id == playlistID);
+    }
+
+    public getPlaylistWhereSongIsNotIn(songID: ID): Playlist[] {
+        if (this.songBuffer.find((song: Song) => song.id == songID) == undefined) {
+            this.app.throwError("Can't get playlist where song is not in: Song is undefined.");
+            return [];
+        }
+
+        return this.playlistBuffer.filter((playlist: Playlist) => {
+            const songs: Song[] = this.getSongsFromPlaylist(playlist.id);
+            return !songs.map((song: Song) => song.id).includes(songID);
+        });
+    }
+
+    public static getPlaylistElementFromID(playlistID: ID): HTMLElement | null {
+        return document.querySelector(`.playlist-container[playlist-id="${playlistID}"]`);
+    }
+
+    public getPlaylistFromElement(playlistElement: Element): Playlist | undefined {
+        if (!playlistElement.hasAttribute("playlist-id")) {
+            return undefined;
+        }
+
+        const playlistID: number = Number(playlistElement.getAttribute("playlist-id"));
+        if (isNaN(playlistID)) {
+            return undefined;
+        }
+
+        return this.getPlaylistFromID(playlistID);
+    }
+    
+    public getSongBuffer(): Song[] {
+        return this.songBuffer;
+    }
+
+    public getSongsFromPlaylist(playlistID: ID): Song[] {
+        if (this.getPlaylistFromID(playlistID) == undefined) {
+            this.app.throwError("Can't get songs from playlist: Playlist is undefined.");
+            return [];
+        }
+
+        return this.songBuffer.filter((song: Song) => {
+            return (song.playlistID == playlistID);
+        });
+    }
+
+    public getArtistNames(): string[] {
+        const artists: string[] = this.songBuffer.map((song: Song) => song.artist);
+        return [...new Set(["Unknown"].concat(artists))];
+    }
+
     public getCurrentOpenedPlaylist(): Playlist | null {
         return this.currentOpenedPlaylist;
     }
@@ -56,7 +157,7 @@ export default class PlaylistManager {
     public getPlaylistOpenedStates(): number[] {
         const res: number[] = [];
 
-        [...Elements.playlists.container!.querySelectorAll("li")].forEach((li: Element) => {
+        [...Elements.playlists.container.querySelectorAll("li")].forEach((li: Element) => {
             if (!li.hasAttribute("playlist-id")) {
                 return;
             }
@@ -75,20 +176,13 @@ export default class PlaylistManager {
         return res;
     }
 
-    public async getSortedPlaylists(): Promise<Playlist[]> {
+    public getSortedPlaylists(): Playlist[] {
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
             return [];
         }
 
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-        if (!getAllPlaylistsFromUserReqRes.success) {
-            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
-            return [];
-        }
-
-        const playlists: Playlist[] = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
-
+        const playlists: Playlist[] = this.playlistBuffer;
         const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
 
         for (const playlist of playlists) {
@@ -120,7 +214,7 @@ export default class PlaylistManager {
         return res;
     }
 
-    public async getSongsLeft(): Promise<Song[]> {
+    public getSongsLeft(): Song[] {
         const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return [];
@@ -132,21 +226,9 @@ export default class PlaylistManager {
             return [];
         }
 
-        const getAllSongsFromUserReqRes: any = await Requests.song.getAllFromUser(userData.id, userData.token);
-        if (!getAllSongsFromUserReqRes.success) {
-            this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
-            return [];
-        }
+        const songTitlesFromPlaylist: string[] = this.getSongsFromPlaylist(currentOpenedPlaylist.id).map((song: Song) => song.title);
     
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, currentOpenedPlaylist.id);
-        if (!getSongsFromPlaylistReqRes.success) {
-            this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
-            return [];
-        }
-    
-        const songTitlesFromPlaylist: string[] = (getSongsFromPlaylistReqRes.songs as Song[]).map((song: Song) => song.title);
-    
-        return (getAllSongsFromUserReqRes.songs as Song[]).filter((song: Song) => {
+        return this.songBuffer.filter((song: Song) => {
             return !songTitlesFromPlaylist.includes(song.title);
         });
     }

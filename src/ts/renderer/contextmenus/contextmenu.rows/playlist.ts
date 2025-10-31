@@ -13,8 +13,11 @@ async function duplicatePlaylistOnClick(app: App, userID: ID, token: Token, play
     
     const newPlaylistID: number = (duplicatePlaylistReqRes.playlistID as number);
 
-    app.playlistManager.refreshPlaylistsContainerTab();
-    app.playlistManager.open(newPlaylistID);
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.open(newPlaylistID);
+    });
+
     TopModal.create("SUCCESS", `Successfully duplicated playlist "${playlist.name}".`);
 }
 
@@ -61,8 +64,11 @@ async function playlistMoveToOnClick(app: App, userID: ID, token: Token, parentP
         return app.throwError(`Can't move playlist: ${movePlaylistInPlaylistReqRes.error}`);
     }
 
-    app.playlistManager.refreshPlaylistsContainerTab();
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
 }
 
@@ -83,15 +89,13 @@ function getPlaylistMerge(app: App, userID: ID, token: Token, userPlaylists: Pla
 
 export function getPlaylistRowShortcuts(): ShortcutMap {
     const res: ShortcutMap = {};
-
     res["rename"] = { ctrl: false, shift: false, alt: false, key: "F2" };
     res["remove"] = { ctrl: false, shift: false, alt: false, key: "Delete" };
     res["duplicate"] = { ctrl: true, shift: false, alt: false, key: "D" };
-
     return res;
 }
 
-export async function getPlaylistRows(app: App, playlist: Playlist): Promise<ContextmenuRow[]> {
+export function getPlaylistRows(app: App, playlist: Playlist): ContextmenuRow[] {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         app.throwError("Can't get playlist contextmenu rows: User is not logged in.");
@@ -101,13 +105,7 @@ export async function getPlaylistRows(app: App, playlist: Playlist): Promise<Con
     const userID: ID = userData.id;
     const token: string = userData.token;
 
-    const getPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userID, token);
-    if (!getPlaylistsFromUserReqRes.success) {
-        app.throwError(`Can't get playlists from user: ${getPlaylistsFromUserReqRes.error}`);
-        return [];
-    }
-
-    const userPlaylists: Playlist[] = (getPlaylistsFromUserReqRes.playlists as Playlist[]);
+    const userPlaylists: Playlist[] = app.playlistManager.getPlaylistBuffer();
     const disableMoveIn: boolean = (userPlaylists.length == 0);
     const disableMerge: boolean = (userPlaylists.length == 0);
 

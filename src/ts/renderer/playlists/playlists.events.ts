@@ -19,22 +19,22 @@ export default class PlaylistsEventManager {
     private initContextmenuShortcuts(): void {
         let prevent: boolean = false;
 
-        document.addEventListener("keydown", async (e: KeyboardEvent) => {
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
             if (prevent) {
                 return;
             }
 
             prevent = true;
 
-            await this.playlistContrainerShortcuts(e);
-            await this.openedPlaylistShortcuts(e);
+            this.playlistContrainerShortcuts(e);
+            this.openedPlaylistShortcuts(e);
 
             prevent = false;
         });
     }
 
     private initPlaylistContainerEvents(): void {
-        Elements.playlists.addButton!.addEventListener("click", () => openCreatePlaylistModal(this.app));
+        Elements.playlists.addButton.addEventListener("click", () => openCreatePlaylistModal(this.app));
 
         (Elements.playlists.container as HTMLElement).addEventListener("contextmenu", (e: PointerEvent) => {
             if (e.target != Elements.playlists.container) {
@@ -44,19 +44,18 @@ export default class PlaylistsEventManager {
             this.app.contextmenuManager.createPlaylistContainerContextmenu((e as Position));
         });
 
-        Elements.songs.settingsButton!.addEventListener("click", async () => {
-            const rect: DOMRect = Elements.songs.settingsButton!.getBoundingClientRect();
-            await this.app.contextmenuManager.createSongSettingContextMenu({ x: rect.x + rect.width, y: rect.y });
+        Elements.songs.settingsButton.addEventListener("click", () => {
+            const rect: DOMRect = Elements.songs.settingsButton.getBoundingClientRect();
+            this.app.contextmenuManager.createSongSettingContextMenu({ x: rect.x + rect.width, y: rect.y });
         });
 
-        Elements.currentPlaylist.addSongsButton!.addEventListener("click", async () => {
-            const songsLeft: Song[] = await this.playlists.getSongsLeft();
-            openAddSongToPlaylistModal(this.app, songsLeft);
+        Elements.currentPlaylist.addSongsButton.addEventListener("click", () => {
+            openAddSongToPlaylistModal(this.app, this.playlists.getSongsLeft());
         });
     }
 
     private initOpenedPlaylistEvents(): void {
-        Elements.currentPlaylist.details.thumbnail!.addEventListener("click", () => openUpdateThumbnailModal(this.app));
+        Elements.currentPlaylist.details.thumbnail.addEventListener("click", () => openUpdateThumbnailModal(this.app));
 
         const input: HTMLInputElement = (Elements.currentPlaylist.songFilterInput as HTMLInputElement);
 
@@ -74,16 +73,16 @@ export default class PlaylistsEventManager {
     }
 
     // PLAYLIST CONTAINER EVENTS
-    private async playlistContrainerShortcuts(e: KeyboardEvent): Promise<void> {
+    private playlistContrainerShortcuts(e: KeyboardEvent): void {
         if (Functions.isCenterModalAlreadyOpened()) {
             return;
         }
 
-        await Functions.testShortcuts(e, getPlaylistContainerShortcuts(), getPlaylistContainerRows, this.app);
+        Functions.testShortcuts(e, getPlaylistContainerShortcuts(), getPlaylistContainerRows, this.app);
     }
 
     // OPENED PLAYLIST EVENTS
-    private async openedPlaylistShortcuts(e: KeyboardEvent): Promise<void> {
+    private openedPlaylistShortcuts(e: KeyboardEvent): void {
         if (Functions.isCenterModalAlreadyOpened()) {
             return;
         }
@@ -93,8 +92,8 @@ export default class PlaylistsEventManager {
             return;
         }
 
-        await Functions.testShortcuts(e, getPlaylistRowShortcuts(), getPlaylistRows, this.app, currentOpenedPlaylist);
-        await Functions.testShortcuts(e, getSongContainerShortcuts(), getSongContainerRows, this.app);
+        Functions.testShortcuts(e, getPlaylistRowShortcuts(), getPlaylistRows, this.app, currentOpenedPlaylist);
+        Functions.testShortcuts(e, getSongContainerShortcuts(), getSongContainerRows, this.app);
     }
 
     private openedPlaylistInputFilterOnInput(): void {
@@ -105,7 +104,7 @@ export default class PlaylistsEventManager {
             const titleIncludes: boolean = song.title.toLowerCase().includes(value);
             const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
 
-            const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer!.children].find((li: Element) => {
+            const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer.children].find((li: Element) => {
                 if (!li.hasAttribute("song-id")) {
                     return false;
                 }

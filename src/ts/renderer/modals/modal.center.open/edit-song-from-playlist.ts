@@ -32,28 +32,23 @@ async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, 
         return null;
     }
 
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshSongBuffer().then(() => {
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully edited song "${song.title}" by "${song.artist}" to "${newTitle}" by "${newArtist}".`);
     return null;
 }
 
-export default async function openEditSongFromPlaylistModal(app: App, song: Song): Promise<void> {
+export default function openEditSongFromPlaylistModal(app: App, song: Song): void {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         return app.throwError("Can't open edit song from app modal: User is not logged in.");
     }
 
-    const getArtistFromUserReqRes: any = await Requests.artist.getAllFromUser(userData.id, userData.token);
-    if (!getArtistFromUserReqRes.success) {
-        return app.throwError(`Can't get artists from user: ${getArtistFromUserReqRes.error}`);
-    }
-
-    const artistsFromUser: Artist[] = (getArtistFromUserReqRes.artists as Artist[]);
-    const artistNames: string[] = [...new Set(["Unknown"].concat(artistsFromUser.map((artist: Artist) => artist.name)))];
-
     const content: ModalRow[] = [
         { label: "New title", type: "TEXT", maxLength: 150, defaultValue: song.title },
-        { label: "New artist", type: "SELECT", maxLength: 150, defaultValue: song.artist, data: artistNames },
+        { label: "New artist", type: "SELECT", maxLength: 150, defaultValue: song.artist, data: app.playlistManager.getArtistNames() },
     ];
 
     const data: CenterModalData = {

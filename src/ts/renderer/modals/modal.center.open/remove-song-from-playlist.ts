@@ -16,8 +16,11 @@ async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist
         return null;
     }
 
-    app.playlistManager.refreshPlaylistsContainerTab();
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from playlist "${playlist.name}".`);
     return null;
 }

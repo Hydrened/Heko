@@ -4,7 +4,7 @@ import { MainFolder, WindowSettings } from "./main-folder.js";
 
 class Index {
     private window: BrowserWindow | null = null;
-    private mainFolder: MainFolder;
+    private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
 
     constructor() {

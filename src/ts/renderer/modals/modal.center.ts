@@ -160,7 +160,7 @@ export default class CenterModal {
             CenterModal.createSelectInput(input, row.data);
         }
 
-        input.addEventListener("keydown", async (e: KeyboardEvent) => {
+        input.addEventListener("keydown", (e: KeyboardEvent) => {
             if (e.key == "Escape") {
                 setTimeout(() => input.blur(), 0);
             }
@@ -238,7 +238,10 @@ export default class CenterModal {
 
         const modalError: ModalError = await this.data.onConfirm(this);
         if (modalError != null) {
-            this.focusFirstField();
+
+            const errorField: string | undefined = modalError.fieldName;
+            (errorField != undefined) ? this.focusField(errorField) : this.focusFirstField();
+
             this.displayError(modalError.fieldName, modalError.error);
             return;
         }
@@ -257,6 +260,20 @@ export default class CenterModal {
             input.focus();
             input.select();
         }
+    }
+
+    private focusField(fieldName: string): void {
+        if (this.container == null) {  
+            return this.app.throwError("Can't focus field: Container is null.");
+        }
+
+        const input: HTMLInputElement | null = CenterModal.getFieldInput(fieldName);
+        if (input == null) {
+            return;
+        }
+
+        input.focus();
+        input.select();
     }
 
     private displayError(fieldName: string | undefined, message: string): void {

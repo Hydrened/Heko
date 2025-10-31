@@ -1,0 +1,34 @@
+maintenance-container {
+    width: 100vw;
+    height: 100vh;
+
+    padding: 5rem;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+    
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+
+    background: var(--main-gradient);
+    z-index: 50;
+}
+maintenance-container.hidden {
+    display: none;
+}
+
+maintenance-container > h1 {
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+}
+
+maintenance-container > p {
+    font-size: 1.3rem;
+    text-align: center;
+    color: var(--text-col-2);
+}

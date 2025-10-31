@@ -6,18 +6,20 @@ import PlaylistManager from "./playlists/playlists.js";
 import ListenerManager from "./listener/listener.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
+import * as Elements from "./utils/utils.elements.js";
 import "./utils/utils.types.js";
 
 export default class App {
-    private window: Window;
-    public account: Account;
-    public settings: Settings;
+    private readonly window: Window;
+    public readonly account: Account;
+    public readonly settings: Settings;
 
-    public contextmenuManager: ContextmenuManager;
-    public playlistManager: PlaylistManager;
-    public listenerManager: ListenerManager;
+    public readonly contextmenuManager: ContextmenuManager;
+    public readonly playlistManager: PlaylistManager;
+    public readonly listenerManager: ListenerManager;
     
     private threw: boolean = false;
+    private readonly dev: boolean = false;
 
     constructor() {
         this.window = new Window(this);
@@ -56,10 +58,30 @@ export default class App {
     }
 
     public async init(): Promise<void> {
-        await this.account.init();
+        const getResponseResRes: any = await Requests.app.getResponse();
+        if (!getResponseResRes.success) {
+            return console.error("No internet connection.");
+        }
+
+        const response: number = (this.dev ? 200 : (getResponseResRes.response as number));
+        switch (response) {
+            case 200:
+                await this.account.init();
+                break;
+
+            case 503:
+                Elements.maintenanceContainer.classList.remove("hidden");
+                break;
+
+            default: return;
+        }
     }
 
     public throwError(message: string): void {
+        if (this.dev) {
+            return console.error(message);
+        }
+
         if (!this.threw) {
             Bridge.throwError(message);
             this.threw = true;
@@ -69,12 +91,12 @@ export default class App {
     // LOGIN EVENTS
     public async loggedIn(): Promise<void> {
         this.listenerManager.loggedIn();
-        await this.playlistManager.refreshPlaylistsContainerTab();
+        await this.playlistManager.loggedIn();
         await this.openFirstPlaylist();
     }
 
     public async openFirstPlaylist(): Promise<void> {
-        const playlists: Playlist[] = await this.playlistManager.getSortedPlaylists();
+        const playlists: Playlist[] = this.playlistManager.getSortedPlaylists();
 
         const firstSongPlaylist: Playlist | undefined = playlists[playlists.findIndex((playlist: Playlist) => playlist.children == 0)];
         if (firstSongPlaylist != undefined) {
@@ -82,8 +104,8 @@ export default class App {
         }
     }
 
-    public async loggedOut(): Promise<void> {
-        await this.playlistManager.refreshPlaylistsContainerTab();
+    public loggedOut(): void {
+        this.playlistManager.refreshPlaylistsContainerTab();
         this.playlistManager.close();
         this.listenerManager.loggedOut();
     } 

@@ -42,7 +42,10 @@ async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userS
         return null;
     }
 
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshSongBuffer().then(() => {
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully edited song "${song.title}" by "${song.artist}" to "${newTitle}" by "${newArtist}".`);
     return null;
 }
@@ -61,7 +64,7 @@ function editSongSongToEditOnChange(app: App, modal: CenterModal, userSongs: Son
     modal.setFieldValue("New artist", songToEdit.artist);
 }
 
-export default async function openEditFromAppSongModal(app: App, userSongs: Song[]): Promise<void> {
+export default function openEditFromAppSongModal(app: App, userSongs: Song[]): void {
     const songTitles: string[] = userSongs.map((song: Song) => song.title);
 
     const userData: UserData = app.account.getUserData();
@@ -69,18 +72,10 @@ export default async function openEditFromAppSongModal(app: App, userSongs: Song
         return app.throwError("Can't open edit song from app modal: User is not logged in.");
     }
 
-    const getArtistFromUserReqRes: any = await Requests.artist.getAllFromUser(userData.id, userData.token);
-    if (!getArtistFromUserReqRes.success) {
-        return app.throwError(`Can't get artists from user: ${getArtistFromUserReqRes.error}`);
-    }
-
-    const artistsFromUser: Artist[] = (getArtistFromUserReqRes.artists as Artist[]);
-    const artistNames: string[] = [...new Set(["Unknown"].concat(artistsFromUser.map((artist: Artist) => artist.name)))];
-
     const content: ModalRow[] = [
         { label: "Song to edit", type: "SELECT", maxLength: 150, data: songTitles, onChange: (modal: CenterModal) => editSongSongToEditOnChange(app, modal, userSongs) },
         { label: "New title", type: "TEXT", maxLength: 150 },
-        { label: "New artist", type: "SELECT", maxLength: 150, data: artistNames },
+        { label: "New artist", type: "SELECT", maxLength: 150, data: app.playlistManager.getArtistNames() },
     ];
 
     const data: CenterModalData = {

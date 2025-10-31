@@ -33,8 +33,11 @@ async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, son
         return null;
     }
 
-    app.playlistManager.refreshPlaylistsContainerTab();
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${currentPlaylist.name}".`);
     return null;
 }

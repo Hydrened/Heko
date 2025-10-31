@@ -10,11 +10,14 @@ async function addSongToPlaylistOnClick(app: App, userID: ID, token: Token, play
         return app.throwError(`Can't add song to playlist: ${addSongToPlaylistReqRes.error}`);
     }
 
-    app.playlistManager.refreshPlaylistsContainerTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+    });
+
     TopModal.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${playlist.name}".`);
 }
 
-export async function getSongRows(app: App, song: Song): Promise<ContextmenuRow[]> {
+export function getSongRows(app: App, song: Song): ContextmenuRow[] {
     const errorBase: string = "Can't get song contextmenu rows";
 
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
@@ -29,16 +32,8 @@ export async function getSongRows(app: App, song: Song): Promise<ContextmenuRow[
         return [];
     }
 
-    const getPlaylistFromUserWhereSongIsNotInReqRes: any = await Requests.playlist.getWhereSongInNotIn(userData.id, userData.token, song.id);
-    if (!getPlaylistFromUserWhereSongIsNotInReqRes.success) {
-        app.throwError(`Can't get songs from users: ${getPlaylistFromUserWhereSongIsNotInReqRes.error}`);
-        return [];
-    }
-
-    const playlistsWhereSongIsNotIn: Playlist[] = (getPlaylistFromUserWhereSongIsNotInReqRes.playlists as Playlist[]);
-
     const addToOtherPlaylistRows: ContextmenuRow[] = [];
-    for (const playlist of playlistsWhereSongIsNotIn) {
+    for (const playlist of app.playlistManager.getPlaylistWhereSongIsNotIn(song.id)) {
         if (playlist.children != 0) {
             continue;
         }
@@ -66,7 +61,7 @@ export async function getSongRows(app: App, song: Song): Promise<ContextmenuRow[
         }, disabled: false },
 
         { title: "Edit song", onClick: async () => {
-            await openEditSongFromPlaylistModal(app, song);
+            openEditSongFromPlaylistModal(app, song);
         }, disabled: false },
     ];
 }

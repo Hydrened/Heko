@@ -25,12 +25,16 @@ export default class Account {
     private async checkLoginState(): Promise<void> {
         const token: Token = await Bridge.token.get();
 
-        const validityRes: any = await Requests.user.isTokenValid(token);
-        if (!validityRes.success) {
+        const validityReqRes: any = await Requests.user.isTokenValid(token);
+        if (!validityReqRes.success) {
+            if (validityReqRes.error == "Maintenance") {
+                this.app.throwError(validityReqRes.error);
+                return;
+            }
             return this.openLoginModal();
         }
 
-        const userID: ID = Number(validityRes.userID);
+        const userID: ID = Number(validityReqRes.userID);
 
         this.userID = userID;
         this.token = token;
@@ -39,8 +43,8 @@ export default class Account {
     }
 
     private initEvents(): void {
-        Elements.account.accountButton!.addEventListener("click", () => {
-            const rect: DOMRect = Elements.account.accountButton!.getBoundingClientRect();
+        Elements.account.accountButton.addEventListener("click", () => {
+            const rect: DOMRect = Elements.account.accountButton.getBoundingClientRect();
             this.app.contextmenuManager.createAccountContextmenu({ x: rect.x, y: rect.y });
         });
     }
@@ -84,7 +88,7 @@ export default class Account {
         this.token = null;
 
         this.openLoginModal();
-        await this.app.loggedOut();
+        this.app.loggedOut();
     }
 
     // OPEN MODALS

@@ -6,13 +6,13 @@ import ListenerEditManager from "./listener.edit.js";
 import ListenerEventManager from "./listener.events.js";
 
 export default class ListenerManager {
-    private audioElement: HTMLAudioElement;
+    private readonly audioElement: HTMLAudioElement;
 
-    private refreshManager: ListenerRefreshManager;
-    private queueManager: ListenerQueueManager;
-    private volumeManager: ListenerVolumeManager;
-    private editManager: ListenerEditManager;
-    private eventManager: ListenerEventManager;
+    private readonly refreshManager: ListenerRefreshManager;
+    private readonly queueManager: ListenerQueueManager;
+    private readonly volumeManager: ListenerVolumeManager;
+    private readonly editManager: ListenerEditManager;
+    private readonly eventManager: ListenerEventManager;
 
     // INIT
     constructor(private app: App) {
@@ -43,8 +43,8 @@ export default class ListenerManager {
         this.queueManager.reset();
     }
 
-    public async initQueue(playlist: Playlist, firstSong: Song | null): Promise<void> {
-        await this.queueManager.init(playlist, firstSong);
+    public initQueue(playlist: Playlist, firstSong: Song | null): void {
+        this.queueManager.init(playlist, firstSong);
     }
 
     public addSongToQueue(song: Song): void {
@@ -52,8 +52,8 @@ export default class ListenerManager {
     }
 
     // BUTTON EVENTS
-    public async togglePlayButton(): Promise<void> {
-        await this.queueManager.togglePlayButton();
+    public togglePlayButton(): void {
+        this.queueManager.togglePlayButton();
     }
 
     public previousButton(): void {

@@ -9,14 +9,18 @@ export default class PlaylistsRefreshCotnainerManager {
 
     }
 
-    public async refresh(): Promise<void> {
+    public refresh(): void {
+        const animation: boolean = (Elements.playlists.container.children.length == 0);
         Functions.removeChildren(Elements.playlists.container);
         
-        const playlists: Playlist[] = await this.playlists.getSortedPlaylists();
-        
+        const playlists: Playlist[] = this.playlists.getSortedPlaylists();
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
-        [...Elements.playlists.container!.children].forEach((liElement: Element, index: number) => {
+        if (!animation) {
+            return;
+        }
+
+        [...Elements.playlists.container.children].forEach((liElement: Element, index: number) => {
             liElement.classList.add("spawn");
 
             setTimeout(() => {
@@ -39,7 +43,7 @@ export default class PlaylistsRefreshCotnainerManager {
         containerElement.setAttribute("playlist-id", strPlaylistID);
         liElement.appendChild(containerElement);
 
-        containerElement.addEventListener("contextmenu", async (e: PointerEvent) => await this.app.contextmenuManager.createPlaylistContextMenu((e as Position), playlist));
+        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createPlaylistContextMenu((e as Position), playlist));
 
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");
@@ -124,7 +128,7 @@ export default class PlaylistsRefreshCotnainerManager {
             return Elements.playlists.container;
         }
 
-        const liElement: Element | undefined = ([...Elements.playlists.container!.querySelectorAll("li")] as Element[]).find((li: Element) => {
+        const liElement: Element | undefined = ([...Elements.playlists.container.querySelectorAll("li")] as Element[]).find((li: Element) => {
             if (!li.hasAttribute("playlist-id")) {
                 return false;
             }

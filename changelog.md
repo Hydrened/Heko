@@ -1,3 +1,12 @@
+## HEKO-3.0.5
+#### ADDED
+- move playlist position
+- auto focus error input when error in modal
+- maintenance message
+#### FIXED
+- not closing playlist when removing current opened playlist parent
+- playlist name validity check when renaming playlist
+
 ## HEKO-3.0.4
 #### ADDED
 - song control shortcuts

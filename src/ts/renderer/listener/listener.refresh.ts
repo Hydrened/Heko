@@ -15,8 +15,8 @@ export default class ListenerRefreshManager {
     }
 
     private refreshDetails(currentSong: Song | null): void {
-        Elements.currentSong.title!.textContent = (currentSong?.title ?? "");
-        Elements.currentSong.artist!.textContent = (currentSong?.artist ?? "");
+        Elements.currentSong.title.textContent = (currentSong?.title ?? "");
+        Elements.currentSong.artist.textContent = (currentSong?.artist ?? "");
     }
 
     private refreshSongClasses(currentSong: Song | null): void {
@@ -25,9 +25,9 @@ export default class ListenerRefreshManager {
             return;
         }
 
-        [...Elements.currentPlaylist.songContainer!.querySelectorAll("li")].forEach((li: Element) => li.classList.remove("listening"));
+        [...Elements.currentPlaylist.songContainer.querySelectorAll("li")].forEach((li: Element) => li.classList.remove("listening"));
 
-        const currentSongLi: Element | undefined = [...Elements.currentPlaylist.songContainer!.querySelectorAll("li")].find((li: Element) => {
+        const currentSongLi: Element | undefined = [...Elements.currentPlaylist.songContainer.querySelectorAll("li")].find((li: Element) => {
             const liPlaylistID: number = (li.hasAttribute("playlist-id") ? Number(li.getAttribute("playlist-id")) : -1);
             const liSongID: number = (li.hasAttribute("song-id") ? Number(li.getAttribute("song-id")) : -1);
 

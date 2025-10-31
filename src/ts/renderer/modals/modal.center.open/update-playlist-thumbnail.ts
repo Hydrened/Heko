@@ -1,8 +1,8 @@
 import App from "./../../app.js";
 import CenterModal from "./../modal.center.js";
 import LoadingModal from "./../modal.loading.js";
-import * as Requests from "./../../utils/utils.requests.js";
 import TopModal from "./../modal.top.js";
+import * as Requests from "./../../utils/utils.requests.js";
 
 async function updateThumbnailModalOnClick(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
     const userData: UserData = app.account.getUserData();
@@ -34,8 +34,10 @@ async function updateThumbnailModalOnClick(app: App, modal: CenterModal, current
         }
     }
     
-    app.playlistManager.refreshPlaylistsContainerTab();
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
     
     TopModal.create("SUCCESS", `Successfully updated "${currentOpenedPlaylist.name}" thumbnail.`);
     return null;

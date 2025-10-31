@@ -2,7 +2,6 @@ import App from "./../app.js";
 import AppPath from "./../utils/utils.app-path.js";
 import ListenerManager from "./listener.js";
 import * as Bridge from "./../utils/utils.bridge.js";
-import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -25,7 +24,7 @@ export default class ListenerQueueManager {
 
     private initEvents(): void {
         this.audioElement.addEventListener("ended", () => {
-            Elements.songControls.buttons.nextButton!.dispatchEvent(new Event("click"));
+            Elements.songControls.buttons.nextButton.dispatchEvent(new Event("click"));
         });
     }
 
@@ -49,7 +48,7 @@ export default class ListenerQueueManager {
     }
 
     // QUEUE EVENTS
-    public async init(playlist: Playlist, firstSong: Song | null): Promise<void> {
+    public init(playlist: Playlist, firstSong: Song | null): void {
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
             return this.app.throwError("Can't init queue: User is not logged in.");
@@ -57,12 +56,7 @@ export default class ListenerQueueManager {
 
         this.currentListeningPlaylist = playlist;
 
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, this.currentListeningPlaylist.id);
-        if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't init queue: ${getSongsFromPlaylistReqRes.error}`);
-        }
-
-        this.currentSongs = (getSongsFromPlaylistReqRes.songs as Song[]);
+        this.currentSongs = this.app.playlistManager.getSongsFromPlaylist(this.currentListeningPlaylist.id);
         if (this.currentSongs.length == 0) {
             this.currentListeningPlaylist = null;
             return;
@@ -137,7 +131,7 @@ export default class ListenerQueueManager {
     }
 
     // BUTTON EVENTS
-    public async togglePlayButton(): Promise<void> {
+    public togglePlayButton(): void {
         const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
 
         if (!this.playing) {
@@ -148,7 +142,7 @@ export default class ListenerQueueManager {
 
             const hasToInit: boolean = (this.currentListeningPlaylist == null && currentOpenedPlaylist != null);
             if (hasToInit) {
-                return await this.init(currentOpenedPlaylist!, null);
+                return this.init(currentOpenedPlaylist!, null);
             }
         }
 

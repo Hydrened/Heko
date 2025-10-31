@@ -1,6 +1,5 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
-import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -26,25 +25,20 @@ export default class PlaylistsOpenManager {
             return;
         }
 
-        const getSongsFromPlaylistReqRes: any = await Requests.song.getFromPlaylist(userData.id, userData.token, playlistID);
-        if (!getSongsFromPlaylistReqRes.success) {
-            return this.app.throwError(`Can't get songs from playlist: ${getSongsFromPlaylistReqRes.error}`);
+        const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(playlistID);
+        if (playlist == undefined) {
+            return this.app.throwError("Can't get playlist: Playlist is undefined.");
         }
 
-        const getPlaylistReqRes: any = await Requests.playlist.get(userData.id, userData.token, playlistID);
-        if (!getPlaylistReqRes.success) {
-            return this.app.throwError(`Can't get playlist: ${getPlaylistReqRes.error}`);
-        }
+        this.playlists.setCurrentOpenedPlaylist(playlist);
+        this.playlists.setCurrentOpenedPlaylistSongs(this.playlists.getSongsFromPlaylist(playlistID));
 
-        this.playlists.setCurrentOpenedPlaylist((getPlaylistReqRes.playlist as Playlist));
-        this.playlists.setCurrentOpenedPlaylistSongs((getSongsFromPlaylistReqRes.songs as Song[]));
+        this.playlists.refreshOpenedPlaylistTab();
 
-        await this.playlists.refreshOpenedPlaylistTab();
-
-        Elements.currentPlaylist.container!.classList.add("opened");
+        Elements.currentPlaylist.container.classList.add("opened");
     }
 
     public close(): void {
-        Elements.currentPlaylist.container!.classList.remove("opened");
+        Elements.currentPlaylist.container.classList.remove("opened");
     }
 };

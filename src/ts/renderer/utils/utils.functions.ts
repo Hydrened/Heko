@@ -39,13 +39,13 @@ export function testShortcut(e: KeyboardEvent, shortcut: Shortcut): boolean {
     return (ctrl && alt && shift && key);
 }
 
-export async function testShortcuts(e: KeyboardEvent, shortcuts: ShortcutMap, contextmenuRowsPromise: (...args: any[]) => ContextmenuRow[] | Promise<ContextmenuRow[]>, ...args: any[]): Promise<boolean> {
+export function testShortcuts(e: KeyboardEvent, shortcuts: ShortcutMap, contextmenuRowsPromise: (...args: any[]) => ContextmenuRow[], ...args: any[]): boolean {
     const shortCutIsValid: boolean = Object.values(shortcuts).some((shortcut: Shortcut) => testShortcut(e, shortcut));
     if (!shortCutIsValid) {
         return false;
     }
 
-    const contextmenuRows: ContextmenuRow[] = await contextmenuRowsPromise(...args);
+    const contextmenuRows: ContextmenuRow[] = contextmenuRowsPromise(...args);
     return contextmenuRows.some((row: ContextmenuRow) => {
         if (row.disabled) {
             return false;
@@ -95,8 +95,6 @@ export function randomIntInRange(min: number, max: number): number {
 export function randomValueFromArray<T>(values: T[]): T {
     return values[randomIntInRange(0, values.length - 1)];
 }
-
-type CssVariableType = "PIXEL" | "MS_DURATION";
 
 export function getCssVariable(variable: string, type: CssVariableType | null): any {
     const res: string = getComputedStyle(document.documentElement).getPropertyValue(`--${variable}`).trim();

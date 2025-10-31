@@ -2,9 +2,9 @@ import App from "./app.js";
 import * as Bridge from "./utils/utils.bridge.js";
 
 export default class Window {
-    private minimizeWindowButton: HTMLElement | null = document.querySelector("#minimize-window-button");
-    private maximizeWindowButton: HTMLElement | null = document.querySelector("#maximize-window-button");
-    private closeWindowButton: HTMLElement | null = document.querySelector("#close-window-button");
+    private minimizeWindowButton: Element = document.querySelector("#minimize-window-button")!;
+    private maximizeWindowButton: Element = document.querySelector("#maximize-window-button")!;
+    private closeWindowButton: Element = document.querySelector("#close-window-button")!;
 
     constructor(private app: App) {
         this.initEvents();

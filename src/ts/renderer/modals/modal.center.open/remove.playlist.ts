@@ -13,13 +13,7 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
 
     const childrenIDs: ID[] = PlaylistManager.getPlaylistChildrenIDs(userPlaylists, playlist.id);
 
-    const getPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-    if (!getPlaylistsFromUserReqRes.success) {
-        app.throwError(`Can't get playlists from user: ${getPlaylistsFromUserReqRes.error}`);
-        return null;
-    }
-
-    const playlists: Playlist[] = (getPlaylistsFromUserReqRes.playlists as Playlist[]);
+    const playlists: Playlist[] = app.playlistManager.getPlaylistBuffer();
     const thumbnailFileNames: string[] = playlists.filter((p: Playlist) => (childrenIDs.includes(p.id) || p.id == playlist.id)).map((p: Playlist) => p.thumbnailFileName);
 
     const removePlaylistReqRes: any = await Requests.playlist.remove(userData.id, userData.token, childrenIDs.concat(playlist.id), thumbnailFileNames);
@@ -28,11 +22,18 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
         return null;
     }
     
-    app.playlistManager.refreshPlaylistsContainerTab();
-    if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
-        app.playlistManager.close();
-        app.openFirstPlaylist();
-    }
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+
+        const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist != null) {
+            
+            if (childrenIDs.concat(playlist.id).includes(currentOpenedPlaylist.id)) {
+                app.playlistManager.close();
+                app.openFirstPlaylist();
+            }
+        }
+    });
 
     TopModal.create("SUCCESS", `Successfully removed playlist "${playlist.name}".`);
     return null;

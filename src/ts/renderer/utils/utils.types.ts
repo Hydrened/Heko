@@ -1,7 +1,11 @@
+type AppResponse = 200 | 503;
+
 interface Position {
     x: number;
     y: number;
 };
+
+type CssVariableType = "PIXEL" | "MS_DURATION";
 
 
 
@@ -9,25 +13,25 @@ type ID = number;
 type Token = string;
 
 interface UserData {
-    id: ID | null;
-    token: Token | null;
+    readonly id: ID | null;
+    readonly token: Token | null;
 };
 
 interface UserSettings {
-    userID: ID | null;
-    shuffle: boolean;
-    loop: boolean;
-    speed: number;
-    volume: number;
+    readonly userID: ID | null;
+    readonly shuffle: boolean;
+    readonly loop: boolean;
+    readonly speed: number;
+    readonly volume: number;
 };
 
 
 
 interface Shortcut {
-    ctrl: boolean;
-    shift: boolean;
-    alt: boolean;
-    key: string;
+    readonly ctrl: boolean;
+    readonly shift: boolean;
+    readonly alt: boolean;
+    readonly key: string;
 };
 
 type ShortcutMap = { [name: string]: Shortcut };
@@ -42,73 +46,73 @@ type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT"
 type ModalRowData = string[];
 
 interface ModalRow {
-    label: string;
-    type: ModalRowType;
-    maxLength?: number;
-    defaultValue?: string;
-    onChange?: (modal: CenterModal) => void;
-    data?: ModalRowData;
+    readonly label: string;
+    readonly type: ModalRowType;
+    readonly maxLength?: number;
+    readonly defaultValue?: string;
+    readonly onChange?: (modal: CenterModal) => void;
+    readonly data?: ModalRowData;
 };
 
 interface ModalButton {
-    title: string;
-    onClick: () => void;
+    readonly title: string;
+    readonly onClick: () => void;
 };
 
 interface ModalFieldError {
-    fieldName?: string;
-    error: string;
+    readonly fieldName?: string;
+    readonly error: string;
 };
 
 type ModalError = ModalFieldError | null;
 
 interface CenterModalData {
-    title: string;
-    content?: ModalRow[];
-    onConfirm: (modal: CenterModal) => Promise<ModalError>;
-    onCancel?: () => void;
-    additionnalButtons?: ModalButton[];
-    cantClose: boolean;
+    readonly title: string;
+    readonly content?: ModalRow[];
+    readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
+    readonly onCancel?: () => void;
+    readonly additionnalButtons?: ModalButton[];
+    readonly cantClose: boolean;
 };
 
 
 
 interface ContextmenuRow {
-    title: string;
-    shortcut?: Shortcut;
-    onClick?: () => Promise<void>;
-    rows?: ContextmenuRow[];
-    disabled: boolean;
+    readonly title: string;
+    readonly shortcut?: Shortcut;
+    readonly onClick?: () => Promise<void>;
+    readonly rows?: ContextmenuRow[];
+    readonly disabled: boolean;
 };
 
 
 
 interface Playlist {
-    id: ID;
-    userID: ID,
-    parentID: ID;
-    name: string;
-    position: number;
-    thumbnailFileName: string;
-    opened: boolean;
-    songs: number;
-    children: number;
-    creationDate: string;
+    readonly id: ID;
+    readonly userID: ID;
+    readonly parentID: ID;
+    readonly name: string;
+    readonly position: number;
+    readonly thumbnailFileName: string;
+    readonly opened: boolean;
+    readonly songs: number;
+    readonly children: number;
+    readonly creationDate: string;
 };
 
 interface Song {
-    id: ID;
-    playlistID: ID;
-    fileName: string;
-    title: string;
-    artist: string;
-    duration: number;
-    creationDate: string;
+    readonly id: ID;
+    readonly playlistID: ID;
+    readonly fileName: string;
+    readonly title: string;
+    readonly artist: string;
+    readonly duration: number;
+    readonly creationDate: string;
 };
 
 interface Artist {
-    userID: ID;
-    name: string;
+    readonly userID: ID;
+    readonly name: string;
 };
 
 

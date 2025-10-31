@@ -12,7 +12,7 @@ export interface WindowSettings {
 
 export class MainFolder {
     public settings: WindowSettings | null = null;
-    private name:  string = "Heko";
+    private readonly name: string = "Heko";
 
     constructor() {
         this.initEvents();

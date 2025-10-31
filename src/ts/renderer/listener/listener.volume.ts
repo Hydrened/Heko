@@ -12,12 +12,12 @@ export default class ListenerVolumeManager {
     }
 
     private initEvents(): void {
-        Elements.songControls.volume.slider!.addEventListener("input", (e: Event) => {
+        Elements.songControls.volume.slider.addEventListener("input", (e: Event) => {
             const sliderValue: number = parseFloat((Elements.songControls.volume.slider as HTMLInputElement).value);
             this.setVolume(sliderValue);
         });
 
-        Elements.songControls.volume.toggleButton!.addEventListener("click", () => this.toggleMuteButton());
+        Elements.songControls.volume.toggleButton.addEventListener("click", () => this.toggleMuteButton());
     }
 
     public load(): void {
@@ -29,7 +29,7 @@ export default class ListenerVolumeManager {
     // EVENTS
     private refreshVolumeLogo(): void {
         const volumeIndex: number = ((this.volume <= 0) ? 0 : (this.volume < 75) ? 1 : 2);
-        Elements.songControls.volume.toggleButton!.setAttribute("volume", String(volumeIndex));
+        Elements.songControls.volume.toggleButton.setAttribute("volume", String(volumeIndex));
     }
 
     private refreshVolumeSlider(): void {

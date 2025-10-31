@@ -38,13 +38,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         };
     }
 
-    const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.getAllFromUser(userData.id, userData.token);
-    if (!getAllPlaylistsFromUserReqRes.success) {
-        app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
-        return null;
-    }
-    
-    const playlistNames: string[] = getAllPlaylistsFromUserReqRes.playlists.map((p: Playlist) => p.name);
+    const playlistNames: string[] = app.playlistManager.getPlaylistBuffer().map((playlist: Playlist) => playlist.name);
     const playlistNameAlreadyExists: boolean = playlistNames.includes(newPlaylistName);
     
     if (playlistNameAlreadyExists) {
@@ -71,10 +65,12 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         return null;
     }
 
-    app.playlistManager.refreshPlaylistsContainerTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
 
-    const newPlaylistID: number = (addPlaylistReqRes.playlistID as number);
-    app.playlistManager.open(newPlaylistID);
+        const newPlaylistID: number = (addPlaylistReqRes.playlistID as number);
+        app.playlistManager.open(newPlaylistID);
+    });
 
     TopModal.create("SUCCESS", `Successfully created playlist "${newPlaylistName}".`);
     return null;
