@@ -1,6 +1,10 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("mainEvents", {
+    onStart: (callback: (data: any) => void): void => {
+        ipcRenderer.on("mainEvents-start", (e: Electron.IpcRendererEvent, data: any) => callback(data));
+    },
+
     onClose: (callback: () => Promise<void>): void => {
         ipcRenderer.on("mainEvents-onClose", async () => {
             await callback();
@@ -18,6 +22,14 @@ contextBridge.exposeInMainWorld("mainEvents", {
 
     onNextButton: (callback: () => void): void => {
         ipcRenderer.on("mainEvents-nextButton", () => callback());
+    },
+
+    onVolumeUp: (callback: () => void): void => {
+        ipcRenderer.on("mainEvents-volumeUp", () => callback());
+    },
+
+    onVolumeDown: (callback: () => void): void => {
+        ipcRenderer.on("mainEvents-volumeDown", () => callback());
     },
 });
 

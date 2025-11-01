@@ -19,7 +19,7 @@ export default class App {
     public readonly listenerManager: ListenerManager;
     
     private threw: boolean = false;
-    private readonly dev: boolean = false;
+    private dev: boolean = false;
 
     constructor() {
         this.window = new Window(this);
@@ -34,27 +34,11 @@ export default class App {
     }
 
     private initEvents(): void {
+        Bridge.mainEvents.onStart((data: any) => {
+            this.dev = data.dev;
+        });
+        
         Bridge.mainEvents.onClose(async () => await this.saveSettings());
-    }
-
-    private async saveSettings(): Promise<void> {
-        const userData: UserData = this.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return;
-        }
-
-        const settings: UserSettings = {
-            userID: userData.id,
-            shuffle: this.listenerManager.getShuffleState(),
-            loop: this.listenerManager.getLoopState(),
-            speed: this.listenerManager.getSpeed(),
-            volume: this.listenerManager.getVolume(),
-        };
-
-        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(userData.id, userData.token, settings);
-        if (!saveUserSettingsReqRes.success) {
-            return this.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
-        }
     }
 
     public async init(): Promise<void> {
@@ -74,6 +58,26 @@ export default class App {
                 break;
 
             default: return;
+        }
+    }
+
+    private async saveSettings(): Promise<void> {
+        const userData: UserData = this.account.getUserData();
+        if (userData.id == null || userData.token == null) {
+            return;
+        }
+
+        const settings: UserSettings = {
+            userID: userData.id,
+            shuffle: this.listenerManager.getShuffleState(),
+            loop: this.listenerManager.getLoopState(),
+            speed: this.listenerManager.getSpeed(),
+            volume: this.listenerManager.getVolume(),
+        };
+
+        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(userData.id, userData.token, settings);
+        if (!saveUserSettingsReqRes.success) {
+            return this.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
         }
     }
 

@@ -1,3 +1,9 @@
+## HEKO-3.0.6
+#### ADDED
+- global shortcuts (play, previous, next, volume up and down)
+#### FIXED
+- input select text overflow
+
 ## HEKO-3.0.5
 #### ADDED
 - move playlist position

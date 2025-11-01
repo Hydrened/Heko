@@ -142,5 +142,15 @@ export default class ListenerEventManager {
                 this.app.listenerManager.toggleMuteButton();
             }
         });
+
+        Bridge.mainEvents.onVolumeDown(() => {
+            const currentVolume: number = this.app.listenerManager.getVolume();
+            this.app.listenerManager.setVolume(currentVolume - 5);
+        });
+
+        Bridge.mainEvents.onVolumeUp(() => {
+            const currentVolume: number = this.app.listenerManager.getVolume();
+            this.app.listenerManager.setVolume(currentVolume + 5);
+        });
     }
 };

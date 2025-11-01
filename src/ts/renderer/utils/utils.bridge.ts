@@ -5,10 +5,13 @@ export async function throwError(message: string): Promise<void> {
 }
 
 export const mainEvents = {
+    onStart: async (callback: (data: any) => void): Promise<void> => await w.mainEvents.onStart(callback),
     onClose: (callback: () => Promise<void>): void => w.mainEvents.onClose(callback),
     onPreviousButton: async (callback: () => void): Promise<void> => await w.mainEvents.onPreviousButton(callback),
     onPlayButton: async (callback: () => void): Promise<void> => await w.mainEvents.onPlayButton(callback),
     onNextButton: async (callback: () => void): Promise<void> => await w.mainEvents.onNextButton(callback),
+    onVolumeUp: async (callback: () => void): Promise<void> => await w.mainEvents.onVolumeUp(callback),
+    onVolumeDown: async (callback: () => void): Promise<void> => await w.mainEvents.onVolumeDown(callback),
 };
 
 export const win = {

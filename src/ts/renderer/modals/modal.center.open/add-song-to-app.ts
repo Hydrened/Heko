@@ -71,7 +71,9 @@ async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: Ce
     }
 
     app.playlistManager.refreshSongBuffer();
-    app.playlistManager.refreshOpenedPlaylistTab();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
     
     TopModal.create("SUCCESS", `Successfully added song "${title}" by "${artist}" to Heko.`);
     return null;

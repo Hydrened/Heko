@@ -42,8 +42,10 @@ async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userS
         return null;
     }
 
-    app.playlistManager.refreshSongBuffer().then(() => {
+    app.playlistManager.refreshSongBuffer();
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
         app.playlistManager.refreshOpenedPlaylistTab();
+        app.listenerManager.refresh();
     });
 
     TopModal.create("SUCCESS", `Successfully edited song "${song.title}" by "${song.artist}" to "${newTitle}" by "${newArtist}".`);

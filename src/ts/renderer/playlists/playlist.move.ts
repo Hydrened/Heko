@@ -11,6 +11,7 @@ export default class PlaylistsMoveManager {
 
     private canMove: boolean = false;
     private canTryMoving: boolean = true;
+    private updating: boolean = false;
     
     constructor(private app: App, private playlists: PlaylistManager) {
         this.initEvents();
@@ -44,10 +45,11 @@ export default class PlaylistsMoveManager {
 
         this.canMove = false;
         this.canTryMoving = true;
+        this.updating = false;
     }
 
     private onMouseDown(e: MouseEvent): void {
-        if (!this.canTryMoving) {
+        if (!this.canTryMoving || this.updating) {
             return;
         }
 
@@ -81,12 +83,12 @@ export default class PlaylistsMoveManager {
     }
 
     private async onMouseUp(e: MouseEvent): Promise<void> {
-        if (this.originalPlaylistElementBuffer == null) {
+        if (this.originalPlaylistElementBuffer == null || this.updating) {
             return;
         }
 
-        const insertBeforeElement: Element | null = document.querySelector(".playlist-container.insert-before");
-        const insertAfterElement: Element | null = document.querySelector(".playlist-container.insert-after");
+        const insertBeforeElement: Element | null = document.querySelector("li.playlist-wrapper.insert-before");
+        const insertAfterElement: Element | null = document.querySelector("li.playlist-wrapper.insert-after");
 
         if (insertBeforeElement == null && insertAfterElement == null) {
             return this.reset();
@@ -140,6 +142,8 @@ export default class PlaylistsMoveManager {
             return this.app.throwError(`${errorBase}: Playlist is undefined.`);
         }
 
+        this.updating = true;
+
         const updatePlaylistPositionReqRes: any = await Requests.playlist.updatePosition(userData.id, userData.token, playlist.id, position);
         if (!updatePlaylistPositionReqRes.success) {
             return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`);
@@ -153,7 +157,7 @@ export default class PlaylistsMoveManager {
     }
 
     private onMouseMove(e: MouseEvent): void {
-        if (!this.canMove || this.movingPlaylistElementBuffer == null) {
+        if (!this.canMove || this.movingPlaylistElementBuffer == null || this.updating) {
             return;
         }
 
@@ -191,7 +195,7 @@ export default class PlaylistsMoveManager {
     }
 
     private async onCanMove(e: MouseEvent, playlistID: ID): Promise<void> {
-        if (this.originalPlaylistElementBuffer == null) {
+        if (this.originalPlaylistElementBuffer == null || this.updating) {
             return;
         }
 
@@ -213,7 +217,7 @@ export default class PlaylistsMoveManager {
         const sameParentPlaylists: Playlist[] = this.app.playlistManager.getPlaylistBuffer().filter((playlist: Playlist) => playlist.parentID == parentPlaylistID);
         
         this.sameParentPlaylistElements = sameParentPlaylists.map((playlist: Playlist) => {
-            return Elements.playlists.container.querySelector(`.playlist-container[playlist-id="${playlist.id}"]`);
+            return Elements.playlists.container.querySelector(`li.playlist-wrapper[playlist-id="${playlist.id}"]`);
         }).filter((element: Element | null) => element != null);
 
         this.sameParentPlaylistElements.sort((a: Element, b: Element) => {

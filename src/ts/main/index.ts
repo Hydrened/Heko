@@ -1,11 +1,12 @@
-import { app, BrowserWindow, ipcMain, dialog , nativeImage } from "electron";
-import * as path from "path";
+import { app, BrowserWindow, ipcMain, dialog , nativeImage, globalShortcut } from "electron";
 import { MainFolder, WindowSettings } from "./main-folder.js";
+import * as path from "path";
 
 class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
+    private readonly dev: boolean = false;
 
     constructor() {
         this.mainFolder = new MainFolder();
@@ -13,6 +14,7 @@ class Index {
         try {
             this.createWindow();
             this.initWindowEvents();
+            this.initGlobalShortcuts();
             this.initRendererEvents();
 
         } catch (err:  unknown) {
@@ -47,7 +49,7 @@ class Index {
                 preload: path.join(__dirname, "preload.js"),
                 contextIsolation: true,
                 nodeIntegration: false,
-                devTools: false,
+                devTools: this.dev,
             },
         });
 
@@ -56,6 +58,10 @@ class Index {
         }
         
         this.window.loadFile(path.join(__dirname, "..", "..", "index.html"));
+            
+        this.window.webContents.on("did-finish-load", () => {
+            this.window?.webContents.send("mainEvents-start", { dev: this.dev });
+        });
 
         this.thumbarButtons = [
             {
@@ -129,10 +135,36 @@ class Index {
             this.window.destroy();
         });
 
+        if (this.dev) {
+            return;
+        }
+
         this.window.webContents.on("before-input-event", (event, input: Electron.Input) => {
             if ((input.control || input.meta) && input.key.toLowerCase() == "r") {
                 event.preventDefault();
             }
+        });
+    }
+
+    private initGlobalShortcuts(): void {
+        globalShortcut.register("MediaPreviousTrack", () => {
+            this.window?.webContents.send("mainEvents-previousButton");
+        });
+
+        globalShortcut.register("MediaPlayPause", () => {
+            this.window?.webContents.send("mainEvents-playButton");
+        });
+
+        globalShortcut.register("MediaNextTrack", () => {
+            this.window?.webContents.send("mainEvents-nextButton");
+        });
+
+        globalShortcut.register("Control+Up", () => {
+            this.window?.webContents.send("mainEvents-volumeUp");
+        });
+
+        globalShortcut.register("Control+Down", () => {
+            this.window?.webContents.send("mainEvents-volumeDown");
         });
     }
 
@@ -199,4 +231,8 @@ class Index {
 
 app.whenReady().then(() => {
     new Index();
+});
+
+app.on("will-quit", () => {
+    globalShortcut.unregisterAll();
 });

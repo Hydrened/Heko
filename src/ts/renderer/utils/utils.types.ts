@@ -89,20 +89,18 @@ interface ContextmenuRow {
 
 interface Playlist {
     readonly id: ID;
-    readonly userID: ID;
     readonly parentID: ID;
     readonly name: string;
     readonly position: number;
     readonly thumbnailFileName: string;
     readonly opened: boolean;
-    readonly songs: number;
+    readonly songs: Song[];
     readonly children: number;
     readonly creationDate: string;
 };
 
 interface Song {
     readonly id: ID;
-    readonly playlistID: ID;
     readonly fileName: string;
     readonly title: string;
     readonly artist: string;

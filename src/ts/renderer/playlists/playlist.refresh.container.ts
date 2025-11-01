@@ -106,8 +106,9 @@ export default class PlaylistsRefreshCotnainerManager {
         const detailsElement: HTMLElement = document.createElement("span");
         detailsElement.classList.add("extern-text");
         detailsElement.setAttribute("playlist-id", strPlaylistID);
+        
         detailsElement.textContent = (playlist.children == 0)
-            ? `${playlist.songs} ${Functions.pluralize("song", playlist.songs)}`
+            ? `${playlist.songs.length} ${Functions.pluralize("song", playlist.songs.length)}`
             : `${playlist.children} ${Functions.pluralize("playlist", playlist.children)}`;
         detailsContainerElement.appendChild(detailsElement);
 

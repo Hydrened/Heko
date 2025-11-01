@@ -16,8 +16,7 @@ export default class PlaylistsOpenManager {
 
     public async open(playlistID: ID): Promise<void> {
         if (this.playlists.getCurrentOpenedPlaylist() != null) {
-            this.close();
-            await new Promise((r) => setTimeout(r, this.closingDuration));
+            await this.close();
         }
 
         const userData: UserData = this.app.account.getUserData();
@@ -31,14 +30,13 @@ export default class PlaylistsOpenManager {
         }
 
         this.playlists.setCurrentOpenedPlaylist(playlist);
-        this.playlists.setCurrentOpenedPlaylistSongs(this.playlists.getSongsFromPlaylist(playlistID));
-
         this.playlists.refreshOpenedPlaylistTab();
 
         Elements.currentPlaylist.container.classList.add("opened");
     }
 
-    public close(): void {
+    public async close(): Promise<void> {
         Elements.currentPlaylist.container.classList.remove("opened");
+        await new Promise((r) => setTimeout(r, this.closingDuration));
     }
 };

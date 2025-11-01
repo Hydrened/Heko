@@ -56,7 +56,7 @@ export default class ListenerQueueManager {
 
         this.currentListeningPlaylist = playlist;
 
-        this.currentSongs = this.app.playlistManager.getSongsFromPlaylist(this.currentListeningPlaylist.id);
+        this.currentSongs = this.currentListeningPlaylist.songs;
         if (this.currentSongs.length == 0) {
             this.currentListeningPlaylist = null;
             return;

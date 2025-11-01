@@ -18,7 +18,6 @@ export default class PlaylistManager {
     private songBuffer: Song[] = [];
 
     private currentOpenedPlaylist: Playlist | null = null;
-    private currentOpenedPlaylistSongs: Song[] = [];
 
     // INIT
     constructor(private app: App) {
@@ -46,20 +45,63 @@ export default class PlaylistManager {
     }
 
     public async refreshPlaylistBuffer(): Promise<void> {
+        this.playlistBuffer = [];
+
         const userData: UserData = this.app.account.getUserData();
         if (userData.id == null || userData.token == null) {
-            this.playlistBuffer = [];
             return;
         }
 
         const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.get(userData.id, userData.token);
         if (!getAllPlaylistsFromUserReqRes.success) {
             this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
-            this.playlistBuffer = [];
             return;
         }
-        
-        this.playlistBuffer = (getAllPlaylistsFromUserReqRes.playlists as Playlist[]);
+
+        const rowPlaylists: any[] = (getAllPlaylistsFromUserReqRes.playlists as any[]);
+
+        const playlistSet: Set<ID> = new Set<ID>();
+        const uniquePlaylists: any[] = rowPlaylists.filter((row: any) => {
+            if (playlistSet.has(row.playlistID)) {
+                return false;
+            }
+
+            playlistSet.add(row.playlistID);
+            return true;
+        });
+
+        uniquePlaylists.forEach((row: any) => {
+            const children: number = uniquePlaylists.filter((r: any) => r.playlistParentID == row.playlistID).length;
+
+            const songs: Song[] = rowPlaylists.filter((r: any) => r.playlistID == row.playlistID && r.songID != null).map((r: any) => {
+                return {
+                    id: r.songID,
+                    fileName: r.songFileName,
+                    title: r.songTitle,
+                    artist: r.songArtist,
+                    duration: r.songDuration,
+                    creationDate: r.songCreationDate,
+                };
+            });
+
+            const playlist: Playlist = {
+                id: row.playlistID,
+                parentID: row.playlistParentID,
+                name: row.playlistName,
+                position: row.playlistPosition,
+                thumbnailFileName: row.playlistThumbnailFileName,
+                opened: row.playlistOpened,
+                songs: songs,
+                children: children,
+                creationDate: row.playlistCreationDate,
+            };
+            
+            this.playlistBuffer.push(playlist);
+        });
+
+        if (this.currentOpenedPlaylist != null) {
+            this.currentOpenedPlaylist = (this.getPlaylistFromID(this.currentOpenedPlaylist.id) ?? null);
+        }
     }
 
     public async refreshSongBuffer(): Promise<void> {
@@ -84,96 +126,15 @@ export default class PlaylistManager {
         this.app.listenerManager.refresh();
     }
 
-    public close(): void {
-        this.openManager.close();
+    public async close(): Promise<void> {
+        await this.openManager.close();
     }
 
     // GETTERS
-    public getPlaylistBuffer(): Playlist[] {
-        return this.playlistBuffer;
-    }
 
-    public getPlaylistFromID(playlistID: ID): Playlist | undefined {
-        return this.playlistBuffer.find((playlist: Playlist) => playlist.id == playlistID);
-    }
-
-    public getPlaylistWhereSongIsNotIn(songID: ID): Playlist[] {
-        if (this.songBuffer.find((song: Song) => song.id == songID) == undefined) {
-            this.app.throwError("Can't get playlist where song is not in: Song is undefined.");
-            return [];
-        }
-
-        return this.playlistBuffer.filter((playlist: Playlist) => {
-            const songs: Song[] = this.getSongsFromPlaylist(playlist.id);
-            return !songs.map((song: Song) => song.id).includes(songID);
-        });
-    }
-
-    public static getPlaylistElementFromID(playlistID: ID): HTMLElement | null {
-        return document.querySelector(`.playlist-container[playlist-id="${playlistID}"]`);
-    }
-
-    public getPlaylistFromElement(playlistElement: Element): Playlist | undefined {
-        if (!playlistElement.hasAttribute("playlist-id")) {
-            return undefined;
-        }
-
-        const playlistID: number = Number(playlistElement.getAttribute("playlist-id"));
-        if (isNaN(playlistID)) {
-            return undefined;
-        }
-
-        return this.getPlaylistFromID(playlistID);
-    }
-    
-    public getSongBuffer(): Song[] {
-        return this.songBuffer;
-    }
-
-    public getSongsFromPlaylist(playlistID: ID): Song[] {
-        if (this.getPlaylistFromID(playlistID) == undefined) {
-            this.app.throwError("Can't get songs from playlist: Playlist is undefined.");
-            return [];
-        }
-
-        return this.songBuffer.filter((song: Song) => {
-            return (song.playlistID == playlistID);
-        });
-    }
-
-    public getArtistNames(): string[] {
-        const artists: string[] = this.songBuffer.map((song: Song) => song.artist);
-        return [...new Set(["Unknown"].concat(artists))];
-    }
-
+    // -- playlists
     public getCurrentOpenedPlaylist(): Playlist | null {
         return this.currentOpenedPlaylist;
-    }
-
-    public getCurrentOpenedPlaylistSongs(): Song[] {
-        return this.currentOpenedPlaylistSongs;
-    }
-
-    public getPlaylistOpenedStates(): number[] {
-        const res: number[] = [];
-
-        [...Elements.playlists.container.querySelectorAll("li")].forEach((li: Element) => {
-            if (!li.hasAttribute("playlist-id")) {
-                return;
-            }
-
-            const playlistID: number = Number(li.getAttribute("playlist-id"));
-            if (isNaN(playlistID)) {
-                return;
-            }
-
-            const opened: boolean = ([...li.children].find((e: Element) => e.classList.contains("opened")) != undefined);
-            if (opened) {
-                res.push(playlistID);
-            }
-        });
-        
-        return res;
     }
 
     public getSortedPlaylists(): Playlist[] {
@@ -214,7 +175,48 @@ export default class PlaylistManager {
         return res;
     }
 
-    public getSongsLeft(): Song[] {
+    public getPlaylistBuffer(): Playlist[] {
+        return this.playlistBuffer;
+    }
+
+    public getPlaylistFromID(playlistID: ID): Playlist | undefined {
+        return this.playlistBuffer.find((playlist: Playlist) => playlist.id == playlistID);
+    }
+
+    public getPlaylistWhereSongIsNotIn(songID: ID): Playlist[] {
+        if (this.songBuffer.find((song: Song) => song.id == songID) == undefined) {
+            this.app.throwError("Can't get playlist where song is not in: Song is undefined.");
+            return [];
+        }
+
+        return this.playlistBuffer.filter((playlist: Playlist) => {
+            const songIsNotIn: boolean = !playlist.songs.map((song: Song) => song.id).includes(songID);
+            const playlistIsNotParent: boolean = (playlist.children == 0);
+            
+            return (songIsNotIn && playlistIsNotParent);
+        });
+    }
+
+    public static getPlaylistElementFromID(playlistID: ID): HTMLElement | null {
+        return document.querySelector(`.playlist-container[playlist-id="${playlistID}"]`);
+    }
+
+    // -- songs
+    public getSongBuffer(): Song[] {
+        return this.songBuffer;
+    }
+
+    public getSongsFromPlaylist(playlistID: ID): Song[] {
+        const playlist: Playlist | undefined = this.getPlaylistFromID(playlistID);
+        if (playlist == undefined) {
+            this.app.throwError("Can't get songs from playlist: Playlist is undefined.");
+            return [];
+        }
+
+        return playlist.songs;
+    }
+
+    public getPlaylistSongsLeft(): Song[] {
         const currentOpenedPlaylist: Playlist | null = this.app.playlistManager.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return [];
@@ -226,11 +228,52 @@ export default class PlaylistManager {
             return [];
         }
 
-        const songTitlesFromPlaylist: string[] = this.getSongsFromPlaylist(currentOpenedPlaylist.id).map((song: Song) => song.title);
+        const songIDsFromPlaylist: ID[] = currentOpenedPlaylist.songs.map((song: Song) => song.id);
     
         return this.songBuffer.filter((song: Song) => {
-            return !songTitlesFromPlaylist.includes(song.title);
+            return !songIDsFromPlaylist.includes(song.id);
         });
+    }
+
+    // -- other
+    public getArtistNames(): string[] {
+        const artists: string[] = this.songBuffer.map((song: Song) => song.artist);
+        return [...new Set(["Unknown"].concat(artists))];
+    }
+
+    public getPlaylistOpenedStates(): number[] {
+        const res: number[] = [];
+
+        [...Elements.playlists.container.querySelectorAll("li")].forEach((li: Element) => {
+            if (!li.hasAttribute("playlist-id")) {
+                return;
+            }
+
+            const playlistID: number = Number(li.getAttribute("playlist-id"));
+            if (isNaN(playlistID)) {
+                return;
+            }
+
+            const opened: boolean = ([...li.children].find((e: Element) => e.classList.contains("opened")) != undefined);
+            if (opened) {
+                res.push(playlistID);
+            }
+        });
+        
+        return res;
+    }
+
+    public getPlaylistFromElement(playlistElement: Element): Playlist | undefined {
+        if (!playlistElement.hasAttribute("playlist-id")) {
+            return undefined;
+        }
+
+        const playlistID: number = Number(playlistElement.getAttribute("playlist-id"));
+        if (isNaN(playlistID)) {
+            return undefined;
+        }
+
+        return this.getPlaylistFromID(playlistID);
     }
 
     public static getPlaylistChildrenIDs(playlists: Playlist[], parentID: ID): ID[] {
@@ -248,9 +291,5 @@ export default class PlaylistManager {
     // SETTERS
     public setCurrentOpenedPlaylist(playlist: Playlist): void {
         this.currentOpenedPlaylist = structuredClone(playlist);
-    }
-
-    public setCurrentOpenedPlaylistSongs(songs: Song[]): void {
-        this.currentOpenedPlaylistSongs = structuredClone(songs);
     }
 };

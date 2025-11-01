@@ -24,13 +24,12 @@ async function duplicatePlaylistOnClick(app: App, userID: ID, token: Token, play
 function getPlaylistMoveInRows(app: App, userID: ID, token: Token, userPlaylists: Playlist[], playlist: Playlist): ContextmenuRow[] {
     const rootPlaylist: Playlist = {
         id: -1,
-        userID: -1,
         parentID: -1,
         name: "ROOT",
         position: -1,
         thumbnailFileName: "",
         opened: true,
-        songs: 0,
+        songs: [],
         children: 0,
         creationDate: "",
     };
@@ -43,7 +42,7 @@ function getPlaylistMoveInRows(app: App, userID: ID, token: Token, userPlaylists
 
     return userPlaylists.filter((userPlaylist: Playlist) => {
         const isDifferent: boolean = (userPlaylist.id != playlist.id);
-        const hasNoSongs: boolean = (userPlaylist.songs == 0);
+        const hasNoSongs: boolean = (userPlaylist.songs.length == 0);
         const isNotChildren: boolean = !childrenIDs.includes(userPlaylist.id);
         const isNotDirectParent: boolean = (userPlaylist.id != playlist.parentID);
 

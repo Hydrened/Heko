@@ -50,7 +50,7 @@ export default class PlaylistsEventManager {
         });
 
         Elements.currentPlaylist.addSongsButton.addEventListener("click", () => {
-            openAddSongToPlaylistModal(this.app, this.playlists.getSongsLeft());
+            openAddSongToPlaylistModal(this.app, this.playlists.getPlaylistSongsLeft());
         });
     }
 
@@ -97,10 +97,14 @@ export default class PlaylistsEventManager {
     }
 
     private openedPlaylistInputFilterOnInput(): void {
+        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
+
         const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
 
-        const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
-        currentOpenedPlaylistSongs.forEach((song: Song) => {
+        currentOpenedPlaylist.songs.forEach((song: Song) => {
             const titleIncludes: boolean = song.title.toLowerCase().includes(value);
             const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
 

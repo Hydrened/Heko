@@ -9,47 +9,9 @@ export default class PlaylistsRefreshOpenedManager {
     }
 
     public refresh(): void {
-        this.updateCurrentOpenedPlaylist();
-        this.updateCurrentOpenedPlaylistSongs();
-
         this.refreshDetails();
         this.refreshAddSongButton();
         this.refreshPlaylistSongs();
-    }
-
-    private updateCurrentOpenedPlaylist(): void {
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-        if (currentOpenedPlaylist == null) {
-            return;
-        }
-
-        const errorBase: string = "Can't update current opened playlist";
-
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return this.app.throwError(`${errorBase}: User is not logged in.`);
-        }
-
-        const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(currentOpenedPlaylist.id);
-        if (playlist != undefined) {
-            this.playlists.setCurrentOpenedPlaylist(playlist);
-        }
-    }
-
-    private updateCurrentOpenedPlaylistSongs(): void {
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-        if (currentOpenedPlaylist == null) {
-            return;
-        }
-
-        const errorBase: string = "Can't update current opened playlist songs";
-
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return this.app.throwError(`${errorBase}: User is not logged in.`);
-        }
-
-        this.playlists.setCurrentOpenedPlaylistSongs(this.playlists.getSongsFromPlaylist(currentOpenedPlaylist.id));
     }
 
     private refreshDetails(): void {
@@ -61,17 +23,18 @@ export default class PlaylistsRefreshOpenedManager {
         Elements.currentPlaylist.addSongsButton.classList.add("disabled");
 
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
-        const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
         if (currentOpenedPlaylist == null) {
             return;
         }
+
+        const currentOpenedPlaylistSongs: Song[] = currentOpenedPlaylist.songs;
 
         const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(currentOpenedPlaylist.thumbnailFileName)}")`;
         thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
 
         Elements.currentPlaylist.details.title.textContent = currentOpenedPlaylist.name;
 
-        const nbSongs: number = currentOpenedPlaylist.songs;
+        const nbSongs: number = currentOpenedPlaylist.songs.length;
         Elements.currentPlaylist.details.songNumber.textContent = `${nbSongs} ${Functions.pluralize("song", nbSongs)}`;
 
         const playlistDuration: number = currentOpenedPlaylistSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
@@ -92,7 +55,7 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        const playlistSongIDs: number[] = this.playlists.getSongsFromPlaylist(currentOpenedPlaylist.id).map((song: Song) => song.id);
+        const playlistSongIDs: number[] = currentOpenedPlaylist.songs.map((song: Song) => song.id);
         const everyUserSongIDs: number[] = (this.playlists.getSongBuffer()).map((song: Song) => song.id);
 
         const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
@@ -109,8 +72,7 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        const currentOpenedPlaylistSongs: Song[] = this.playlists.getCurrentOpenedPlaylistSongs();
-        currentOpenedPlaylistSongs.forEach((song: Song, index: number) => {
+        currentOpenedPlaylist.songs.forEach((song: Song, index: number) => {
             const liElement: HTMLElement = document.createElement("li");
             liElement.setAttribute("playlist-id", String(currentOpenedPlaylist.id));
             liElement.setAttribute("song-id", String(song.id));

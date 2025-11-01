@@ -22,15 +22,16 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
         return null;
     }
     
+    const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
+
     app.playlistManager.refreshPlaylistBuffer().then(() => {
         app.playlistManager.refreshPlaylistsContainerTab();
 
-        const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist != null) {
-            
             if (childrenIDs.concat(playlist.id).includes(currentOpenedPlaylist.id)) {
-                app.playlistManager.close();
-                app.openFirstPlaylist();
+                app.playlistManager.close().then(() => {
+                    app.openFirstPlaylist();
+                });
             }
         }
     });

@@ -31,6 +31,10 @@ input-select > ul:not(:has(li:not(.hidden))) {
 input-select > ul > li {
     padding: 0.4rem 0.6rem;
 
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+
     border-radius: 0.5rem;
 
     cursor: pointer;

@@ -8,7 +8,7 @@ export function getSongContainerShortcuts(): ShortcutMap {
 }
 
 export function getSongContainerRows(app: App): ContextmenuRow[] {
-    const songsLeft: Song[] = app.playlistManager.getSongsLeft();
+    const songsLeft: Song[] = app.playlistManager.getPlaylistSongsLeft();
     const disableAddSong: boolean = (songsLeft.length == 0);
 
     const shortcuts: ShortcutMap = getSongContainerShortcuts();

@@ -35,6 +35,7 @@ async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal:
     
     app.playlistManager.refreshPlaylistBuffer().then(() => {
         app.playlistManager.refreshPlaylistsContainerTab();
+        
         if (app.playlistManager.getCurrentOpenedPlaylist()?.id == playlist.id) {
             app.playlistManager.refreshOpenedPlaylistTab();
         }
