@@ -4,13 +4,7 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't remove song from playlist: User is not logged in.");
-        return null;
-    }
-
-    const removeSongFromPlaylistReqRes: any = await Requests.song.removeFromPlaylist(userData.id, userData.token, playlist.id, song.id);
+    const removeSongFromPlaylistReqRes: any = await Requests.song.removeFromPlaylist(app, playlist.id, song.id);
     if (!removeSongFromPlaylistReqRes.success) {
         app.throwError(`Can't remove song from playlist: ${removeSongFromPlaylistReqRes.error}`);
         return null;

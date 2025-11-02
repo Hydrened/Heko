@@ -76,14 +76,9 @@ export default class PlaylistsRefreshCotnainerManager {
             containerElement.addEventListener("click", async () => {
                 containerElement.classList.toggle("opened");
 
-                const userData: UserData = this.app.account.getUserData();
-                if (userData.id == null || userData.token == null) {
-                    return;
-                }
-
                 const openedPlaylistIDs: number[] = this.playlists.getPlaylistOpenedStates();
 
-                const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(userData.id, userData.token, openedPlaylistIDs);
+                const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(this.app, openedPlaylistIDs);
                 if (!updatePlaylistOpenedStatesReqRes.success) {
                     return this.app.throwError(`Can't update playlist opened states: ${updatePlaylistOpenedStatesReqRes.error}`);
                 }
@@ -107,9 +102,22 @@ export default class PlaylistsRefreshCotnainerManager {
         detailsElement.classList.add("extern-text");
         detailsElement.setAttribute("playlist-id", strPlaylistID);
         
-        detailsElement.textContent = (playlist.children == 0)
-            ? `${playlist.songs.length} ${Functions.pluralize("song", playlist.songs.length)}`
-            : `${playlist.children} ${Functions.pluralize("playlist", playlist.children)}`;
+        const isMergeContainer: boolean = (playlist.mergedPlaylist.length != 0);
+        const isParent: boolean = (playlist.children != 0);
+
+        if (isMergeContainer) {
+            const nb: number = playlist.mergedPlaylist.length;
+            detailsElement.textContent = `${nb} ${Functions.pluralize("merged playlist", nb)}`;
+        }
+        else if (isParent) {
+            const nb: number = playlist.children;
+            detailsElement.textContent = `${nb} ${Functions.pluralize("playlist", nb)}`;
+        }
+        else {
+            const nb: number = playlist.songs.length;
+            detailsElement.textContent = `${nb} ${Functions.pluralize("song", nb)}`;
+        }
+
         detailsContainerElement.appendChild(detailsElement);
 
         const childrenContainerElement: HTMLElement = document.createElement("ul");

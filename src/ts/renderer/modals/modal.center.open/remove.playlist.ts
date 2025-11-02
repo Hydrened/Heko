@@ -5,18 +5,12 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't remove playlist: User is not logged in.");
-        return null;
-    }
-
     const childrenIDs: ID[] = PlaylistManager.getPlaylistChildrenIDs(userPlaylists, playlist.id);
 
     const playlists: Playlist[] = app.playlistManager.getPlaylistBuffer();
     const thumbnailFileNames: string[] = playlists.filter((p: Playlist) => (childrenIDs.includes(p.id) || p.id == playlist.id)).map((p: Playlist) => p.thumbnailFileName);
 
-    const removePlaylistReqRes: any = await Requests.playlist.remove(userData.id, userData.token, childrenIDs.concat(playlist.id), thumbnailFileNames);
+    const removePlaylistReqRes: any = await Requests.playlist.remove(app, childrenIDs.concat(playlist.id), thumbnailFileNames);
     if (!removePlaylistReqRes.success) {
         app.throwError(`Can't remove playlist: ${removePlaylistReqRes.error}`);
         return null;
@@ -26,6 +20,7 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
 
     app.playlistManager.refreshPlaylistBuffer().then(() => {
         app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
 
         if (currentOpenedPlaylist != null) {
             if (childrenIDs.concat(playlist.id).includes(currentOpenedPlaylist.id)) {

@@ -23,14 +23,27 @@ export const currentPlaylist = {
 
     songFilterInput: document.querySelector("#current-playlist-song-filter-input")!,
 
-    sort: {
-        idButton: document.querySelector("#current-playlist-sort-by-id-button")!,
-        titleButton: document.querySelector("#current-playlist-sort-by-title-button")!,
-        artistButton: document.querySelector("#current-playlist-sort-by-artist-button")!,
-        durationButton: document.querySelector("#current-playlist-sort-by-duration-button")!,
+    song: {
+        sort: {
+            idButton: document.querySelector("#current-playlist-song-sort-by-id-button")!,
+            titleButton: document.querySelector("#current-playlist-song-sort-by-title-button")!,
+            artistButton: document.querySelector("#current-playlist-song-sort-by-artist-button")!,
+            durationButton: document.querySelector("#current-playlist-song-sort-by-duration-button")!,
+        },
+
+        container: document.querySelector("#current-playlist-song-container")!,
     },
 
-    songContainer: document.querySelector("#current-playlist-song-container")!,
+    merged: {
+        sort: {
+            idButton: document.querySelector("#current-playlist-merged-sort-by-id-button")!,
+            nameButton: document.querySelector("#current-playlist-merged-sort-by-name-button")!,
+            nbSongButton: document.querySelector("#current-playlist-merged-sort-by-nb-song-button")!,
+            durationButton: document.querySelector("#current-playlist-merged-sort-by-duration-button")!,
+        },
+
+        container: document.querySelector("#current-playlist-merged-container")!,
+    },
 };
 
 export const account = {

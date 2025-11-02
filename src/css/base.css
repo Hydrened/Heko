@@ -126,10 +126,11 @@ main {
     height: var(--main-height);
 }
 
+input {
+    accent-color: var(--main-col-1);
+}
 input[type="range"] {
     position: relative;
-
-    accent-color: var(--main-col-1);
 }
 input[type="range"]::after {
     content: "";

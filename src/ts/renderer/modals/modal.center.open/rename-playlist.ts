@@ -4,12 +4,6 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't rename playlist: User is not logged in.");
-        return null;
-    }
-
     const newPlaylistName: string = modal.getFieldValue("New name");
 
     if (newPlaylistName.length < 3) {
@@ -27,7 +21,7 @@ async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal:
         };
     }
 
-    const renamePlaylistReqRes: any = await Requests.playlist.rename(userData.id, userData.token, playlist.id, newPlaylistName);
+    const renamePlaylistReqRes: any = await Requests.playlist.rename(app, playlist.id, newPlaylistName);
     if (!renamePlaylistReqRes.success) {
         app.throwError(`Can't rename playlist: ${renamePlaylistReqRes.error}`);
         return null;

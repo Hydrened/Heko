@@ -132,11 +132,6 @@ export default class PlaylistsMoveManager {
 
         const errorBase: string = "Can't update playlist position";
 
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return this.app.throwError(`${errorBase}: User is not logged in.`);
-        }
-
         const playlist: Playlist | undefined = this.playlists.getPlaylistFromElement(this.originalPlaylistElementBuffer);
         if (playlist == undefined) {
             return this.app.throwError(`${errorBase}: Playlist is undefined.`);
@@ -144,7 +139,7 @@ export default class PlaylistsMoveManager {
 
         this.updating = true;
 
-        const updatePlaylistPositionReqRes: any = await Requests.playlist.updatePosition(userData.id, userData.token, playlist.id, position);
+        const updatePlaylistPositionReqRes: any = await Requests.playlist.updatePosition(this.app, playlist.id, position);
         if (!updatePlaylistPositionReqRes.success) {
             return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`);
         }
@@ -215,7 +210,7 @@ export default class PlaylistsMoveManager {
 
         const parentPlaylistID: number = (this.app.playlistManager.getPlaylistFromID(playlistID)?.parentID ?? -1);
         const sameParentPlaylists: Playlist[] = this.app.playlistManager.getPlaylistBuffer().filter((playlist: Playlist) => playlist.parentID == parentPlaylistID);
-        
+
         this.sameParentPlaylistElements = sameParentPlaylists.map((playlist: Playlist) => {
             return Elements.playlists.container.querySelector(`li.playlist-wrapper[playlist-id="${playlist.id}"]`);
         }).filter((element: Element | null) => element != null);

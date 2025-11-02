@@ -5,13 +5,7 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function updateThumbnailModalOnClick(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't update playlist thumbnail: User is not logged in.");
-        return null;
-    }
-
-    const removePlaylistThumbnailReqRes: any = await Requests.thumbnail.remove(userData.id, userData.token, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
+    const removePlaylistThumbnailReqRes: any = await Requests.thumbnail.remove(app, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
     if (!removePlaylistThumbnailReqRes.success) {
         app.throwError(`Can't remove playlist thumbnail: ${removePlaylistThumbnailReqRes.error}`);
         return null;
@@ -19,7 +13,7 @@ async function updateThumbnailModalOnClick(app: App, modal: CenterModal, current
 
     const file: File | null = CenterModal.getFileFromFileInput("Thumbnail");
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(userData.id, userData.token, file));
+        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't upload playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -27,7 +21,7 @@ async function updateThumbnailModalOnClick(app: App, modal: CenterModal, current
 
         const thumbnailFileName: string = uploadPlaylistThumbnailReqRes.fileName;
 
-        const updatePlaylistThumbnailReqRes: any = await Requests.thumbnail.update(userData.id, userData.token, currentOpenedPlaylist.id, thumbnailFileName);
+        const updatePlaylistThumbnailReqRes: any = await Requests.thumbnail.update(app, currentOpenedPlaylist.id, thumbnailFileName);
         if (!updatePlaylistThumbnailReqRes.success) {
             app.throwError(`Can't update playlist thumbnail: ${updatePlaylistThumbnailReqRes.error}`);
             return null;

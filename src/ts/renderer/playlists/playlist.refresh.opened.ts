@@ -1,5 +1,6 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
+import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -11,7 +12,7 @@ export default class PlaylistsRefreshOpenedManager {
     public refresh(): void {
         this.refreshDetails();
         this.refreshAddSongButton();
-        this.refreshPlaylistSongs();
+        this.refreshMainContainer();
     }
 
     private refreshDetails(): void {
@@ -27,17 +28,20 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        const currentOpenedPlaylistSongs: Song[] = currentOpenedPlaylist.songs;
+        const isMergedContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
+        const songs: Song[] = ((isMergedContainer)
+            ? this.playlists.getMergedContainerSongs(currentOpenedPlaylist, false)
+            : currentOpenedPlaylist.songs);
 
         const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(currentOpenedPlaylist.thumbnailFileName)}")`;
         thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
 
         Elements.currentPlaylist.details.title.textContent = currentOpenedPlaylist.name;
 
-        const nbSongs: number = currentOpenedPlaylist.songs.length;
+        const nbSongs: number = songs.length;
         Elements.currentPlaylist.details.songNumber.textContent = `${nbSongs} ${Functions.pluralize("song", nbSongs)}`;
 
-        const playlistDuration: number = currentOpenedPlaylistSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
+        const playlistDuration: number = songs.reduce((acc: number, song: Song) => acc + song.duration, 0);
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
         Elements.currentPlaylist.details.duration.textContent = formatPlatlistDuration;
 
@@ -50,8 +54,8 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
+        if (currentOpenedPlaylist.mergedPlaylist.length != 0) {
+            Elements.currentPlaylist.addSongsButton.classList.add("disabled");
             return;
         }
 
@@ -64,34 +68,111 @@ export default class PlaylistsRefreshOpenedManager {
         }
     }
 
-    private refreshPlaylistSongs(): void {
-        Functions.removeChildren(Elements.currentPlaylist.songContainer);
+    private refreshMainContainer(): void {
+        Functions.removeChildren(Elements.currentPlaylist.song.container);
+        Functions.removeChildren(Elements.currentPlaylist.merged.container);
         
         const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
 
+        if (currentOpenedPlaylist.mergedPlaylist.length != 0) {
+            this.refreshMergedPlaylists(currentOpenedPlaylist);
+        }
+        else {
+            this.refreshPlaylistSongs(currentOpenedPlaylist);
+        }
+    }
+
+    private static createRowContent(parent: HTMLElement, text: string): HTMLElement {
+        const rowElement: HTMLElement = document.createElement("p");
+        rowElement.classList.add("extern-text");
+        rowElement.textContent = text;
+        parent.appendChild(rowElement);
+
+        return rowElement;
+    }
+
+    private refreshPlaylistSongs(currentOpenedPlaylist: Playlist): void {
+        Elements.currentPlaylist.container.setAttribute("type", "song-container");
+
         currentOpenedPlaylist.songs.forEach((song: Song, index: number) => {
             const liElement: HTMLElement = document.createElement("li");
             liElement.setAttribute("playlist-id", String(currentOpenedPlaylist.id));
             liElement.setAttribute("song-id", String(song.id));
             liElement.classList.add("current-playlist-table-row");
-            Elements.currentPlaylist.songContainer.appendChild(liElement);
+            Elements.currentPlaylist.song.container.appendChild(liElement);
+
+            const formatDuration: string = Functions.formatDuration(song.duration);
+
+            const rowElementTexts: string[] = [String(index + 1), song.title, song.artist, formatDuration];
+            rowElementTexts.forEach((text: string) => PlaylistsRefreshOpenedManager.createRowContent(liElement, text));
 
             liElement.addEventListener("click", () => {
                 this.app.listenerManager.initQueue(currentOpenedPlaylist, song);
             });
             liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu((e as Position), song, liElement));
+        });
+    }
 
-            const formatDuration: string = Functions.formatDuration(song.duration);
+    private refreshMergedPlaylists(currentOpenedPlaylist: Playlist): void {
+        Elements.currentPlaylist.container.setAttribute("type", "merged-container");
 
-            const rowElementTexts: string[] = [String(index + 1), song.title, song.artist, formatDuration];
-            rowElementTexts.forEach((text: string) => {
-                const rowElement: HTMLElement = document.createElement("p");
-                rowElement.textContent = text;
-                liElement.appendChild(rowElement);
+        currentOpenedPlaylist.mergedPlaylist.reverse().forEach((mergedPlaylist: MergedPlaylist, index: number) => {
+            const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(mergedPlaylist.id);
+            if (playlist == undefined) {
+                return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.");
+            }
+
+            const liElement: HTMLElement = document.createElement("li");
+            liElement.setAttribute("playlist-id", String(mergedPlaylist.id));
+            liElement.classList.add("current-playlist-table-row");
+            Elements.currentPlaylist.merged.container.appendChild(liElement);
+
+            PlaylistsRefreshOpenedManager.createRowContent(liElement, String(index + 1));
+            const checkboxElementContainer: HTMLElement = PlaylistsRefreshOpenedManager.createRowContent(liElement, "");
+            const checkboxElement: HTMLInputElement = document.createElement("input");
+            checkboxElement.type = "checkbox";
+            if (mergedPlaylist.toggled) {
+                checkboxElement.setAttribute("checked", "");
+            }
+            checkboxElement.setAttribute("tabindex", "-1");
+            checkboxElementContainer.appendChild(checkboxElement);
+
+            const thumbnailElementContainer: HTMLElement = PlaylistsRefreshOpenedManager.createRowContent(liElement, "");
+            const thumbnailElement: HTMLElement = document.createElement("div");
+            const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(playlist.thumbnailFileName)}")`;
+            thumbnailElement.classList.add("thumbnail");
+            thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
+            thumbnailElementContainer.appendChild(thumbnailElement);
+
+            const duration: number = playlist.songs.reduce((acc: number, song: Song) => acc + song.duration, 0);
+            const formatDuration: string = Functions.formatDuration(duration);
+
+            const rowElementTexts: string[] = [playlist.name, String(playlist.songs.length), formatDuration];
+            rowElementTexts.forEach((text: string) => PlaylistsRefreshOpenedManager.createRowContent(liElement, text));
+
+            checkboxElement.addEventListener("change", async () => {
+                const chcked: boolean = checkboxElement.checked;
+
+                const updateMergeToggleReqRes: any = await Requests.playlist.updateMergeToggle(this.app, mergedPlaylist.id, chcked);
+                if (!updateMergeToggleReqRes.success) {
+                    return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`);
+                }
+
+                await this.playlists.refreshPlaylistBuffer();
+                this.app.listenerManager.refreshQueue();
             });
+
+            liElement.addEventListener("click", async (e: PointerEvent) => {
+                if (e.target == checkboxElement) {
+                    return;
+                }
+
+                await this.app.playlistManager.open(mergedPlaylist.id);
+            });
+            liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createMergedPlaylistContextMenu((e as Position), playlist, liElement));
         });
     }
 };

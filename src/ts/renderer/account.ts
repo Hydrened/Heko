@@ -54,7 +54,7 @@ export default class Account {
             return;
         }
 
-        const getUserSettingsReqRes: any = await Requests.user.getSettings(this.userID, this.token);
+        const getUserSettingsReqRes: any = await Requests.user.getSettings(this.app);
         if (!getUserSettingsReqRes.success) {
             return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`);
         }

@@ -1,3 +1,9 @@
+## HEKO-3.1.0
+#### ADDED
+- playlist merge
+#### FIXED
+- move in root duplication
+
 ## HEKO-3.0.6
 #### ADDED
 - global shortcuts (play, previous, next, volume up and down)

@@ -87,18 +87,6 @@ interface ContextmenuRow {
 
 
 
-interface Playlist {
-    readonly id: ID;
-    readonly parentID: ID;
-    readonly name: string;
-    readonly position: number;
-    readonly thumbnailFileName: string;
-    readonly opened: boolean;
-    readonly songs: Song[];
-    readonly children: number;
-    readonly creationDate: string;
-};
-
 interface Song {
     readonly id: ID;
     readonly fileName: string;
@@ -108,11 +96,27 @@ interface Song {
     readonly creationDate: string;
 };
 
+interface MergedPlaylist {
+    readonly id: ID;
+    readonly toggled: boolean;
+};
+
+interface Playlist {
+    readonly id: ID;
+    readonly parentID: ID;
+    readonly name: string;
+    readonly position: number;
+    readonly thumbnailFileName: string;
+    readonly opened: boolean;
+    readonly mergedPlaylist: MergedPlaylist[];
+    readonly songs: Song[];
+    readonly children: number;
+    readonly creationDate: string;
+};
+
 interface Artist {
     readonly userID: ID;
     readonly name: string;
 };
-
-
 
 type Queue = Song[];

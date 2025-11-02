@@ -4,12 +4,6 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removeSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't remove song from app: User is not logged in.");
-        return null;
-    }
-
     const songIndex: number | undefined = modal.getFieldValueIndex("Title");
     if (songIndex == undefined) {
         return {
@@ -20,7 +14,7 @@ async function removeSongFromAppModalOnConfirm(app: App, modal: CenterModal, use
 
     const song: Song = userSongs[songIndex];
     
-    const removeSongFromAppReqRes: any = await Requests.song.removeFromApp(userData.id, userData.token, song.id, song.fileName);
+    const removeSongFromAppReqRes: any = await Requests.song.removeFromApp(app, song.id, song.fileName);
     if (!removeSongFromAppReqRes.success) {
         app.throwError(`Can't remove song from app: ${removeSongFromAppReqRes.error}`);
         return null;

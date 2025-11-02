@@ -4,12 +4,6 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, song: Song): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't edit song from playlist: User is not logged in.");
-        return null;
-    }
-
     const newTitle: string = modal.getFieldValue("New title");
     if (newTitle.length < 1) {
         return {
@@ -26,7 +20,7 @@ async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, 
         };
     }
 
-    const editSongReqRes: any = await Requests.song.edit(userData.id, userData.token, song.id, newTitle, newArtist);
+    const editSongReqRes: any = await Requests.song.edit(app, song.id, newTitle, newArtist);
     if (!editSongReqRes.success) {
         app.throwError(`Can't edit song: ${editSongReqRes.error}`);
         return null;
@@ -43,11 +37,6 @@ async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, 
 }
 
 export default function openEditSongFromPlaylistModal(app: App, song: Song): void {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        return app.throwError("Can't open edit song from app modal: User is not logged in.");
-    }
-
     const content: ModalRow[] = [
         { label: "New title", type: "TEXT", maxLength: 150, defaultValue: song.title },
         { label: "New artist", type: "SELECT", maxLength: 150, defaultValue: song.artist, data: app.playlistManager.getArtistNames() },

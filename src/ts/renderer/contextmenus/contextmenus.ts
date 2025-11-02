@@ -5,6 +5,8 @@ import { getPlaylistRows } from "./contextmenu.rows/playlist.js";
 import { getSongSettingRows } from "./contextmenu.rows/song-settings.js";
 import { getSongContainerRows } from "./contextmenu.rows/song-container.js";
 import { getSongRows } from "./contextmenu.rows/song.js";
+import { getMergedPlaylistRows } from "./contextmenu.rows/merged-playlist.js";
+import { getMergedContainerRows } from "./contextmenu.rows/merged-container.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class ContextmenuManager {
@@ -47,6 +49,10 @@ export default class ContextmenuManager {
 
     // PRIVATE CREATE EVENTS
     private createContextMenu(position: Position, rows: ContextmenuRow[]): void {
+        if (rows.length == 0) {
+            return;
+        }
+
         this.closeContextMenu();
         
         this.currentContextmenuElement = document.createElement("ul");
@@ -177,8 +183,17 @@ export default class ContextmenuManager {
         this.createContextMenu(position, getSongContainerRows(this.app));
     }
 
+    public createMergedContainerContextmenu(position: Position, mergeContainer: Playlist): void {
+        this.createContextMenu(position, getMergedContainerRows(this.app, mergeContainer));
+    }
+
     public createSongContextMenu(position: Position, song: Song, songElement: HTMLElement): void {
         this.setElementToContextmenuParent(songElement);
         this.createContextMenu(position, getSongRows(this.app, song));
+    }
+
+    public createMergedPlaylistContextMenu(position: Position, playlist: Playlist, playlistElement: HTMLElement): void {
+        this.setElementToContextmenuParent(playlistElement);
+        this.createContextMenu(position, getMergedPlaylistRows(this.app, playlist));
     }
 };

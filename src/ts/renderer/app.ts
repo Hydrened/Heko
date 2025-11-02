@@ -75,7 +75,7 @@ export default class App {
             volume: this.listenerManager.getVolume(),
         };
 
-        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(userData.id, userData.token, settings);
+        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(this, settings);
         if (!saveUserSettingsReqRes.success) {
             return this.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
         }

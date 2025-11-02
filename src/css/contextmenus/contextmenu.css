@@ -77,6 +77,9 @@ span.contextmenu-row-shortcut {
 img.contextmenu-row-submenu-indicator {
     width: 1rem;
 }
+li.contextmenu-row-container.disabled img.contextmenu-row-submenu-indicator {
+    display: none;
+}
 
 li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {
     display: none;

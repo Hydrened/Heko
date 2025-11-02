@@ -28,7 +28,11 @@ export default class ListenerManager {
     // EVENTS
     public refresh(): void {
         const currentSong: Song | null = this.queueManager.getCurrentSong();
-        this.refreshManager.refresh(currentSong);   
+        this.refreshManager.refresh(currentSong);
+    }
+
+    public refreshQueue(): void {
+        this.queueManager.refresh();
     }
 
     public loggedIn(): void {
@@ -43,7 +47,7 @@ export default class ListenerManager {
         this.queueManager.reset();
     }
 
-    public initQueue(playlist: Playlist, firstSong: Song | null): void {
+    public initQueue(playlist: Playlist, firstSong: Song | null = null): void {
         this.queueManager.init(playlist, firstSong);
     }
 

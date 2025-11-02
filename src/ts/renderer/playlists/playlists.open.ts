@@ -19,11 +19,6 @@ export default class PlaylistsOpenManager {
             await this.close();
         }
 
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return;
-        }
-
         const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(playlistID);
         if (playlist == undefined) {
             return this.app.throwError("Can't get playlist: Playlist is undefined.");

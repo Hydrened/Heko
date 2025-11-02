@@ -31,13 +31,6 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         }
     }
 
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        return {
-            error: "User is not logged in.",
-        };
-    }
-
     const playlistNames: string[] = app.playlistManager.getPlaylistBuffer().map((playlist: Playlist) => playlist.name);
     const playlistNameAlreadyExists: boolean = playlistNames.includes(newPlaylistName);
     
@@ -50,7 +43,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
 
     let thumbnailFileName: string = "";
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(userData.id, userData.token, file));
+        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -59,7 +52,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         thumbnailFileName = uploadPlaylistThumbnailReqRes.fileName;
     }
 
-    const addPlaylistReqRes: any = await Requests.playlist.add(userData.id, userData.token, newPlaylistName, thumbnailFileName);
+    const addPlaylistReqRes: any = await Requests.playlist.add(app, newPlaylistName, thumbnailFileName);
     if (!addPlaylistReqRes.success) {
         app.throwError(`Can't add playlist: ${addPlaylistReqRes.error}`);
         return null;

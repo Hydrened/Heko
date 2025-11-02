@@ -39,24 +39,39 @@ export default class ListenerQueueManager {
         this.currentQueueIndex = 0;
         this.manuallyAddedToQueue = [];
 
+        this.audioElement.src = "";
+        this.audioElement.currentTime = 0;
+
         this.currentListeningPlaylist = null;
         this.currentSongs = null;
 
         this.setPlaying(false);
         this.setShuffle(false);
         this.setLoop(false);
+
+        this.listener.refresh();
+    }
+
+    public refresh(): void {
+        if (this.currentListeningPlaylist == null) {
+            return;
+        }
+        
+        const a = this.currentListeningPlaylist.id;
+        this.reset();
+        this.listener.refresh();
+        this.recreate();
     }
 
     // QUEUE EVENTS
-    public init(playlist: Playlist, firstSong: Song | null): void {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return this.app.throwError("Can't init queue: User is not logged in.");
-        }
-
+    public init(playlist: Playlist, firstSong: Song | null = null): void {
         this.currentListeningPlaylist = playlist;
 
-        this.currentSongs = this.currentListeningPlaylist.songs;
+        const isMergedContainer: boolean = (this.currentListeningPlaylist.mergedPlaylist.length != 0);
+        this.currentSongs = (isMergedContainer)
+            ? this.app.playlistManager.getMergedContainerSongs(this.currentListeningPlaylist, true)
+            : this.currentListeningPlaylist.songs;
+
         if (this.currentSongs.length == 0) {
             this.currentListeningPlaylist = null;
             return;
@@ -74,7 +89,7 @@ export default class ListenerQueueManager {
         this.setAudioSrc(currentSong);
     }
 
-    private recreate(firstSong: Song | null): void {
+    private recreate(firstSong: Song | null = null): void {
         if (!this.canPlay()) {
             return;
         }
@@ -142,7 +157,7 @@ export default class ListenerQueueManager {
 
             const hasToInit: boolean = (this.currentListeningPlaylist == null && currentOpenedPlaylist != null);
             if (hasToInit) {
-                return this.init(currentOpenedPlaylist!, null);
+                return this.init(currentOpenedPlaylist!);
             }
         }
 
@@ -170,6 +185,7 @@ export default class ListenerQueueManager {
             return this.app.throwError("Can't go to previous song: Previous song is null");
         }
 
+        this.setPlaying(true);
         this.setAudioSrc(previousSong);
     }
 
@@ -186,7 +202,7 @@ export default class ListenerQueueManager {
         this.currentQueueIndex++;
 
         if (this.currentSongs!.length == 1) {
-            this.recreate(null);
+            this.recreate();
             this.audioElement.currentTime = 0;
             this.audioElement.play();
             return;
@@ -197,6 +213,7 @@ export default class ListenerQueueManager {
             return this.app.throwError("Can't go to next song: Next song is null");
         }
 
+        this.setPlaying(true);
         this.setAudioSrc(nextSong);
 
         const queueSize: number = this.queue.length - this.currentQueueIndex;

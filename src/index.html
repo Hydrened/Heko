@@ -56,7 +56,7 @@
                 </footer>
             </aside>
             <section class="right-tab">
-                <article id="current-playlist-container">
+                <article id="current-playlist-container" type="song-container">
                     <header>
                         <div id="current-playlist-thumbnail"></div>
                         <div class="current-playlist-details-container">
@@ -72,13 +72,22 @@
                     </header>
                     <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
                     <div class="current-playlist-table-container">
-                        <div class="current-playlist-table-head-container">
-                            <button id="current-playlist-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
-                            <button id="current-playlist-sort-by-title-button" tabindex="-1">Title</button>
-                            <button id="current-playlist-sort-by-artist-button" tabindex="-1">Artist</button>
-                            <button id="current-playlist-sort-by-duration-button" tabindex="-1">Duration</button>
+                        <div class="current-playlist-table-head-container" type="song-container">
+                            <button id="current-playlist-song-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
+                            <button id="current-playlist-song-sort-by-title-button" tabindex="-1">Title</button>
+                            <button id="current-playlist-song-sort-by-artist-button" tabindex="-1">Artist</button>
+                            <button id="current-playlist-song-sort-by-duration-button" tabindex="-1">Duration</button>
                         </div>
-                        <ul id="current-playlist-song-container"></ul>
+                        <ul id="current-playlist-song-container" type="song-container"></ul>
+                        <div class="current-playlist-table-head-container" type="merged-container">
+                            <button id="current-playlist-merged-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>
+                            <button tabindex="-1"></button>
+                            <button tabindex="-1"></button>
+                            <button id="current-playlist-merged-sort-by-name-button" tabindex="-1">Name</button>
+                            <button id="current-playlist-merged-sort-by-nb-song-button" tabindex="-1">Songs</button>
+                            <button id="current-playlist-merged-sort-by-duration-button" tabindex="-1">Duration</button>
+                        </div>
+                        <ul id="current-playlist-merged-container" type="merged-container"></ul>
                     </div>
                 </article>
                 <button id="account-button" tabindex="-1">
@@ -187,7 +196,12 @@
                                         <div></div>
                                     </li>
                                     <li>
-                                        <label>Gradient rotation</label>
+                                        <label>Rotate gradient</label>
+                                        <input type="checkbox">
+                                        <input type="number">
+                                    </li>
+                                    <li>
+                                        <label>Gradient default rotation</label>
                                         <input type="number">
                                     </li>
                                 </ul>

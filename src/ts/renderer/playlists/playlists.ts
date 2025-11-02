@@ -47,12 +47,7 @@ export default class PlaylistManager {
     public async refreshPlaylistBuffer(): Promise<void> {
         this.playlistBuffer = [];
 
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return;
-        }
-
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.get(userData.id, userData.token);
+        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.get(this.app);
         if (!getAllPlaylistsFromUserReqRes.success) {
             this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
             return;
@@ -71,7 +66,12 @@ export default class PlaylistManager {
         });
 
         uniquePlaylists.forEach((row: any) => {
-            const children: number = uniquePlaylists.filter((r: any) => r.playlistParentID == row.playlistID).length;
+            const mergedPlaylist: MergedPlaylist[] = rowPlaylists.filter((r: any) => r.playlistID == row.playlistID && r.mergedPlaylistID != null).map((r: any) => {
+                return {
+                    id: r.mergedPlaylistID,
+                    toggled: r.mergedPlaylistToggled,
+                };
+            });
 
             const songs: Song[] = rowPlaylists.filter((r: any) => r.playlistID == row.playlistID && r.songID != null).map((r: any) => {
                 return {
@@ -84,6 +84,8 @@ export default class PlaylistManager {
                 };
             });
 
+            const children: number = uniquePlaylists.filter((r: any) => r.playlistParentID == row.playlistID).length;
+
             const playlist: Playlist = {
                 id: row.playlistID,
                 parentID: row.playlistParentID,
@@ -91,6 +93,7 @@ export default class PlaylistManager {
                 position: row.playlistPosition,
                 thumbnailFileName: row.playlistThumbnailFileName,
                 opened: row.playlistOpened,
+                mergedPlaylist: mergedPlaylist,
                 songs: songs,
                 children: children,
                 creationDate: row.playlistCreationDate,
@@ -105,13 +108,7 @@ export default class PlaylistManager {
     }
 
     public async refreshSongBuffer(): Promise<void> {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            this.songBuffer = [];
-            return;
-        }
-
-        const getAllSongsFromUserReqRes: any = await Requests.song.get(userData.id, userData.token);
+        const getAllSongsFromUserReqRes: any = await Requests.song.get(this.app);
         if (!getAllSongsFromUserReqRes.success) {
             this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
             this.songBuffer = [];
@@ -138,11 +135,6 @@ export default class PlaylistManager {
     }
 
     public getSortedPlaylists(): Playlist[] {
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            return [];
-        }
-
         const playlists: Playlist[] = this.playlistBuffer;
         const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
 
@@ -222,17 +214,31 @@ export default class PlaylistManager {
             return [];
         }
 
-        const userData: UserData = this.app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
-            this.app.throwError("Can't get songs left: User is not logged in.");
-            return [];
-        }
-
         const songIDsFromPlaylist: ID[] = currentOpenedPlaylist.songs.map((song: Song) => song.id);
     
         return this.songBuffer.filter((song: Song) => {
             return !songIDsFromPlaylist.includes(song.id);
         });
+    }
+
+    public getMergedContainerSongs(mergedContainer: Playlist, toggledOnly: boolean): Song[] {
+        return Object.values(mergedContainer.mergedPlaylist.map((mp: MergedPlaylist) => {
+            if (toggledOnly && !mp.toggled) {
+                return [];
+            }
+
+            const playlist: Playlist | undefined = this.app.playlistManager.getPlaylistFromID(mp.id);
+            if (playlist == undefined) {
+                this.app.throwError("Can't refresh current opened playlist details: A merged playlist is undefined.");
+                return [];
+            }
+
+            return playlist.songs;
+
+        }).flat().reduce((acc: { [id: ID]: Song }, song: Song) => {
+            acc[song.id] = song;
+            return acc;
+        }, {}));
     }
 
     // -- other

@@ -4,8 +4,8 @@ import openEditSongFromPlaylistModal from "./../../modals/modal.center.open/edit
 import openRemoveSongFromPlaylistModal from "./../../modals/modal.center.open/remove-song-from-playlist.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function addSongToPlaylistOnClick(app: App, userID: ID, token: Token, playlist: Playlist, song: Song): Promise<void> {
-    const addSongToPlaylistReqRes: any = await Requests.song.addToPlaylist(userID, token, song.id, playlist.id);
+async function addSongToPlaylistOnClick(app: App, playlist: Playlist, song: Song): Promise<void> {
+    const addSongToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, song.id, playlist.id);
     if (!addSongToPlaylistReqRes.success) {
         return app.throwError(`Can't add song to playlist: ${addSongToPlaylistReqRes.error}`);
     }
@@ -26,12 +26,6 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
         return [];
     }
 
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError(`${errorBase}: User is not logged in.`);
-        return [];
-    }
-
     const addToOtherPlaylistRows: ContextmenuRow[] = [];
     for (const playlist of app.playlistManager.getPlaylistWhereSongIsNotIn(song.id)) {
         if (playlist.children != 0) {
@@ -40,7 +34,7 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
 
         addToOtherPlaylistRows.push({
             title: playlist.name,
-            onClick: async () => await addSongToPlaylistOnClick(app, userData.id!, userData.token!, playlist, song),
+            onClick: async () => await addSongToPlaylistOnClick(app, playlist, song),
             disabled: false,
         });
     }

@@ -5,12 +5,6 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't add song to app: User is not logged in.");
-        return null;
-    }
-
     const title: string = modal.getFieldValue("Title");
     if (title.length < 1) {
         return {
@@ -58,13 +52,13 @@ async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: Ce
         };
     }
 
-    const uploadSongReqRes: any = await LoadingModal.create<any>("Uploading song", Requests.song.upload(userData.id, userData.token, file));
+    const uploadSongReqRes: any = await LoadingModal.create<any>("Uploading song", Requests.song.upload(app, file));
     if (!uploadSongReqRes.success) {
         app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`);
         return null;
     }
 
-    const addSongToAppReqRes: any = await Requests.song.addToApp(userData.id, userData.token, title, artist, uploadSongReqRes.fileName);
+    const addSongToAppReqRes: any = await Requests.song.addToApp(app, title, artist, uploadSongReqRes.fileName);
     if (!addSongToAppReqRes.success) {
         app.throwError(`Can't add song to app: ${addSongToAppReqRes.error}`);
         return null;

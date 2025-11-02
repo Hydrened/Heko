@@ -4,12 +4,6 @@ import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        app.throwError("Can't edit song from app: User is not logged in.");
-        return null;
-    }
-
     const songIndex: number | undefined = modal.getFieldValueIndex("Song to edit");
     if (songIndex == undefined) {
         return {
@@ -36,7 +30,7 @@ async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userS
 
     const song: Song = userSongs[songIndex];
 
-    const editSongReqRes: any = await Requests.song.edit(userData.id, userData.token, song.id, newTitle, newArtist);
+    const editSongReqRes: any = await Requests.song.edit(app, song.id, newTitle, newArtist);
     if (!editSongReqRes.success) {
         app.throwError(`Can't edit song: ${editSongReqRes.error}`);
         return null;
@@ -68,11 +62,6 @@ function editSongSongToEditOnChange(app: App, modal: CenterModal, userSongs: Son
 
 export default function openEditFromAppSongModal(app: App, userSongs: Song[]): void {
     const songTitles: string[] = userSongs.map((song: Song) => song.title);
-
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        return app.throwError("Can't open edit song from app modal: User is not logged in.");
-    }
 
     const content: ModalRow[] = [
         { label: "Song to edit", type: "SELECT", maxLength: 150, data: songTitles, onChange: (modal: CenterModal) => editSongSongToEditOnChange(app, modal, userSongs) },

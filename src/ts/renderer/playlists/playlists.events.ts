@@ -3,9 +3,10 @@ import PlaylistManager from "./playlists.js";
 import openUpdateThumbnailModal from "./../modals/modal.center.open/update-playlist-thumbnail.js";
 import openCreatePlaylistModal from "./../modals/modal.center.open/create-playlist.js";
 import openAddSongToPlaylistModal from "./../modals/modal.center.open/add-song-to-playlist.js";
-import { getPlaylistRows, getPlaylistRowShortcuts } from "./../contextmenus/contextmenu.rows/playlist.js";
-import { getPlaylistContainerRows, getPlaylistContainerShortcuts } from "./../contextmenus/contextmenu.rows/playlist-container.js";
+import { getPlaylistRowShortcuts, getPlaylistRows } from "./../contextmenus/contextmenu.rows/playlist.js";
+import { getPlaylistContainerShortcuts, getPlaylistContainerRows } from "./../contextmenus/contextmenu.rows/playlist-container.js";
 import { getSongContainerShortcuts, getSongContainerRows } from "./../contextmenus/contextmenu.rows/song-container.js";
+import { getMergedContainerShortcuts, getMergedContainerRows } from "../contextmenus/contextmenu.rows/merged-container.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -68,7 +69,8 @@ export default class PlaylistsEventManager {
             }
         });
 
-        (Elements.currentPlaylist.songContainer as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
+        (Elements.currentPlaylist.song.container as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
+        (Elements.currentPlaylist.merged.container as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistMergedContainerOnContextmenu(e));
 
     }
 
@@ -93,7 +95,13 @@ export default class PlaylistsEventManager {
         }
 
         Functions.testShortcuts(e, getPlaylistRowShortcuts(), getPlaylistRows, this.app, currentOpenedPlaylist);
-        Functions.testShortcuts(e, getSongContainerShortcuts(), getSongContainerRows, this.app);
+
+        if (currentOpenedPlaylist.mergedPlaylist.length != 0) {
+            Functions.testShortcuts(e, getMergedContainerShortcuts(), getMergedContainerRows, this.app, currentOpenedPlaylist);
+        }
+        else {
+            Functions.testShortcuts(e, getSongContainerShortcuts(), getSongContainerRows, this.app);
+        }
     }
 
     private openedPlaylistInputFilterOnInput(): void {
@@ -104,11 +112,53 @@ export default class PlaylistsEventManager {
 
         const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
 
-        currentOpenedPlaylist.songs.forEach((song: Song) => {
-            const titleIncludes: boolean = song.title.toLowerCase().includes(value);
-            const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+        const isMergeContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
+        (isMergeContainer)
+            ? this.openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist, value)
+            : this.openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist, value);
+    }
 
-            const liElement: Element | undefined = [...Elements.currentPlaylist.songContainer.children].find((li: Element) => {
+    private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, value: string): void {
+        currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist) => {
+            const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(mergedPlaylist.id);
+            if (playlist == undefined) {
+                return this.app.throwError("Can't filter merged playlists: A merged playlist is undefined.");
+            }
+
+            const liElement: Element | undefined = [...Elements.currentPlaylist.merged.container.children].find((li: Element) => {
+                if (!li.hasAttribute("playlist-id")) {
+                    return false;
+                }
+
+                const playlistID: number = Number(li.getAttribute("playlist-id"));
+                return (playlistID == mergedPlaylist.id);
+            });
+
+            if (liElement == undefined) {
+                return;
+            }
+
+            const nameIncludes: boolean = playlist.name.toLowerCase().includes(value);
+
+            const songIncludes: boolean = playlist.songs.some((song: Song) => {
+                const titleIncludes: boolean = song.title.toLowerCase().includes(value);
+                const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+
+                return (titleIncludes || artistIncludes);
+            });
+
+            if (nameIncludes || songIncludes) {
+                liElement.classList.remove("hidden");
+            }
+            else {
+                liElement.classList.add("hidden");
+            }
+        });
+    }
+
+    private openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist: Playlist, value: string): void {
+        currentOpenedPlaylist.songs.forEach((song: Song) => {
+            const liElement: Element | undefined = [...Elements.currentPlaylist.song.container.children].find((li: Element) => {
                 if (!li.hasAttribute("song-id")) {
                     return false;
                 }
@@ -118,8 +168,11 @@ export default class PlaylistsEventManager {
             });
 
             if (liElement == undefined) {
-                return false;
+                return;
             }
+
+            const titleIncludes: boolean = song.title.toLowerCase().includes(value);
+            const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
 
             if (titleIncludes || artistIncludes) {
                 liElement.classList.remove("hidden");
@@ -131,10 +184,23 @@ export default class PlaylistsEventManager {
     }
 
     private openedPlaylistSongContainerOnContextmenu(e: PointerEvent): void {
-        if (e.target != Elements.currentPlaylist.songContainer) {
+        if (e.target != Elements.currentPlaylist.song.container) {
             return;
         }
 
         this.app.contextmenuManager.createSongContainerContextMenu((e as Position));
+    }
+
+    private openedPlaylistMergedContainerOnContextmenu(e: PointerEvent): void {
+        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
+
+        if (e.target != Elements.currentPlaylist.merged.container) {
+            return;
+        }
+
+        this.app.contextmenuManager.createMergedContainerContextmenu((e as Position), currentOpenedPlaylist);
     }
 };

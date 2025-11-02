@@ -34,6 +34,8 @@
     gap: 2rem;
 }
 
+
+
 #current-playlist-thumbnail {
     width: 11rem;
     aspect-ratio: 1 / 1;
@@ -42,11 +44,13 @@
 
     background-color: var(--bg-bo-6);
     background-position: center center;
-    background-size: contain;
+    background-size: cover;
     background-repeat: no-repeat;
 
     cursor: pointer;
 }
+
+
 
 .current-playlist-details-container {
     padding-block: 0.5rem;
@@ -58,10 +62,14 @@
     align-self: end;
 }
 
+
+
 #current-playlist-title {
     font-size: 6rem;
     text-transform: uppercase;
 }
+
+
 
 .current-playlist-bottom-details-container {
     padding-inline: 1.5rem;
@@ -78,6 +86,8 @@
     width: 1.5rem;
 }
 
+
+
 #account-button {
     position: absolute;
     top: var(--main-padding);
@@ -89,6 +99,8 @@
     width: 1.6rem;
 }
 
+
+
 #current-playlist-song-filter-input {
     padding: 0.7rem 0.9rem;
     
@@ -99,17 +111,28 @@
     background-color: rgba(0,0,0,0.25);
 }
 
+
+
 .current-playlist-table-container {
     display: flex;
     flex-direction: column;
     gap: 0.4rem;
 }
 
+
+
 .current-playlist-table-head-container {
     padding-right: var(--scrollbar-width);
 
     border-bottom: 2px solid var(--bg-wo-10);
 }
+#current-playlist-container[type="song-container"] .current-playlist-table-container > :not([type="song-container"]),
+#current-playlist-container[type="merged-container"] .current-playlist-table-container > :not([type="merged-container"]) {
+    display: none;
+}
+
+
+
 .current-playlist-table-head-container > button {
     padding: 0.7rem 1rem;
 
@@ -127,17 +150,36 @@
     background-color: var(--bg-col-13); */
 }
 
-.current-playlist-table-head-container,
-.current-playlist-table-row {
+
+
+#current-playlist-container[type="song-container"] :is(.current-playlist-table-head-container, .current-playlist-table-row) {
     display: grid;
     grid-template-columns: 4.5rem 1fr 1fr 7rem;
 }
-.current-playlist-table-head-container :is(:nth-child(2), :nth-child(3)),
-.current-playlist-table-row :is(:nth-child(2), :nth-child(3)) {
+#current-playlist-container[type="song-container"] :is(
+    .current-playlist-table-head-container :is(:nth-child(2), :nth-child(3)),
+    .current-playlist-table-row :is(:nth-child(2), :nth-child(3))
+) {
     text-align: left;
 }
 
-#current-playlist-song-container {
+
+
+#current-playlist-container[type="merged-container"] :is(.current-playlist-table-head-container, .current-playlist-table-row) {
+    display: grid;
+    grid-template-columns: 4.5rem 4rem 4rem 1fr 6rem 7rem;
+}
+#current-playlist-container[type="merged-container"] :is(
+    .current-playlist-table-head-container :nth-child(4),
+    .current-playlist-table-row :nth-child(4)
+) {
+    text-align: left;
+}
+
+
+
+#current-playlist-song-container,
+#current-playlist-merged-container {
     height: 100%;
     
     overflow-y: scroll;
@@ -148,7 +190,7 @@
     cursor: pointer;
 }
 .current-playlist-table-row.hidden {
-    display: none;
+    display: none !important;
 }
 .current-playlist-table-row:hover {
     background-color: var(--bg-bo-3);
@@ -157,21 +199,57 @@
     background-color: var(--bg-bo-5);
 }
 
+
 .current-playlist-table-row > p {
     padding: 0.7rem 1rem;
     
     font-size: 0.9rem;
     text-align: center;
 }
+.current-playlist-table-row > :is(p:has(input[type="checkbox"]), p:has(.thumbnail)) {
+    padding-block: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.current-playlist-table-row > p > input[type="checkbox"] {
+    position: relative;
+
+    scale: 1.8;
+}
+.current-playlist-table-row > p > input[type="checkbox"]::after {
+    content: "";
+
+    width: 170%;
+    height: 170%;
+
+    position: absolute;
+    top: -35%;
+    left: -35%;
+}
+.current-playlist-table-row > p > .thumbnail {
+    width: 1rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 0.2rem;
+
+    background-color: var(--bg-bo-6);
+    background-position: center center;
+    background-size: cover;
+    background-repeat: no-repeat;
+
+    scale: 2.2;
+}
+
+
 
 @media screen and (width < 1000px) {
-    .current-playlist-table-head-container :nth-child(3),
-    .current-playlist-table-row :nth-child(3) {
+    #current-playlist-container[type="song-container"] :is(.current-playlist-table-head-container :nth-child(3), .current-playlist-table-row :nth-child(3)) {
         display: none;
     }
 
-    .current-playlist-table-head-container,
-    .current-playlist-table-row {
+    #current-playlist-container[type="song-container"] :is(.current-playlist-table-head-container, .current-playlist-table-row) {
         grid-template-columns: 4.5rem 1fr 7rem;
     }
 }
