@@ -1,9 +1,5 @@
 const w: any = (window as any);
 
-export async function throwError(message: string): Promise<void> {
-    await w.main.throwError(message);
-}
-
 export const mainEvents = {
     onStart: async (callback: (data: any) => void): Promise<void> => await w.mainEvents.onStart(callback),
     onClose: (callback: () => Promise<void>): void => w.mainEvents.onClose(callback),
@@ -13,6 +9,10 @@ export const mainEvents = {
     onVolumeUp: async (callback: () => void): Promise<void> => await w.mainEvents.onVolumeUp(callback),
     onVolumeDown: async (callback: () => void): Promise<void> => await w.mainEvents.onVolumeDown(callback),
 };
+
+export async function throwError(message: string): Promise<void> {
+    await w.main.throwError(message);
+}
 
 export const win = {
     minimize: async (): Promise<void> => await w.win.minimize(),

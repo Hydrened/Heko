@@ -1,11 +1,11 @@
 maintenance-container {
     width: 100vw;
-    height: 100vh;
+    height: calc(100vh - var(--frame-height));
 
     padding: 5rem;
 
     position: absolute;
-    top: 0;
+    top: var(--frame-height);
     left: 0;
     
     display: flex;

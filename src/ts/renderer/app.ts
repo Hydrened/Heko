@@ -51,6 +51,9 @@ export default class App {
         switch (response) {
             case 200:
                 await this.account.init();
+                Requests.youtube.search(this, "Aegleseeker").then((res: any) => {
+                    console.log(res);
+                });
                 break;
 
             case 503:

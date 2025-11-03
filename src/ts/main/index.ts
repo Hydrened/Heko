@@ -173,6 +173,13 @@ class Index {
         this.initRendererMainEvents();
     }
 
+    private initRendererMainEvents(): void {
+        ipcMain.handle("main-throwError", (_event, message: string) => { 
+            dialog.showErrorBox("Error", message);
+            this.window?.close();
+        });
+    }
+
     private initRendererWindowEvents(): void {
         app.on("window-all-closed", () => {
             if (process.platform !== "darwin") {
@@ -220,14 +227,7 @@ class Index {
             this.window.setTitle(title);
         });
     }
-
-    private initRendererMainEvents(): void {
-        ipcMain.handle("main-throwError", (_event, message: string) => { 
-            dialog.showErrorBox("Error", message);
-            this.window?.close();
-        });
-    }
-};
+};  
 
 app.whenReady().then(() => {
     new Index();

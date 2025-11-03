@@ -75,6 +75,13 @@ interface CenterModalData {
     readonly cantClose: boolean;
 };
 
+interface CenterSearchModalData {
+    readonly title: string;
+    readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
+    readonly onCancel?: () => void;
+    readonly cantClose: boolean;
+};
+
 
 
 interface ContextmenuRow {

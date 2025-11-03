@@ -4,7 +4,7 @@ import LoadingModal from "./../modal.loading.js";
 import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
+async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
     const title: string = modal.getFieldValue("Title");
     if (title.length < 1) {
         return {
@@ -73,7 +73,7 @@ async function addSongToAppModalOnConfirm(app: App, userSongs: Song[], modal: Ce
     return null;
 }
 
-export default function openAddSongToAppModal(app: App, userSongs: Song[]): void {
+export default function openAddSongFileToAppModal(app: App, userSongs: Song[]): void {
     const userData: UserData = app.account.getUserData();
     if (userData.id == null || userData.token == null) {
         return app.throwError("Can't open add song to app modal: User is not logged in.");
@@ -88,7 +88,7 @@ export default function openAddSongToAppModal(app: App, userSongs: Song[]): void
     const data: CenterModalData = {
         title: "Add song to Heko",
         content: content,
-        onConfirm: async (modal: CenterModal) => await addSongToAppModalOnConfirm(app, userSongs, modal),
+        onConfirm: async (modal: CenterModal) => await addSongFileToAppModalOnConfirm(app, userSongs, modal),
         cantClose: false,
     };
 

@@ -54,6 +54,12 @@ export const app = {
     },
 };
 
+export const youtube = {
+    search: async (app: App, query: string): Promise<any> => {
+        return await request("youtube/search.php", app, { query: query });
+    },
+};
+
 export const user = {
     isTokenValid: async (token: Token): Promise<any> => {
         return await request("user/is-token-valid.php", null, { token: token });

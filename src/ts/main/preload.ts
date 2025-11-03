@@ -66,8 +66,8 @@ contextBridge.exposeInMainWorld("mainFolder", {
         ipcRenderer.invoke("mainFolder-saveToken", token);
     },
 
-    getToken: (): Promise<string> => {
-        return ipcRenderer.invoke("mainFolder-getToken");
+    getToken: async (): Promise<string> => {
+        return await ipcRenderer.invoke("mainFolder-getToken");
     },
 
     removeToken: (): void => {
