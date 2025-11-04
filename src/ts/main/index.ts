@@ -6,7 +6,7 @@ class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
-    private readonly dev: boolean = false;
+    private readonly dev: boolean = true;
 
     constructor() {
         this.mainFolder = new MainFolder();

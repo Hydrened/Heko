@@ -17,7 +17,7 @@ export function getSongSettingRows(app: App): ContextmenuRow[] {
 
             { title: "Search on youtube", onClick: async () => {
                 openAddYoutubeSongToAppModal(app, userSongs);
-            }, disabled: true },
+            }, disabled: false },
         ], disabled: false },
 
         { title: "Edit song from Heko", onClick: async () => {

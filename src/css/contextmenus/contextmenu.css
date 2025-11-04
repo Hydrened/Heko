@@ -47,6 +47,7 @@ li.contextmenu-row-container {
 }
 li.contextmenu-row-container:has(.contextmenu-row-submenu-indicator) {
     grid-template-columns: 1fr auto;
+    cursor: default;
 }
 li.contextmenu-row-container.disabled {
     opacity: 0.5;

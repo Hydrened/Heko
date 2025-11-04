@@ -48,7 +48,7 @@ export default class PlaylistsRefreshCotnainerManager {
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");
         thumbnailElement.setAttribute("playlist-id", strPlaylistID);
-        thumbnailElement.style.backgroundImage = `url("${Functions.getThumbnailPath(playlist.thumbnailFileName)}")`;
+        Functions.setThumbnail(thumbnailElement, playlist.thumbnailFileName);
         containerElement.appendChild(thumbnailElement);
 
         const detailsContainerElement: HTMLElement = document.createElement("div");

@@ -136,6 +136,7 @@ export default class CenterModal {
 
     private createRow(ul: HTMLElement, row: ModalRow): void {
         const li: HTMLElement = document.createElement("li");
+        li.classList.add("field-row-container");
         ul.appendChild(li);
 
         const label: HTMLElement = document.createElement("label");
@@ -257,7 +258,7 @@ export default class CenterModal {
     }
 
     // INPUT EVENTS
-    private focusFirstField(): void {
+    protected focusFirstField(): void {
         if (this.mainContainer == null) {  
             return this.app.throwError("Can't focus first modal input: Container is null.");
         }

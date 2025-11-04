@@ -115,7 +115,7 @@ button.close-button > img {
     flex-direction: column;
     gap: 0.5rem;
 }
-.center-modal > .container > ul > li {
+.center-modal > .container > ul > li.field-row-container {
     display: grid;
     grid-template-columns: 8rem 1fr;
     align-items: center;
@@ -131,7 +131,7 @@ button.close-button > img {
 .center-modal input:focus {
     box-shadow: inset 0 0 0 1px var(--border-col-1);
 }
-.center-modal > .container > ul > li:has(error) input {
+.center-modal > .container > ul > li.field-row-container:has(error) input {
     border: 1px solid var(--bg-error-col);
 }
 .center-modal input-file-container {

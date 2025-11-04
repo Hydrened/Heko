@@ -43,9 +43,6 @@
     border-radius: 1rem;
 
     background-color: var(--bg-bo-6);
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
 
     cursor: pointer;
 }
@@ -235,9 +232,6 @@
     border-radius: 0.2rem;
 
     background-color: var(--bg-bo-6);
-    background-position: center center;
-    background-size: cover;
-    background-repeat: no-repeat;
 
     scale: 2.2;
 }

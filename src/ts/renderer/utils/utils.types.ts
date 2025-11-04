@@ -79,6 +79,7 @@ interface CenterSearchModalData {
     readonly title: string;
     readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
     readonly onCancel?: () => void;
+    readonly onSearch: (searchResultContainerElement: HTMLElement, query: string) => Promise<void>;
     readonly cantClose: boolean;
 };
 
@@ -127,3 +128,36 @@ interface Artist {
 };
 
 type Queue = Song[];
+
+
+
+interface VideoThumbnail {
+    width: number;
+    height: number;
+    url: string;
+};
+
+interface Video {
+    kind: "youtube#searchResult";
+    etag: string;
+    id: {
+        kind: "youtube#video" | "youtube#channel" | "youtube#playlist";
+        videoId?: string;
+        channelId?: string;
+        playlistId?: string;
+    };
+    snippet: {
+        channelId: string;
+        channelTitle: string;
+        publishedAt: string;
+        publishTime?: string;
+        title: string;
+        description: string;
+        thumbnails: {
+            default?: VideoThumbnail;
+            medium?: VideoThumbnail;
+            high?: VideoThumbnail;
+        };
+        liveBroadcastContent: "none" | "upcoming" | "live";
+    };
+};

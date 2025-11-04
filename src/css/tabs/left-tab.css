@@ -155,9 +155,6 @@
     border-radius: 0.5rem;
     
     background-color: var(--bg-bo-8);
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
 }
 .playlist-container > .details-container {
     display: flex;

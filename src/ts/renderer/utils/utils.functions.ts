@@ -72,6 +72,12 @@ export function getThumbnailPath(thumbnailFileName: string): string {
     return `${AppPath}/thumbnails/${thumbnailFileName}`;
 }
 
+export function setThumbnail(element: HTMLElement, thumbnailFileName: string, isAbsolute: boolean = false): void {
+    const url: string = ((isAbsolute) ? thumbnailFileName : getThumbnailPath(thumbnailFileName));
+    const cssBackgroundImageProperty: string = `url("${url}")`;
+    element.style.backgroundImage = cssBackgroundImageProperty;
+}
+
 export function getSongPath(song: Song): string {
     return `${AppPath}/songs/${song.fileName}`;
 }
@@ -113,4 +119,10 @@ export function getCssVariable(variable: string, type: CssVariableType | null): 
 
 export function isCenterModalAlreadyOpened(): boolean {
     return (document.querySelector(".center-modal-container") != null);
+}
+
+export function decodeNumericEntities(str: string): string {
+    str = str.replace(/&#(\d+);/g, (e: string, dec: any) => String.fromCharCode(Number(dec)));
+    str = str.replace(/&#x([0-9a-fA-F]+);/g, (e: string, hex: any) => String.fromCharCode(parseInt(hex, 16)));
+    return str;
 }

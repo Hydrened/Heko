@@ -33,8 +33,7 @@ export default class PlaylistsRefreshOpenedManager {
             ? this.playlists.getMergedContainerSongs(currentOpenedPlaylist, false)
             : currentOpenedPlaylist.songs);
 
-        const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(currentOpenedPlaylist.thumbnailFileName)}")`;
-        thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
+        Functions.setThumbnail(thumbnailElement, currentOpenedPlaylist.thumbnailFileName);
 
         Elements.currentPlaylist.details.title.textContent = currentOpenedPlaylist.name;
 
@@ -142,9 +141,8 @@ export default class PlaylistsRefreshOpenedManager {
 
             const thumbnailElementContainer: HTMLElement = PlaylistsRefreshOpenedManager.createRowContent(liElement, "");
             const thumbnailElement: HTMLElement = document.createElement("div");
-            const cssBackgroundImageProperty: string = `url("${Functions.getThumbnailPath(playlist.thumbnailFileName)}")`;
             thumbnailElement.classList.add("thumbnail");
-            thumbnailElement.style.backgroundImage = cssBackgroundImageProperty;
+            Functions.setThumbnail(thumbnailElement, playlist.thumbnailFileName);
             thumbnailElementContainer.appendChild(thumbnailElement);
 
             const duration: number = playlist.songs.reduce((acc: number, song: Song) => acc + song.duration, 0);

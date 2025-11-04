@@ -143,6 +143,12 @@ input[type="range"]::after {
     left: 0;
 }
 
+.thumbnail {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
 ::-webkit-scrollbar {
     width: var(--scrollbar-width);
 
