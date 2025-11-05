@@ -22,6 +22,10 @@ export default class CenterSearchModal extends CenterModal {
         super.focusFirstField();
     }
 
+    protected override createFooter(): void {
+
+    }
+
     private createSearchBar(): void {
         if (this.container == null) {
             return this.app.throwError("Can't create modal search bar: Container element is null.");
@@ -45,6 +49,6 @@ export default class CenterSearchModal extends CenterModal {
         this.searchTimeout = setTimeout(async () => {
             this.searchTimeout = null;
             await this.onSearch(searchResultContainerElement, value);
-        }, 500);
+        }, 700);
     }
 }

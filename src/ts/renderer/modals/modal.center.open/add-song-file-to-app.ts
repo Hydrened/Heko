@@ -74,11 +74,6 @@ async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal
 }
 
 export default function openAddSongFileToAppModal(app: App, userSongs: Song[]): void {
-    const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
-        return app.throwError("Can't open add song to app modal: User is not logged in.");
-    }
-
     const content: ModalRow[] = [
         { label: "Title", type: "TEXT", maxLength: 150 },
         { label: "Artist", type: "SELECT", maxLength: 150, data: app.playlistManager.getArtistNames() },

@@ -8,7 +8,7 @@ export default class CenterModal {
     private mainContainer: HTMLElement | null = null;
     protected container: HTMLElement | null = null;
     private closing: boolean = false;
-    private closingDuration: number = 0;
+    private static closingDuration: number = 0;
 
     // INIT
     constructor(protected app: App, private data: CenterModalData) {
@@ -45,7 +45,7 @@ export default class CenterModal {
     }
 
     private loadCssVariables(): void {
-        this.closingDuration = Number(Functions.getCssVariable("center-modal-closing-duration", "MS_DURATION"));
+        CenterModal.closingDuration = Number(Functions.getCssVariable("center-modal-closing-duration", "MS_DURATION"));
     }
 
     private keydownEvent = async (e: KeyboardEvent): Promise<void> => {
@@ -175,7 +175,7 @@ export default class CenterModal {
         }
     }
 
-    private createFooter(): void {
+    protected createFooter(): void {
         if (this.container == null) {
             return this.app.throwError("Can't create modal footer: Container element is null.");
         }
@@ -230,7 +230,7 @@ export default class CenterModal {
         }
 
         window.removeEventListener("keydown", this.keydownEvent);
-        setTimeout(() => container.remove(), this.closingDuration);
+        setTimeout(() => container.remove(), CenterModal.closingDuration);
     }
 
     public async confirm(): Promise<void> {
@@ -363,7 +363,7 @@ export default class CenterModal {
         return labelElement.parentElement;
     }
 
-    private static getFieldInput(fieldName: string): HTMLInputElement | null {
+    public static getFieldInput(fieldName: string): HTMLInputElement | null {
         const rowContainer: HTMLElement | null = this.getFieldRowContainer(fieldName);
         if (rowContainer == null) {
             return null;

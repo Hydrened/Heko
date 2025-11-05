@@ -31,30 +31,33 @@ li.video-container-element > .thumbnail {
 
 
 .video-detail-container {
-    display: flex;
-    flex-direction: column;
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
     gap: 0.3rem;
 }
 
 
 
 h1.video-title {
+    max-height: 2.4rem;
+
     font-size: 1rem;
+    line-height: 1.2rem;
+
+    overflow: hidden;
 }
 
 h2.video-channel {
     font-size: 0.85rem;
     font-weight: normal;
+    color: var(--text-col-2);
+    text-overflow: ellipsis;
+
+    white-space: nowrap;
+    overflow: hidden;
 }
 
-footer.video-button-container {
-    margin-top: auto;
-
-    display: flex;
-    justify-content: end;
-    gap: 1rem;
-}
-footer.video-button-container > button {
+.video-detail-container > button {
     padding: 0.5rem 0.8rem;
 
     border-radius: 0.5rem;
@@ -63,6 +66,6 @@ footer.video-button-container > button {
     cursor: pointer;
     transition: 150ms;
 }
-footer.video-button-container > button:hover  {
+.video-detail-container > button:hover  {
     background-color: var(--bg-wo-20);
 }

@@ -27,3 +27,7 @@ export const token = {
     get: async (): Promise<string> => await w.mainFolder.getToken(),
     remove: async (): Promise<void> => await w.mainFolder.removeToken(),
 };
+
+export const youtube = {
+    downloadSong: async (videoID: string, onUpdate: (data: string) => void): Promise<any> => await w.youtube.downloadSong(videoID, onUpdate),
+};

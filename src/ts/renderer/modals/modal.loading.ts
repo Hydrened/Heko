@@ -39,4 +39,13 @@ export default class LoadingModal {
 
         setTimeout(() => container.remove(), Number(Functions.getCssVariable("loading-modal-closing-duration", "MS_DURATION")));
     }
+
+    public static setTitle(title: string): void {
+        const currentLoadingModalTitleElement: HTMLElement | null = document.querySelector("loading-modal-container h1");
+        if (currentLoadingModalTitleElement == null) {
+            return;
+        }
+
+        currentLoadingModalTitleElement.textContent = title;
+    }
 };

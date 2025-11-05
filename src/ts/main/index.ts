@@ -1,5 +1,6 @@
 import { app, BrowserWindow, ipcMain, dialog , nativeImage, globalShortcut } from "electron";
 import { MainFolder, WindowSettings } from "./main-folder.js";
+import { downloadYoutubeSong } from "./download-song.js";
 import * as path from "path";
 
 class Index {
@@ -170,6 +171,7 @@ class Index {
 
     private initRendererEvents(): void {
         this.initRendererWindowEvents();
+        this.initRendererYoutubeEvents();
         this.initRendererMainEvents();
     }
 
@@ -177,6 +179,17 @@ class Index {
         ipcMain.handle("main-throwError", (_event, message: string) => { 
             dialog.showErrorBox("Error", message);
             this.window?.close();
+        });
+
+    }
+
+    private initRendererYoutubeEvents(): void {
+        ipcMain.handle("youtube-downloadSong", async (_event, videoID: string) => {
+            if (this.window == null) {
+                throw new Error("Can't download youtube song: Window is null.");
+            }
+
+            return await downloadYoutubeSong(this.window!, videoID);
         });
     }
 

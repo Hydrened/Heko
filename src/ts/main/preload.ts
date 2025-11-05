@@ -74,3 +74,10 @@ contextBridge.exposeInMainWorld("mainFolder", {
         ipcRenderer.invoke("mainFolder-removeToken");
     },
 });
+
+contextBridge.exposeInMainWorld("youtube", {
+    downloadSong: async (videoID: string, onUpdate: (data: string) => void): Promise<any> => {
+        ipcRenderer.on("youtube-onUpdate", (e, data: string) => onUpdate(data));
+        return await ipcRenderer.invoke("youtube-downloadSong", videoID);
+    },
+});
