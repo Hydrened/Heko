@@ -77,7 +77,11 @@ contextBridge.exposeInMainWorld("mainFolder", {
 
 contextBridge.exposeInMainWorld("youtube", {
     downloadSong: async (videoID: string, onUpdate: (data: string) => void): Promise<any> => {
-        ipcRenderer.on("youtube-onUpdate", (e, data: string) => onUpdate(data));
+        ipcRenderer.on("youtube-downloadSongOnUpdate", (e, data: string) => onUpdate(data));
         return await ipcRenderer.invoke("youtube-downloadSong", videoID);
+    },
+
+    getSongSrc: async (videoID: string): Promise<any> => {
+        return await ipcRenderer.invoke("youtube-getSongSrc", videoID);
     },
 });

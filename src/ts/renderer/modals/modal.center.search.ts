@@ -14,6 +14,7 @@ export default class CenterSearchModal extends CenterModal {
         };
 
         super(app, centerModalData);
+        this.mainContainer!.classList.add("search");
         this.onSearch = data.onSearch;
     }
 

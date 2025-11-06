@@ -40,7 +40,7 @@ async function uploadFile(phpFile: string, app: App, file: File): Promise<any> {
     formData.append("token", userData.token);
     formData.append("file", file);
 
-    const res = await fetch(`${AppPath}/requests/${phpFile}`, {
+    const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
         body: formData,
     });

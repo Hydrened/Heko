@@ -48,7 +48,7 @@
     border: var(--default-border);
 
     background: var(--main-gradient);
-    box-shadow: 0 0 1rem black;
+    box-shadow: 0 0 2rem 0.8rem black;
     animation: center-modal-opening 500ms forwards;
 }
 @keyframes center-modal-closing {
@@ -160,6 +160,9 @@ button.close-button > img {
     z-index: 1;
     opacity: 0;
     cursor: pointer;
+}
+.center-modal input-file-container:has(input[disabled="true"]) {
+    pointer-events: none;
 }
 .center-modal input-file-drop-area {
     display: flex;

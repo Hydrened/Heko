@@ -3,6 +3,14 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import * as fs from "fs";
 import * as path from "path";
 
+const basePath: string = ((app.isPackaged)
+    ? path.join(process.resourcesPath, "app.asar.unpacked")
+    : app.getAppPath());
+
+const binPath: string = path.join(basePath, "bin");
+const ytDlpPath: string = path.join(binPath, "yt-dlp.exe");
+const ffmpegPath: string = path.join(binPath, "ffmpeg.exe");
+
 function onStdout(window: BrowserWindow, line: string, fileName: string): string {
     const waitingForSiteKey: string = "[download] Sleeping ";
     if (line.startsWith(waitingForSiteKey)) {
@@ -10,19 +18,19 @@ function onStdout(window: BrowserWindow, line: string, fileName: string): string
         const end: number = (start + line.substring(start).indexOf("."));
         const duration: number = Number(line.substring(start, end));
 
-        window.webContents.send("youtube-onUpdate", `Waiting ${duration} seconds for the site...`);
+        window.webContents.send("youtube-downloadSongOnUpdate", `Waiting ${duration} seconds for the site...`);
         return fileName;
     }
 
     const startingDownloadKey: string = "[download] Destination: ";
     if (line.startsWith(startingDownloadKey)) {
-        window.webContents.send("youtube-onUpdate", "Downloading...");
+        window.webContents.send("youtube-downloadSongOnUpdate", "Downloading...");
         return fileName;
     }
 
     const extractingAudioKey: string = "[ExtractAudio] Destination: ";
     if (line.startsWith(extractingAudioKey)) {
-        window.webContents.send("youtube-onUpdate", "Extracting file...");
+        window.webContents.send("youtube-downloadSongOnUpdate", "Extracting file...");
         return line.substring(line.indexOf(extractingAudioKey) + extractingAudioKey.length, line.indexOf(".mp3") + 4);
     }
 
@@ -46,18 +54,15 @@ async function onClose(window: BrowserWindow, code: number | null, fileName: str
     };
 }
 
+function getYoutubeVideoUrl(videoID: string): string {
+    return `https://www.youtube.com/watch?v=${videoID}`;
+}
+
 export async function downloadYoutubeSong(window: BrowserWindow, videoID: string): Promise<any> {
-    const basePath: string = (app.isPackaged
-        ? process.resourcesPath
-        : app.getAppPath());
-
-    const binPath: string = path.join(basePath, "bin");
-    const ytDlpPath: string = path.join(binPath, "yt-dlp.exe");
-    const ffmpegPath: string = path.join(binPath, "ffmpeg.exe");
     const outPath: string = path.join(binPath, "out", "temp.mp3");
-    const videoUrl: string = `https://www.youtube.com/watch?v=${videoID}`;
+    const videoUrl: string = getYoutubeVideoUrl(videoID);
 
-    window.webContents.send("youtube-onUpdate", "Fetching data...");
+    window.webContents.send("youtube-downloadSongOnUpdate", "Fetching data...");
 
     return await new Promise<any>((resolve) => {
         const args: string[] = [
@@ -70,7 +75,6 @@ export async function downloadYoutubeSong(window: BrowserWindow, videoID: string
         ];
 
         const proc: ChildProcessWithoutNullStreams = spawn(ytDlpPath, args);
-
         let fileName: string = "";
 
         proc.stdout.on("data", (data: Buffer) => {
@@ -78,5 +82,40 @@ export async function downloadYoutubeSong(window: BrowserWindow, videoID: string
         });
 
         proc.on("close", async (code: number | null) => resolve(await onClose(window, code, fileName)));
+    });
+}
+
+export async function getYoutubeSongSrc(window: BrowserWindow, videoID: string): Promise<any> {
+    const videoUrl: string = getYoutubeVideoUrl(videoID);
+    
+    return await new Promise<any>((resolve) => {
+        const args: string[] = [
+            "-f",
+            "bestaudio",
+            "--get-url",
+            videoUrl,
+        ];
+
+        const proc: ChildProcessWithoutNullStreams = spawn(ytDlpPath, args);
+        let src: string = "";
+
+        proc.stdout.on("data", (data: Buffer) => {
+            src = data.toString();
+        });
+
+        proc.stderr.on("data", (data: Buffer) => {
+            const line: string = data.toString();
+            if (line.startsWith("ERROR")) {
+                resolve({
+                    success: false,
+                    error: line,
+                });
+            }
+        });
+        
+        proc.on("close", async (code: number | null) => resolve({
+            success: true,
+            src: src,
+        }));
     });
 }

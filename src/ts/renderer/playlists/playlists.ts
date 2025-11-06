@@ -47,60 +47,56 @@ export default class PlaylistManager {
     public async refreshPlaylistBuffer(): Promise<void> {
         this.playlistBuffer = [];
 
-        const getAllPlaylistsFromUserReqRes: any = await Requests.playlist.get(this.app);
-        if (!getAllPlaylistsFromUserReqRes.success) {
-            this.app.throwError(`Can't get playlists from user: ${getAllPlaylistsFromUserReqRes.error}`);
+        const getPlaylistsReqRes: any = await Requests.playlist.get(this.app);
+        if (!getPlaylistsReqRes.success) {
+            this.app.throwError(`Can't get playlists from user: ${getPlaylistsReqRes.error}`);
             return;
         }
 
-        const rowPlaylists: any[] = (getAllPlaylistsFromUserReqRes.playlists as any[]);
+        const rows: any[] = getPlaylistsReqRes.playlists;
+        const playlistsMap: Map<number, Omit<Playlist, "children">> = new Map<number, Omit<Playlist, "children">>();
 
-        const playlistSet: Set<ID> = new Set<ID>();
-        const uniquePlaylists: any[] = rowPlaylists.filter((row: any) => {
-            if (playlistSet.has(row.playlistID)) {
-                return false;
+        for (const row of rows) {
+            let playlist: Omit<Playlist, "children"> | undefined = playlistsMap.get(row.playlistID);
+
+            if (playlist == undefined) {
+                playlist = {
+                    id: row.playlistID,
+                    parentID: row.playlistParentID,
+                    name: row.playlistName,
+                    position: row.playlistPosition,
+                    thumbnailFileName: row.playlistThumbnailFileName,
+                    opened: row.playlistOpened,
+                    mergedPlaylist: [],
+                    songs: [],
+                    creationDate: row.playlistCreationDate,
+                };
+                playlistsMap.set(row.playlistID, playlist);
             }
 
-            playlistSet.add(row.playlistID);
-            return true;
-        });
+            if (row.mergedPlaylistID != null) {
+                playlist.mergedPlaylist.push({
+                    id: row.mergedPlaylistID,
+                    toggled: row.mergedPlaylistToggled,
+                });
+            }
 
-        uniquePlaylists.forEach((row: any) => {
-            const mergedPlaylist: MergedPlaylist[] = rowPlaylists.filter((r: any) => r.playlistID == row.playlistID && r.mergedPlaylistID != null).map((r: any) => {
-                return {
-                    id: r.mergedPlaylistID,
-                    toggled: r.mergedPlaylistToggled,
-                };
-            });
+            if (row.songID != null) {
+                playlist.songs.push({
+                    id: row.songID,
+                    fileName: row.songFileName,
+                    title: row.songTitle,
+                    artist: row.songArtist,
+                    duration: row.songDuration,
+                    creationDate: row.songCreationDate,
+                });
+            }
+        }
 
-            const songs: Song[] = rowPlaylists.filter((r: any) => r.playlistID == row.playlistID && r.songID != null).map((r: any) => {
-                return {
-                    id: r.songID,
-                    fileName: r.songFileName,
-                    title: r.songTitle,
-                    artist: r.songArtist,
-                    duration: r.songDuration,
-                    creationDate: r.songCreationDate,
-                };
-            });
-
-            const children: number = uniquePlaylists.filter((r: any) => r.playlistParentID == row.playlistID).length;
-
-            const playlist: Playlist = {
-                id: row.playlistID,
-                parentID: row.playlistParentID,
-                name: row.playlistName,
-                position: row.playlistPosition,
-                thumbnailFileName: row.playlistThumbnailFileName,
-                opened: row.playlistOpened,
-                mergedPlaylist: mergedPlaylist,
-                songs: songs,
-                children: children,
-                creationDate: row.playlistCreationDate,
-            };
-            
-            this.playlistBuffer.push(playlist);
-        });
+        this.playlistBuffer = Array.from(playlistsMap.values()).map((p: Omit<Playlist, "children">) => ({
+            ...p,
+            children: Array.from(playlistsMap.values()).filter((c: Omit<Playlist, "children">) => c.parentID == p.id).length,
+        }));
 
         if (this.currentOpenedPlaylist != null) {
             this.currentOpenedPlaylist = (this.getPlaylistFromID(this.currentOpenedPlaylist.id) ?? null);

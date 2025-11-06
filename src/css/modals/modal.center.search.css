@@ -1,31 +1,84 @@
-ul.search-result-container {
-    height: 30rem;
+.search > .center-modal {
+    width: 50rem;
+}
+.center-modal-container.search input {
+    font-size: 1.2rem;
+}
 
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+
+
+ul.search-result-container {
+    height: 60vh;
+
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 1rem !important;
 
     overflow-y: scroll;
 }
 
 
 
-li.video-container-element {
+li.video-container {
     flex: 1 0 auto;
-
-    padding: 0.7rem;
+    
+    margin-right: 0.8rem;
+    padding: 1rem;
 
     display: grid;
     grid-template-columns: 1fr 1.5fr;
-    gap: 0.8rem;
+    gap: 1rem;
+
+    border-radius: 0.9rem;
+
+    background-color: var(--bg-bo-4);
 }
 
 
 
-li.video-container-element > .thumbnail {
+li.video-container > .thumbnail {
+    --play-button-size: 5rem;
+    
     aspect-ratio: 16 / 9;
 
+    position: relative;
+
     border-radius: 0.4rem;
+
+    cursor: pointer;
+    background-size: 100%;
+    transition: 400ms;
+}
+li.video-container:not(:has(footer.hidden)) > .thumbnail {
+    cursor: default;
+}
+li.video-container > .thumbnail:hover {
+    background-size: 120%;
+}
+li.video-container:has(footer.hidden) > .thumbnail::before {
+    content: "";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-color: var(--bg-bo-2);
+}
+li.video-container:has(footer.hidden) > .thumbnail::after {
+    content: "";
+
+    width: 0;
+    height: 0;
+
+    position: absolute;
+    top: calc(50% - 1.4rem);
+    left: calc(50% - 0.75rem);
+
+    border: 1.5rem solid transparent;
+    border-left: 2rem solid white;
 }
 
 
@@ -33,16 +86,14 @@ li.video-container-element > .thumbnail {
 .video-detail-container {
     display: grid;
     grid-template-rows: auto auto 1fr auto;
-    gap: 0.3rem;
+    gap: 0.5rem;
 }
 
-
-
 h1.video-title {
-    max-height: 2.4rem;
+    max-height: 3rem;
 
-    font-size: 1rem;
-    line-height: 1.2rem;
+    font-size: 1.2rem;
+    line-height: 1.5rem;
 
     overflow: hidden;
 }
@@ -68,4 +119,42 @@ h2.video-channel {
 }
 .video-detail-container > button:hover  {
     background-color: var(--bg-wo-20);
+}
+
+
+
+footer.song-player-container {
+    grid-column: span 2;
+
+    display: grid;
+    grid-template-columns: repeat(2, auto) 1fr;
+    align-items: center;
+    gap: 0.8rem;
+
+}
+footer.song-player-container.hidden {
+    display: none;
+}
+
+footer.song-player-container > button[playing="true"] > [playing="false"],
+footer.song-player-container > button[playing="false"] > [playing="true"] {
+    display: none;
+}
+footer.song-player-container > button > img {
+    width: 1.6rem;
+    height: 1.6rem;
+}
+
+footer.song-player-container > p {
+    display: flex;
+    gap: 0.3rem;
+}
+footer.song-player-container > p > span {
+    font-size: 0.8rem;
+}
+
+footer.song-player-container > input {
+    width: 100%;
+
+    padding: 0;
 }

@@ -13,6 +13,7 @@
 
     overflow: hidden;
     overflow-y: hidden !important;
+    pointer-events: none;
 }
 .loading::after {
     content: "";

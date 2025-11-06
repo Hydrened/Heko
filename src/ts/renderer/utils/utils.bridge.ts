@@ -30,4 +30,5 @@ export const token = {
 
 export const youtube = {
     downloadSong: async (videoID: string, onUpdate: (data: string) => void): Promise<any> => await w.youtube.downloadSong(videoID, onUpdate),
+    getSongSrc: async (videoID: string): Promise<any> => await w.youtube.getSongSrc(videoID),
 };

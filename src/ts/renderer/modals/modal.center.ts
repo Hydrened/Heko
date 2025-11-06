@@ -5,7 +5,7 @@ import * as AntiSpam from "./../utils/utils.anti-spam.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class CenterModal {
-    private mainContainer: HTMLElement | null = null;
+    protected mainContainer: HTMLElement | null = null;
     protected container: HTMLElement | null = null;
     private closing: boolean = false;
     private static closingDuration: number = 0;
@@ -49,6 +49,10 @@ export default class CenterModal {
     }
 
     private keydownEvent = async (e: KeyboardEvent): Promise<void> => {
+        if (this.mainContainer != CenterModal.getCurrentModalContainer()) {
+            return;
+        }
+
         if (e.key == "Escape") {
             if (this.mainContainer == null) {
                 return this.app.throwError("Can't close modal: Container element is null.");
@@ -78,6 +82,7 @@ export default class CenterModal {
     private createContainer(): void {
         this.mainContainer = document.createElement("div");
         this.mainContainer.classList.add("center-modal-container");
+        this.mainContainer.classList.add("modal");
         document.body.appendChild(this.mainContainer);
 
         if (!this.data.cantClose) {
@@ -352,10 +357,24 @@ export default class CenterModal {
     }
 
     // GETTERS
+    private static getCurrentModalContainer(): HTMLElement | null {
+        const modalElements: Element[] = [...document.body.querySelectorAll(".modal")];
+        if (modalElements.length == 0) {
+            return null;
+        }
+
+        return (modalElements[modalElements.length - 1] as HTMLElement);
+    }
+
     private static getFieldRowContainer(fieldName: string): HTMLElement | null {
         fieldName += " :";
 
-        const labelElement: Element | undefined = [...document.body.querySelectorAll(".center-modal label")].find((element: Element) => element.textContent == fieldName);
+        const currentModalElement: HTMLElement | null = CenterModal.getCurrentModalContainer();
+        if (currentModalElement == null) {
+            return null;
+        }
+
+        const labelElement: Element | undefined = [...currentModalElement.querySelectorAll("label")].find((element: Element) => element.textContent == fieldName);
         if (labelElement == undefined) {
             return null;
         }

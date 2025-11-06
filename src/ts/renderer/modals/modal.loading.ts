@@ -18,6 +18,7 @@ export default class LoadingModal {
     // EVENTS
     private open(): void {
         this.container = document.createElement("loading-modal-container");
+        this.container.classList.add("modal");
         document.body.appendChild(this.container);
 
         const titleElement: HTMLElement = document.createElement("h1");
