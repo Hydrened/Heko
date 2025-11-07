@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removeMergedFromPlaylistModalOnConfirm(app: App, playlist: Playlist, mergedPlaylist: Playlist): Promise<ModalError> {
@@ -15,7 +13,7 @@ async function removeMergedFromPlaylistModalOnConfirm(app: App, playlist: Playli
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully removed playlist "${mergedPlaylist.name}" from playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully removed playlist "${mergedPlaylist.name}" from playlist "${playlist.name}".`);
     return null;
 }
 
@@ -26,5 +24,5 @@ export default function openRemoveMergedFromPlaylistModal(app: App, playlist: Pl
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

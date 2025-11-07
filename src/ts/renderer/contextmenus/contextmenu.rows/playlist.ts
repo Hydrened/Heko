@@ -1,6 +1,5 @@
 import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
-import TopModal from "./../../modals/modal.top.js";
 import openRemovePlaylistModal from "./../../modals/modal.center.open/remove.playlist.js";
 import openRenamePlaylistModal from "./../../modals/modal.center.open/rename-playlist.js";
 import * as Requests from "./../../utils/utils.requests.js";
@@ -18,7 +17,7 @@ async function duplicatePlaylistOnClick(app: App, playlist: Playlist): Promise<v
         app.playlistManager.open(newPlaylistID);
     });
 
-    TopModal.create("SUCCESS", `Successfully duplicated playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully duplicated playlist "${playlist.name}".`);
 }
 
 function getPlaylistMoveToRows(app: App, playlist: Playlist): ContextmenuRow[] {
@@ -73,7 +72,7 @@ async function playlistMoveToOnClick(app: App, parentPlaylist: Playlist, playlis
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully moved playlist "${playlist.name}" in playlist "${parentPlaylist.name}".`);
 }
 
 function getPlaylistMergeInRows(app: App, playlist: Playlist): ContextmenuRow[] {
@@ -108,7 +107,7 @@ async function playlistMergeInOnClick(app: App, playlist: Playlist, mergedPlayli
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully merged playlist "${mergedPlaylist.name}" in playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully merged playlist "${mergedPlaylist.name}" in playlist "${playlist.name}".`);
 }
 
 export function getPlaylistRowShortcuts(): ShortcutMap {

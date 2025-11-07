@@ -1,5 +1,4 @@
 import App from "./../../app.js";
-import TopModal from "./../../modals/modal.top.js";
 import openEditSongFromPlaylistModal from "./../../modals/modal.center.open/edit-song-from-playlist.js";
 import openRemoveSongFromPlaylistModal from "./../../modals/modal.center.open/remove-song-from-playlist.js";
 import * as Requests from "./../../utils/utils.requests.js";
@@ -14,7 +13,7 @@ async function addSongToPlaylistOnClick(app: App, playlist: Playlist, song: Song
         app.playlistManager.refreshPlaylistsContainerTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${playlist.name}".`);
 }
 
 export function getSongRows(app: App, song: Song): ContextmenuRow[] {
@@ -45,7 +44,7 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
     return [
         { title: "Add to queue", onClick: async () => {
             app.listenerManager.addSongToQueue(song);
-            TopModal.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to queue.`);
+            app.modalManager.openTopModal("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to queue.`);
         }, disabled: disableAddToQueue },
 
         { title: "Add to other playlist", rows: addToOtherPlaylistRows, disabled: disableAddToOtherPlaylist },

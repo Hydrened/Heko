@@ -1,5 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
@@ -43,5 +42,6 @@ export default function openLoginModal(app: App): CenterModal {
         cantClose: true,
     };
 
-    return new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
+    return app.modalManager.getCurrentCenterModal()!;
 }

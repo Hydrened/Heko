@@ -80,6 +80,14 @@ export const user = {
     saveSettings: async (app: App, settings: UserSettings): Promise<any> => {
         return await request("user/save-settings.php", app, { settings: settings });
     },
+
+    addDownload: async (app: App, videoID: string): Promise<any> => {
+        return await request("user/add-download.php", app, { videoID: videoID });
+    },
+
+    getDownloads: async (app: App): Promise<any> => {
+        return await request("user/get-downloads.php", app);
+    },
 };
 
 export const playlist = {

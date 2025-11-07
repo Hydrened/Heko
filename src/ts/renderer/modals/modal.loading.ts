@@ -3,19 +3,10 @@ import * as Functions from "./../utils/utils.functions.js";
 export default class LoadingModal {
     private container: HTMLElement | null = null;
 
-    // INIT
-    private constructor(private title: string) {
+    constructor(private title: string) {
         this.open();
     }
 
-    public static async create<T>(title: string, promise: Promise<T>): Promise<T> {
-        const modal = new LoadingModal(title);
-        const res: T = await promise;
-        modal.close();
-        return res;
-    }
-
-    // EVENTS
     private open(): void {
         this.container = document.createElement("loading-modal-container");
         this.container.classList.add("modal");
@@ -30,7 +21,7 @@ export default class LoadingModal {
         this.container.appendChild(spinnerElement);
     }
 
-    private close(): void {
+    public close(): void {
         if (this.container == null) {
             return;
         }
@@ -41,8 +32,12 @@ export default class LoadingModal {
         setTimeout(() => container.remove(), Number(Functions.getCssVariable("loading-modal-closing-duration", "MS_DURATION")));
     }
 
-    public static setTitle(title: string): void {
-        const currentLoadingModalTitleElement: HTMLElement | null = document.querySelector("loading-modal-container h1");
+    public setTitle(title: string): void {
+        if (this.container == null) {
+            return;
+        }
+
+        const currentLoadingModalTitleElement: HTMLElement | null = this.container.querySelector("h1");
         if (currentLoadingModalTitleElement == null) {
             return;
         }

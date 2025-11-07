@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
@@ -42,7 +40,7 @@ async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userS
         app.listenerManager.refresh();
     });
 
-    TopModal.create("SUCCESS", `Successfully edited song "${song.title}" by "${song.artist}" to "${newTitle}" by "${newArtist}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully edited song "${song.title}" by "${song.artist}" to "${newTitle}" by "${newArtist}".`);
     return null;
 }
 
@@ -76,5 +74,5 @@ export default function openEditFromAppSongModal(app: App, userSongs: Song[]): v
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

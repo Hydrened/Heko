@@ -126,3 +126,7 @@ export function decodeNumericEntities(str: string): string {
     str = str.replace(/&#x([0-9a-fA-F]+);/g, (e: string, hex: any) => String.fromCharCode(parseInt(hex, 16)));
     return str;
 }
+
+export function getFileSize(file: File): number {
+    return file.size / (1024 * 1024);
+}

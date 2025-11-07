@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
@@ -15,7 +13,7 @@ async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from playlist "${playlist.name}".`);
     return null;
 }
 
@@ -26,5 +24,5 @@ export default function openRemoveSongFromPlaylistModal(app: App, playlist: Play
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

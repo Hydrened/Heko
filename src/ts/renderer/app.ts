@@ -1,6 +1,7 @@
 import Window from "./window.js";
 import Account from "./account.js";
 import Settings from "./settings.js";
+import ModalManager from "./modals/modals.js";
 import ContextmenuManager from "./contextmenus/contextmenus.js";
 import PlaylistManager from "./playlists/playlists.js";
 import ListenerManager from "./listener/listener.js";
@@ -14,6 +15,7 @@ export default class App {
     public readonly account: Account;
     public readonly settings: Settings;
 
+    public readonly modalManager: ModalManager;
     public readonly contextmenuManager: ContextmenuManager;
     public readonly playlistManager: PlaylistManager;
     public readonly listenerManager: ListenerManager;
@@ -26,6 +28,7 @@ export default class App {
         this.account = new Account(this);
         this.settings = new Settings(this);
 
+        this.modalManager = new ModalManager(this);
         this.contextmenuManager = new ContextmenuManager(this);
         this.playlistManager = new PlaylistManager(this);
         this.listenerManager = new ListenerManager(this);

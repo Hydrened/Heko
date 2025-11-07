@@ -4,16 +4,10 @@ import "./../utils/utils.types.js";
 export default class TopModal {
     private container: HTMLElement | null = null;
 
-    // INIT
-    private constructor(private type: TopModalType, private message: string) {
+    constructor(private type: TopModalType, private message: string) {
         this.open();
     }
 
-    public static create(type: TopModalType, message: string): void {
-        new TopModal(type, message);
-    }
-
-    // EVENTS
     private open(): void {
         this.container = document.createElement("top-modal-container");
         this.container.classList.add(this.type.toLowerCase());
@@ -25,7 +19,7 @@ export default class TopModal {
         setTimeout(() => this.close(), 7000);
     }
 
-    private close(): void {
+    public close(): void {
         if (this.container == null) {
             return;
         }

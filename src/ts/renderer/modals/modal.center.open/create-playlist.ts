@@ -1,8 +1,6 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import LoadingModal from "./../modal.loading.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
+import * as Functions from "./../../utils/utils.functions.js";
 
 async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("Name");
@@ -12,8 +10,15 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
             error: "Name has to be at least 3 characters long.",
         };
     }
+
+    const currentCenterModal: CenterModal | null = app.modalManager.getCurrentCenterModal();
+    if (currentCenterModal == null) {
+        return {
+            error: "Can't confirm modal: Current modal is null.",
+        };
+    }
     
-    const file: File | null = CenterModal.getFileFromFileInput("Thumbnail");
+    const file: File | null = currentCenterModal.getFileFromFileInput("Thumbnail");
     if (file != null) {
         if (!file.type.includes("image/")) {
             return {
@@ -22,7 +27,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
             };
         }
 
-        const fileSize: number = CenterModal.getFileSize(file);
+        const fileSize: number = Functions.getFileSize(file);
         if (fileSize > 10) {
             return {
                 fieldName: "Thumbnail",
@@ -43,7 +48,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
 
     let thumbnailFileName: string = "";
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(app, file));
+        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Requests.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -65,7 +70,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
         app.playlistManager.open(newPlaylistID);
     });
 
-    TopModal.create("SUCCESS", `Successfully created playlist "${newPlaylistName}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully created playlist "${newPlaylistName}".`);
     return null;
 }
 
@@ -82,5 +87,5 @@ export default function openCreatePlaylistModal(app: App): void {
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

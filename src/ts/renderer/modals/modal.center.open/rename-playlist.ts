@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
@@ -35,7 +33,7 @@ async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal:
         }
     });
 
-    TopModal.create("SUCCESS", `Successfully renamed playlist "${playlist.name}" to "${newPlaylistName}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully renamed playlist "${playlist.name}" to "${newPlaylistName}".`);
     return null;
 }
 
@@ -51,5 +49,5 @@ export default function openRenamePlaylistModal(app: App, playlist: Playlist): v
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

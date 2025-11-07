@@ -1,7 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import CenterSearchModal from "./../modal.center.search.js";
-import LoadingModal from "./../modal.loading.js";
 import openAddSongFileToAppModal from "./add-song-file-to-app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
 import * as Requests from "./../../utils/utils.requests.js";
@@ -146,9 +143,7 @@ function createSongPlayerContainerContent(app: App, elements: any): void {
 function initEvents(app: App, elements: any, userSongs: Song[], video: Video): void {
     elements.thumbnail.addEventListener("click", () => thumbnailOnClick(app, elements, video), { once: true });
 
-    elements.details.downloadButton.addEventListener("click", async () => await AntiSpam.prevent(async () => {
-        await downloadSongButtonOnClick(app, userSongs, video);
-    }));
+    elements.details.downloadButton.addEventListener("click", async () => await AntiSpam.prevent(downloadSongButtonOnClick(app, userSongs, video)));
 
     elements.player.playButton.addEventListener("click", () => playButtonOnClick(app, elements));
 
@@ -156,9 +151,18 @@ function initEvents(app: App, elements: any, userSongs: Song[], video: Video): v
 }
 
 async function downloadSongButtonOnClick(app: App, userSongs: Song[], video: Video): Promise<void> {
-    const downloadSongReqRes: any = await LoadingModal.create<any>("", Bridge.youtube.downloadSong(video.id.videoId!, (data: string) => LoadingModal.setTitle(data)));
+    const updateLoadingModalTitle = (data: string): void => {
+        app.modalManager.getCurrentLoadingModal()?.setTitle(data);
+    };
+
+    const downloadSongReqRes: any = await app.modalManager.openLoadingModal("", Bridge.youtube.downloadSong(video.id.videoId!, updateLoadingModalTitle));
     if (!downloadSongReqRes.success) {
         return app.throwError(`Can't download song from youtube: ${downloadSongReqRes.error}`);
+    }
+
+    const addUserDownloadReqRes: any = await Requests.user.addDownload(app, video.id.videoId!);
+    if (!addUserDownloadReqRes.success) {
+        return app.throwError(`Can't add user download: ${addUserDownloadReqRes.error}`);
     }
 
     const buffer: Uint8Array = (downloadSongReqRes.buffer as Uint8Array);
@@ -166,19 +170,24 @@ async function downloadSongButtonOnClick(app: App, userSongs: Song[], video: Vid
 
     openAddSongFileToAppModal(app, userSongs);
 
-    const songTitleInput: HTMLInputElement | null = CenterModal.getFieldInput("Title");
+    const currentCenterModal: CenterModal | null = app.modalManager.getCurrentCenterModal();
+    if (currentCenterModal == null) {
+        return app.throwError("Can't fill song details: Current center modal is null.");
+    }
+
+    const songTitleInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Title");
     if (songTitleInput == null) {
         return app.throwError("Can't set song title: Input is null.");
     }
     songTitleInput.value = video.snippet.title!;
 
-    const songArtistInput: HTMLInputElement | null = CenterModal.getFieldInput("Artist");
+    const songArtistInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Artist");
     if (songArtistInput == null) {
         return app.throwError("Can't set song artist: Input is null.");
     }
     songArtistInput.value = video.snippet.channelTitle!;
 
-    const songFileInput: HTMLInputElement | null = CenterModal.getFieldInput("Song file");
+    const songFileInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Song file");
     if (songFileInput == null) {
         return app.throwError("Can't set file in song file input: Input is null.");
     }
@@ -240,7 +249,7 @@ function playButtonOnClick(app: App, elements: any): void {
     }
     else {
         audioElement.pause();
-        playButtonElement.setAttribute("playing", String(false));
+        playButtonElement.setAttribute("playing", String(false));   
     }
 }
 
@@ -262,5 +271,5 @@ export default function openAddYoutubeSongToAppModal(app: App, userSongs: Song[]
         cantClose: false,
     };
 
-    new CenterSearchModal(app, data);
+    app.modalManager.openCenterSearchModal(data);
 }

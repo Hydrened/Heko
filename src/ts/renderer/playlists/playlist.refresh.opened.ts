@@ -118,7 +118,7 @@ export default class PlaylistsRefreshOpenedManager {
     private refreshMergedPlaylists(currentOpenedPlaylist: Playlist): void {
         Elements.currentPlaylist.container.setAttribute("type", "merged-container");
 
-        currentOpenedPlaylist.mergedPlaylist.reverse().forEach((mergedPlaylist: MergedPlaylist, index: number) => {
+        currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist, index: number) => {
             const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(mergedPlaylist.id);
             if (playlist == undefined) {
                 return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.");

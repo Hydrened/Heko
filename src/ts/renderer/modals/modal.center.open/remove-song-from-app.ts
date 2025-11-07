@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removeSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
@@ -26,7 +24,7 @@ async function removeSongFromAppModalOnConfirm(app: App, modal: CenterModal, use
         app.playlistManager.refreshPlaylistsContainerTab();
     });
     
-    TopModal.create("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from Heko.`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from Heko.`);
     return null;
 }
 
@@ -44,5 +42,5 @@ export default function openRemoveFromAppSongModal(app: App, userSongs: Song[]):
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

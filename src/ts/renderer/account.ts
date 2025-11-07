@@ -1,5 +1,4 @@
 import App from "./app.js";
-import CenterModal from "./modals/modal.center.js";
 import openLoginModal from "./modals/modal.center.open/login.js";
 import openRegisterModal from "./modals/modal.center.open/register.js";
 import * as Bridge from "./utils/utils.bridge.js";
@@ -11,6 +10,7 @@ export default class Account {
     private userID: ID | null = null;
     private token: Token | null = null;
     private settings: UserSettings | null = null;
+    private downloads: string[] = [];
 
     // INIT
     constructor(private app: App) {
@@ -49,7 +49,7 @@ export default class Account {
         });
     }
 
-    private async loadSettings(): Promise<any> {
+    private async loadSettings(): Promise<void> {
         if (this.userID == null || this.token == null) {
             return;
         }
@@ -68,6 +68,20 @@ export default class Account {
         };
     }
 
+    private async loadDownloads(): Promise<void> {
+        if (this.userID == null || this.token == null) {
+            return;
+        }
+
+        const getUserDownloadsReqRes: any = await Requests.user.getDownloads(this.app);
+        if (!getUserDownloadsReqRes.success) {
+            return this.app.throwError(`Can't get user downloads: ${getUserDownloadsReqRes.error}`);
+        }
+
+        this.downloads = getUserDownloadsReqRes.downloads.map((row: any) => Object.values(row)).flat();
+        console.log(this.downloads);
+    }
+
     // LOG EVENTS
     public async loggedIn(): Promise<void> {
         if (this.userID == null || this.token == null) {
@@ -75,6 +89,7 @@ export default class Account {
         }
 
         await this.loadSettings();
+        await this.loadDownloads();
         await this.app.loggedIn();
     }
 

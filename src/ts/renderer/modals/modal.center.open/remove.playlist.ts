@@ -1,7 +1,5 @@
 import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
@@ -31,7 +29,7 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
         }
     });
 
-    TopModal.create("SUCCESS", `Successfully removed playlist "${playlist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully removed playlist "${playlist.name}".`);
     return null;
 }
 
@@ -42,5 +40,5 @@ export default function openRemovePlaylistModal(app: App, userPlaylists: Playlis
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

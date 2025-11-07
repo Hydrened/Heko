@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
@@ -32,8 +30,7 @@ async function registerModalOnConfirm(app: App, modal: CenterModal): Promise<Mod
 
     app.account.loggedIn();
 
-    TopModal.create("SUCCESS", "Account successfully created.");
-
+    app.modalManager.openTopModal("SUCCESS", "Account successfully created.");
     return null;
 }
 
@@ -57,5 +54,6 @@ export default function openRegisterModal(app: App): CenterModal {
         cantClose: true,
     };
 
-    return new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
+    return app.modalManager.getCurrentCenterModal()!;
 }

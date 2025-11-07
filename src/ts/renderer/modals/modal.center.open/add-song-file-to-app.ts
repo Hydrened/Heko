@@ -1,8 +1,6 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import LoadingModal from "./../modal.loading.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
+import * as Functions from "./../../utils/utils.functions.js";
 
 async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
     const title: string = modal.getFieldValue("Title");
@@ -29,7 +27,14 @@ async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal
         };
     }
 
-    const file: File | null = CenterModal.getFileFromFileInput("Song file");
+    const currentCenterModal: CenterModal | null = app.modalManager.getCurrentCenterModal();
+    if (currentCenterModal == null) {
+        return {
+            error: "Can't confirm modal: Current center modal is null.",
+        };
+    }
+
+    const file: File | null = currentCenterModal.getFileFromFileInput("Song file");
     if (file == null) {
         return {
             fieldName: "Song file",
@@ -44,7 +49,7 @@ async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal
         };
     }
 
-    const fileSize: number = CenterModal.getFileSize(file);
+    const fileSize: number = Functions.getFileSize(file);
     if (fileSize > 30) {
         return {
             fieldName: "Song file",
@@ -52,7 +57,7 @@ async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal
         };
     }
 
-    const uploadSongReqRes: any = await LoadingModal.create<any>("Uploading song", Requests.song.upload(app, file));
+    const uploadSongReqRes: any = await app.modalManager.openLoadingModal("Uploading song", Requests.song.upload(app, file));
     if (!uploadSongReqRes.success) {
         app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`);
         return null;
@@ -69,7 +74,7 @@ async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal
         app.playlistManager.refreshOpenedPlaylistTab();
     });
     
-    TopModal.create("SUCCESS", `Successfully added song "${title}" by "${artist}" to Heko.`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully added song "${title}" by "${artist}" to Heko.`);
     return null;
 }
 
@@ -87,5 +92,5 @@ export default function openAddSongFileToAppModal(app: App, userSongs: Song[]): 
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

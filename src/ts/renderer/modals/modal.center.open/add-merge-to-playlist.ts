@@ -1,7 +1,5 @@
-import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import App from "../../app.js";
+import * as Requests from "../../utils/utils.requests.js";
 
 async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playlist[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
@@ -31,7 +29,7 @@ async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, pla
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully merged playlist "${playlist.name}" in playlist "${currentOpenedPlaylist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully merged playlist "${playlist.name}" in playlist "${currentOpenedPlaylist.name}".`);
     return null;
 }
 
@@ -54,5 +52,5 @@ export default function openAddMergeToPlaylistModal(app: App, playlistsLeft: Pla
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

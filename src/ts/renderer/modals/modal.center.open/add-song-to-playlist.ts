@@ -1,6 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, songsLeft: Song[]): Promise<ModalError> {
@@ -31,7 +29,7 @@ async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, son
         app.playlistManager.refreshOpenedPlaylistTab();
     });
 
-    TopModal.create("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${currentOpenedPlaylist.name}".`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${currentOpenedPlaylist.name}".`);
     return null;
 }
 
@@ -54,5 +52,5 @@ export default function openAddSongToPlaylistModal(app: App, songsLeft: Song[]):
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }

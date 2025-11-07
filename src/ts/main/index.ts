@@ -7,7 +7,7 @@ class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
-    private readonly dev: boolean = false;
+    private readonly dev: boolean = true;
 
     constructor() {
         this.mainFolder = new MainFolder();
@@ -97,7 +97,7 @@ class Index {
 
                     this.window.webContents.send("mainEvents-nextButton");
                 },
-            }
+            },
         ];
 
         this.window.setThumbarButtons(this.thumbarButtons);
@@ -180,7 +180,6 @@ class Index {
             dialog.showErrorBox("Error", message);
             this.window?.close();
         });
-
     }
 
     private initRendererYoutubeEvents(): void {

@@ -1,7 +1,4 @@
 import App from "./../../app.js";
-import CenterModal from "./../modal.center.js";
-import LoadingModal from "./../modal.loading.js";
-import TopModal from "./../modal.top.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function updateThumbnailModalOnClick(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
@@ -11,9 +8,16 @@ async function updateThumbnailModalOnClick(app: App, modal: CenterModal, current
         return null;
     }
 
-    const file: File | null = CenterModal.getFileFromFileInput("Thumbnail");
+    const curentCenterModal: CenterModal | null = app.modalManager.getCurrentCenterModal();
+    if (curentCenterModal == null) {
+        return {
+            error: "Can't confirm modal: Current modal is null.",
+        };
+    }
+
+    const file: File | null = curentCenterModal.getFileFromFileInput("Thumbnail");
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await LoadingModal.create<any>("Uploading thumbnail", Requests.thumbnail.upload(app, file));
+        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Requests.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't upload playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -33,7 +37,7 @@ async function updateThumbnailModalOnClick(app: App, modal: CenterModal, current
         app.playlistManager.refreshOpenedPlaylistTab();
     });
     
-    TopModal.create("SUCCESS", `Successfully updated "${currentOpenedPlaylist.name}" thumbnail.`);
+    app.modalManager.openTopModal("SUCCESS", `Successfully updated "${currentOpenedPlaylist.name}" thumbnail.`);
     return null;
 }
 
@@ -54,5 +58,5 @@ export default function openUpdateThumbnailModal(app: App): void {
         cantClose: false,
     };
 
-    new CenterModal(app, data);
+    app.modalManager.openCenterModal(data);
 }
