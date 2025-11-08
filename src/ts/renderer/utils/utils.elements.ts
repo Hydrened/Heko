@@ -80,3 +80,7 @@ export const songControls = {
         slider: document.querySelector("#volume-slider")!,
     },
 };
+
+export const settings = {
+    container: document.querySelector("settings-container")!,
+};

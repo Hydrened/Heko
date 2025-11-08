@@ -145,7 +145,8 @@
                 </article>
             </footer>
         </main>
-        <settings-container class="hidden">
+        <settings-container class="">
+            <div class="wrapper">
                 <aside>
                     <h1>Settings</h1>
                     <ul class="settings-menus-container">
@@ -156,63 +157,63 @@
                     </ul>
                 </aside>
                 <section>
-                    <article>
+                    <article class="setting-section-container">
                         <h1>Account</h1>
-                        <ul class="settings-section-container">
-                            <li>
-                                <h2 class="settings-section-title">Details</h2>
-                                <ul class="setting-row-container">
-                                    <li>
-                                        <p>Name: <span id="settings-user-name"></span></p>
-                                    </li>
-                                    <li>
-                                        <p>Email: <span id="settings-user-email"></span></p>
-                                    </li>
-                                </ul>
+                        <ul class="settings-account-details-container col">
+                            <li class="edit dark-container">
+                                <p>Name</p>
+                                <p id="settings-user-name">Killian</p>
+                                <button>Edit</button>
+                            </li>
+                            <li class="edit dark-container">
+                                <p>Email</p>
+                                <p id="settings-user-email">killiansimon297@gmail.com</p>
+                                <button>Edit</button>
+                            </li>
+                            <li class="row">
+                                <button class="remove-account-button">Remove account</button>
                             </li>
                         </ul>
                     </article>
-                    <article>
+                    <article class="setting-section-container">
                         <h1>Apparence</h1>
-                        <ul class="settings-section-container">
-                            <li>
+                        <ul class="settings-apparence-container col">
+                            <li class="settings-template-container dark-container col">
                                 <h2 class="settings-section-title">Templates</h2>
-                                <div>Theme 1</div>
-                                <div>Theme 2</div>
-                                <div>Theme 3</div>
-                                <!-- theme squares -->
-                            </li>
-                            <li>
-                                <h2 class="settings-section-title">Custom</h2>
-                                <ul class="setting-row-container">
-                                    <li>
-                                        <label>Main color</label>
-                                        <div></div>
-                                    </li>
-                                    <li>
-                                        <label>Gradient color 1</label>
-                                        <div></div>
-                                    </li>
-                                    <li>
-                                        <label>Gradient color 2</label>
-                                        <div></div>
-                                    </li>
-                                    <li>
-                                        <label>Rotate gradient</label>
-                                        <input type="checkbox">
-                                        <input type="number">
-                                    </li>
-                                    <li>
-                                        <label>Gradient default rotation</label>
-                                        <input type="number">
-                                    </li>
+                                <ul class="templates-container row">
+                                    <li><input type="radio" name="aa"></li>
+                                    <li><input type="radio" name="aa"></li>
+                                    <li><input type="radio" name="aa"></li>
+                                    <li><input type="radio" name="aa"></li>
+                                    <li><input type="radio" name="aa"></li>
                                 </ul>
+                            </li>
+                            <li class="dark-container">
+                                <label>Main color</label>
+                                <input type="color">
+                            </li>
+                            <li class="dark-container">
+                                <label>Gradient color 1</label>
+                                <input type="color">
+                            </li>
+                            <li class="dark-container">
+                                <label>Gradient color 2</label>
+                                <input type="color">
+                            </li>
+                            <li class="dark-container">
+                                <label>Rotate gradient</label>
+                                <input type="checkbox">
+                                <input type="number">
+                            </li>
+                            <li class="dark-container">
+                                <label>Gradient default rotation</label>
+                                <input type="number">
                             </li>
                         </ul>
                     </article>
-                    <article>
+                    <article class="setting-section-container">
                         <h1>Preferences</h1>
-                        <ul class="settings-section-container">
+                        <ul>
                             <li>
                                 <div>
                                     <label>Hide success top modal</label>
@@ -227,11 +228,12 @@
                             </li>
                         </ul>
                     </article>
-                    <article>
+                    <article class="setting-section-container">
                         <h1>Shortcuts</h1>
-                        <ul class="settings-section-container"></ul>
+                        <ul></ul>
                     </article>
                 </section>
+            </div>
         </settings-container>
         <maintenance-container class="hidden">
             <h1>Taking a Short Break</h1>

@@ -1,6 +1,6 @@
 import Window from "./window.js";
 import Account from "./account.js";
-import Settings from "./settings.js";
+import Settings from "./settings/settings.js";
 import ModalManager from "./modals/modals.js";
 import ContextmenuManager from "./contextmenus/contextmenus.js";
 import PlaylistManager from "./playlists/playlists.js";
@@ -53,7 +53,7 @@ export default class App {
         const response: number = (this.dev ? 200 : (getResponseResRes.response as number));
         switch (response) {
             case 200:
-                await this.account.init();
+                // await this.account.init();
                 break;
 
             case 503:
