@@ -71,7 +71,7 @@ export default class ModalManager {
     }
 
     // GETTERS
-    public getCurrentModalCotnainer(): HTMLElement | null {
+    public getCurrentModalContainer(): HTMLElement | null {
         const modals: Element[] = [...document.querySelectorAll(".modal")];
         return ((modals[modals.length - 1] as HTMLElement) ?? null);
     }

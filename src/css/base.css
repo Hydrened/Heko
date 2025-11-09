@@ -126,6 +126,10 @@ main {
     height: var(--main-height);
 }
 
+a {
+    text-decoration: none;
+}
+
 input {
     accent-color: var(--main-col-1);
 }

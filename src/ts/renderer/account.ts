@@ -7,8 +7,12 @@ import * as Elements from "./utils/utils.elements.js";
 
 export default class Account {
     private modal: CenterModal | null = null;
+
     private userID: ID | null = null;
     private token: Token | null = null;
+    private name: string | null = null;
+    private email: string | null = null;
+
     private settings: UserSettings | null = null;
     private downloads: string[] = [];
 
@@ -38,6 +42,8 @@ export default class Account {
 
         this.userID = userID;
         this.token = token;
+        this.name = validityReqRes.name;
+        this.email = validityReqRes.email;
 
         await this.loggedIn();
     }
@@ -50,7 +56,7 @@ export default class Account {
     }
 
     private async loadSettings(): Promise<void> {
-        if (this.userID == null || this.token == null) {
+        if (!this.isLoggedIn()) {
             return;
         }
 
@@ -60,7 +66,6 @@ export default class Account {
         }
 
         this.settings = {
-            userID: this.userID,
             shuffle: (getUserSettingsReqRes.settings.shuffle == 1),
             loop: (getUserSettingsReqRes.settings.loop == 1),
             speed: getUserSettingsReqRes.settings.speed,
@@ -69,22 +74,21 @@ export default class Account {
     }
 
     private async loadDownloads(): Promise<void> {
-        if (this.userID == null || this.token == null) {
+        if (!this.isLoggedIn()) {
             return;
         }
 
-        const getUserDownloadsReqRes: any = await Requests.user.getDownloads(this.app);
-        if (!getUserDownloadsReqRes.success) {
-            return this.app.throwError(`Can't get user downloads: ${getUserDownloadsReqRes.error}`);
-        }
+        // const getUserDownloadsReqRes: any = await Requests.user.getDownloads(this.app);
+        // if (!getUserDownloadsReqRes.success) {
+        //     return this.app.throwError(`Can't get user downloads: ${getUserDownloadsReqRes.error}`);
+        // }
 
-        this.downloads = getUserDownloadsReqRes.downloads.map((row: any) => Object.values(row)).flat();
-        console.log(this.downloads);
+        // this.downloads = getUserDownloadsReqRes.downloads.map((row: any) => Object.values(row)).flat();
     }
 
     // LOG EVENTS
     public async loggedIn(): Promise<void> {
-        if (this.userID == null || this.token == null) {
+        if (!this.isLoggedIn()) {
             return;
         }
 
@@ -94,7 +98,7 @@ export default class Account {
     }
 
     public async logout(): Promise<void> {
-        if (this.userID == null || this.token == null) {
+        if (!this.isLoggedIn()) {
             return;
         }
 
@@ -124,20 +128,25 @@ export default class Account {
     }
 
     // GETTERS
+    public isLoggedIn(): boolean {
+        return (this.userID != null && this.token != null && this.name != null && this.email != null);
+    }
+
     public getUserData(): UserData {
         return {
             id: this.userID,
             token: this.token,
+            name: this.name,
+            email: this.email,
         };
     }
 
     public getSettings(): UserSettings {
         return {
-            userID: (this.settings ? this.settings.userID : -1),
-            loop: (this.settings ? this.settings.loop : false),
-            shuffle: (this.settings ? this.settings.shuffle : false),
-            speed: (this.settings ? this.settings.speed : -1),
-            volume: (this.settings ? this.settings.volume : -1),
+            loop: (this.settings?.loop ?? false),
+            shuffle: (this.settings?.shuffle ?? false),
+            speed: (this.settings?.speed ?? -1),
+            volume: (this.settings?.volume ?? -1),
         };
     }
 

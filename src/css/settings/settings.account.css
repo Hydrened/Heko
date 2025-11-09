@@ -1,0 +1,14 @@
+#account-settings li {
+    gap: 0.3rem;
+}
+
+
+
+#remove-account-button {
+    border: 1px solid var(--bg-error-col);
+}
+#remove-account-button:hover {
+    color: white;
+
+    background-color: var(--bg-error-col);
+}

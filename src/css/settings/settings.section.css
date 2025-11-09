@@ -1,0 +1,149 @@
+settings-container .col {
+    display: flex;
+    flex-direction: column;
+}
+settings-container .row {
+    display: flex;
+}
+
+
+
+settings-container button {
+    padding: 0.7rem 1.3rem;
+
+    border-radius: 0.6rem;
+
+    cursor: pointer;
+    transition: 200ms;
+}
+
+
+
+settings-container li:has(input:disabled) * {
+    pointer-events: none;
+    opacity: 0.3;
+}
+settings-container li > :is(input[type="text"], input[type="number"]) {
+    padding: 0.6rem 0.8rem;
+
+    border-radius: 0.6rem;
+
+    background-color: var(--bg-bo-3);
+}
+settings-container li > :is(input[type="checkbox"], input[type="radio"]) {
+    width: 1.5rem;
+    aspect-ratio: 1 / 1;
+}
+
+
+
+settings-container .dark-container {
+    padding: 0.8rem 1.3rem;
+
+    border-radius: 0.8rem;
+
+    background-color: var(--bg-bo-2);
+}
+
+
+
+settings-container .single-input-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+settings-container .multiple-input-row {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 1rem;
+}
+settings-container .multiple-input-row > :first-child {
+    margin-right: auto;
+}
+
+
+
+settings-container .input-color-container {
+    width: 2rem;
+    height: 2rem;
+
+    border-radius: 50%;
+
+    overflow: hidden;
+}
+settings-container .input-color-container > input[type="color"] {
+    scale: 2.5;
+    cursor: pointer;
+}
+
+
+
+settings-container li.edit {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: repeat(2, auto);
+}
+settings-container li.edit > p:first-of-type {
+    font-weight: bold;
+}
+settings-container li.edit > button {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    align-self: center;
+
+    background-color: var(--bg-bo-5);
+}
+settings-container li.edit > button:hover {
+    background-color: var(--bg-wo-10);
+}
+
+
+
+settings-container section {
+    padding-right: 10vw;
+
+    display: flex;
+    flex-direction: column;
+
+    overflow-x: visible;
+    overflow-y: auto;
+}
+settings-container section > article {
+    flex: 1 0 auto;
+
+    display: flex;
+    flex-direction: column;
+
+    border-radius: 1rem;
+
+    background-color: var(--bg-bo-2);
+    overflow: hidden;
+}
+settings-container section > article > ul {
+    padding: 1rem;
+}
+
+
+settings-container ::-webkit-scrollbar {
+    display: none;
+}
+
+
+
+settings-container article > h1 {
+    padding: 1rem 1.5rem;
+
+    font-size: 1.7rem;
+
+    background-color: var(--bg-bo-3);
+}
+settings-container article h2 {
+    font-size: 1.3rem;
+}
+settings-container article > ul {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}

@@ -6,15 +6,15 @@ type App = import("../app.js").default;
 async function request(phpFile: string, app: App | null = null, data: { [key: string]: any } = {}): Promise<any> {
     if (app != null) {
         const userData: UserData = app.account.getUserData();
-        if (userData.id == null || userData.token == null) {
+        if (!app.account.isLoggedIn()) {
             return {
                 success: false,
                 error: "User is not logged in.",
             };
         }
 
-        data["userID"] = userData.id;
-        data["token"] = userData.token;
+        data["userID"] = userData.id!;
+        data["token"] = userData.token!;
     }
 
     const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
@@ -28,7 +28,7 @@ async function request(phpFile: string, app: App | null = null, data: { [key: st
 
 async function uploadFile(phpFile: string, app: App, file: File): Promise<any> {
     const userData: UserData = app.account.getUserData();
-    if (userData.id == null || userData.token == null) {
+    if (!app.account.isLoggedIn()) {
         return {
             success: false,
             error: "User is not logged in.",
@@ -36,8 +36,8 @@ async function uploadFile(phpFile: string, app: App, file: File): Promise<any> {
     }
 
     const formData = new FormData();
-    formData.append("userID", String(userData.id));
-    formData.append("token", userData.token);
+    formData.append("userID", String(userData.id!));
+    formData.append("token", userData.token!);
     formData.append("file", file);
 
     const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
@@ -73,6 +73,10 @@ export const user = {
         return await request("user/register.php", null, { name: name, email: email, password: password, confirm: confirm });
     },
 
+    editName: async (app: App, name: string): Promise<any> => {
+        return await request("user/edit-name.php", app, { name: name });
+    },
+
     getSettings: async (app: App): Promise<any> => {
         return await request("user/get-settings.php", app);
     },
@@ -87,6 +91,10 @@ export const user = {
 
     getDownloads: async (app: App): Promise<any> => {
         return await request("user/get-downloads.php", app);
+    },
+
+    sendRemoveConfirmation: async (app: App, email: string): Promise<any> => {
+        return await request("user/send-remove-confirmation.php", app, { email: email });
     },
 };
 

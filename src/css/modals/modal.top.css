@@ -17,6 +17,7 @@ top-modal-container {
     background: var(--main-gradient);
     transform: translateX(-50%);
     cursor: pointer;
+    z-index: 30;
 }
 top-modal-container::before {
     content: "";

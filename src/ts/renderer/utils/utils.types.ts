@@ -15,10 +15,11 @@ type Token = string;
 interface UserData {
     readonly id: ID | null;
     readonly token: Token | null;
+    readonly name: string | null;
+    readonly email: string | null;
 };
 
 interface UserSettings {
-    readonly userID: ID | null;
     readonly shuffle: boolean;
     readonly loop: boolean;
     readonly speed: number;
@@ -120,11 +121,6 @@ interface Playlist {
     readonly songs: Song[];
     readonly children: number;
     readonly creationDate: string;
-};
-
-interface Artist {
-    readonly userID: ID;
-    readonly name: string;
 };
 
 type Queue = Song[];

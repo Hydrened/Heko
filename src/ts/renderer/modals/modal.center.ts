@@ -48,7 +48,7 @@ export default class CenterModal {
     }
 
     private keydownEvent = async (e: KeyboardEvent): Promise<void> => {
-        if (this.mainContainer != this.app.modalManager.getCurrentModalCotnainer()) {
+        if (this.mainContainer != this.app.modalManager.getCurrentModalContainer()) {
             return;
         }
 

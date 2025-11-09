@@ -1,0 +1,28 @@
+.settings-template-container,
+.settings-template-container > .templates-container {
+    gap: 1rem;
+}
+
+
+
+.settings-template-container > .templates-container > li {
+    width: 4rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 0.5rem;
+
+    background-color: var(--bg-bo-4);
+}
+.settings-template-container > .templates-container > li:has(input:checked) {
+    border: 1px solid var(--main-col-1);
+}
+
+
+
+.settings-template-container > .templates-container > li > input {
+    width: 100%;
+    height: 100%;
+    
+    opacity: 0;
+    cursor: pointer;
+}

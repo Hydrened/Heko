@@ -83,4 +83,32 @@ export const songControls = {
 
 export const settings = {
     container: document.querySelector("settings-container")!,
+    sectionContainer: document.querySelector("#settings-section-container")!,
+
+    account: {
+        name: {
+            text: document.querySelector("#settings-user-name")!,
+            editButton: document.querySelector("#settings-edit-user-name")!,
+        },
+        email: document.querySelector("#settings-user-email")!,
+        removeButton: document.querySelector("#remove-account-button")!,
+    },
+
+    apparence: {
+        templateContainer: document.querySelector("#settings-templates-container")!,
+        mainColorInput: document.querySelector("#settings-main-color")!,
+        gradientColor1Input: document.querySelector("#settings-gradient-color-1")!,
+        gradientColor2Input: document.querySelector("#settings-gradient-color-2")!,
+        rotateGradientCheckbox: document.querySelector("#settings-rotate-gradient")!,
+        gradientRotationSpeedInput: document.querySelector("#settings-gradient-rotation-speed")!,
+        gradientDefaultRotationInput: document.querySelector("#settings-gradient-default-rotation")!,
+    },
+
+    preferences: {
+        hideSuccessModalCheckbox: document.querySelector("#settings-hide-success-modal")!,
+    },
+
+    shortcuts: {
+
+    }
 };

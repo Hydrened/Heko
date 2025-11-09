@@ -1,0 +1,43 @@
+settings-container aside {
+    padding-left: 10vw;
+
+    position: relative;
+
+    border-right: var(--default-border);
+
+    background-color: var(--bg-bo-2);
+}
+settings-container aside::before {
+    content: "";
+
+    width: 30vw;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: -30vw;
+
+    background-color: var(--bg-bo-2);
+}
+
+
+
+settings-container aside > h1 {
+    padding-inline: 0.8rem;
+}
+
+
+
+ul.settings-menus-container > li > a {
+    padding: 0.5rem 0.8rem;
+
+    display: block;
+
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+    transition: 150ms;
+}
+ul.settings-menus-container > li > :is(a.selected, a:hover) {
+    background-color: var(--bg-bo-5);
+}

@@ -53,7 +53,8 @@ export default class App {
         const response: number = (this.dev ? 200 : (getResponseResRes.response as number));
         switch (response) {
             case 200:
-                // await this.account.init();
+                await this.account.init();
+                this.settings.open();
                 break;
 
             case 503:
@@ -65,13 +66,11 @@ export default class App {
     }
 
     private async saveSettings(): Promise<void> {
-        const userData: UserData = this.account.getUserData();
-        if (userData.id == null || userData.token == null) {
+        if (!this.account.isLoggedIn()) {
             return;
         }
 
         const settings: UserSettings = {
-            userID: userData.id,
             shuffle: this.listenerManager.getShuffleState(),
             loop: this.listenerManager.getLoopState(),
             speed: this.listenerManager.getSpeed(),
@@ -97,6 +96,7 @@ export default class App {
 
     // LOGIN EVENTS
     public async loggedIn(): Promise<void> {
+        this.settings.loggedIn();
         this.listenerManager.loggedIn();
         await this.playlistManager.loggedIn();
         await this.openFirstPlaylist();
