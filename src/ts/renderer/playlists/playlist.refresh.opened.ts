@@ -5,7 +5,7 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsRefreshOpenedManager {
-    constructor(private app: App, private playlists: PlaylistManager) {
+    constructor(private app: App, private main: PlaylistManager) {
 
     }
 
@@ -23,14 +23,14 @@ export default class PlaylistsRefreshOpenedManager {
         Elements.currentPlaylist.details.duration.textContent = "";
         Elements.currentPlaylist.addSongsButton.classList.add("disabled");
 
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
 
         const isMergedContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
         const songs: Song[] = ((isMergedContainer)
-            ? this.playlists.getMergedContainerSongs(currentOpenedPlaylist, false)
+            ? this.main.getMergedContainerSongs(currentOpenedPlaylist, false)
             : currentOpenedPlaylist.songs);
 
         Functions.setThumbnail(thumbnailElement, currentOpenedPlaylist.thumbnailFileName);
@@ -44,11 +44,11 @@ export default class PlaylistsRefreshOpenedManager {
         const formatPlatlistDuration: string = Functions.formatDuration(playlistDuration);
         Elements.currentPlaylist.details.duration.textContent = formatPlatlistDuration;
 
-        (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value = "";
+        Elements.currentPlaylist.songFilterInput.value = "";
     }
 
     private refreshAddSongButton(): void {
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
@@ -59,7 +59,7 @@ export default class PlaylistsRefreshOpenedManager {
         }
 
         const playlistSongIDs: number[] = currentOpenedPlaylist.songs.map((song: Song) => song.id);
-        const everyUserSongIDs: number[] = (this.playlists.getSongBuffer()).map((song: Song) => song.id);
+        const everyUserSongIDs: number[] = (this.main.getSongBuffer()).map((song: Song) => song.id);
 
         const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
         if (canUserAddSongs) {
@@ -71,7 +71,7 @@ export default class PlaylistsRefreshOpenedManager {
         Functions.removeChildren(Elements.currentPlaylist.song.container);
         Functions.removeChildren(Elements.currentPlaylist.merged.container);
         
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
@@ -119,7 +119,7 @@ export default class PlaylistsRefreshOpenedManager {
         Elements.currentPlaylist.container.setAttribute("type", "merged-container");
 
         currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist, index: number) => {
-            const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(mergedPlaylist.id);
+            const playlist: Playlist | undefined = this.main.getPlaylistFromID(mergedPlaylist.id);
             if (playlist == undefined) {
                 return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.");
             }
@@ -159,7 +159,7 @@ export default class PlaylistsRefreshOpenedManager {
                     return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`);
                 }
 
-                await this.playlists.refreshPlaylistBuffer();
+                await this.main.refreshPlaylistBuffer();
                 this.app.listenerManager.refreshQueue();
             });
 

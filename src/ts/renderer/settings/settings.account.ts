@@ -1,11 +1,11 @@
 import App from "./../app.js";
-import Settings from "./settings.js";
+import SettingsManager from "./settings.js";
 import openEditAccountNameModal from "./../modals/modal.center.open/edit-account-name.js";
 import openRemoveAccountModal from "./../modals/modal.center.open/remove-account.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class AccountSettings {
-    constructor(private app: App, private settings: Settings) {
+    constructor(private app: App, private main: SettingsManager) {
         this.initEvents();
     }
 

@@ -11,7 +11,7 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsEventManager {
-    constructor(private app: App, private playlists: PlaylistManager) {
+    constructor(private app: App, private main: PlaylistManager) {
         this.initContextmenuShortcuts();
         this.initPlaylistContainerEvents();
         this.initOpenedPlaylistEvents();
@@ -51,14 +51,14 @@ export default class PlaylistsEventManager {
         });
 
         Elements.currentPlaylist.addSongsButton.addEventListener("click", () => {
-            openAddSongToPlaylistModal(this.app, this.playlists.getPlaylistSongsLeft());
+            openAddSongToPlaylistModal(this.app, this.main.getPlaylistSongsLeft());
         });
     }
 
     private initOpenedPlaylistEvents(): void {
         Elements.currentPlaylist.details.thumbnail.addEventListener("click", () => openUpdateThumbnailModal(this.app));
 
-        const input: HTMLInputElement = (Elements.currentPlaylist.songFilterInput as HTMLInputElement);
+        const input: HTMLInputElement = Elements.currentPlaylist.songFilterInput;
 
         input.addEventListener("input", () => this.openedPlaylistInputFilterOnInput());
         input.addEventListener("keydown", (e: KeyboardEvent) => {
@@ -89,7 +89,7 @@ export default class PlaylistsEventManager {
             return;
         }
 
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
@@ -105,12 +105,12 @@ export default class PlaylistsEventManager {
     }
 
     private openedPlaylistInputFilterOnInput(): void {
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }
 
-        const value: string = (Elements.currentPlaylist.songFilterInput as HTMLInputElement).value.toLowerCase();
+        const value: string = Elements.currentPlaylist.songFilterInput.value.toLowerCase();
 
         const isMergeContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
         (isMergeContainer)
@@ -120,7 +120,7 @@ export default class PlaylistsEventManager {
 
     private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, value: string): void {
         currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist) => {
-            const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(mergedPlaylist.id);
+            const playlist: Playlist | undefined = this.main.getPlaylistFromID(mergedPlaylist.id);
             if (playlist == undefined) {
                 return this.app.throwError("Can't filter merged playlists: A merged playlist is undefined.");
             }
@@ -192,7 +192,7 @@ export default class PlaylistsEventManager {
     }
 
     private openedPlaylistMergedContainerOnContextmenu(e: PointerEvent): void {
-        const currentOpenedPlaylist: Playlist | null = this.playlists.getCurrentOpenedPlaylist();
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
         if (currentOpenedPlaylist == null) {
             return;
         }

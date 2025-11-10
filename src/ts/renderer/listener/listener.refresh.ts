@@ -4,7 +4,7 @@ import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerRefreshManager {
     // INIT
-    constructor(private app: App, private listener: ListenerManager) {
+    constructor(private app: App, private main: ListenerManager) {
 
     }
 
@@ -20,7 +20,7 @@ export default class ListenerRefreshManager {
     }
 
     private refreshSongClasses(currentSong: Song | null): void {
-        const currentListeningPlaylist: Playlist | null = this.listener.getCurrentListeningPlaylist();
+        const currentListeningPlaylist: Playlist | null = this.main.getCurrentListeningPlaylist();
         if (currentListeningPlaylist == null || currentSong == null) {
             return;
         }

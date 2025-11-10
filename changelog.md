@@ -1,3 +1,7 @@
+## HEKO-3.2.1
+#### ADDED
+- account removal with mail confirmation
+
 ## HEKO-3.2.0
 #### ADDED
 - add songs from youtube

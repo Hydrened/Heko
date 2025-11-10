@@ -19,11 +19,31 @@ interface UserData {
     readonly email: string | null;
 };
 
-interface UserSettings {
+interface SongSettings {
     readonly shuffle: boolean;
     readonly loop: boolean;
     readonly speed: number;
     readonly volume: number;
+};
+
+interface ApparenceSettings {
+    readonly mainColor: string;
+    readonly gradientColor1: string;
+    readonly gradientColor2: string;
+    readonly rotateGradient: boolean;
+    readonly gradientRotationSpeed: number;
+    readonly gradientDefaultRotation: number;
+};
+
+interface PreferencesSettings {
+    readonly hideSuccessModal: boolean;
+    readonly volumeEasing: number;
+};
+
+interface Settings {
+    readonly song: SongSettings;
+    readonly apparence: ApparenceSettings;
+    readonly preferences: PreferencesSettings;
 };
 
 

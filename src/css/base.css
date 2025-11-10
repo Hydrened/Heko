@@ -36,13 +36,23 @@
     --bg-success-col: rgb(51,155,51);
     --bg-error-col: rgb(132,34,34);
     
-    /* -- green */
+
+
+
+/*     
     --main-col-1: rgb(17,115,89);
     --main-gradient: linear-gradient(45deg, rgb(11, 15, 11) 0%, rgb(21, 40, 38) 100%);
 
-    /* -- blue */
     --main-col-1: rgb(35, 55, 167);
     --main-gradient: linear-gradient(45deg, rgb(11, 11, 15) 0%, rgb(21, 22, 40) 100%);
+ */
+
+    --main-col-1: black;
+    --gradient-col-1: black;
+    --gradient-col-2: black;
+    --gradient-rotation: 0deg;
+    --main-gradient: linear-gradient(var(--gradient-rotation), var(--gradient-col-1) 0%, var(--gradient-col-2) 100%);
+
 
     /* TEXT COLORS */
     --text-opacity: 0.6;

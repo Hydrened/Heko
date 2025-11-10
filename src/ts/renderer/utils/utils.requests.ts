@@ -81,7 +81,7 @@ export const user = {
         return await request("user/get-settings.php", app);
     },
     
-    saveSettings: async (app: App, settings: UserSettings): Promise<any> => {
+    saveSettings: async (app: App, settings: Settings): Promise<any> => {
         return await request("user/save-settings.php", app, { settings: settings });
     },
 

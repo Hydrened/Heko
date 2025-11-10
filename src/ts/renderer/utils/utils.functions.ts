@@ -117,6 +117,10 @@ export function getCssVariable(variable: string, type: CssVariableType | null): 
     }
 }
 
+export function setCssVariable(variable: string, value: string): void {
+    document.documentElement.style.setProperty(`--${variable}`, value);
+}
+
 export function isCenterModalAlreadyOpened(): boolean {
     return (document.querySelector(".center-modal-container") != null);
 }

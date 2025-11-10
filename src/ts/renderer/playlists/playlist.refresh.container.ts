@@ -5,7 +5,7 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsRefreshCotnainerManager {
-    constructor(private app: App, private playlists: PlaylistManager) {
+    constructor(private app: App, private main: PlaylistManager) {
 
     }
 
@@ -13,7 +13,7 @@ export default class PlaylistsRefreshCotnainerManager {
         const animation: boolean = (Elements.playlists.container.children.length == 0);
         Functions.removeChildren(Elements.playlists.container);
         
-        const playlists: Playlist[] = this.playlists.getSortedPlaylists();
+        const playlists: Playlist[] = this.main.getSortedPlaylists();
         playlists.forEach((playlist: Playlist) => this.createPlaylist(playlist));
 
         if (!animation) {
@@ -76,7 +76,7 @@ export default class PlaylistsRefreshCotnainerManager {
             containerElement.addEventListener("click", async () => {
                 containerElement.classList.toggle("opened");
 
-                const openedPlaylistIDs: number[] = this.playlists.getPlaylistOpenedStates();
+                const openedPlaylistIDs: number[] = this.main.getPlaylistOpenedStates();
 
                 const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(this.app, openedPlaylistIDs);
                 if (!updatePlaylistOpenedStatesReqRes.success) {
@@ -94,7 +94,7 @@ export default class PlaylistsRefreshCotnainerManager {
                     }
                 }
 
-                await this.playlists.open(playlist.id);
+                await this.main.open(playlist.id);
             });
         }
 

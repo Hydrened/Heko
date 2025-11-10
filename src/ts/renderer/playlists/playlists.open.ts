@@ -6,7 +6,7 @@ import * as Elements from "./../utils/utils.elements.js";
 export default class PlaylistsOpenManager {
     private closingDuration: number = 0;
     
-    constructor(private app: App, private playlists: PlaylistManager) {
+    constructor(private app: App, private main: PlaylistManager) {
         this.loadCssVariables();
     }
 
@@ -15,17 +15,17 @@ export default class PlaylistsOpenManager {
     }
 
     public async open(playlistID: ID): Promise<void> {
-        if (this.playlists.getCurrentOpenedPlaylist() != null) {
+        if (this.main.getCurrentOpenedPlaylist() != null) {
             await this.close();
         }
 
-        const playlist: Playlist | undefined = this.playlists.getPlaylistFromID(playlistID);
+        const playlist: Playlist | undefined = this.main.getPlaylistFromID(playlistID);
         if (playlist == undefined) {
             return this.app.throwError("Can't get playlist: Playlist is undefined.");
         }
 
-        this.playlists.setCurrentOpenedPlaylist(playlist);
-        this.playlists.refreshOpenedPlaylistTab();
+        this.main.setCurrentOpenedPlaylist(playlist);
+        this.main.refreshOpenedPlaylistTab();
 
         Elements.currentPlaylist.container.classList.add("opened");
     }

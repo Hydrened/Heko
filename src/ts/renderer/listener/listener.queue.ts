@@ -18,7 +18,7 @@ export default class ListenerQueueManager {
     private loop: boolean = false;
 
     // INIT
-    constructor(private app: App, private listener: ListenerManager, private audioElement: HTMLAudioElement) {
+    constructor(private app: App, private main: ListenerManager, private audioElement: HTMLAudioElement) {
         this.initEvents();
     }
 
@@ -29,9 +29,9 @@ export default class ListenerQueueManager {
     }
 
     public load(): void {
-        const settings: UserSettings = this.app.account.getSettings();
-        this.setShuffle(settings.shuffle);
-        this.setLoop(settings.loop);
+        const settings: Settings = this.app.settings.get();
+        this.setShuffle(settings.song.shuffle);
+        this.setLoop(settings.song.loop);
     }
 
     public reset(): void {
@@ -49,7 +49,7 @@ export default class ListenerQueueManager {
         this.setShuffle(false);
         this.setLoop(false);
 
-        this.listener.refresh();
+        this.main.refresh();
     }
 
     public refresh(): void {
@@ -59,7 +59,7 @@ export default class ListenerQueueManager {
         
         const a = this.currentListeningPlaylist.id;
         this.reset();
-        this.listener.refresh();
+        this.main.refresh();
         this.recreate();
     }
 
@@ -262,7 +262,7 @@ export default class ListenerQueueManager {
     private setAudioSrc(song: Song): void {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
         this.audioElement.play();
-        this.listener.refresh();
+        this.main.refresh();
         Bridge.win.setTitle(song.title);
     }
 

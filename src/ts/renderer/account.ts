@@ -13,7 +13,6 @@ export default class Account {
     private name: string | null = null;
     private email: string | null = null;
 
-    private settings: UserSettings | null = null;
     private downloads: string[] = [];
 
     // INIT
@@ -55,24 +54,6 @@ export default class Account {
         });
     }
 
-    private async loadSettings(): Promise<void> {
-        if (!this.isLoggedIn()) {
-            return;
-        }
-
-        const getUserSettingsReqRes: any = await Requests.user.getSettings(this.app);
-        if (!getUserSettingsReqRes.success) {
-            return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`);
-        }
-
-        this.settings = {
-            shuffle: (getUserSettingsReqRes.settings.shuffle == 1),
-            loop: (getUserSettingsReqRes.settings.loop == 1),
-            speed: getUserSettingsReqRes.settings.speed,
-            volume: getUserSettingsReqRes.settings.volume,
-        };
-    }
-
     private async loadDownloads(): Promise<void> {
         if (!this.isLoggedIn()) {
             return;
@@ -92,7 +73,6 @@ export default class Account {
             return;
         }
 
-        await this.loadSettings();
         await this.loadDownloads();
         await this.app.loggedIn();
     }
@@ -140,19 +120,12 @@ export default class Account {
             email: this.email,
         };
     }
-
-    public getSettings(): UserSettings {
-        return {
-            loop: (this.settings?.loop ?? false),
-            shuffle: (this.settings?.shuffle ?? false),
-            speed: (this.settings?.speed ?? -1),
-            volume: (this.settings?.volume ?? -1),
-        };
-    }
-
+    
     // SETTERS
-    public setUserData(userID: ID, token: Token): void {
+    public setUserData(userID: ID, token: Token, name: string, email: string): void {
         this.userID = userID;
         this.token = token;
+        this.name = name;
+        this.email = email;
     }
 };

@@ -7,13 +7,13 @@ export default class ListenerVolumeManager {
     private oldVolume: number = 0;
 
     // INIT
-    constructor(private app: App, private listener: ListenerManager, private audioElement: HTMLAudioElement) {
+    constructor(private app: App, private main: ListenerManager, private audioElement: HTMLAudioElement) {
         this.initEvents();
     }
 
     private initEvents(): void {
         Elements.songControls.volume.slider.addEventListener("input", (e: Event) => {
-            const sliderValue: number = parseFloat((Elements.songControls.volume.slider as HTMLInputElement).value);
+            const sliderValue: number = parseFloat(Elements.songControls.volume.slider.value);
             this.setVolume(sliderValue);
         });
 
@@ -21,8 +21,8 @@ export default class ListenerVolumeManager {
     }
 
     public load(): void {
-        const settings: UserSettings = this.app.account.getSettings();
-        this.setVolume(settings.volume);
+        const settings: Settings = this.app.settings.get();
+        this.setVolume(settings.song.volume);
         this.refreshVolumeSlider();
     }
 
@@ -33,7 +33,7 @@ export default class ListenerVolumeManager {
     }
 
     private refreshVolumeSlider(): void {
-        (Elements.songControls.volume.slider as HTMLInputElement).value = String(this.volume);
+        Elements.songControls.volume.slider.value = String(this.volume);
     }
 
     // BUTTON EVENTS
@@ -62,7 +62,7 @@ export default class ListenerVolumeManager {
         const volume: number = Math.pow((percentageVolume * 0.01), 2);
         this.audioElement.volume = volume;
 
-        (Elements.songControls.volume.slider as HTMLInputElement).value = String(percentageVolume);
+        Elements.songControls.volume.slider.value = String(percentageVolume);
 
         this.refreshVolumeLogo();
     }

@@ -13,7 +13,7 @@ export default class PlaylistsMoveManager {
     private canTryMoving: boolean = true;
     private updating: boolean = false;
     
-    constructor(private app: App, private playlists: PlaylistManager) {
+    constructor(private app: App, private main: PlaylistManager) {
         this.initEvents();
     }
 
@@ -101,7 +101,7 @@ export default class PlaylistsMoveManager {
         let position: number = -1;
 
         if (insertBeforeElement != null) {
-            const insertBeforePlaylist: Playlist | undefined = this.playlists.getPlaylistFromElement(insertBeforeElement);
+            const insertBeforePlaylist: Playlist | undefined = this.main.getPlaylistFromElement(insertBeforeElement);
             if (insertBeforePlaylist == undefined) {
                 return this.reset();
             }
@@ -110,7 +110,7 @@ export default class PlaylistsMoveManager {
         }
         else if (insertAfterElement != null) {
             const insertAfterElementIndex: number = this.sameParentPlaylistElements.indexOf(insertAfterElement);
-            const insertAfterPlaylist: Playlist | undefined = this.playlists.getPlaylistFromElement(insertAfterElement);
+            const insertAfterPlaylist: Playlist | undefined = this.main.getPlaylistFromElement(insertAfterElement);
             if (insertAfterPlaylist == undefined) {
                 return this.reset();
             }
@@ -121,7 +121,7 @@ export default class PlaylistsMoveManager {
             }
             else {
                 const nextPlaylistElement: Element = this.sameParentPlaylistElements[insertAfterElementIndex + 1];
-                const nextPlaylist: Playlist | undefined = this.playlists.getPlaylistFromElement(nextPlaylistElement);
+                const nextPlaylist: Playlist | undefined = this.main.getPlaylistFromElement(nextPlaylistElement);
                 if (nextPlaylist == undefined) {
                     return this.reset();
                 }
@@ -132,7 +132,7 @@ export default class PlaylistsMoveManager {
 
         const errorBase: string = "Can't update playlist position";
 
-        const playlist: Playlist | undefined = this.playlists.getPlaylistFromElement(this.originalPlaylistElementBuffer);
+        const playlist: Playlist | undefined = this.main.getPlaylistFromElement(this.originalPlaylistElementBuffer);
         if (playlist == undefined) {
             return this.app.throwError(`${errorBase}: Playlist is undefined.`);
         }
@@ -144,8 +144,8 @@ export default class PlaylistsMoveManager {
             return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`);
         }
 
-        this.playlists.refreshPlaylistBuffer().then(() => {
-            this.playlists.refreshPlaylistsContainerTab();
+        this.main.refreshPlaylistBuffer().then(() => {
+            this.main.refreshPlaylistsContainerTab();
         });
 
         this.reset();

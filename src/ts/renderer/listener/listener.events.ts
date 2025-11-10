@@ -5,7 +5,7 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerEventManager {
-    constructor(private app: App, private listener: ListenerManager) {
+    constructor(private app: App, private main: ListenerManager) {
         this.initEvents();
         this.initRefreshLoop();
     }
@@ -19,50 +19,50 @@ export default class ListenerEventManager {
     private initSongControlButtonEvent(): void {
         interface ElementEvent { element: Element; event: () => void; };
         const elementEvents: ElementEvent[] = [
-            { element: Elements.songControls.buttons.togglePlayButton, event: () => this.listener.togglePlayButton() },
-            { element: Elements.songControls.buttons.previousButton, event: () => this.listener.previousButton() },
-            { element: Elements.songControls.buttons.nextButton, event: () => this.listener.nextButton() },
-            { element: Elements.songControls.buttons.toggleShuffleButton, event: () => this.listener.toggleShuffleButton() },
-            { element: Elements.songControls.buttons.toggleLoopButton, event: () => this.listener.toggleLoopButton() },
+            { element: Elements.songControls.buttons.togglePlayButton, event: () => this.main.togglePlayButton() },
+            { element: Elements.songControls.buttons.previousButton, event: () => this.main.previousButton() },
+            { element: Elements.songControls.buttons.nextButton, event: () => this.main.nextButton() },
+            { element: Elements.songControls.buttons.toggleShuffleButton, event: () => this.main.toggleShuffleButton() },
+            { element: Elements.songControls.buttons.toggleLoopButton, event: () => this.main.toggleLoopButton() },
         ];
 
         elementEvents.forEach((elementEvent: ElementEvent) => {
             elementEvent.element.addEventListener("click", () => elementEvent.event());
         });
 
-        Bridge.mainEvents.onPreviousButton(() => this.listener.previousButton());
-        Bridge.mainEvents.onPlayButton(() => this.listener.togglePlayButton());
-        Bridge.mainEvents.onNextButton(() => this.listener.nextButton());
+        Bridge.mainEvents.onPreviousButton(() => this.main.previousButton());
+        Bridge.mainEvents.onPlayButton(() => this.main.togglePlayButton());
+        Bridge.mainEvents.onNextButton(() => this.main.nextButton());
     }
 
     private initSongProgressbarEvents(): void {
         Elements.songControls.progressBar.slider.addEventListener("input", (e: Event) => {
-            const currentSong: Song | null = this.listener.getCurrentSong();
+            const currentSong: Song | null = this.main.getCurrentSong();
             if (currentSong == null) {
                 return;
             }
 
-            const percentage: number = Number((Elements.songControls.progressBar.slider as HTMLInputElement).value);
+            const percentage: number = Number(Elements.songControls.progressBar.slider.value);
             const newCurrentTime: number = (currentSong.duration * percentage / 100);
 
-            const audioElement: HTMLAudioElement = this.listener.getAudioElement();
+            const audioElement: HTMLAudioElement = this.main.getAudioElement();
             audioElement.currentTime = newCurrentTime;
             audioElement.volume = 0;
         });
 
         Elements.songControls.progressBar.slider.addEventListener("mouseup", (e: Event) => {
-            const currentSong: Song | null = this.listener.getCurrentSong();
+            const currentSong: Song | null = this.main.getCurrentSong();
             if (currentSong == null) {
                 return;
             }
 
-            this.listener.setVolume(this.listener.getVolume());
+            this.main.setVolume(this.main.getVolume());
         });
     }
 
     private initRefreshLoop(): void {
-        const currentSong: Song | null = this.listener.getCurrentSong();
-        const audioElement: HTMLAudioElement = this.listener.getAudioElement();
+        const currentSong: Song | null = this.main.getCurrentSong();
+        const audioElement: HTMLAudioElement = this.main.getAudioElement();
 
         const positionText: string = ((currentSong == null) ? "\u00A0" : Functions.formatDuration(audioElement.currentTime));
         Elements.songControls.progressBar.position.textContent = positionText;
@@ -71,7 +71,7 @@ export default class ListenerEventManager {
         Elements.songControls.progressBar.duration.textContent = durationText;
 
         const sliderValue: string = ((currentSong == null) ? "0" : String(audioElement.currentTime / currentSong.duration * 100));
-        (Elements.songControls.progressBar.slider as HTMLInputElement).value = sliderValue;
+        Elements.songControls.progressBar.slider.value = sliderValue;
 
         setTimeout(() => this.initRefreshLoop(), 100);
     }

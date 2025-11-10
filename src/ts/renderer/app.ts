@@ -1,6 +1,6 @@
 import Window from "./window.js";
 import Account from "./account.js";
-import Settings from "./settings/settings.js";
+import SettingsManager from "./settings/settings.js";
 import ModalManager from "./modals/modals.js";
 import ContextmenuManager from "./contextmenus/contextmenus.js";
 import PlaylistManager from "./playlists/playlists.js";
@@ -13,7 +13,7 @@ import "./utils/utils.types.js";
 export default class App {
     private readonly window: Window;
     public readonly account: Account;
-    public readonly settings: Settings;
+    public readonly settings: SettingsManager;
 
     public readonly modalManager: ModalManager;
     public readonly contextmenuManager: ContextmenuManager;
@@ -26,7 +26,7 @@ export default class App {
     constructor() {
         this.window = new Window(this);
         this.account = new Account(this);
-        this.settings = new Settings(this);
+        this.settings = new SettingsManager(this);
 
         this.modalManager = new ModalManager(this);
         this.contextmenuManager = new ContextmenuManager(this);
@@ -70,11 +70,25 @@ export default class App {
             return;
         }
 
-        const settings: UserSettings = {
-            shuffle: this.listenerManager.getShuffleState(),
-            loop: this.listenerManager.getLoopState(),
-            speed: this.listenerManager.getSpeed(),
-            volume: this.listenerManager.getVolume(),
+        const settings: Settings = {
+            song: {
+                shuffle: this.listenerManager.getShuffleState(),
+                loop: this.listenerManager.getLoopState(),
+                speed: this.listenerManager.getSpeed(),
+                volume: this.listenerManager.getVolume(),
+            },
+            apparence: {
+                mainColor: "",
+                gradientColor1: "",
+                gradientColor2: "",
+                rotateGradient: false,
+                gradientRotationSpeed: 0,
+                gradientDefaultRotation: 0,
+            },
+            preferences: {
+                hideSuccessModal: false,
+                volumeEasing: 0,
+            },
         };
 
         const saveUserSettingsReqRes: any = await Requests.user.saveSettings(this, settings);
@@ -96,7 +110,7 @@ export default class App {
 
     // LOGIN EVENTS
     public async loggedIn(): Promise<void> {
-        this.settings.loggedIn();
+        await this.settings.loggedIn();
         this.listenerManager.loggedIn();
         await this.playlistManager.loggedIn();
         await this.openFirstPlaylist();

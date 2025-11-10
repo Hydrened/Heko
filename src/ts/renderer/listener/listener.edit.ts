@@ -5,7 +5,7 @@ export default class ListenerEditManager {
     private speed: number = 1;
 
     // INIT
-    constructor(private app: App, private listener: ListenerManager, private audioElement: HTMLAudioElement) {
+    constructor(private app: App, private main: ListenerManager, private audioElement: HTMLAudioElement) {
         this.initEvents();
     }
 
@@ -16,8 +16,8 @@ export default class ListenerEditManager {
     }
 
     public load(): void {
-        const settings: UserSettings = this.app.account.getSettings();
-        this.speed = settings.speed;
+        const settings: Settings = this.app.settings.get();
+        this.speed = settings.song.speed;
 
         // set slider to this.speed
     }
