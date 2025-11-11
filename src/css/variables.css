@@ -1,0 +1,57 @@
+:root {
+    /* SIZES */
+    --frame-height: 2rem;
+    --main-height: calc(100vh - var(--frame-height));
+    --scrollbar-width: 0.5rem;
+    --main-padding: 1.15rem;
+    --loading-modal-spinner-width: 4px;
+    --contextmenu-padding: 5px;
+    --contextmenu-width: 280px;
+    --contextmenu-row-height: 29px;
+
+    /* BG COLORS */
+    --bg-bo-1: rgba(0,0,0,0.1);
+    --bg-bo-2: rgba(0,0,0,0.2);
+    --bg-bo-3: rgba(0,0,0,0.3);
+    --bg-bo-4: rgba(0,0,0,0.4);
+    --bg-bo-5: rgba(0,0,0,0.5);
+    --bg-bo-6: rgba(0,0,0,0.6);
+    --bg-bo-7: rgba(0,0,0,0.7);
+    --bg-bo-8: rgba(0,0,0,0.8);
+    --bg-bo-9: rgba(0,0,0,0.9);
+
+    --bg-wo-1: rgba(255,255,255,0.01);
+    --bg-wo-2: rgba(255,255,255,0.02);
+    --bg-wo-3: rgba(255,255,255,0.03);
+    --bg-wo-4: rgba(255,255,255,0.04);
+    --bg-wo-5: rgba(255,255,255,0.05);
+    --bg-wo-6: rgba(255,255,255,0.06);
+    --bg-wo-7: rgba(255,255,255,0.07);
+    --bg-wo-8: rgba(255,255,255,0.08);
+    --bg-wo-9: rgba(255,255,255,0.09);
+    --bg-wo-10: rgba(255,255,255,0.1);
+    --bg-wo-20: rgba(255,255,255,0.2);
+    --bg-wo-30: rgba(255,255,255,0.3);
+    
+    --bg-success-col: rgb(51,155,51);
+    --bg-error-col: rgb(132,34,34);
+
+    /* TEXT COLORS */
+    --text-opacity: 0.6;
+    --text-col-1: rgb(180,180,180);
+    --text-col-2: rgba(120,120,120);
+    --text-error-col: rgb(187,53,53);
+
+    /* BORDER */
+    --border-col-1: rgb(47,47,47);
+    --default-border: 1px solid var(--border-col-1);
+
+    /* DURATIONS */
+    --center-modal-closing-duration: 500ms;
+    --top-modal-closing-duration: 500ms;
+    --loading-modal-closing-duration: 500ms;
+    --playlist-open-duration: 500ms;
+
+    /* INDEXES */
+    --main-modal-index: 10;
+}

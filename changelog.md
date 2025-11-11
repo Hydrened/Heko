@@ -1,6 +1,11 @@
 ## HEKO-3.2.1
 #### ADDED
 - account removal with mail confirmation
+- settings
+- themes
+#### FIXED
+- refresh playlist container on loggout
+- contextmenu overflow
 
 ## HEKO-3.2.0
 #### ADDED

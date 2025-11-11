@@ -93,7 +93,7 @@ export const user = {
         return await request("user/get-downloads.php", app);
     },
 
-    sendRemoveConfirmation: async (app: App, email: string): Promise<any> => {
+    sendDeleteConfirmation: async (app: App, email: string): Promise<any> => {
         return await request("user/send-remove-confirmation.php", app, { email: email });
     },
 };

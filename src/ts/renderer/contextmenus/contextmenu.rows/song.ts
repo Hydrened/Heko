@@ -31,6 +31,10 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
             continue;
         }
 
+        if (playlist.mergedPlaylist.length != 0) {
+            continue;
+        }
+
         addToOtherPlaylistRows.push({
             title: playlist.name,
             onClick: async () => await addSongToPlaylistOnClick(app, playlist, song),

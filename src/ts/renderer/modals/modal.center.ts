@@ -160,6 +160,9 @@ export default class CenterModal {
         li.appendChild(input);
 
         if (row.type == "FILE") {
+            if (row.data != undefined) {
+                input.accept = row.data.join(",");
+            }
             CenterModal.createFileInput(input);
 
         } else if (row.type == "SELECT" && row.data != undefined) {
@@ -227,8 +230,10 @@ export default class CenterModal {
             this.data.onCancel();
         }
 
+        const closingDuration: number = ((this.app.settings.get().apparence.enableAnimations) ? this.closingDuration : 0);
+
         window.removeEventListener("keydown", this.keydownEvent);
-        setTimeout(() => container.remove(), this.closingDuration);
+        setTimeout(() => container.remove(), closingDuration);
     }
 
     public async confirm(): Promise<void> {
@@ -313,7 +318,7 @@ export default class CenterModal {
         if (inputParentElement == null) {
             return;
         }
-        
+
         const containerElement: HTMLElement = document.createElement("input-file-container");
         inputParentElement.appendChild(containerElement);
         containerElement.appendChild(input);

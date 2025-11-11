@@ -9,7 +9,7 @@ ul.contextmenu ul.contextmenu-submenu-container {
     border: var(--default-border);
     border-radius: 0.7rem;
 
-    background: var(--main-gradient);
+    background: var(--gradient);
     z-index: 20;
 }
 ul.contextmenu::before,
@@ -88,7 +88,4 @@ li.contextmenu-row-container:not(:hover) > ul.contextmenu-submenu-container {
 ul.contextmenu-submenu-container {
     top: calc(var(--contextmenu-padding) * -1);
     left: calc(100% + var(--contextmenu-padding));
-}
-.right ul.contextmenu-submenu-container {
-    left: calc(-100% - var(--contextmenu-padding) * 3 - 1px);
 }

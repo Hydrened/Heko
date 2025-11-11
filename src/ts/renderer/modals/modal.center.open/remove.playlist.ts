@@ -22,9 +22,7 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
 
         if (currentOpenedPlaylist != null) {
             if (childrenIDs.concat(playlist.id).includes(currentOpenedPlaylist.id)) {
-                app.playlistManager.close().then(() => {
-                    app.openFirstPlaylist();
-                });
+                app.playlistManager.close().then(() => app.openFirstPlaylist());
             }
         }
     });

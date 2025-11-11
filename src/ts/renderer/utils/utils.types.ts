@@ -27,17 +27,13 @@ interface SongSettings {
 };
 
 interface ApparenceSettings {
-    readonly mainColor: string;
-    readonly gradientColor1: string;
-    readonly gradientColor2: string;
-    readonly rotateGradient: boolean;
-    readonly gradientRotationSpeed: number;
-    readonly gradientDefaultRotation: number;
+    theme: number;
+    enableAnimations: boolean;
 };
 
 interface PreferencesSettings {
-    readonly hideSuccessModal: boolean;
-    readonly volumeEasing: number;
+    hideSuccessModals: boolean;
+    volumeEasing: number;
 };
 
 interface Settings {

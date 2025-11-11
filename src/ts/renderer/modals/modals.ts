@@ -27,7 +27,7 @@ export default class ModalManager {
     }
 
     public async openLoadingModal(title: string, promise: Promise<any>): Promise<any> {
-        const modal: LoadingModal = new LoadingModal(title);
+        const modal: LoadingModal = new LoadingModal(this.app, title);
         this.loadingModals.push(modal);
 
         const res: any = await promise;
@@ -38,7 +38,11 @@ export default class ModalManager {
     }
 
     public openTopModal(type: TopModalType, message: string): void {
-        const modal: TopModal = new TopModal(type, message);
+        if (this.app.settings.preferences.get().hideSuccessModals) {
+            return;
+        }
+
+        const modal: TopModal = new TopModal(this.app, type, message);
         this.topModals.push(modal);
     }
 
@@ -72,7 +76,7 @@ export default class ModalManager {
 
     // GETTERS
     public getCurrentModalContainer(): HTMLElement | null {
-        const modals: Element[] = [...document.querySelectorAll(".modal")];
+        const modals: Element[] = [...document.querySelectorAll(".modal:not(.closing)")];
         return ((modals[modals.length - 1] as HTMLElement) ?? null);
     }
 

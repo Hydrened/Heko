@@ -17,7 +17,7 @@ async function loginModalOnConfirm(app: App, modal: CenterModal): Promise<ModalE
     
     const userID: ID = Number(loginReqRes.userID);
     const token: Token = loginReqRes.token;
-    const name: string = loginReqRes.token;
+    const name: string = loginReqRes.name;
     app.account.setUserData(userID, token, name, email);
 
     app.account.loggedIn();

@@ -142,7 +142,7 @@
 }
 .current-playlist-table-head-container > button:hover,
 .current-playlist-table-head-container > button.sorted-by {
-    /* color: var(--main-col-1);
+    /* color: var(--accent-color);
 
     background-color: var(--bg-col-13); */
 }

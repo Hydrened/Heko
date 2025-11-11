@@ -1,25 +1,30 @@
-.settings-template-container,
-.settings-template-container > .templates-container {
+.settings-theme-container,
+.settings-theme-container > .themes-container {
     gap: 1rem;
 }
 
 
 
-.settings-template-container > .templates-container > li {
+.settings-theme-container > .themes-container {
+    flex-wrap: wrap;
+}
+.settings-theme-container > .themes-container > li {
     width: 4rem;
     aspect-ratio: 1 / 1;
 
     border-radius: 0.5rem;
 
+    box-shadow: inset 0 0 5px rgba(255,255,255,0.3);
+
     background-color: var(--bg-bo-4);
 }
-.settings-template-container > .templates-container > li:has(input:checked) {
-    border: 1px solid var(--main-col-1);
+.settings-theme-container > .themes-container > li:has(input:checked) {
+    border: 2px solid var(--accent-color);
 }
 
 
 
-.settings-template-container > .templates-container > li > input {
+.settings-theme-container > .themes-container > li > input {
     width: 100%;
     height: 100%;
     

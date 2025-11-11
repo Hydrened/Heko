@@ -48,7 +48,7 @@ export default function openUpdateThumbnailModal(app: App): void {
     }
 
     const content: ModalRow[] = [
-        { label: "Thumbnail", type: "FILE" },
+        { label: "Thumbnail", type: "FILE", data: ["image/png", "image/jpeg", "image/gif", "image/webp"] },
     ];
 
     const data: CenterModalData = {

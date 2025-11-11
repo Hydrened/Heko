@@ -73,6 +73,10 @@ export function getThumbnailPath(thumbnailFileName: string): string {
 }
 
 export function setThumbnail(element: HTMLElement, thumbnailFileName: string, isAbsolute: boolean = false): void {
+    if (thumbnailFileName == "") {
+        return;
+    }
+
     const url: string = ((isAbsolute) ? thumbnailFileName : getThumbnailPath(thumbnailFileName));
     const cssBackgroundImageProperty: string = `url("${url}")`;
     element.style.backgroundImage = cssBackgroundImageProperty;

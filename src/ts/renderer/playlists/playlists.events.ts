@@ -76,7 +76,7 @@ export default class PlaylistsEventManager {
 
     // PLAYLIST CONTAINER EVENTS
     private playlistContrainerShortcuts(e: KeyboardEvent): void {
-        if (Functions.isCenterModalAlreadyOpened()) {
+        if (Functions.isCenterModalAlreadyOpened() || this.app.settings.areOpened()) {
             return;
         }
 
@@ -85,7 +85,7 @@ export default class PlaylistsEventManager {
 
     // OPENED PLAYLIST EVENTS
     private openedPlaylistShortcuts(e: KeyboardEvent): void {
-        if (Functions.isCenterModalAlreadyOpened()) {
+        if (Functions.isCenterModalAlreadyOpened() || this.app.settings.areOpened()) {
             return;
         }
 
@@ -93,7 +93,6 @@ export default class PlaylistsEventManager {
         if (currentOpenedPlaylist == null) {
             return;
         }
-
         Functions.testShortcuts(e, getPlaylistRowShortcuts(), getPlaylistRows, this.app, currentOpenedPlaylist);
 
         if (currentOpenedPlaylist.mergedPlaylist.length != 0) {

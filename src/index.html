@@ -1,15 +1,18 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" theme="0">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="css/variables.css">
         <link rel="stylesheet" href="css/base.css">
+        <link rel="stylesheet" href="css/themes.css">
         <link rel="stylesheet" href="css/frame.css">
         <link rel="stylesheet" href="css/utils/utils.css">
         <link rel="stylesheet" href="css/utils/input-select.css">
         <link rel="stylesheet" href="css/contextmenus/contextmenu.css">
         <link rel="stylesheet" href="css/contextmenus/contextmenu.parents.css">
         <link rel="stylesheet" href="css/maintenance.css">
+        <link rel="stylesheet" href="css/loading-screen.css">
         <link rel="stylesheet" href="css/settings/settings.css">
         <link rel="stylesheet" href="css/settings/settings.aside.css">
         <link rel="stylesheet" href="css/settings/settings.section.css">
@@ -164,7 +167,7 @@
                         <h1>Account</h1>
                         <ul>
                             <li class="edit dark-container">
-                                <p>Name</p>
+                                <p>Username</p>
                                 <p id="settings-user-name"></p>
                                 <button id="settings-edit-user-name" tabindex="-1">Edit</button>
                             </li>
@@ -173,67 +176,50 @@
                                 <p id="settings-user-email"></p>
                             </li>
                             <li class="row">
-                                <button id="remove-account-button" tabindex="-1">Remove account</button>
+                                <button id="remove-account-button" tabindex="-1">Delete account</button>
                             </li>
                         </ul>
                     </article>
                     <article id="apparence-settings">
                         <h1>Apparence</h1>
                         <ul>
-                            <li class="settings-template-container dark-container col">
-                                <h2>Templates</h2>
-                                <ul class="templates-container row" id="settings-templates-container">
-                                    <li><input type="radio" name="template" tabindex="-1"></li>
-                                    <li><input type="radio" name="template" tabindex="-1"></li>
-                                    <li><input type="radio" name="template" tabindex="-1"></li>
-                                    <li><input type="radio" name="template" tabindex="-1"></li>
-                                    <li><input type="radio" name="template" tabindex="-1"></li>
-                                </ul>
+                            <li class="settings-theme-container dark-container col">
+                                <h2>Themes</h2>
+                                <p class="description">Pick a visual template to change the app's overall look and feel.</p>
+                                <ul class="themes-container row" id="settings-themes-container"></ul>
                             </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-main-color">Main color</label>
-                                <div class="input-color-container">
-                                    <input type="color" id="settings-main-color" tabindex="-1">
-                                </div>
-                            </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-gradient-color-1">Gradient color 1</label>
-                                <div class="input-color-container">
-                                    <input type="color" id="settings-gradient-color-1" tabindex="-1">
-                                </div>
-                            </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-gradient-color-2">Gradient color 2</label>
-                                <div class="input-color-container">
-                                    <input type="color" id="settings-gradient-color-2" tabindex="-1">
-                                </div>
-                            </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-rotate-gradient">Rotate gradient</label>
-                                <input type="checkbox" id="settings-rotate-gradient" tabindex="-1"> 
-                            </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-gradient-rotation-speed">Gradient rotation speed</label>
-                                <input type="number" id="settings-gradient-rotation-speed" tabindex="-1"> 
-                            </li>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-gradient-default-rotation">Gradient default rotation</label>
-                                <input type="number" id="settings-gradient-default-rotation" tabindex="-1">
+                            <li class="input-row dark-container">
+                                <label for="settings-enable-animations">Enable animations</label>
+                                <p class="description">Toggle visual animations throughout the app.</p>
+                                <input type="checkbox" id="settings-enable-animations" tabindex="-1">
                             </li>
                         </ul>
                     </article>
                     <article id="preferences-settings">
                         <h1>Preferences</h1>
                         <ul>
-                            <li class="single-input-row dark-container">
-                                <label for="settings-hide-success-modal">Hide success modal</label>
-                                <input type="checkbox" id="settings-hide-success-modal" tabindex="-1">
+                            <li class="input-row dark-container">
+                                <label for="settings-hide-success-modals">Hide success modals</label>
+                                <p class="description">Hide success notifications that appear at the top of the screen.</p>
+                                <input type="checkbox" id="settings-hide-success-modals" tabindex="-1">
                             </li>
-                            <li class="multiple-input-row dark-container">
+                            <li class="input-row dark-container" id="settings-volume-easing-container">
                                 <label>Volume easing</label>
-                                <input type="radio" name="volume-easing" tabindex="-1">
-                                <input type="radio" name="volume-easing" tabindex="-1">
-                                <input type="radio" name="volume-easing" tabindex="-1">
+                                <p class="description">Defines the easing used for volume transitions.</p>
+                                <ul>
+                                    <li>
+                                        <input type="radio" name="volume-easing" id="volume-easing-linear" tabindex="-1">
+                                        <label for="volume-easing-linear">Linear</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="volume-easing" id="volume-easing-ease-in" tabindex="-1">
+                                        <label for="volume-easing-ease-in">Ease in</label>
+                                    </li>
+                                    <li>
+                                        <input type="radio" name="volume-easing" id="volume-easing-ease-out" tabindex="-1">
+                                        <label for="volume-easing-ease-out">Ease out</label>
+                                    </li>
+                                </ul>
                             </li>
                         </ul>
                     </article>
@@ -244,5 +230,8 @@
             <h1>Taking a Short Break</h1>
             <p>We're tuning things up! Heko will be back in a few minutes. Thanks for your patience!</p>
         </maintenance-container>
+        <loading-screen>
+            Heko
+        </loading-screen>
     </body>
 </html>

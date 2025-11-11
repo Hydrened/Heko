@@ -14,7 +14,7 @@ maintenance-container {
     align-items: center;
     gap: 2rem;
 
-    background: var(--main-gradient);
+    background: var(--gradient);
     z-index: 50;
 }
 maintenance-container.hidden {

@@ -1,10 +1,11 @@
+import App from "./../app.js";
 import * as Functions from "./../utils/utils.functions.js";
 import "./../utils/utils.types.js";
 
 export default class TopModal {
     private container: HTMLElement | null = null;
 
-    constructor(private type: TopModalType, private message: string) {
+    constructor(private app: App, private type: TopModalType, private message: string) {
         this.open();
     }
 
@@ -24,7 +25,9 @@ export default class TopModal {
             return;
         }
 
+        const closingDuration: number = ((this.app.settings.get().apparence.enableAnimations) ? Number(Functions.getCssVariable("top-modal-closing-duration", "MS_DURATION")) : 0);
+        
         this.container.classList.add("closing");
-        setTimeout(() => this.container?.remove(), Number(Functions.getCssVariable("top-modal-closing-duration", "MS_DURATION")));
+        setTimeout(() => this.container?.remove(), closingDuration);
     }
 };

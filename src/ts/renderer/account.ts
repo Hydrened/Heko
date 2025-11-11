@@ -73,8 +73,8 @@ export default class Account {
             return;
         }
 
-        await this.loadDownloads();
         await this.app.loggedIn();
+        await this.loadDownloads();
     }
 
     public async logout(): Promise<void> {
@@ -82,12 +82,15 @@ export default class Account {
             return;
         }
 
+        await this.app.loggedOut();
+
         await Bridge.token.remove();
         this.userID = null;
         this.token = null;
+        this.name = null;
+        this.email = null;
 
         this.openLoginModal();
-        this.app.loggedOut();
     }
 
     // OPEN MODALS

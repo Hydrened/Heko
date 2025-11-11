@@ -77,7 +77,7 @@ async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<Mo
 export default function openCreatePlaylistModal(app: App): void {
     const content: ModalRow[] = [
         { label: "Name", type: "TEXT", maxLength: 150 },
-        { label: "Thumbnail", type: "FILE" },
+        { label: "Thumbnail", type: "FILE", data: ["image/png", "image/jpeg", "image/gif", "image/webp"] },
     ];
 
     const data: CenterModalData = {

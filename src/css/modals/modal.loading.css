@@ -18,7 +18,7 @@ loading-modal-container {
 
     background-color: var(--bg-bo-7);
     animation: loading-modal-container-opening 500ms forwards;
-    z-index: 999;
+    z-index: 25;
 }
 
 
@@ -42,8 +42,8 @@ loading-modal-container.closing {
     aspect-ratio: 1 / 1;
 
     border: var(--loading-modal-spinner-width) solid transparent;
-    border-top: var(--loading-modal-spinner-width) solid var(--main-col-1);
+    border-top: var(--loading-modal-spinner-width) solid var(--accent-color);
     border-radius: 50%;
     
-    animation: spin 800ms linear infinite;
+    animation: spin 800ms linear infinite !important;
 }

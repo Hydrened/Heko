@@ -7,7 +7,7 @@ class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
-    private readonly dev: boolean = true;
+    private readonly dev: boolean = false;
 
     constructor() {
         this.mainFolder = new MainFolder();
@@ -134,16 +134,6 @@ class Index {
             this.mainFolder.saveWindowSettings(onCloseWindowSettings);
 
             this.window.destroy();
-        });
-
-        if (this.dev) {
-            return;
-        }
-
-        this.window.webContents.on("before-input-event", (event, input: Electron.Input) => {
-            if ((input.control || input.meta) && input.key.toLowerCase() == "r") {
-                event.preventDefault();
-            }
         });
     }
 

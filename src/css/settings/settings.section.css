@@ -44,23 +44,45 @@ settings-container .dark-container {
 
     background-color: var(--bg-bo-2);
 }
-
-
-
-settings-container .single-input-row {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    gap: 1rem;
+settings-container p.description {
+    grid-column: 1;
+    
+    color: var(--text-col-2);
+    font-size: 0.85rem;
 }
-settings-container .multiple-input-row {
-    display: flex;
-    justify-content: end;
+
+
+
+settings-container .input-row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    grid-template-rows: repeat(2, auto);
     align-items: center;
-    gap: 1rem;
+    column-gap: 1rem;
+    row-gap: 0.4rem;
 }
-settings-container .multiple-input-row > :first-child {
-    margin-right: auto;
+settings-container .input-row:has(> ul) {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(3, auto);
+}
+settings-container .input-row > ul {
+    margin-top: 1rem;
+
+    display: flex;
+    flex-direction: column;
+    gap: 0.7rem;
+}
+settings-container .input-row > ul > li {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+}
+settings-container .input-row > input {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+}
+settings-container .input-row > label {
+    font-size: 1.05rem;
 }
 
 
@@ -93,10 +115,12 @@ settings-container li.edit > button {
     grid-column: 2;
     align-self: center;
 
+    border: 1px solid transparent;
+    
     background-color: var(--bg-bo-5);
 }
 settings-container li.edit > button:hover {
-    background-color: var(--bg-wo-10);
+    border-color: var(--accent-color);
 }
 
 

@@ -57,10 +57,26 @@ export default class ListenerVolumeManager {
 
     // SETTERS
     public setVolume(percentageVolume: number) {
-        this.volume = percentageVolume;
+        let volume: number = 0;
 
-        const volume: number = Math.pow((percentageVolume * 0.01), 2);
+        switch (this.app.settings.preferences.get().volumeEasing) {
+            case 0:
+                volume = (percentageVolume * 0.01);
+                break;
+
+            case 1:
+                volume = Math.pow((percentageVolume * 0.01), 2);
+                break;
+
+            case 2:
+                volume = (1 - Math.pow(1 - (percentageVolume * 0.01), 2));
+                break;
+
+            default: return;
+        }
+
         this.audioElement.volume = volume;
+        this.volume = percentageVolume;
 
         Elements.songControls.volume.slider.value = String(percentageVolume);
 

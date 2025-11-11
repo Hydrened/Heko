@@ -15,16 +15,17 @@ export default class PlaylistsOpenManager {
     }
 
     public async open(playlistID: ID): Promise<void> {
-        if (this.main.getCurrentOpenedPlaylist() != null) {
-            await this.close();
-        }
-
         const playlist: Playlist | undefined = this.main.getPlaylistFromID(playlistID);
         if (playlist == undefined) {
             return this.app.throwError("Can't get playlist: Playlist is undefined.");
         }
 
         this.main.setCurrentOpenedPlaylist(playlist);
+
+        if (this.main.getCurrentOpenedPlaylist() != null) {
+            await this.close();
+        }
+
         this.main.refreshOpenedPlaylistTab();
 
         Elements.currentPlaylist.container.classList.add("opened");
@@ -32,6 +33,9 @@ export default class PlaylistsOpenManager {
 
     public async close(): Promise<void> {
         Elements.currentPlaylist.container.classList.remove("opened");
-        await new Promise((r) => setTimeout(r, this.closingDuration));
+
+        if (this.app.settings.get().apparence.enableAnimations) {
+            await new Promise((r) => setTimeout(r, this.closingDuration));
+        }
     }
 };

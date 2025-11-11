@@ -66,7 +66,6 @@ export default class ContextmenuManager {
 
         if (x + this.width > windowWidth) {
             x -= this.width;
-            this.currentContextmenuElement.classList.add("right");
         }
         if (y + height > windowHeight) {
             y -= height;
@@ -77,14 +76,14 @@ export default class ContextmenuManager {
         this.currentContextmenuElement.style.left = `${x}px`;
         document.body.appendChild(this.currentContextmenuElement);
 
-        rows.forEach((row: ContextmenuRow) => this.createContextMenuRow(this.currentContextmenuElement, row));
+        rows.forEach((row: ContextmenuRow, index: number) => this.createContextMenuRow(this.currentContextmenuElement, row, index));
     }
 
     private getContextmenuHeight(nbRows: number): number {
         return (this.padding * 2 + this.rowHeight * nbRows);
     }
 
-    private createContextMenuRow(parent: HTMLElement | null, row: ContextmenuRow): void {
+    private createContextMenuRow(parent: HTMLElement | null, row: ContextmenuRow, level: number): void {
         if (parent == null) {
             return this.app.throwError("Can't create contextmenu row: Row parent is null.");
         }
@@ -133,7 +132,20 @@ export default class ContextmenuManager {
             submenuElement.classList.add("contextmenu-submenu-container");
             rowContainer.appendChild(submenuElement);
 
-            row.rows.forEach((r: ContextmenuRow) => this.createContextMenuRow(submenuElement, r));
+            const windowWidth: number = window.innerWidth;
+            const windowHeight: number = window.innerHeight;
+            const parentRect: DOMRect = parent.getBoundingClientRect();
+            const thisHeight: number = this.getContextmenuHeight(row.rows.length);
+
+            if (parentRect.x + parentRect.width + this.width > windowWidth) {
+                submenuElement.style.left = `calc(-${parentRect.width}px - var(--contextmenu-padding))`;
+            }
+
+            if (parentRect.y + this.getContextmenuHeight(level) + thisHeight > windowHeight) {
+                submenuElement.style.top = `calc(-${thisHeight}px + var(--contextmenu-row-height) + 3px)`;
+            }
+
+            row.rows.forEach((r: ContextmenuRow, i: number) => this.createContextMenuRow(submenuElement, r, i));
         }
     }
 

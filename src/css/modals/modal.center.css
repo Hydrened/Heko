@@ -47,8 +47,8 @@
     border-radius: 0.7rem;
     border: var(--default-border);
 
-    background: var(--main-gradient);
-    box-shadow: 0 0 2rem 0.8rem black;
+    background: var(--gradient);
+    box-shadow: 0 0 1rem 0.1rem black;
     animation: center-modal-opening 500ms forwards;
 }
 @keyframes center-modal-closing {
@@ -187,7 +187,7 @@ button.close-button > img {
 .center-modal input-file-drop-area.dragover,
 .center-modal input-file-container:has(input:focus) input-file-drop-area,
 .center-modal input-file-container:hover > input-file-drop-area {
-    border-color: var(--main-col-1);
+    border-color: var(--accent-color);
 }
 .center-modal error {
     color: var(--text-error-col);

@@ -20,6 +20,8 @@ export default class PlaylistsRefreshCotnainerManager {
             return;
         }
 
+        const multiplier: number = ((this.app.settings.get().apparence.enableAnimations) ? 50 : 0);
+
         [...Elements.playlists.container.children].forEach((liElement: Element, index: number) => {
             liElement.classList.add("spawn");
 
@@ -27,7 +29,7 @@ export default class PlaylistsRefreshCotnainerManager {
                 if (liElement != null) {
                     liElement.classList.remove("spawn");
                 }
-            }, (index + 1) * 50);
+            }, (index + 1) * multiplier);
         });
     }
 

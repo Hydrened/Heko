@@ -1,9 +1,10 @@
+import App from "./../app.js";
 import * as Functions from "./../utils/utils.functions.js";
 
 export default class LoadingModal {
     private container: HTMLElement | null = null;
 
-    constructor(private title: string) {
+    constructor(private app: App, private title: string) {
         this.open();
     }
 
@@ -29,7 +30,8 @@ export default class LoadingModal {
         const container: HTMLElement = this.container;
         container.classList.add("closing");
 
-        setTimeout(() => container.remove(), Number(Functions.getCssVariable("loading-modal-closing-duration", "MS_DURATION")));
+        const closingDuration: number = ((this.app.settings.get().apparence.enableAnimations) ? Number(Functions.getCssVariable("loading-modal-closing-duration", "MS_DURATION")) : 0);
+        setTimeout(() => container.remove(), closingDuration);
     }
 
     public setTitle(title: string): void {

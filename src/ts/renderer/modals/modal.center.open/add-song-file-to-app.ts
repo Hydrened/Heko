@@ -82,7 +82,7 @@ export default function openAddSongFileToAppModal(app: App, userSongs: Song[]): 
     const content: ModalRow[] = [
         { label: "Title", type: "TEXT", maxLength: 150 },
         { label: "Artist", type: "SELECT", maxLength: 150, data: app.playlistManager.getArtistNames() },
-        { label: "Song file", type: "FILE" },
+        { label: "Song file", type: "FILE", data: ["audio/mpeg", "audio/wav", "audio/ogg", "audio/flac"] },
     ];
 
     const data: CenterModalData = {

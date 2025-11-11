@@ -1,4 +1,6 @@
-export const maintenanceContainer: Element = document.querySelector("maintenance-container")!;
+export const loadingScreen: HTMLElement = document.querySelector("loading-screen")!;
+
+export const maintenanceContainer: HTMLElement = document.querySelector("maintenance-container")!;
 
 export const playlists = {
     addButton: (document.querySelector("#add-playlist-button") as HTMLButtonElement),
@@ -95,20 +97,12 @@ export const settings = {
     },
 
     apparence: {
-        templateContainer: (document.querySelector("#settings-templates-container") as HTMLElement),
-        mainColorInput: (document.querySelector("#settings-main-color") as HTMLInputElement),
-        gradientColor1Input: (document.querySelector("#settings-gradient-color-1") as HTMLInputElement),
-        gradientColor2Input: (document.querySelector("#settings-gradient-color-2") as HTMLInputElement),
-        rotateGradientCheckbox: (document.querySelector("#settings-rotate-gradient") as HTMLInputElement),
-        gradientRotationSpeedInput: (document.querySelector("#settings-gradient-rotation-speed") as HTMLInputElement),
-        gradientDefaultRotationInput: (document.querySelector("#settings-gradient-default-rotation") as HTMLInputElement),
+        themesContainer: (document.querySelector("#settings-themes-container") as HTMLElement),
+        enableAnimations: (document.querySelector("#settings-enable-animations") as HTMLInputElement),
     },
 
     preferences: {
-        hideSuccessModalCheckbox: (document.querySelector("#settings-hide-success-modal") as HTMLInputElement),
+        hideSuccessModalCheckbox: (document.querySelector("#settings-hide-success-modals") as HTMLInputElement),
+        volumeEasingContainer: (document.querySelector("#settings-volume-easing-container") as HTMLElement),
     },
-
-    shortcuts: {
-
-    }
 };

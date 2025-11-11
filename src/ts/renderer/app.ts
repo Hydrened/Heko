@@ -7,6 +7,7 @@ import PlaylistManager from "./playlists/playlists.js";
 import ListenerManager from "./listener/listener.js";
 import * as Bridge from "./utils/utils.bridge.js";
 import * as Requests from "./utils/utils.requests.js";
+import * as Functions from "./utils/utils.functions.js";
 import * as Elements from "./utils/utils.elements.js";
 import "./utils/utils.types.js";
 
@@ -41,7 +42,17 @@ export default class App {
             this.dev = data.dev;
         });
         
-        Bridge.mainEvents.onClose(async () => await this.saveSettings());
+        Bridge.mainEvents.onClose(async () => await this.settings.save());
+
+        window.addEventListener("keydown", async (e: KeyboardEvent) => {
+            if (!e.ctrlKey || e.key.toLowerCase() != "r") {
+                return;
+            }
+
+            e.preventDefault();
+            await this.settings.save();
+            window.location.reload();
+        });
     }
 
     public async init(): Promise<void> {
@@ -54,7 +65,6 @@ export default class App {
         switch (response) {
             case 200:
                 await this.account.init();
-                this.settings.open();
                 break;
 
             case 503:
@@ -63,38 +73,9 @@ export default class App {
 
             default: return;
         }
-    }
 
-    private async saveSettings(): Promise<void> {
-        if (!this.account.isLoggedIn()) {
-            return;
-        }
-
-        const settings: Settings = {
-            song: {
-                shuffle: this.listenerManager.getShuffleState(),
-                loop: this.listenerManager.getLoopState(),
-                speed: this.listenerManager.getSpeed(),
-                volume: this.listenerManager.getVolume(),
-            },
-            apparence: {
-                mainColor: "",
-                gradientColor1: "",
-                gradientColor2: "",
-                rotateGradient: false,
-                gradientRotationSpeed: 0,
-                gradientDefaultRotation: 0,
-            },
-            preferences: {
-                hideSuccessModal: false,
-                volumeEasing: 0,
-            },
-        };
-
-        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(this, settings);
-        if (!saveUserSettingsReqRes.success) {
-            return this.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
-        }
+        Elements.loadingScreen.classList.add("closing");
+        setTimeout(() => Elements.loadingScreen.classList.remove(), 250);
     }
 
     public throwError(message: string): void {
@@ -125,9 +106,10 @@ export default class App {
         }
     }
 
-    public loggedOut(): void {
-        this.playlistManager.refreshPlaylistsContainerTab();
+    public async loggedOut(): Promise<void> {
+        await this.settings.save();
         this.playlistManager.close();
+        Functions.removeChildren(Elements.playlists.container);
         this.listenerManager.loggedOut();
     } 
 };

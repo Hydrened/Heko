@@ -16,7 +16,10 @@ async function editAccountNameOnConfirm(app: App, modal: CenterModal): Promise<M
         return null;
     }
 
-    app.init();
+    const userData: UserData = app.account.getUserData();
+    app.account.setUserData(userData.id!, userData.token!, newName, userData.email!);
+    app.settings.account.loggedIn(app.settings.get());
+
     app.modalManager.openTopModal("SUCCESS", `Successfully edited account name to "${newName}".`);
     return null;
 }

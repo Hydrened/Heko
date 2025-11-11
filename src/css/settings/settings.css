@@ -10,7 +10,7 @@ settings-container {
     top: var(--frame-height);
     left: 0;
 
-    background: var(--main-gradient);
+    background: var(--gradient);
     animation: open-settings-container 150ms forwards;
     z-index: 5;
 }

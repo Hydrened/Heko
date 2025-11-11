@@ -160,10 +160,10 @@ async function downloadSongButtonOnClick(app: App, userSongs: Song[], video: Vid
         return app.throwError(`Can't download song from youtube: ${downloadSongReqRes.error}`);
     }
 
-    const addUserDownloadReqRes: any = await Requests.user.addDownload(app, video.id.videoId!);
-    if (!addUserDownloadReqRes.success) {
-        return app.throwError(`Can't add user download: ${addUserDownloadReqRes.error}`);
-    }
+    // const addUserDownloadReqRes: any = await Requests.user.addDownload(app, video.id.videoId!);
+    // if (!addUserDownloadReqRes.success) {
+    //     return app.throwError(`Can't add user download: ${addUserDownloadReqRes.error}`);
+    // }
 
     const buffer: Uint8Array = (downloadSongReqRes.buffer as Uint8Array);
     const file: File = new File([new Uint8Array(buffer)], `${Functions.decodeNumericEntities(video.snippet.title)}.mp3`, { type: "audio/mpeg" });
