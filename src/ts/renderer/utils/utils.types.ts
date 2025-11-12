@@ -94,9 +94,11 @@ interface CenterModalData {
 
 interface CenterSearchModalData {
     readonly title: string;
-    readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
+    readonly onConfirm: (modal: CenterModal, searchResultContainerElement: HTMLElement) => Promise<ModalError>;
     readonly onCancel?: () => void;
     readonly onSearch: (searchResultContainerElement: HTMLElement, query: string) => Promise<void>;
+    readonly searchDelay: number;
+    readonly instantSearch: boolean;
     readonly cantClose: boolean;
 };
 

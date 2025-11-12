@@ -1,10 +1,14 @@
+## HEKO-3.2.2
+#### ADDED
+- add songs to playlist modal
+
 ## HEKO-3.2.1
 #### ADDED
 - account removal with mail confirmation
 - settings
 - themes
 #### FIXED
-- refresh playlist container on loggout
+- refresh playlist container on logout
 - contextmenu overflow
 
 ## HEKO-3.2.0

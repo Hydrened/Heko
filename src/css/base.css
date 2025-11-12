@@ -21,7 +21,7 @@
 html {
     background: var(--gradient);
 }
-html[no-animations="true"] * {
+[no-animations="true"] * {
     animation-duration: 0ms !important;
     transition: 0ms !important;
 }

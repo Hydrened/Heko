@@ -194,6 +194,10 @@ export default class PlaylistManager {
         return this.songBuffer;
     }
 
+    public getSongFromID(songID: ID): Song | null {
+        return (this.songBuffer.find((song: Song) => song.id == songID) ?? null);
+    }
+
     public getSongsFromPlaylist(playlistID: ID): Song[] {
         const playlist: Playlist | undefined = this.getPlaylistFromID(playlistID);
         if (playlist == undefined) {

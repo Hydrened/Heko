@@ -266,8 +266,10 @@ function sliderOnInput(app: App, elements: any): void {
 export default function openAddYoutubeSongToAppModal(app: App, userSongs: Song[]): void {
     const data: CenterSearchModalData = {
         title: "Search song on Youtube",
-        onConfirm: async (modal: CenterModal) => null,
+        onConfirm: async (modal: CenterModal, searchResultContainerElement: HTMLElement) => null,
         onSearch: async (searchResultContainerElement: HTMLElement, query: string) => await addYoutubeSongToAppModalOnSearch(app, userSongs, searchResultContainerElement, query),
+        searchDelay: 700,
+        instantSearch: false,
         cantClose: false,
     };
 

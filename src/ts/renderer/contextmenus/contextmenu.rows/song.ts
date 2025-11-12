@@ -4,9 +4,9 @@ import openRemoveSongFromPlaylistModal from "./../../modals/modal.center.open/re
 import * as Requests from "./../../utils/utils.requests.js";
 
 async function addSongToPlaylistOnClick(app: App, playlist: Playlist, song: Song): Promise<void> {
-    const addSongToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, song.id, playlist.id);
-    if (!addSongToPlaylistReqRes.success) {
-        return app.throwError(`Can't add song to playlist: ${addSongToPlaylistReqRes.error}`);
+    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, [song.id], playlist.id);
+    if (!addSongsToPlaylistReqRes.success) {
+        return app.throwError(`Can't add song to playlist: ${addSongsToPlaylistReqRes.error}`);
     }
 
     app.playlistManager.refreshPlaylistBuffer().then(() => {

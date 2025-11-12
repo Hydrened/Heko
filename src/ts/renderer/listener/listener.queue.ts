@@ -57,7 +57,6 @@ export default class ListenerQueueManager {
             return;
         }
         
-        const a = this.currentListeningPlaylist.id;
         this.reset();
         this.main.refresh();
         this.recreate();
@@ -79,14 +78,13 @@ export default class ListenerQueueManager {
 
         this.recreate(firstSong);
 
-        this.setPlaying(true);
-
         const currentSong: Song | null = this.getCurrentSong();
         if (currentSong == null) {
             return this.app.throwError("Can't set audio src: Current song is null.");
         }
 
         this.setAudioSrc(currentSong);
+        this.setPlaying(true);
     }
 
     private recreate(firstSong: Song | null = null): void {
@@ -185,8 +183,8 @@ export default class ListenerQueueManager {
             return this.app.throwError("Can't go to previous song: Previous song is null");
         }
 
-        this.setPlaying(true);
         this.setAudioSrc(previousSong);
+        this.setPlaying(true);
     }
 
     public nextButton(): void {
@@ -213,8 +211,8 @@ export default class ListenerQueueManager {
             return this.app.throwError("Can't go to next song: Next song is null");
         }
 
-        this.setPlaying(true);
         this.setAudioSrc(nextSong);
+        this.setPlaying(true);
 
         const queueSize: number = this.queue.length - this.currentQueueIndex;
         if (queueSize < this.currentSongs!.length + 1) {

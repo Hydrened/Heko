@@ -3,12 +3,10 @@ import ListenerManager from "./listener.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerRefreshManager {
-    // INIT
     constructor(private app: App, private main: ListenerManager) {
 
     }
 
-    // EVENTS
     public refresh(currentSong: Song | null): void {
         this.refreshDetails(currentSong);
         this.refreshSongClasses(currentSong);

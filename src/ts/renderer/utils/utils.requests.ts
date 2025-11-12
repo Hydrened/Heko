@@ -163,8 +163,8 @@ export const song = {
         return await request("song/add-to-app.php", app, { title: title, artist: artist, songFileName: songFileName });
     },
 
-    addToPlaylist: async (app: App, songID: ID, playlistID: ID): Promise<any> => {
-        return await request("song/add-to-playlist.php", app, { songID: songID, playlistID: playlistID });
+    addToPlaylist: async (app: App, songIDs: ID[], playlistID: ID): Promise<any> => {
+        return await request("song/add-to-playlist.php", app, { songIDs: songIDs, playlistID: playlistID });
     },
 
     upload: async (app: App, songFile: File): Promise<any> => {

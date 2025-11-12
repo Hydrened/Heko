@@ -2,7 +2,7 @@ import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
 import openUpdateThumbnailModal from "./../modals/modal.center.open/update-playlist-thumbnail.js";
 import openCreatePlaylistModal from "./../modals/modal.center.open/create-playlist.js";
-import openAddSongToPlaylistModal from "./../modals/modal.center.open/add-song-to-playlist.js";
+import openAddSongsToPlaylistModal from "./../modals/modal.center.open/add-songs-to-playlist.js";
 import { getPlaylistRowShortcuts, getPlaylistRows } from "./../contextmenus/contextmenu.rows/playlist.js";
 import { getPlaylistContainerShortcuts, getPlaylistContainerRows } from "./../contextmenus/contextmenu.rows/playlist-container.js";
 import { getSongContainerShortcuts, getSongContainerRows } from "./../contextmenus/contextmenu.rows/song-container.js";
@@ -51,7 +51,7 @@ export default class PlaylistsEventManager {
         });
 
         Elements.currentPlaylist.addSongsButton.addEventListener("click", () => {
-            openAddSongToPlaylistModal(this.app, this.main.getPlaylistSongsLeft());
+            openAddSongsToPlaylistModal(this.app, this.main.getPlaylistSongsLeft());
         });
     }
 
