@@ -15,7 +15,7 @@ export default class CenterSearchModal extends CenterModal {
         const centerModalData: CenterModalData = {
             title: data.title,
             onConfirm: async (modal: CenterModal) => await data.onConfirm(modal, this.searchResultContainerElement),
-            onCancel: data.onCancel,
+            onCancel: data.onClose,
             cantClose: data.cantClose,
         };
 

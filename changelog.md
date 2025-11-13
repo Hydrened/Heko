@@ -1,3 +1,9 @@
+## HEKO-3.2.3
+#### ADDED
+- song preview in add songs to playlist modal
+#### FIXED
+- add songs to playlist modal container overflow y
+
 ## HEKO-3.2.2
 #### ADDED
 - add songs to playlist modal

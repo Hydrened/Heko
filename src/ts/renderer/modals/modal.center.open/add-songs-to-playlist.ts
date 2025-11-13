@@ -39,7 +39,7 @@ async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, se
     return null;
 }
 
-function addSongModalOnSearch(searchResultContainerElement: HTMLElement, query: string, songsLeft: Song[]): void {
+function addSongModalOnSearch(app: App, audioELement: HTMLAudioElement, searchResultContainerElement: HTMLElement, query: string, songsLeft: Song[]): void {
     Functions.removeChildren(searchResultContainerElement);
 
     query = query.toLowerCase();
@@ -63,16 +63,69 @@ function addSongModalOnSearch(searchResultContainerElement: HTMLElement, query: 
         titleElement.textContent = `${song.title} by ${song.artist}`;
         liElement.appendChild(titleElement);
 
+        const togglePlayButton: HTMLElement = document.createElement("button");
+        togglePlayButton.setAttribute("playing", String(false));
+        togglePlayButton.setAttribute("tabindex", String(-1));
+        liElement.appendChild(togglePlayButton);
+
+        const togglePlayButtonPlayImg: HTMLImageElement = document.createElement("img");
+        togglePlayButtonPlayImg.setAttribute("playing", String(false));
+        togglePlayButtonPlayImg.src = "assets/window-play.png";
+        togglePlayButton.appendChild(togglePlayButtonPlayImg);
+
+        const togglePlayButtonPauseImg: HTMLImageElement = document.createElement("img");
+        togglePlayButtonPauseImg.setAttribute("playing", String(true));
+        togglePlayButtonPauseImg.src = "assets/window-pause.png";
+        togglePlayButton.appendChild(togglePlayButtonPauseImg);
+
         const checkboxElement: HTMLInputElement = document.createElement("input");
+        checkboxElement.setAttribute("tabindex", String(-1));
         checkboxElement.type = "checkbox";
         liElement.appendChild(checkboxElement);
 
         liElement.addEventListener("click", (e: PointerEvent) => {
-            if (e.target != checkboxElement) {
+            if (e.target == null) {
+                return;
+            }
+
+            if (![togglePlayButton, togglePlayButtonPlayImg, togglePlayButtonPauseImg, checkboxElement].includes((e.target as HTMLElement))) {
                 checkboxElement.checked = !checkboxElement.checked;
             }
         });
+
+        togglePlayButton.addEventListener("click", () => togglePlayButtonOnClick(app, searchResultContainerElement, audioELement, liElement, togglePlayButton, song));
     });
+}
+
+function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLElement, audioELement: HTMLAudioElement, songContainer: HTMLElement, togglePlayButton: HTMLElement, song: Song): void {
+    if (!togglePlayButton.hasAttribute("playing")) {
+        return app.throwError("Can't toggle play state: Play button element has no playing attribute.");
+    }
+
+    const songSrc: string = Functions.getSongPath(song);
+    if (audioELement.src != songSrc) {
+        songContainer.classList.add("loading");
+
+        audioELement.src = songSrc;
+        audioELement.currentTime = (song.duration * 0.23);
+
+        resetEverySong(app, searchResultContainerElement);
+    }
+
+    const playing: boolean = (togglePlayButton.getAttribute("playing") == "true");
+    togglePlayButton.setAttribute("playing", String(!playing));
+
+    if (!playing) {
+        audioELement.play().then(() => songContainer.classList.remove("loading"));
+    }
+    else {
+        audioELement.pause();
+    }
+}
+
+function resetEverySong(app: App, searchResultContainerElement: HTMLElement): void {
+    const playButtonElements: HTMLElement[] = [...searchResultContainerElement.querySelectorAll<HTMLElement>("button")];
+    playButtonElements.forEach((button: HTMLElement) => button.setAttribute("playing", String(false)));
 }
 
 export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[]): void {
@@ -81,10 +134,19 @@ export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[])
         return app.throwError("Can't open add songs to playlist modal: Current opened playlist is null.");
     }
 
+    const audioELement: HTMLAudioElement = new Audio();
+    audioELement.volume = (app.listenerManager.getVolume() * 0.01);
+    
     const data: CenterSearchModalData = {
         title: `Add song to ${currentOpenedPlaylist.name}`,
         onConfirm: async (modal: CenterModal, searchResultContainerElement: HTMLElement) => await addSongsToPlaylistModalOnConfirm(app, modal, searchResultContainerElement, songsLeft),
-        onSearch: async (searchResultContainerElement: HTMLElement, query: string) => addSongModalOnSearch(searchResultContainerElement, query, songsLeft),
+        onSearch: async (searchResultContainerElement: HTMLElement, query: string) => addSongModalOnSearch(app, audioELement, searchResultContainerElement, query, songsLeft),
+        onClose: () => {
+            audioELement.pause();
+            audioELement.src = "";
+            audioELement.load();
+            audioELement.remove();
+        },
         searchDelay: 200,
         instantSearch: true,
         cantClose: false,
