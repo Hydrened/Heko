@@ -9,6 +9,7 @@ async function loginModalOnConfirm(app: App, modal: CenterModal): Promise<ModalE
     const loginReqRes: any = await Requests.user.login(email, password);
     if (!loginReqRes.success) {
         return {
+            fieldName: loginReqRes.fieldName,
             error: loginReqRes.error,
         };
     }

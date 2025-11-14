@@ -1,5 +1,15 @@
 import { contextBridge, ipcRenderer } from "electron";
 
+contextBridge.exposeInMainWorld("main", {
+    throwError: (message: string): void => {
+        ipcRenderer.invoke("main-throwError", message);
+    },
+
+    getVersion: async (): Promise<string> => {
+        return await ipcRenderer.invoke("main-getVersion");
+    },
+});
+
 contextBridge.exposeInMainWorld("mainEvents", {
     onStart: (callback: (data: any) => void): void => {
         ipcRenderer.on("mainEvents-start", (e: Electron.IpcRendererEvent, data: any) => callback(data));
@@ -30,12 +40,6 @@ contextBridge.exposeInMainWorld("mainEvents", {
 
     onVolumeDown: (callback: () => void): void => {
         ipcRenderer.on("mainEvents-volumeDown", () => callback());
-    },
-});
-
-contextBridge.exposeInMainWorld("main", {
-    throwError: (message: string): void => {
-        ipcRenderer.invoke("main-throwError", message);
     },
 });
 

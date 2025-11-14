@@ -20,6 +20,7 @@
 
 html {
     background: var(--gradient);
+    overflow: hidden;
 }
 [no-animations="true"] * {
     animation-duration: 0ms !important;
@@ -36,6 +37,7 @@ main {
 
     background-color: rgba(0,0,0,0.4);
 }
+::-webkit-scrollbar,
 ::-webkit-scrollbar-track {
     border-radius: calc(var(--scrollbar-width) / 2);
 }

@@ -1,5 +1,6 @@
 top-modal-container {
-    width: 20rem;
+    min-width: 20rem;
+    max-width: 70vw;
 
     padding: 1rem;
 
@@ -8,6 +9,7 @@ top-modal-container {
     left: 50%;
 
     text-align: center;
+    line-height: 1.4rem;
 
     border: 1px solid transparent;
     border-radius: 0.8rem;

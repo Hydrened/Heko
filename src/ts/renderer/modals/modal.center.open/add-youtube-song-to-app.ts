@@ -243,6 +243,10 @@ function playButtonOnClick(app: App, elements: any): void {
     const playButtonElement: HTMLElement = elements.player.playButton;
     const audioElement: HTMLAudioElement = elements.player.audio;
 
+    if (!app.listenerManager.getAudioElement().paused) {
+        app.listenerManager.togglePlayButton();
+    }
+
     if (audioElement.paused) {
         audioElement.play();
         playButtonElement.setAttribute("playing", String(true));
@@ -268,7 +272,7 @@ export default function openAddYoutubeSongToAppModal(app: App, userSongs: Song[]
         title: "Search song on Youtube",
         onConfirm: async (modal: CenterModal, searchResultContainerElement: HTMLElement) => null,
         onSearch: async (searchResultContainerElement: HTMLElement, query: string) => await addYoutubeSongToAppModalOnSearch(app, userSongs, searchResultContainerElement, query),
-        searchDelay: 700,
+        searchDelay: 1000,
         instantSearch: false,
         cantClose: false,
     };

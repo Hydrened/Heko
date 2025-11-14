@@ -2,6 +2,7 @@ import App from "./../app.js";
 import AccountSettingsManager from "./settings.account.js";
 import ApparenceSettingsManager from "./settings.apparence.js";
 import PreferencesSettingsManager from "./settings.preferences.js";
+import * as Bridge from "./../utils/utils.bridge.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
@@ -19,6 +20,10 @@ export default class SettingsManager {
         this.account = new AccountSettingsManager(this.app, this);
         this.apparence = new ApparenceSettingsManager(this.app, this);
         this.preferences = new PreferencesSettingsManager(this.app, this);
+
+        Bridge.getVersion().then((version: string) => {
+            Elements.settings.version.textContent = `v${version}`;
+        });
 
         this.initEvents();
     }

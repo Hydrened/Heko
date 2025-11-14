@@ -44,6 +44,7 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
 
     const disableAddToQueue: boolean = (app.listenerManager.getCurrentListeningPlaylist() == null);
     const disableAddToOtherPlaylist: boolean = (addToOtherPlaylistRows.length == 0);
+    const disableRemoveFromPlaylist: boolean = !currentOpenedPlaylist.songs.some((s: Song) => s.id == song.id);
 
     return [
         { title: "Add to queue", onClick: async () => {
@@ -55,7 +56,7 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
 
         { title: "Remove from playlist", onClick: async () => {
             openRemoveSongFromPlaylistModal(app, currentOpenedPlaylist, song);
-        }, disabled: false },
+        }, disabled: disableRemoveFromPlaylist },
 
         { title: "Edit song", onClick: async () => {
             openEditSongFromPlaylistModal(app, song);

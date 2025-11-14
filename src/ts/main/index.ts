@@ -170,6 +170,8 @@ class Index {
             dialog.showErrorBox("Error", message);
             this.window?.close();
         });
+
+        ipcMain.handle("main-getVersion", (_event) => app.getVersion());
     }
 
     private initRendererYoutubeEvents(): void {

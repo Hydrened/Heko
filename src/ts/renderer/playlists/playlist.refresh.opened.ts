@@ -118,14 +118,23 @@ export default class PlaylistsRefreshOpenedManager {
     private refreshMergedPlaylists(currentOpenedPlaylist: Playlist): void {
         Elements.currentPlaylist.container.setAttribute("type", "merged-container");
 
-        currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist, index: number) => {
-            const playlist: Playlist | undefined = this.main.getPlaylistFromID(mergedPlaylist.id);
-            if (playlist == undefined) {
+        const mergedPlaylists: Playlist[] = currentOpenedPlaylist.mergedPlaylist.map((mergedPlaylist: MergedPlaylist) => {
+            return this.main.getPlaylistFromID(mergedPlaylist.id);
+        }).filter((playlist: Playlist | undefined) => playlist != undefined);
+
+        const sortedMergedPlaylists: Playlist[] = this.main.getSortedPlaylists(mergedPlaylists);
+
+        sortedMergedPlaylists.forEach((playlist: Playlist, index: number) => {
+
+            const mergedPlaylist: MergedPlaylist | undefined = currentOpenedPlaylist.mergedPlaylist.find((mp: MergedPlaylist) => mp.id == playlist.id);
+            if (mergedPlaylist == undefined) {
                 return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.");
             }
 
+            const toggled: boolean = mergedPlaylist.toggled;
+
             const liElement: HTMLElement = document.createElement("li");
-            liElement.setAttribute("playlist-id", String(mergedPlaylist.id));
+            liElement.setAttribute("playlist-id", String(playlist.id));
             liElement.classList.add("current-playlist-table-row");
             Elements.currentPlaylist.merged.container.appendChild(liElement);
 
@@ -133,7 +142,7 @@ export default class PlaylistsRefreshOpenedManager {
             const checkboxElementContainer: HTMLElement = PlaylistsRefreshOpenedManager.createRowContent(liElement, "");
             const checkboxElement: HTMLInputElement = document.createElement("input");
             checkboxElement.type = "checkbox";
-            if (mergedPlaylist.toggled) {
+            if (toggled) {
                 checkboxElement.setAttribute("checked", "");
             }
             checkboxElement.setAttribute("tabindex", "-1");
@@ -154,7 +163,7 @@ export default class PlaylistsRefreshOpenedManager {
             checkboxElement.addEventListener("change", async () => {
                 const chcked: boolean = checkboxElement.checked;
 
-                const updateMergeToggleReqRes: any = await Requests.playlist.updateMergeToggle(this.app, mergedPlaylist.id, chcked);
+                const updateMergeToggleReqRes: any = await Requests.playlist.updateMergeToggle(this.app, playlist.id, chcked);
                 if (!updateMergeToggleReqRes.success) {
                     return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`);
                 }
@@ -168,7 +177,7 @@ export default class PlaylistsRefreshOpenedManager {
                     return;
                 }
 
-                await this.app.playlistManager.open(mergedPlaylist.id);
+                await this.app.playlistManager.open(playlist.id);
             });
             liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createMergedPlaylistContextMenu((e as Position), playlist, liElement));
         });

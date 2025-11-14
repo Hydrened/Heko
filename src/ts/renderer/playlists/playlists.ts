@@ -130,11 +130,11 @@ export default class PlaylistManager {
         return this.currentOpenedPlaylist;
     }
 
-    public getSortedPlaylists(): Playlist[] {
-        const playlists: Playlist[] = this.playlistBuffer;
+    public getSortedPlaylists(playlistFilter: Playlist[] = []): Playlist[] {
+        const playlistIdFilter: ID[] = playlistFilter.map((p: Playlist) => p.id);
         const playlistsByParent: Map<number, Playlist[]> = new Map<number, Playlist[]>();
 
-        for (const playlist of playlists) {
+        for (const playlist of this.playlistBuffer) {
             if (!playlistsByParent.has(playlist.parentID)) {
                 playlistsByParent.set(playlist.parentID, []);
             }
@@ -160,7 +160,11 @@ export default class PlaylistManager {
 
         addWithChildren(-1);
 
-        return res;
+        if (playlistFilter.length == 0) {
+            return res;
+        }
+        
+        return res.filter((p: Playlist) => playlistIdFilter.includes(p.id));
     }
 
     public getPlaylistBuffer(): Playlist[] {

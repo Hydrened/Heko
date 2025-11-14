@@ -11,6 +11,7 @@ async function registerModalOnConfirm(app: App, modal: CenterModal): Promise<Mod
     const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
     if (!registerReqRes.success) {
         return {
+            fieldName: registerReqRes.fieldName,
             error: registerReqRes.error,
         };
     }
@@ -18,6 +19,7 @@ async function registerModalOnConfirm(app: App, modal: CenterModal): Promise<Mod
     const loginReqRes: any = await Requests.user.login(email, password);
     if (!loginReqRes.success) {
         return {
+            fieldName: loginReqRes.fieldName,
             error: loginReqRes.error,
         };
     }

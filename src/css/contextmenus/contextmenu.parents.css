@@ -5,3 +5,7 @@ li.playlist-wrapper.contextmenu-parent > .playlist-container {
 li.current-playlist-table-row.contextmenu-parent {
     background-color: var(--bg-bo-3);
 }
+
+li.song-container.contextmenu-parent {
+    background-color: var(--bg-wo-5) !important;
+}

@@ -71,15 +71,15 @@ export default class PlaylistsMoveManager {
             if (this.originalPlaylistElementBuffer != null) {
                 this.originalPlaylistElementBuffer.classList.add("pre-move");
             }
-        }, 100);
+        }, 400);
 
-        setTimeout(async () => {
+        setTimeout(() => {
             if (this.originalPlaylistElementBuffer != null) {
-                await this.onCanMove(e, Number(playlistIdStr));
+                this.onCanMove(e, Number(playlistIdStr));
             }
 
             this.canTryMoving = true;
-        }, 300);
+        }, 600);
     }
 
     private async onMouseUp(e: MouseEvent): Promise<void> {
@@ -146,6 +146,7 @@ export default class PlaylistsMoveManager {
 
         this.main.refreshPlaylistBuffer().then(() => {
             this.main.refreshPlaylistsContainerTab();
+            this.main.refreshOpenedPlaylistTab();
         });
 
         this.reset();
@@ -189,7 +190,7 @@ export default class PlaylistsMoveManager {
         (nearestLiRect.y < pos.y) ? nearestLi.classList.add("insert-after") : nearestLi.classList.add("insert-before");
     }
 
-    private async onCanMove(e: MouseEvent, playlistID: ID): Promise<void> {
+    private onCanMove(e: MouseEvent, playlistID: ID): void {
         if (this.originalPlaylistElementBuffer == null || this.updating) {
             return;
         }

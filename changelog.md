@@ -1,3 +1,13 @@
+## HEKO-3.2.4
+#### ADDED
+- sorted merged playlist container
+- "add song to playlist modal" song's contextmenu
+- app version in settings
+- auto pause when previewing a song
+#### FIXED
+- automatic modal validation when pressing enter in a select
+- enter shortcut not working in login & register modals
+
 ## HEKO-3.2.3
 #### ADDED
 - song preview in add songs to playlist modal

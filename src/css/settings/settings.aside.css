@@ -41,3 +41,14 @@ ul.settings-menus-container > li > a {
 ul.settings-menus-container > li > :is(a.selected, a:hover) {
     background-color: var(--bg-bo-5);
 }
+
+
+
+#app-version {
+    margin-top: auto;
+
+    align-self: center;
+
+    font-size: 0.8rem;
+    color: var(--text-col-2);
+}

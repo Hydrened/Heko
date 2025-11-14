@@ -36,10 +36,6 @@ export default class CenterModal {
     }
 
     private initEvents(): void {
-        if (this.data.cantClose) {
-            return;
-        }
-
         window.addEventListener("keydown", this.keydownEvent);
     }
 
@@ -62,12 +58,17 @@ export default class CenterModal {
                 return;
             }
 
-            this.close();
+            if (!this.data.cantClose) {
+                this.close();
+            }
         }
         else if (e.key == "Enter") {
             const element: HTMLElement = (e.target as HTMLElement);
             if (element.tagName == "INPUT") {
-                if ((element as HTMLInputElement).type == "file") {
+                const isFileInput: boolean = ((element as HTMLInputElement).type == "file");
+                const isInputSelect: boolean = element.classList.contains("input-select");
+
+                if (isFileInput || isInputSelect) {
                     return;
                 }
             }

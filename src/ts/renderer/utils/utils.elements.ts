@@ -86,6 +86,7 @@ export const songControls = {
 export const settings = {
     container: (document.querySelector("settings-container") as HTMLElement),
     sectionContainer: (document.querySelector("#settings-section-container") as HTMLElement),
+    version: (document.querySelector("#app-version") as HTMLElement),
 
     account: {
         name: {

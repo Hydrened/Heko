@@ -41,60 +41,62 @@ async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, se
 
 function addSongModalOnSearch(app: App, audioELement: HTMLAudioElement, searchResultContainerElement: HTMLElement, query: string, songsLeft: Song[]): void {
     Functions.removeChildren(searchResultContainerElement);
-
     query = query.toLowerCase();
+    songsLeft.forEach((song: Song) => createSongContainer(app, audioELement, searchResultContainerElement, query, song));
+}
 
-    songsLeft.forEach((song: Song) => {
-        const titleIncludes: boolean = song.title.toLowerCase().includes(query);
-        const artistIncludes: boolean = song.artist.toLowerCase().includes(query);
+function createSongContainer(app: App, audioELement: HTMLAudioElement, searchResultContainerElement: HTMLElement, query: string, song: Song): void {
+    const titleIncludes: boolean = song.title.toLowerCase().includes(query);
+    const artistIncludes: boolean = song.artist.toLowerCase().includes(query);
 
-        if (!titleIncludes && !artistIncludes) {
+    if (!titleIncludes && !artistIncludes) {
+        return;
+    }
+
+    const liElement: HTMLElement = document.createElement("li");
+    liElement.classList.add("song-container");
+    liElement.setAttribute("song-id", String(song.id));
+    searchResultContainerElement.appendChild(liElement);
+
+    const titleElement: HTMLElement = document.createElement("h2");
+    titleElement.classList.add("song-title-and-artist");
+    titleElement.classList.add("extern-text");
+    titleElement.textContent = `${song.title} by ${song.artist}`;
+    liElement.appendChild(titleElement);
+
+    const togglePlayButton: HTMLElement = document.createElement("button");
+    togglePlayButton.setAttribute("playing", String(false));
+    togglePlayButton.setAttribute("tabindex", String(-1));
+    liElement.appendChild(togglePlayButton);
+
+    const togglePlayButtonPlayImg: HTMLImageElement = document.createElement("img");
+    togglePlayButtonPlayImg.setAttribute("playing", String(false));
+    togglePlayButtonPlayImg.src = "assets/window-play.png";
+    togglePlayButton.appendChild(togglePlayButtonPlayImg);
+
+    const togglePlayButtonPauseImg: HTMLImageElement = document.createElement("img");
+    togglePlayButtonPauseImg.setAttribute("playing", String(true));
+    togglePlayButtonPauseImg.src = "assets/window-pause.png";
+    togglePlayButton.appendChild(togglePlayButtonPauseImg);
+
+    const checkboxElement: HTMLInputElement = document.createElement("input");
+    checkboxElement.setAttribute("tabindex", String(-1));
+    checkboxElement.type = "checkbox";
+    liElement.appendChild(checkboxElement);
+
+    liElement.addEventListener("click", (e: PointerEvent) => {
+        if (e.target == null) {
             return;
         }
 
-        const liElement: HTMLElement = document.createElement("li");
-        liElement.classList.add("song-container");
-        liElement.setAttribute("song-id", String(song.id));
-        searchResultContainerElement.appendChild(liElement);
-
-        const titleElement: HTMLElement = document.createElement("h2");
-        titleElement.classList.add("song-title-and-artist");
-        titleElement.classList.add("extern-text");
-        titleElement.textContent = `${song.title} by ${song.artist}`;
-        liElement.appendChild(titleElement);
-
-        const togglePlayButton: HTMLElement = document.createElement("button");
-        togglePlayButton.setAttribute("playing", String(false));
-        togglePlayButton.setAttribute("tabindex", String(-1));
-        liElement.appendChild(togglePlayButton);
-
-        const togglePlayButtonPlayImg: HTMLImageElement = document.createElement("img");
-        togglePlayButtonPlayImg.setAttribute("playing", String(false));
-        togglePlayButtonPlayImg.src = "assets/window-play.png";
-        togglePlayButton.appendChild(togglePlayButtonPlayImg);
-
-        const togglePlayButtonPauseImg: HTMLImageElement = document.createElement("img");
-        togglePlayButtonPauseImg.setAttribute("playing", String(true));
-        togglePlayButtonPauseImg.src = "assets/window-pause.png";
-        togglePlayButton.appendChild(togglePlayButtonPauseImg);
-
-        const checkboxElement: HTMLInputElement = document.createElement("input");
-        checkboxElement.setAttribute("tabindex", String(-1));
-        checkboxElement.type = "checkbox";
-        liElement.appendChild(checkboxElement);
-
-        liElement.addEventListener("click", (e: PointerEvent) => {
-            if (e.target == null) {
-                return;
-            }
-
-            if (![togglePlayButton, togglePlayButtonPlayImg, togglePlayButtonPauseImg, checkboxElement].includes((e.target as HTMLElement))) {
-                checkboxElement.checked = !checkboxElement.checked;
-            }
-        });
-
-        togglePlayButton.addEventListener("click", () => togglePlayButtonOnClick(app, searchResultContainerElement, audioELement, liElement, togglePlayButton, song));
+        if (![togglePlayButton, togglePlayButtonPlayImg, togglePlayButtonPauseImg, checkboxElement].includes((e.target as HTMLElement))) {
+            checkboxElement.checked = !checkboxElement.checked;
+        }
     });
+
+    togglePlayButton.addEventListener("click", () => togglePlayButtonOnClick(app, searchResultContainerElement, audioELement, liElement, togglePlayButton, song));
+
+    liElement.addEventListener("contextmenu", (e: PointerEvent) => app.contextmenuManager.createSongContextMenu((e as Position), song, liElement));
 }
 
 function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLElement, audioELement: HTMLAudioElement, songContainer: HTMLElement, togglePlayButton: HTMLElement, song: Song): void {
@@ -110,6 +112,10 @@ function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLEle
         audioELement.currentTime = (song.duration * 0.23);
 
         resetEverySong(app, searchResultContainerElement);
+
+        if (!app.listenerManager.getAudioElement().paused) {
+            app.listenerManager.togglePlayButton();
+        }
     }
 
     const playing: boolean = (togglePlayButton.getAttribute("playing") == "true");
