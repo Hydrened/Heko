@@ -1,3 +1,7 @@
+## HEKO-3.2.5
+#### ADDED
+- auto updates
+
 ## HEKO-3.2.4
 #### ADDED
 - sorted merged playlist container

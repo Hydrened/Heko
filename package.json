@@ -1,6 +1,6 @@
 {
   "name": "heko",
-  "version": "3.2.4",
+  "version": "3.2.5",
   "description": "",
   "main": "src/js/main/index.js",
   "scripts": {
@@ -39,9 +39,17 @@
     },
     "mac": {
       "target": "dmg"
-    }
+    },
+    "publish": [
+      {
+        "provider": "github",
+        "owner": "Hydrened",
+        "repo": "Heko"
+      }
+    ]
   },
   "dependencies": {
-    "conf": "^15.0.2"
+    "conf": "^15.0.2",
+    "electron-updater": "^6.6.2"
   }
 }

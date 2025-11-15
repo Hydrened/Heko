@@ -1,4 +1,5 @@
 import { app, BrowserWindow, ipcMain, dialog , nativeImage, globalShortcut } from "electron";
+import { autoUpdater } from "electron-updater";
 import { MainFolder, WindowSettings } from "./main-folder.js";
 import { downloadYoutubeSong, getYoutubeSongSrc } from "./song.js";
 import * as path from "path";
@@ -7,7 +8,7 @@ class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
-    private readonly dev: boolean = false;
+    private readonly dev: boolean = true;
 
     constructor() {
         this.mainFolder = new MainFolder();
@@ -242,6 +243,9 @@ class Index {
 };  
 
 app.whenReady().then(() => {
+    autoUpdater.checkForUpdatesAndNotify();
+    autoUpdater.on("update-downloaded", () => autoUpdater.quitAndInstall());
+
     new Index();
 });
 
