@@ -23,6 +23,8 @@ export const currentPlaylist = {
 
     addSongsButton: (document.querySelector("#add-songs-to-current-playlist-button") as HTMLButtonElement),
 
+    playButton: (document.querySelector("#current-playlist-play-button") as HTMLElement),
+
     songFilterInput: (document.querySelector("#current-playlist-song-filter-input") as HTMLInputElement),
 
     song: {

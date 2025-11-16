@@ -58,6 +58,17 @@ export default class PlaylistsEventManager {
     private initOpenedPlaylistEvents(): void {
         Elements.currentPlaylist.details.thumbnail.addEventListener("click", () => openUpdateThumbnailModal(this.app));
 
+        const playButton: HTMLElement = Elements.currentPlaylist.playButton;
+
+        playButton.addEventListener("click", () => {
+            const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
+            if (currentOpenedPlaylist == null) {
+                return;
+            }
+
+            this.app.listenerManager.initQueue(currentOpenedPlaylist, null);
+        });
+
         const input: HTMLInputElement = Elements.currentPlaylist.songFilterInput;
 
         input.addEventListener("input", () => this.openedPlaylistInputFilterOnInput());
@@ -69,8 +80,8 @@ export default class PlaylistsEventManager {
             }
         });
 
-        (Elements.currentPlaylist.song.container as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
-        (Elements.currentPlaylist.merged.container as HTMLElement).addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistMergedContainerOnContextmenu(e));
+        Elements.currentPlaylist.song.container.addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
+        Elements.currentPlaylist.merged.container.addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistMergedContainerOnContextmenu(e));
 
     }
 
@@ -119,9 +130,9 @@ export default class PlaylistsEventManager {
 
     private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, value: string): void {
         currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist) => {
-            const playlist: Playlist | undefined = this.main.getPlaylistFromID(mergedPlaylist.id);
-            if (playlist == undefined) {
-                return this.app.throwError("Can't filter merged playlists: A merged playlist is undefined.");
+            const playlist: Playlist | null = this.main.getPlaylistFromID(mergedPlaylist.id);
+            if (playlist == null) {
+                return this.app.throwError("Can't filter merged playlists: A merged playlist is null.");
             }
 
             const liElement: Element | undefined = [...Elements.currentPlaylist.merged.container.children].find((li: Element) => {

@@ -1,68 +1,17 @@
 import App from "./../../app.js";
+import CenterSearchModal from "./../modal.center.search.js";
 import * as Requests from "./../../utils/utils.requests.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
-async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, searchResultContainerElement: HTMLElement, songsLeft: Song[]): Promise<ModalError> {
-    const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
-    if (currentOpenedPlaylist == null) {
-        app.throwError("Can't add songs to playlist: Current opened playlist is null.");
-        return null;
-    }
-    
-    const liElements: HTMLElement[] = [...searchResultContainerElement.querySelectorAll<HTMLElement>("li")];
-    const songIDsToAdd: ID[] = liElements.map((li: HTMLElement) => {
-        const checkbox: HTMLInputElement | null = li.querySelector<HTMLInputElement>("input");
-        const songID: number = Number(li.getAttribute("song-id"));
-
-        if (!checkbox?.checked || isNaN(songID)) {
-            return null;
-        }
-
-        return app.playlistManager.getSongFromID(songID);
-
-    }).filter((song: Song | null) => song != null).map((song: Song) => song.id);
-
-    const songWord: string = Functions.pluralize("song", songIDsToAdd.length);
-
-    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, songIDsToAdd, currentOpenedPlaylist.id);
-    if (!addSongsToPlaylistReqRes.success) {
-        app.throwError(`Can't add ${songWord} to playlist: ${addSongsToPlaylistReqRes.error}`);
-        return null;
-    }
-
-    app.playlistManager.refreshPlaylistBuffer().then(() => {
-        app.playlistManager.refreshPlaylistsContainerTab();
-        app.playlistManager.refreshOpenedPlaylistTab();
-    });
-
-    app.modalManager.openTopModal("SUCCESS", `Successfully added ${songWord} to playlist "${currentOpenedPlaylist.name}".`);
-    return null;
+function addSongsToPlaylistModalOnCreate(app: App, audioELement: HTMLAudioElement, songsLeft: Song[], container: HTMLElement): void {
+    songsLeft.forEach((song: Song) => createSongContainer(app, audioELement, container, "", song));
 }
 
-function addSongModalOnSearch(app: App, audioELement: HTMLAudioElement, searchResultContainerElement: HTMLElement, query: string, songsLeft: Song[]): void {
-    Functions.removeChildren(searchResultContainerElement);
-    query = query.toLowerCase();
-    songsLeft.forEach((song: Song) => createSongContainer(app, audioELement, searchResultContainerElement, query, song));
-}
-
-function createSongContainer(app: App, audioELement: HTMLAudioElement, searchResultContainerElement: HTMLElement, query: string, song: Song): void {
-    const titleIncludes: boolean = song.title.toLowerCase().includes(query);
-    const artistIncludes: boolean = song.artist.toLowerCase().includes(query);
-
-    if (!titleIncludes && !artistIncludes) {
-        return;
-    }
-
-    const liElement: HTMLElement = document.createElement("li");
+function createSongContainer(app: App, audioELement: HTMLAudioElement, container: HTMLElement, query: string, song: Song): void {
+    const liElement: HTMLElement = CenterSearchModal.createCheckboxRow(`${song.title} by ${song.artist}`);
     liElement.classList.add("song-container");
     liElement.setAttribute("song-id", String(song.id));
-    searchResultContainerElement.appendChild(liElement);
-
-    const titleElement: HTMLElement = document.createElement("h2");
-    titleElement.classList.add("song-title-and-artist");
-    titleElement.classList.add("extern-text");
-    titleElement.textContent = `${song.title} by ${song.artist}`;
-    liElement.appendChild(titleElement);
+    container.appendChild(liElement);
 
     const togglePlayButton: HTMLElement = document.createElement("button");
     togglePlayButton.setAttribute("playing", String(false));
@@ -79,27 +28,12 @@ function createSongContainer(app: App, audioELement: HTMLAudioElement, searchRes
     togglePlayButtonPauseImg.src = "assets/window-pause.png";
     togglePlayButton.appendChild(togglePlayButtonPauseImg);
 
-    const checkboxElement: HTMLInputElement = document.createElement("input");
-    checkboxElement.setAttribute("tabindex", String(-1));
-    checkboxElement.type = "checkbox";
-    liElement.appendChild(checkboxElement);
-
-    liElement.addEventListener("click", (e: PointerEvent) => {
-        if (e.target == null) {
-            return;
-        }
-
-        if (![togglePlayButton, togglePlayButtonPlayImg, togglePlayButtonPauseImg, checkboxElement].includes((e.target as HTMLElement))) {
-            checkboxElement.checked = !checkboxElement.checked;
-        }
-    });
-
-    togglePlayButton.addEventListener("click", () => togglePlayButtonOnClick(app, searchResultContainerElement, audioELement, liElement, togglePlayButton, song));
+    togglePlayButton.addEventListener("click", () => togglePlayButtonOnClick(app, container, audioELement, liElement, togglePlayButton, song));
 
     liElement.addEventListener("contextmenu", (e: PointerEvent) => app.contextmenuManager.createSongContextMenu((e as Position), song, liElement));
 }
 
-function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLElement, audioELement: HTMLAudioElement, songContainer: HTMLElement, togglePlayButton: HTMLElement, song: Song): void {
+function togglePlayButtonOnClick(app: App, container: HTMLElement, audioELement: HTMLAudioElement, songContainer: HTMLElement, togglePlayButton: HTMLElement, song: Song): void {
     if (!togglePlayButton.hasAttribute("playing")) {
         return app.throwError("Can't toggle play state: Play button element has no playing attribute.");
     }
@@ -111,7 +45,7 @@ function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLEle
         audioELement.src = songSrc;
         audioELement.currentTime = (song.duration * 0.23);
 
-        resetEverySong(app, searchResultContainerElement);
+        resetEverySong(app, container);
 
         if (!app.listenerManager.getAudioElement().paused) {
             app.listenerManager.togglePlayButton();
@@ -129,9 +63,58 @@ function togglePlayButtonOnClick(app: App, searchResultContainerElement: HTMLEle
     }
 }
 
-function resetEverySong(app: App, searchResultContainerElement: HTMLElement): void {
-    const playButtonElements: HTMLElement[] = [...searchResultContainerElement.querySelectorAll<HTMLElement>("button")];
+function resetEverySong(app: App, container: HTMLElement): void {
+    const playButtonElements: HTMLElement[] = [...container.querySelectorAll<HTMLElement>("button")];
     playButtonElements.forEach((button: HTMLElement) => button.setAttribute("playing", String(false)));
+}
+
+async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, container: HTMLElement, songsLeft: Song[]): Promise<ModalError> {
+    const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
+    if (currentOpenedPlaylist == null) {
+        app.throwError("Can't add songs to playlist: Current opened playlist is null.");
+        return null;
+    }
+
+    const songIDsToAdd: ID[] = (modal as CenterSearchModal).getCheckedElements().map((li: HTMLElement) => {
+        return (app.playlistManager.getSongFromElement(li));
+    }).filter((song: Song | null) => song != null).map((song: Song) => song.id);
+
+    const songWord: string = Functions.pluralize("song", songIDsToAdd.length);
+
+    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, songIDsToAdd, [currentOpenedPlaylist.id]);
+    if (!addSongsToPlaylistReqRes.success) {
+        app.throwError(`Can't add ${songWord} to playlist: ${addSongsToPlaylistReqRes.error}`);
+        return null;
+    }
+
+    app.playlistManager.refreshPlaylistBuffer().then(() => {
+        app.playlistManager.refreshPlaylistsContainerTab();
+        app.playlistManager.refreshOpenedPlaylistTab();
+    });
+
+    app.modalManager.openTopModal("SUCCESS", `Successfully added ${songWord} to playlist "${currentOpenedPlaylist.name}".`);
+    return null;
+}
+
+function addSongsToPlaylistModalOnSearch(app: App, audioELement: HTMLAudioElement, container: HTMLElement, query: string, songsLeft: Song[]): void {
+    query = query.toLowerCase();
+
+    const songElements: HTMLElement[] = [...container.querySelectorAll<HTMLElement>("li")];
+    songElements.forEach((songElement: HTMLElement) => {
+        const song: Song | null = app.playlistManager.getSongFromElement(songElement);
+        if (song == null) {
+            return app.throwError("Can't get song from element: Song is null.");
+        }
+
+        const titleIncludes: boolean = song.title.toLowerCase().includes(query);
+        const artistIncludes: boolean = song.artist.toLowerCase().includes(query);
+        const hidden: boolean = (!titleIncludes && !artistIncludes);
+
+        songElement.classList.remove("hidden");
+        if (hidden) {
+            songElement.classList.add("hidden");
+        }
+    });
 }
 
 export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[]): void {
@@ -145,8 +128,9 @@ export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[])
     
     const data: CenterSearchModalData = {
         title: `Add song to ${currentOpenedPlaylist.name}`,
-        onConfirm: async (modal: CenterModal, searchResultContainerElement: HTMLElement) => await addSongsToPlaylistModalOnConfirm(app, modal, searchResultContainerElement, songsLeft),
-        onSearch: async (searchResultContainerElement: HTMLElement, query: string) => addSongModalOnSearch(app, audioELement, searchResultContainerElement, query, songsLeft),
+        onCreate: (container: HTMLElement) => addSongsToPlaylistModalOnCreate(app, audioELement, songsLeft, container),
+        onConfirm: async (modal: CenterModal, container: HTMLElement) => await addSongsToPlaylistModalOnConfirm(app, modal, container, songsLeft),
+        onSearch: async (container: HTMLElement, query: string) => addSongsToPlaylistModalOnSearch(app, audioELement, container, query, songsLeft),
         onClose: () => {
             audioELement.pause();
             audioELement.src = "";
@@ -154,7 +138,6 @@ export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[])
             audioELement.remove();
         },
         searchDelay: 200,
-        instantSearch: true,
         cantClose: false,
     };
 

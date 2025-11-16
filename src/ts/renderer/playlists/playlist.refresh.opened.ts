@@ -12,6 +12,7 @@ export default class PlaylistsRefreshOpenedManager {
     public refresh(): void {
         this.refreshDetails();
         this.refreshAddSongButton();
+        this.refreshPlayButton();
         this.refreshMainContainer();
     }
 
@@ -64,6 +65,26 @@ export default class PlaylistsRefreshOpenedManager {
         const canUserAddSongs: boolean = everyUserSongIDs.some((id: ID) => !playlistSongIDs.includes(id));
         if (canUserAddSongs) {
             Elements.currentPlaylist.addSongsButton.classList.remove("disabled");
+        }
+    }
+
+    private refreshPlayButton(): void {
+        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
+        if (currentOpenedPlaylist == null) {
+            return;
+        }
+
+        const playButton: HTMLElement = Elements.currentPlaylist.playButton;
+
+        const nbSongs: number = (currentOpenedPlaylist.mergedPlaylist.length == 0)
+            ? currentOpenedPlaylist.songs.length
+            : this.main.getMergedContainerSongs(currentOpenedPlaylist, true).length;
+            
+        if (nbSongs == 0) {
+            playButton.classList.add("disabled");
+        }
+        else {
+            playButton.classList.remove("disabled");
         }
     }
 
@@ -120,7 +141,7 @@ export default class PlaylistsRefreshOpenedManager {
 
         const mergedPlaylists: Playlist[] = currentOpenedPlaylist.mergedPlaylist.map((mergedPlaylist: MergedPlaylist) => {
             return this.main.getPlaylistFromID(mergedPlaylist.id);
-        }).filter((playlist: Playlist | undefined) => playlist != undefined);
+        }).filter((playlist: Playlist | null) => playlist != null);
 
         const sortedMergedPlaylists: Playlist[] = this.main.getSortedPlaylists(mergedPlaylists);
 
@@ -169,6 +190,10 @@ export default class PlaylistsRefreshOpenedManager {
                 }
 
                 await this.main.refreshPlaylistBuffer();
+                const updatedCurrentOpenedPlaylist: Playlist | null = (this.main.getPlaylistFromID(currentOpenedPlaylist.id) ?? null);
+                this.main.setCurrentOpenedPlaylist(updatedCurrentOpenedPlaylist);
+
+                this.refreshPlayButton();
                 this.app.listenerManager.refreshQueue();
             });
 

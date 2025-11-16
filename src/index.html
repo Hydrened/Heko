@@ -56,7 +56,12 @@
                             </div>
                         </div>
                     </header>
-                    <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
+                    <div class="current-playlist-play-button-and-filter-container">
+                        <button id="current-playlist-play-button" class="disabled" tabindex="-1">
+                            <img src="assets/play.svg">
+                        </button>
+                        <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
+                    </div>
                     <div class="current-playlist-table-container">
                         <div class="current-playlist-table-head-container" type="song-container">
                             <button id="current-playlist-song-sort-by-id-button" class="sorted-by" tabindex="-1">#</button>

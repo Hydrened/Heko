@@ -8,7 +8,7 @@ class Index {
     private window: BrowserWindow | null = null;
     private readonly mainFolder: MainFolder;
     private thumbarButtons: Electron.ThumbarButton[] = [];
-    private readonly dev: boolean = true;
+    private readonly dev: boolean = false;
 
     constructor() {
         this.mainFolder = new MainFolder();
@@ -243,10 +243,24 @@ class Index {
 };  
 
 app.whenReady().then(() => {
-    autoUpdater.checkForUpdatesAndNotify();
-    autoUpdater.on("update-downloaded", () => autoUpdater.quitAndInstall());
+    if (app.isPackaged) {
+        autoUpdater.checkForUpdates();
 
-    new Index();
+        autoUpdater.on("update-downloaded", () => {
+            autoUpdater.quitAndInstall();
+        });
+
+        autoUpdater.on("update-not-available", () => {
+            new Index();
+        });
+
+        autoUpdater.on("error", (err) => {
+            new Index();
+        });
+    }
+    else {
+        new Index();
+    }
 });
 
 app.on("will-quit", () => {

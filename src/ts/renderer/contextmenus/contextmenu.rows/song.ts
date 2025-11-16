@@ -1,20 +1,7 @@
 import App from "./../../app.js";
 import openEditSongFromPlaylistModal from "./../../modals/modal.center.open/edit-song-from-playlist.js";
 import openRemoveSongFromPlaylistModal from "./../../modals/modal.center.open/remove-song-from-playlist.js";
-import * as Requests from "./../../utils/utils.requests.js";
-
-async function addSongToPlaylistOnClick(app: App, playlist: Playlist, song: Song): Promise<void> {
-    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, [song.id], playlist.id);
-    if (!addSongsToPlaylistReqRes.success) {
-        return app.throwError(`Can't add song to playlist: ${addSongsToPlaylistReqRes.error}`);
-    }
-
-    app.playlistManager.refreshPlaylistBuffer().then(() => {
-        app.playlistManager.refreshPlaylistsContainerTab();
-    });
-
-    app.modalManager.openTopModal("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to playlist "${playlist.name}".`);
-}
+import openAddSongToPlaylistsModal from "./../../modals/modal.center.open/add-song-to-playlistys.js";
 
 export function getSongRows(app: App, song: Song): ContextmenuRow[] {
     const errorBase: string = "Can't get song contextmenu rows";
@@ -25,25 +12,10 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
         return [];
     }
 
-    const addToOtherPlaylistRows: ContextmenuRow[] = [];
-    for (const playlist of app.playlistManager.getPlaylistWhereSongIsNotIn(song.id)) {
-        if (playlist.children != 0) {
-            continue;
-        }
-
-        if (playlist.mergedPlaylist.length != 0) {
-            continue;
-        }
-
-        addToOtherPlaylistRows.push({
-            title: playlist.name,
-            onClick: async () => await addSongToPlaylistOnClick(app, playlist, song),
-            disabled: false,
-        });
-    }
+    const playlistsLeft: Playlist[] = app.playlistManager.getPlaylistWhereSongIsNotIn(song.id);
 
     const disableAddToQueue: boolean = (app.listenerManager.getCurrentListeningPlaylist() == null);
-    const disableAddToOtherPlaylist: boolean = (addToOtherPlaylistRows.length == 0);
+    const disableAddToOtherPlaylist: boolean = (playlistsLeft.length == 0);
     const disableRemoveFromPlaylist: boolean = !currentOpenedPlaylist.songs.some((s: Song) => s.id == song.id);
 
     return [
@@ -52,7 +24,9 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
             app.modalManager.openTopModal("SUCCESS", `Successfully added song "${song.title}" by "${song.artist}" to queue.`);
         }, disabled: disableAddToQueue },
 
-        { title: "Add to other playlist", rows: addToOtherPlaylistRows, disabled: disableAddToOtherPlaylist },
+        { title: "Add to other playlist", onClick: async () => {
+            openAddSongToPlaylistsModal(app, playlistsLeft, song);
+        }, disabled: disableAddToOtherPlaylist },
 
         { title: "Remove from playlist", onClick: async () => {
             openRemoveSongFromPlaylistModal(app, currentOpenedPlaylist, song);

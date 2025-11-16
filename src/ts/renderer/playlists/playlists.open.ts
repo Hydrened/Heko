@@ -15,9 +15,9 @@ export default class PlaylistsOpenManager {
     }
 
     public async open(playlistID: ID): Promise<void> {
-        const playlist: Playlist | undefined = this.main.getPlaylistFromID(playlistID);
-        if (playlist == undefined) {
-            return this.app.throwError("Can't get playlist: Playlist is undefined.");
+        const playlist: Playlist | null = this.main.getPlaylistFromID(playlistID);
+        if (playlist == null) {
+            return this.app.throwError("Can't get playlist: Playlist is null.");
         }
 
         this.main.setCurrentOpenedPlaylist(playlist);

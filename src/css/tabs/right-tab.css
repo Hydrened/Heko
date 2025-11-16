@@ -98,9 +98,21 @@
 
 
 
+.current-playlist-play-button-and-filter-container {
+    padding-left: 1rem;
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1.5rem;
+}
+#current-playlist-play-button {
+    scale: 1.7;
+}
 #current-playlist-song-filter-input {
     padding: 0.7rem 0.9rem;
     
+    align-self: center;
+
     font-size: 1rem;
 
     border-radius: 0.7rem;

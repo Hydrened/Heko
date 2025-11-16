@@ -7,9 +7,9 @@ export default class CenterSearchModal extends CenterModal {
     private searchBarElement!: HTMLInputElement;
     private searchResultContainerElement!: HTMLElement;
         
-    private onSearch: (resultContainerElement: HTMLElement, query: string) => Promise<void>;
+    private onCreate: ((container: HTMLElement) => void) | undefined;
+    private onSearch: ((container: HTMLElement, query: string) => Promise<void>) | null = null;
     private searchDelay: number = 0;
-    private instantSearchEnabled: boolean = false;
 
     constructor(app: App, data: CenterSearchModalData) {
         const centerModalData: CenterModalData = {
@@ -21,28 +21,15 @@ export default class CenterSearchModal extends CenterModal {
 
         super(app, centerModalData);
         this.mainContainer!.classList.add("search");
-        this.onSearch = data.onSearch;
+
+        this.onCreate = data.onCreate;
+        setTimeout(() => this.onSearch = data.onSearch, 0);
         this.searchDelay = data.searchDelay;
-        setTimeout(() => this.instantSearchEnabled = data.instantSearch, 0);
     }
 
     protected override createContent(): void {
         this.createSearchBar();
         super.focusFirstField();
-
-        setTimeout(() => {
-            if (this.instantSearchEnabled) {
-                this.instantSearch();
-            }
-        }, 1);
-    }
-
-    private instantSearch(): void {
-        if (this.searchResultContainerElement == null || this.searchBarElement == null) {
-            return this.app.throwError("Can't instant search: Search bar or container elements is null.");
-        }
-
-        this.onSearch(this.searchResultContainerElement, this.searchBarElement.value);
     }
 
     private createSearchBar(): void {
@@ -58,6 +45,12 @@ export default class CenterSearchModal extends CenterModal {
         this.container.appendChild(this.searchResultContainerElement);
 
         this.searchBarElement.addEventListener("input", () => this.searchBarElementOnInput());
+        
+        setTimeout(() => {
+            if (this.onCreate != undefined) {
+                this.onCreate(this.searchResultContainerElement);
+            }
+        }, 1);
     }
 
     private searchBarElementOnInput(): void {
@@ -66,6 +59,10 @@ export default class CenterSearchModal extends CenterModal {
         }
 
         this.searchTimeout = setTimeout(async () => {
+            if (this.onSearch == null) {
+                return;
+            }
+
             if (this.searchResultContainerElement == null || this.searchBarElement == null) {
                 return this.app.throwError("Can't search: Search bar or container elements is null.");
             }
@@ -73,5 +70,42 @@ export default class CenterSearchModal extends CenterModal {
             this.searchTimeout = null;
             await this.onSearch(this.searchResultContainerElement, this.searchBarElement.value);
         }, this.searchDelay);
+    }
+
+    public static createCheckboxRow(title: string): HTMLElement {
+        const container: HTMLElement = document.createElement("li");
+        container.classList.add("checkbox-row");
+
+        const titleElement: HTMLElement = document.createElement("h2");
+        titleElement.classList.add("song-title-and-artist");
+        titleElement.classList.add("extern-text");
+        titleElement.textContent = title;
+        container.appendChild(titleElement);
+
+        const checkboxElement: HTMLInputElement = document.createElement("input");
+        checkboxElement.setAttribute("tabindex", String(-1));
+        checkboxElement.type = "checkbox";
+        container.appendChild(checkboxElement);
+
+        container.addEventListener("click", (e: PointerEvent) => {
+            if (e.target == null) {
+                return;
+            }
+    
+            if ([container, titleElement].includes((e.target as HTMLElement))) {
+                checkboxElement.checked = !checkboxElement.checked;
+            }
+        });
+
+        return container;
+    }
+
+    public getCheckedElements(): HTMLElement[] {
+        const liElements: HTMLElement[] = [...this.searchResultContainerElement.querySelectorAll<HTMLElement>("li")];
+
+        return liElements.filter((li: HTMLElement) => {
+            const checkbox: HTMLInputElement | null = li.querySelector<HTMLInputElement>("input");
+            return (checkbox?.checked);
+        });
     }
 }

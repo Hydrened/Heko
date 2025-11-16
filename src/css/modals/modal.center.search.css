@@ -165,21 +165,20 @@ ul.search-result-container > li.video-container > footer.song-player-container >
 
 
 
-ul.search-result-container:has(li.song-container) {
+ul.search-result-container:has(li.checkbox-row) {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: start;
     gap: 0.5rem;
 }
-
-ul.search-result-container > li.song-container {
+ul.search-result-container > li.checkbox-row {
     flex: 0 0 calc(50% - 0.5rem);
     
-    padding: 0.5rem 0.8rem;
+    padding-inline: 0.8rem;
 
-    display: flex;
-    justify-content: space-between;
+    display: grid;
+    grid-template-columns: 1fr auto;
     align-items: center;
     gap: 0.5rem;
 
@@ -190,24 +189,41 @@ ul.search-result-container > li.song-container {
     transition: 200ms;
     cursor: pointer;
 }
-ul.search-result-container > li.song-container:hover {
+ul.search-result-container > li.checkbox-row.hidden {
+    display: none;
+}
+ul.search-result-container > li.checkbox-row:hover {
     background-color: var(--bg-wo-5);
 }
-ul.search-result-container > li.song-container:has(input:checked) {
+ul.search-result-container > li.checkbox-row:has(input:checked) {
     border-color: var(--accent-color);
 }
+ul.search-result-container > li.checkbox-row > h2.song-title-and-artist {
+    padding-block: 0.7rem;
 
-ul.search-result-container > li.song-container > h2.song-title-and-artist {
     font-size: 0.8rem;
     font-weight: normal;
 }
-ul.search-result-container > li.song-container > button[playing="true"] > [playing="false"],
-ul.search-result-container > li.song-container > button[playing="false"] > [playing="true"] {
-    display: none;
-}
-ul.search-result-container > li.song-container > input {
+ul.search-result-container > li.checkbox-row > input {
     width: 2rem;
 
     scale: 1.5;
     box-shadow: none;
+}
+
+
+
+
+
+ul.search-result-container > li.song-container {
+    grid-template-columns: 1fr repeat(2, auto);
+}
+
+ul.search-result-container > li.song-container > button {
+    grid-row: 1;
+    grid-column: 2;
+}
+ul.search-result-container > li.song-container > button[playing="true"] > [playing="false"],
+ul.search-result-container > li.song-container > button[playing="false"] > [playing="true"] {
+    display: none;
 }

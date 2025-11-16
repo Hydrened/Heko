@@ -101,8 +101,8 @@ export default class PlaylistsMoveManager {
         let position: number = -1;
 
         if (insertBeforeElement != null) {
-            const insertBeforePlaylist: Playlist | undefined = this.main.getPlaylistFromElement(insertBeforeElement);
-            if (insertBeforePlaylist == undefined) {
+            const insertBeforePlaylist: Playlist | null = this.main.getPlaylistFromElement(insertBeforeElement);
+            if (insertBeforePlaylist == null) {
                 return this.reset();
             }
 
@@ -110,8 +110,8 @@ export default class PlaylistsMoveManager {
         }
         else if (insertAfterElement != null) {
             const insertAfterElementIndex: number = this.sameParentPlaylistElements.indexOf(insertAfterElement);
-            const insertAfterPlaylist: Playlist | undefined = this.main.getPlaylistFromElement(insertAfterElement);
-            if (insertAfterPlaylist == undefined) {
+            const insertAfterPlaylist: Playlist | null = this.main.getPlaylistFromElement(insertAfterElement);
+            if (insertAfterPlaylist == null) {
                 return this.reset();
             }
 
@@ -121,8 +121,8 @@ export default class PlaylistsMoveManager {
             }
             else {
                 const nextPlaylistElement: Element = this.sameParentPlaylistElements[insertAfterElementIndex + 1];
-                const nextPlaylist: Playlist | undefined = this.main.getPlaylistFromElement(nextPlaylistElement);
-                if (nextPlaylist == undefined) {
+                const nextPlaylist: Playlist | null = this.main.getPlaylistFromElement(nextPlaylistElement);
+                if (nextPlaylist == null) {
                     return this.reset();
                 }
                 
@@ -132,9 +132,9 @@ export default class PlaylistsMoveManager {
 
         const errorBase: string = "Can't update playlist position";
 
-        const playlist: Playlist | undefined = this.main.getPlaylistFromElement(this.originalPlaylistElementBuffer);
-        if (playlist == undefined) {
-            return this.app.throwError(`${errorBase}: Playlist is undefined.`);
+        const playlist: Playlist | null = this.main.getPlaylistFromElement(this.originalPlaylistElementBuffer);
+        if (playlist == null) {
+            return this.app.throwError(`${errorBase}: Playlist is null.`);
         }
 
         this.updating = true;

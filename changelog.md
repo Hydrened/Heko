@@ -1,3 +1,10 @@
+## HEKO-3.2.7
+#### ADDED
+- current oppened playlist play button
+- "add song to playlists" modal
+#### FIXED
+- search modal reset when searching
+
 ## HEKO-3.2.5
 #### ADDED
 - auto updates

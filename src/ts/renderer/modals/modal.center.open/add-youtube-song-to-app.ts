@@ -6,25 +6,25 @@ import * as Functions from "./../../utils/utils.functions.js";
 import * as AntiSpam from "./../../utils/utils.anti-spam.js";
 
 // SEARCH
-async function addYoutubeSongToAppModalOnSearch(app: App, userSongs: Song[], searchResultContainerElement: HTMLElement, query: string): Promise<void> {
+async function addYoutubeSongToAppModalOnSearch(app: App, userSongs: Song[], container: HTMLElement, query: string): Promise<void> {
     const encodedQuery: string = encodeURIComponent(query);
 
-    Functions.removeChildren(searchResultContainerElement);
-    searchResultContainerElement.classList.add("loading");
+    Functions.removeChildren(container);
+    container.classList.add("loading");
 
     const searchReqRes: any = await Requests.youtube.search(app, encodedQuery);
     if (!searchReqRes.success) {
         return app.throwError(`Can't search on youtube: ${searchReqRes.error}`);
     }
 
-    searchResultContainerElement.classList.remove("loading");
+    container.classList.remove("loading");
 
     const videos: Video[] = (searchReqRes.videos as Video[]);
-    videos.forEach((video: Video) => createVideoElement(app, userSongs, searchResultContainerElement, video));
+    videos.forEach((video: Video) => createVideoElement(app, userSongs, container, video));
 }
 
 // CREATE
-function createVideoElement(app: App, userSongs: Song[], searchResultContainerElement: HTMLElement, video: Video): void {
+function createVideoElement(app: App, userSongs: Song[], container: HTMLElement, video: Video): void {
     if (video.id.kind != "youtube#video") {
         return;
     }
@@ -35,7 +35,7 @@ function createVideoElement(app: App, userSongs: Song[], searchResultContainerEl
 
     const elements: any = [];
 
-    createMainContainers(app, elements, searchResultContainerElement, video);
+    createMainContainers(app, elements, container, video);
     initEvents(app, elements, userSongs, video);
 }
 
@@ -270,10 +270,9 @@ function sliderOnInput(app: App, elements: any): void {
 export default function openAddYoutubeSongToAppModal(app: App, userSongs: Song[]): void {
     const data: CenterSearchModalData = {
         title: "Search song on Youtube",
-        onConfirm: async (modal: CenterModal, searchResultContainerElement: HTMLElement) => null,
-        onSearch: async (searchResultContainerElement: HTMLElement, query: string) => await addYoutubeSongToAppModalOnSearch(app, userSongs, searchResultContainerElement, query),
+        onConfirm: async (modal: CenterModal, container: HTMLElement) => null,
+        onSearch: async (container: HTMLElement, query: string) => await addYoutubeSongToAppModalOnSearch(app, userSongs, container, query),
         searchDelay: 1000,
-        instantSearch: false,
         cantClose: false,
     };
 

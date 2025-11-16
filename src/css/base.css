@@ -67,7 +67,7 @@ a {
 
 
 button.disabled {
-    opacity: 0.5;
+    opacity: 0.2;
     user-select: none;
     pointer-events: none;
 }
@@ -121,6 +121,7 @@ input[type="range"]::-webkit-slider-thumb {
 img {
     width: 2rem;
 
+    pointer-events: none;
     opacity: var(--text-opacity);
 }
 svg.fill, svg.fill * {
