@@ -46,7 +46,7 @@
                     <header>
                         <div id="current-playlist-thumbnail" class="thumbnail"></div>
                         <div class="current-playlist-details-container">
-                            <h1 id="current-playlist-title" class="extern-text"></h1>
+                            <h1 id="current-playlist-title" class="text-overflow"></h1>
                             <div class="current-playlist-bottom-details-container">
                                 <h4 id="current-playlist-song-number"></h4>
                                 <h4 id="current-playlist-duration"><h4>
@@ -87,8 +87,8 @@
             </section>
             <footer class="bottom-tab">
                 <article class="current-song-details-container">
-                    <h3 id="current-song-title" class="extern-text"></h3>
-                    <h4 id="current-song-artist" class="extern-text"></h4>
+                    <h3 id="current-song-title" class="text-overflow"></h3>
+                    <h4 id="current-song-artist" class="text-overflow"></h4>
                 </article>
                 <article class="main-controls-container">
                     <div class="main-control-buttons-container">
@@ -120,10 +120,10 @@
                 <article class="secondary-controls-container">
                     <!-- <button id="speed-button" tabindex="-1">
                         <img src="assets/speed.svg">
-                    </button>
-                    <button id="queue-button" tabindex="-1">
-                        <img src="assets/queue.svg">
                     </button> -->
+                    <button id="queue-button" class="disabled" tabindex="-1">
+                        <img src="assets/queue.svg">
+                    </button>
                     <div class="volume-controls-container">
                         <button id="toggle-song-volume-button" volume="0" tabindex="-1">
                             <img src="assets/volume-muted.svg" volume="0">
@@ -135,7 +135,21 @@
                 </article>
             </footer>
         </main>
-        <settings-container class="hidden">
+        <queue-container class="main-container hidden">
+            <header>
+                <h1>Queue</h1>
+                <button id="queue-close-button">
+                    <img src="assets/remove.svg">
+                </button>
+            </header>
+            <div class="content">
+                <h2>Playing song</h2>
+                <ul id="queue-current-song-container"></ul>
+                <h2>Next songs</h2>
+                <ul id="queue-next-songs-container"></ul>
+            </div>
+        </queue-container>
+        <settings-container class="main-container hidden">
             <div class="wrapper">
                 <aside>
                     <h1>Settings</h1>
@@ -210,12 +224,12 @@
                 </section>
             </div>
         </settings-container>
-        <maintenance-container class="hidden">
+        <maintenance-container class="main-container hidden">
             <h1>Taking a Short Break</h1>
             <p>We're tuning things up! Heko will be back in a few minutes. Thanks for your patience!</p>
         </maintenance-container>
-        <loading-screen>
+        <loading-screen-container class="main-container">
             Heko
-        </loading-screen>
+        </loading-screen-container>
     </body>
 </html>

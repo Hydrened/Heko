@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function editSongFromPlaylistModalOnConfirm(app: App, modal: CenterModal, song: Song): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, song: Song): Promise<ModalError> {
     const newTitle: string = modal.getFieldValue("New title");
     if (newTitle.length < 1) {
         return {
@@ -43,7 +43,7 @@ export default function openEditSongFromPlaylistModal(app: App, song: Song): voi
     const data: CenterModalData = {
         title: `Edit song "${song.title}" by "${song.artist}"`,
         content: content,
-        onConfirm: async (modal: CenterModal) => await editSongFromPlaylistModalOnConfirm(app, modal, song),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal, song),
         cantClose: false,
     };
 

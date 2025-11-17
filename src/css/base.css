@@ -132,3 +132,8 @@ svg.fill, svg.fill * {
     background-repeat: no-repeat;
     background-position: center center;
 }
+
+
+.main-container.hidden {
+    display: none;
+}

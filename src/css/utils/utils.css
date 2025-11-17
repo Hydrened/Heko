@@ -1,10 +1,6 @@
-@keyframes loading-shimmer {
-    0% {
-        left: -150%;
-    }
-    100% {
-        left: 150%;
-    }
+@keyframes loading-shimmer-move {
+    0% { left: -150%; }
+    100% { left: 150%; }
 }
 .loading {
     position: relative;
@@ -26,10 +22,10 @@
     left: -150%;
 
     background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.08) 50%, transparent 100%);
-    animation: loading-shimmer 1300ms 300ms infinite !important;
+    animation: loading-shimmer-move 1300ms 300ms infinite !important;
 }
 
-.extern-text {
+.text-overflow {
     width: 100%;
     min-width: 0;
 

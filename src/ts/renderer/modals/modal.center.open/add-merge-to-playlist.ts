@@ -1,7 +1,7 @@
 import App from "../../app.js";
 import * as Requests from "../../utils/utils.requests.js";
 
-async function addSongToPlaylistModalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playlist[]): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playlist[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
         app.throwError("Can't add playlist to merge in playlist: Current opened playlist is null.");
@@ -48,7 +48,7 @@ export default function openAddMergeToPlaylistModal(app: App, playlistsLeft: Pla
     const data: CenterModalData = {
         title: `Add a playlist to merge in ${currentOpenedPlaylist.name}`,
         content: content,
-        onConfirm: async (modal: CenterModal) => await addSongToPlaylistModalOnConfirm(app, modal, playlistsLeft),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal, playlistsLeft),
         cantClose: false,
     };
 

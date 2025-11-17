@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
+async function modalOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
     const removeSongFromPlaylistReqRes: any = await Requests.song.removeFromPlaylist(app, playlist.id, song.id);
     if (!removeSongFromPlaylistReqRes.success) {
         app.throwError(`Can't remove song from playlist: ${removeSongFromPlaylistReqRes.error}`);
@@ -11,6 +11,7 @@ async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist
     app.playlistManager.refreshPlaylistBuffer().then(() => {
         app.playlistManager.refreshPlaylistsContainerTab();
         app.playlistManager.refreshOpenedPlaylistTab();
+        app.listenerManager.refresh();
     });
 
     app.modalManager.openTopModal("SUCCESS", `Successfully removed song "${song.title}" by "${song.artist}" from playlist "${playlist.name}".`);
@@ -20,7 +21,7 @@ async function removeSongFromPlaylistModalOnConfirm(app: App, playlist: Playlist
 export default function openRemoveSongFromPlaylistModal(app: App, playlist: Playlist, song: Song): void {
     const data: CenterModalData = {
         title: `Are you sure you want to remove song "${song.title}" by "${song.artist}" from playlist "${playlist.name}"`,
-        onConfirm: async (modal: CenterModal) => await removeSongFromPlaylistModalOnConfirm(app, playlist, song),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, playlist, song),
         cantClose: false,
     };
 

@@ -1,3 +1,7 @@
+## HEKO-3.2.8
+#### ADDED
+- queue visualisation
+
 ## HEKO-3.2.7
 #### ADDED
 - current oppened playlist play button

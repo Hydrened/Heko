@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function removeSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
     const songIndex: number | undefined = modal.getFieldValueIndex("Title");
     if (songIndex == undefined) {
         return {
@@ -38,7 +38,7 @@ export default function openRemoveFromAppSongModal(app: App, userSongs: Song[]):
     const data: CenterModalData = {
         title: "Remove song from Heko",
         content: content,
-        onConfirm: async (modal: CenterModal) => await removeSongFromAppModalOnConfirm(app, modal, userSongs),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal, userSongs),
         cantClose: false,
     };
 

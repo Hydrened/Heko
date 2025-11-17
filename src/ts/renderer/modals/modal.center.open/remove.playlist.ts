@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const childrenIDs: ID[] = PlaylistManager.getPlaylistChildrenIDs(userPlaylists, playlist.id);
 
     const playlists: Playlist[] = app.playlistManager.getPlaylistBuffer();
@@ -34,7 +34,7 @@ async function removePlaylistModalOnConfirm(app: App, userPlaylists: Playlist[],
 export default function openRemovePlaylistModal(app: App, userPlaylists: Playlist[], playlist: Playlist): void {
     const data: CenterModalData = {
         title: `Are you sure you want to remove playlist "${playlist.name}"? Children playlist(s) will also be deleted.`,
-        onConfirm: async (modal: CenterModal) => await removePlaylistModalOnConfirm(app, userPlaylists, playlist, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, userPlaylists, playlist, modal),
         cantClose: false,
     };
 

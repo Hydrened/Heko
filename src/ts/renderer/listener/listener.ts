@@ -53,6 +53,7 @@ export default class ListenerManager {
 
     public addSongToQueue(song: Song): void {
         this.queueManager.addSong(song);
+        this.refreshManager.refresh(this.queueManager.getCurrentSong());
     }
 
     // BUTTON EVENTS
@@ -70,10 +71,12 @@ export default class ListenerManager {
 
     public toggleShuffleButton(): void {
         this.queueManager.toggleShuffleButton();
+        this.refreshManager.refresh(this.queueManager.getCurrentSong());
     }
 
     public toggleLoopButton(): void {
         this.queueManager.toggleLoopButton();
+        this.refreshManager.refresh(this.queueManager.getCurrentSong());
     }
 
     public toggleMuteButton(): void {
@@ -81,6 +84,10 @@ export default class ListenerManager {
     }
 
     // GETTERS
+    public getQueue(): Queue {
+        return this.queueManager.getQueue();
+    }
+
     public getAudioElement(): HTMLAudioElement {
         return this.audioElement;
     }

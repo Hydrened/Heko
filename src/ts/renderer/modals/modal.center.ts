@@ -143,7 +143,7 @@ export default class CenterModal {
         ul.appendChild(li);
 
         const label: HTMLElement = document.createElement("label");
-        label.classList.add("extern-text");
+        label.classList.add("text-overflow");
         label.textContent = `${row.label} :`;
         li.appendChild(label);
 
@@ -325,7 +325,7 @@ export default class CenterModal {
         containerElement.appendChild(input);
 
         const dropAreaElement: HTMLElement = document.createElement("input-file-drop-area");
-        dropAreaElement.classList.add("extern-text");
+        dropAreaElement.classList.add("text-overflow");
         containerElement.appendChild(dropAreaElement);
 
         const resetDropAreaText = (): void => {

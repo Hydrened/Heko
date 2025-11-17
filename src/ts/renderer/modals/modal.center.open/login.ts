@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function loginModalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const email: string = modal.getFieldValue("Email");
     const password: string = modal.getFieldValue("Password");
 
@@ -39,7 +39,7 @@ export default function openLoginModal(app: App): CenterModal {
     const data: CenterModalData = {
         title: "Login",
         content: content,
-        onConfirm: async (modal: CenterModal) => await loginModalOnConfirm(app, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal),
         additionnalButtons: additionnalButtons,
         cantClose: true,
     };

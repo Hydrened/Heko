@@ -5,15 +5,23 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerEventManager {
+    private queueCloseDuration: number = 0;
+
     constructor(private app: App, private main: ListenerManager) {
         this.initEvents();
+        this.loadCssVariables();
         this.initRefreshLoop();
     }
 
     private initEvents(): void {
         this.initSongControlButtonEvent();
+        this.initQueueEvents();
         this.initSongProgressbarEvents();
         this.initShortcuts();
+    }
+
+    private loadCssVariables(): void {
+        this.queueCloseDuration = Functions.getCssVariable("queue-closing-duration", "MS_DURATION");
     }
 
     private initSongControlButtonEvent(): void {
@@ -33,6 +41,36 @@ export default class ListenerEventManager {
         Bridge.mainEvents.onPreviousButton(() => this.main.previousButton());
         Bridge.mainEvents.onPlayButton(() => this.main.togglePlayButton());
         Bridge.mainEvents.onNextButton(() => this.main.nextButton());
+    }
+
+    private initQueueEvents(): void {
+        const closeQueueContainer = (): void => {
+            Elements.queue.container.classList.add("closing");
+
+            setTimeout(() => {
+                Elements.queue.container.classList.add("hidden");
+                Elements.queue.container.classList.remove("closing");
+            }, this.queueCloseDuration);
+        };
+
+        Elements.songControls.special.queueButton.addEventListener("click", () => {
+            const isClosed: boolean = Elements.queue.container.classList.contains("hidden");
+
+            if (isClosed) {
+                Elements.queue.container.classList.remove("hidden");
+            }
+            else {
+                closeQueueContainer();
+            }
+        });
+
+        Elements.queue.closeButton.addEventListener("click", () => closeQueueContainer());
+
+        document.addEventListener("keydown", (e: KeyboardEvent) => {
+            if (e.key == "Escape" && !Elements.queue.container.classList.contains("hidden")) {
+                closeQueueContainer();
+            }
+        });
     }
 
     private initSongProgressbarEvents(): void {

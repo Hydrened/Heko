@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function renamePlaylistModalOnConfirm(app: App, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("New name");
 
     if (newPlaylistName.length < 3) {
@@ -45,7 +45,7 @@ export default function openRenamePlaylistModal(app: App, playlist: Playlist): v
     const data: CenterModalData = {
         title: `Rename playlist "${playlist.name}".`,
         content: content,
-        onConfirm: async (modal: CenterModal) => await renamePlaylistModalOnConfirm(app, playlist, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, playlist, modal),
         cantClose: false,
     };
 

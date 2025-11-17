@@ -17,9 +17,6 @@ maintenance-container {
     background: var(--gradient);
     z-index: 50;
 }
-maintenance-container.hidden {
-    display: none;
-}
 
 maintenance-container > h1 {
     font-size: 3rem;

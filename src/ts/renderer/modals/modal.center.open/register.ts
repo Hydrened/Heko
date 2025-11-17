@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function registerModalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const name: string = modal.getFieldValue("Name");
     const email: string = modal.getFieldValue("Email");
     const password: string = modal.getFieldValue("Password");
@@ -51,7 +51,7 @@ export default function openRegisterModal(app: App): CenterModal {
     const data: CenterModalData = {
         title: "Register",
         content: content,
-        onConfirm: async (modal: CenterModal) => await registerModalOnConfirm(app, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal),
         additionnalButtons: additionnalButtons,
         cantClose: true,
     };

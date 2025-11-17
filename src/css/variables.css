@@ -8,6 +8,7 @@
     --contextmenu-padding: 5px;
     --contextmenu-width: 280px;
     --contextmenu-row-height: 29px;
+    --queue-container-height: 40rem;
 
     /* BG COLORS */
     --bg-bo-1: rgba(0,0,0,0.1);
@@ -51,6 +52,7 @@
     --top-modal-closing-duration: 500ms;
     --loading-modal-closing-duration: 500ms;
     --playlist-open-duration: 500ms;
+    --queue-closing-duration: 250ms;
 
     /* INDEXES */
     --main-modal-index: 10;

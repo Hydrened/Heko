@@ -42,7 +42,7 @@ export default class App {
             this.dev = data.dev;
         });
         
-        Bridge.mainEvents.onClose(async () => await this.settings.save());
+        Bridge.mainEvents.onClose(async () => await this.onClose());
 
         window.addEventListener("keydown", async (e: KeyboardEvent) => {
             if (!e.ctrlKey || e.key.toLowerCase() != "r") {
@@ -50,7 +50,7 @@ export default class App {
             }
 
             e.preventDefault();
-            await this.settings.save();
+            await this.onClose();
             window.location.reload();
         });
     }
@@ -87,6 +87,10 @@ export default class App {
             Bridge.throwError(message);
             this.threw = true;
         }
+    }
+
+    private async onClose(): Promise<void> {
+        await this.settings.save();
     }
 
     // LOGIN EVENTS

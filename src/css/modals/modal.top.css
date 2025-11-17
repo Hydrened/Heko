@@ -42,10 +42,6 @@ top-modal-container.error {
     border-color: var(--bg-error-col);
 }
 
-@keyframes top-modal-container-closing {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
-}
 top-modal-container.closing {
-    animation: top-modal-container-closing var(--top-modal-closing-duration) forwards;
+    animation: fade-out var(--top-modal-closing-duration) forwards;
 }

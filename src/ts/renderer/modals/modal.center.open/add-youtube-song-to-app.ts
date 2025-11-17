@@ -6,7 +6,7 @@ import * as Functions from "./../../utils/utils.functions.js";
 import * as AntiSpam from "./../../utils/utils.anti-spam.js";
 
 // SEARCH
-async function addYoutubeSongToAppModalOnSearch(app: App, userSongs: Song[], container: HTMLElement, query: string): Promise<void> {
+async function modalOnSearch(app: App, userSongs: Song[], container: HTMLElement, query: string): Promise<void> {
     const encodedQuery: string = encodeURIComponent(query);
 
     Functions.removeChildren(container);
@@ -271,7 +271,7 @@ export default function openAddYoutubeSongToAppModal(app: App, userSongs: Song[]
     const data: CenterSearchModalData = {
         title: "Search song on Youtube",
         onConfirm: async (modal: CenterModal, container: HTMLElement) => null,
-        onSearch: async (container: HTMLElement, query: string) => await addYoutubeSongToAppModalOnSearch(app, userSongs, container, query),
+        onSearch: async (container: HTMLElement, query: string) => await modalOnSearch(app, userSongs, container, query),
         searchDelay: 1000,
         cantClose: false,
     };

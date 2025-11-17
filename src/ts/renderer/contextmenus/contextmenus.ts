@@ -107,7 +107,7 @@ export default class ContextmenuManager {
 
         const titleElement: HTMLElement = document.createElement("span");
         titleElement.classList.add("contextmenu-row-title");
-        titleElement.classList.add("extern-text");
+        titleElement.classList.add("text-overflow");
         titleElement.textContent = row.title;
         rowContainer.appendChild(titleElement);
         

@@ -1,4 +1,4 @@
-export const loadingScreen: HTMLElement = document.querySelector("loading-screen")!;
+export const loadingScreen: HTMLElement = document.querySelector("loading-screen-container")!;
 
 export const maintenanceContainer: HTMLElement = document.querySelector("maintenance-container")!;
 
@@ -83,6 +83,14 @@ export const songControls = {
         toggleButton: (document.querySelector("#toggle-song-volume-button") as HTMLButtonElement),
         slider: (document.querySelector("#volume-slider") as HTMLInputElement),
     },
+};
+
+export const queue = {
+    container: (document.querySelector("queue-container") as HTMLElement),
+    closeButton: (document.querySelector("#queue-close-button") as HTMLElement),
+
+    currentSongContainer: (document.querySelector("#queue-current-song-container") as HTMLElement),
+    nextSongsContainer: (document.querySelector("#queue-next-songs-container") as HTMLElement),
 };
 
 export const settings = {

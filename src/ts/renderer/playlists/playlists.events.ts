@@ -11,6 +11,8 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsEventManager {
+    private searchTimeout: NodeJS.Timeout | null = null;
+
     constructor(private app: App, private main: PlaylistManager) {
         this.initContextmenuShortcuts();
         this.initPlaylistContainerEvents();
@@ -115,17 +117,25 @@ export default class PlaylistsEventManager {
     }
 
     private openedPlaylistInputFilterOnInput(): void {
-        const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
-        if (currentOpenedPlaylist == null) {
-            return;
+        if (this.searchTimeout != null) {
+            clearTimeout(this.searchTimeout);
         }
 
-        const value: string = Elements.currentPlaylist.songFilterInput.value.toLowerCase();
+        this.searchTimeout = setTimeout(() => {
+            this.searchTimeout = null;
+            
+            const currentOpenedPlaylist: Playlist | null = this.main.getCurrentOpenedPlaylist();
+            if (currentOpenedPlaylist == null) {
+                return;
+            }
 
-        const isMergeContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
-        (isMergeContainer)
-            ? this.openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist, value)
-            : this.openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist, value);
+            const value: string = Elements.currentPlaylist.songFilterInput.value.toLowerCase();
+
+            const isMergeContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
+            (isMergeContainer)
+                ? this.openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist, value)
+                : this.openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist, value);
+        }, 300);
     }
 
     private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, value: string): void {

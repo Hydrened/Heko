@@ -1,8 +1,4 @@
 /* MAIN MODAL */
-@keyframes center-modal-container-opening {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
 .center-modal-container {
     width: 100vw;
     height: 100vh;
@@ -17,27 +13,17 @@
 
     background-color: var(--bg-bo-2);
     z-index: var(--main-modal-index);
-    animation: center-modal-container-opening 500ms forwards;
-}
-@keyframes center-modal-container-closing {
-    0% { opacity: 1; }
-    100% { opacity: 0; }
+    animation: fade-in 500ms forwards;
 }
 .center-modal-container.closing {
-    animation: center-modal-container-closing var(--center-modal-closing-duration) forwards;
+    animation: fade-out var(--center-modal-closing-duration) forwards;
 }
 
 
 
-@keyframes center-modal-opening {
-    0% {
-        opacity: 0;
-        transform: translateY(-10rem);
-    }
-    100% {
-        opacity: 1;
-        transform: translateY(0);
-    }
+@keyframes center-modal-opening-move {
+    0% { transform: translateY(-10rem); }
+    100% { transform: translateY(0); }
 }
 .center-modal {
     width: 35rem;
@@ -49,14 +35,14 @@
 
     background: var(--gradient);
     box-shadow: 0 0 1rem 0.1rem black;
-    animation: center-modal-opening 500ms forwards;
+    animation: center-modal-opening-move var(--center-modal-closing-duration) forwards, fade-in var(--center-modal-closing-duration) forwards;
 }
-@keyframes center-modal-closing {
+@keyframes center-modal-closing-move {
     0% { transform: translateY(0); }
     100% { transform: translateY(-10rem); }
 }
 .closing > .center-modal {
-    animation: center-modal-closing var(--center-modal-closing-duration) forwards;
+    animation: center-modal-closing-move var(--center-modal-closing-duration) forwards;
 }
 .center-modal::before {
     content: "";

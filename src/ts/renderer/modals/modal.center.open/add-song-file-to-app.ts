@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
-async function addSongFileToAppModalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
     const title: string = modal.getFieldValue("Title");
     if (title.length < 1) {
         return {
@@ -88,7 +88,7 @@ export default function openAddSongFileToAppModal(app: App, userSongs: Song[]): 
     const data: CenterModalData = {
         title: "Add song to Heko",
         content: content,
-        onConfirm: async (modal: CenterModal) => await addSongFileToAppModalOnConfirm(app, userSongs, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, userSongs, modal),
         cantClose: false,
     };
 

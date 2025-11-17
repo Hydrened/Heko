@@ -1,5 +1,3 @@
-import "./utils.types.js";
-
 export default class InputSelect {
     private list: HTMLElement | null = null;
     private selected: number = -1;

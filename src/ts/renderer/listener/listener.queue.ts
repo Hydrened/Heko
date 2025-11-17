@@ -135,8 +135,6 @@ export default class ListenerQueueManager {
         const nextIndex: number = ((songIndex + 1) % songs.length);
         const nextSong: Song = songs[nextIndex];
         this.queue.push(nextSong);
-
-        this.logQueue();
     }
 
     public addSong(song: Song): void {
@@ -231,6 +229,10 @@ export default class ListenerQueueManager {
     }
 
     // GETTERS
+    public getQueue(): Queue {
+        return this.manuallyAddedToQueue.concat(this.queue.slice(this.currentQueueIndex + 1));
+    }
+
     public getAudioElement(): HTMLAudioElement {
         return this.audioElement;
     }
@@ -259,7 +261,7 @@ export default class ListenerQueueManager {
     // SETTERS
     private setAudioSrc(song: Song): void {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
-        this.audioElement.play();
+        this.audioElement.load();
         this.main.refresh();
         Bridge.win.setTitle(song.title);
     }
@@ -267,7 +269,7 @@ export default class ListenerQueueManager {
     private setPlaying(state: boolean): void {
         this.playing = state;
         this.setButtonState(Elements.songControls.buttons.togglePlayButton, state, "playing");
-        (this.playing) ? this.audioElement.play() : this.audioElement.pause();
+        (this.playing) ? this.audioElement.play().catch((err: any) => {}) : this.audioElement.pause();
 
         const prop: string = (state ? "pause" : "play");
         Bridge.win.setThumbarPlayButton(prop);
@@ -297,24 +299,5 @@ export default class ListenerQueueManager {
 
     public getLoopState(): boolean {
         return this.loop;
-    }
-
-    // DEBUG
-    private logQueue(): void {
-        return;
-
-        console.log("----------------------------------");
-
-        const currentSong: Song | null = this.getCurrentSong();
-        if (currentSong == null) {
-            this.app.throwError("Can't log queue: Current song is null.");
-        }
-
-        console.log(`Current song: ${currentSong!.title}`);
-
-        console.log(`Next songs:`);
-        this.queue.slice(this.currentQueueIndex).forEach((song: Song, index: number) => {
-            console.log(`${index + 1}: ${song.title}`);
-        });
     }
 };

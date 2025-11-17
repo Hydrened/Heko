@@ -78,7 +78,7 @@ export default class CenterSearchModal extends CenterModal {
 
         const titleElement: HTMLElement = document.createElement("h2");
         titleElement.classList.add("song-title-and-artist");
-        titleElement.classList.add("extern-text");
+        titleElement.classList.add("text-overflow");
         titleElement.textContent = title;
         container.appendChild(titleElement);
 

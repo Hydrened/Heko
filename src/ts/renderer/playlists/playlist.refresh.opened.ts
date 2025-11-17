@@ -107,7 +107,7 @@ export default class PlaylistsRefreshOpenedManager {
 
     private static createRowContent(parent: HTMLElement, text: string): HTMLElement {
         const rowElement: HTMLElement = document.createElement("p");
-        rowElement.classList.add("extern-text");
+        rowElement.classList.add("text-overflow");
         rowElement.textContent = text;
         parent.appendChild(rowElement);
 

@@ -3,7 +3,7 @@ import CenterSearchModal from "./../modal.center.search.js";
 import * as Requests from "./../../utils/utils.requests.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
-function addSongsToPlaylistModalOnCreate(app: App, audioELement: HTMLAudioElement, songsLeft: Song[], container: HTMLElement): void {
+function modalOnCreate(app: App, audioELement: HTMLAudioElement, songsLeft: Song[], container: HTMLElement): void {
     songsLeft.forEach((song: Song) => createSongContainer(app, audioELement, container, "", song));
 }
 
@@ -68,7 +68,7 @@ function resetEverySong(app: App, container: HTMLElement): void {
     playButtonElements.forEach((button: HTMLElement) => button.setAttribute("playing", String(false)));
 }
 
-async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, container: HTMLElement, songsLeft: Song[]): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, container: HTMLElement, songsLeft: Song[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
         app.throwError("Can't add songs to playlist: Current opened playlist is null.");
@@ -77,9 +77,15 @@ async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, co
 
     const songIDsToAdd: ID[] = (modal as CenterSearchModal).getCheckedElements().map((li: HTMLElement) => {
         return (app.playlistManager.getSongFromElement(li));
-    }).filter((song: Song | null) => song != null).map((song: Song) => song.id);
+    }).filter((song: Song | null) => song != null).map((song: Song) => song.id).filter((songID: ID) => !currentOpenedPlaylist.songs.find((s) => s.id == songID));
 
     const songWord: string = Functions.pluralize("song", songIDsToAdd.length);
+
+    if (songIDsToAdd.length == 0) {
+        return {
+            error: "Song(s) are already in this playlist.",
+        };
+    }
 
     const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, songIDsToAdd, [currentOpenedPlaylist.id]);
     if (!addSongsToPlaylistReqRes.success) {
@@ -96,7 +102,7 @@ async function addSongsToPlaylistModalOnConfirm(app: App, modal: CenterModal, co
     return null;
 }
 
-function addSongsToPlaylistModalOnSearch(app: App, audioELement: HTMLAudioElement, container: HTMLElement, query: string, songsLeft: Song[]): void {
+function modalOnSearch(app: App, audioELement: HTMLAudioElement, container: HTMLElement, query: string, songsLeft: Song[]): void {
     query = query.toLowerCase();
 
     const songElements: HTMLElement[] = [...container.querySelectorAll<HTMLElement>("li")];
@@ -128,9 +134,9 @@ export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[])
     
     const data: CenterSearchModalData = {
         title: `Add song to ${currentOpenedPlaylist.name}`,
-        onCreate: (container: HTMLElement) => addSongsToPlaylistModalOnCreate(app, audioELement, songsLeft, container),
-        onConfirm: async (modal: CenterModal, container: HTMLElement) => await addSongsToPlaylistModalOnConfirm(app, modal, container, songsLeft),
-        onSearch: async (container: HTMLElement, query: string) => addSongsToPlaylistModalOnSearch(app, audioELement, container, query, songsLeft),
+        onCreate: (container: HTMLElement) => modalOnCreate(app, audioELement, songsLeft, container),
+        onConfirm: async (modal: CenterModal, container: HTMLElement) => await modalOnConfirm(app, modal, container, songsLeft),
+        onSearch: async (container: HTMLElement, query: string) => modalOnSearch(app, audioELement, container, query, songsLeft),
         onClose: () => {
             audioELement.pause();
             audioELement.src = "";

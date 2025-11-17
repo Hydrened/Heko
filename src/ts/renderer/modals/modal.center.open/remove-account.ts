@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function deleteAccountOnConfirm(app: App): Promise<ModalError> {
+async function modalOnConfirm(app: App): Promise<ModalError> {
     const email: string = app.account.getUserData().email!;
 
     const sendDeleteAccountConfirmationReqRes: any = await Requests.user.sendDeleteConfirmation(app, email);
@@ -18,7 +18,7 @@ export default function openDeleteAccountModal(app: App): void {
     const data: CenterModalData = {
         title: "Are you sure you want to delete your account? A confirmation email will be sent to your address.",
         content: [],
-        onConfirm: async (modal: CenterModal) => deleteAccountOnConfirm(app),
+        onConfirm: async (modal: CenterModal) => modalOnConfirm(app),
         cantClose: false,
     };
 

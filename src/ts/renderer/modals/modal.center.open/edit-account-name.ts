@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function editAccountNameOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const newName: string = modal.getFieldValue("New name");
     if (newName.length < 3) {
         return {
@@ -36,7 +36,7 @@ export default function openEditAccountNameModal(app: App): void {
     const data: CenterModalData = {
         title: "Edit song from Heko",
         content: content,
-        onConfirm: async (modal: CenterModal) => await editAccountNameOnConfirm(app, modal),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal),
         cantClose: false,
     };
 

@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
-async function createPlaylistOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("Name");
     if (newPlaylistName.length < 3) {
         return {
@@ -83,7 +83,7 @@ export default function openCreatePlaylistModal(app: App): void {
     const data: CenterModalData = {
         title: "Create a playlist",
         content: content,
-        onConfirm: (modal: CenterModal): Promise<ModalError> => createPlaylistOnConfirm(app, modal),
+        onConfirm: (modal: CenterModal): Promise<ModalError> => modalOnConfirm(app, modal),
         cantClose: false,
     };
 

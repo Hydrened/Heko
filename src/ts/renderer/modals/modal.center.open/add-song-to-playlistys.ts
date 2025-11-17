@@ -2,7 +2,7 @@ import App from "./../../app.js";
 import CenterSearchModal from "./../modal.center.search.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-function openAddSongToPlaylistsOnCreate(app: App, playlistsLeft: Playlist[], container: HTMLElement): void {
+function modalOnCreate(app: App, playlistsLeft: Playlist[], container: HTMLElement): void {
     playlistsLeft.forEach((playlistLeft: Playlist) => createPlaylistContainer(app, playlistLeft, container));
 }
 
@@ -14,7 +14,7 @@ function createPlaylistContainer(app: App, playlistLeft: Playlist, container: HT
     liElement.addEventListener("contextmenu", (e: PointerEvent) => app.contextmenuManager.createPlaylistContextMenu((e as Position), playlistLeft));
 }
 
-async function openAddSongToPlaylistsOnConfirm(app: App, song: Song, modal: CenterModal, container: HTMLElement): Promise<ModalError> {
+async function modalOnConfirm(app: App, song: Song, modal: CenterModal, container: HTMLElement): Promise<ModalError> {
     const playlistIDsToAdd: ID[] = (modal as CenterSearchModal).getCheckedElements().map((li: HTMLElement) => {
         return (app.playlistManager.getPlaylistFromElement(li));
     }).filter((playlist: Playlist | null) => playlist != null).map((playlist: Playlist) => playlist.id);
@@ -29,13 +29,14 @@ async function openAddSongToPlaylistsOnConfirm(app: App, song: Song, modal: Cent
         await app.playlistManager.refreshSongBuffer();
         app.playlistManager.refreshPlaylistsContainerTab();
         app.playlistManager.refreshOpenedPlaylistTab();
+        app.listenerManager.refresh();
     });
 
     app.modalManager.openTopModal("SUCCESS", `Successfully added "${song.title}" by "${song.artist}" to playlists.`);
     return null;
 }
 
-async function openAddSongToPlaylistsOnSearch(app: App, container: HTMLElement, query: string): Promise<void> {
+async function modalOnSearch(app: App, container: HTMLElement, query: string): Promise<void> {
     query = query.toLowerCase();
 
     const playlistElements: HTMLElement[] = [...container.querySelectorAll<HTMLElement>("li")];
@@ -62,9 +63,9 @@ export default function openAddSongToPlaylistsModal(app: App, playlistsLeft: Pla
 
     const data: CenterSearchModalData = {
         title: `Add song "${song.title}" by "${song.artist}" in playlists`,
-        onCreate: (container: HTMLElement) => openAddSongToPlaylistsOnCreate(app, playlistsLeft, container),
-        onConfirm: async (modal: CenterModal, container: HTMLElement) => await openAddSongToPlaylistsOnConfirm(app, song, modal, container),
-        onSearch: async (container: HTMLElement, query: string) => openAddSongToPlaylistsOnSearch(app, container, query),
+        onCreate: (container: HTMLElement) => modalOnCreate(app, playlistsLeft, container),
+        onConfirm: async (modal: CenterModal, container: HTMLElement) => await modalOnConfirm(app, song, modal, container),
+        onSearch: async (container: HTMLElement, query: string) => modalOnSearch(app, container, query),
         searchDelay: 0,
         cantClose: false,
     };

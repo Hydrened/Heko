@@ -1,5 +1,6 @@
 import App from "./../app.js";
 import ListenerManager from "./listener.js";
+import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerRefreshManager {
@@ -10,6 +11,7 @@ export default class ListenerRefreshManager {
     public refresh(currentSong: Song | null): void {
         this.refreshDetails(currentSong);
         this.refreshSongClasses(currentSong);
+        this.refreshQueue(currentSong);
     }
 
     private refreshDetails(currentSong: Song | null): void {
@@ -37,5 +39,54 @@ export default class ListenerRefreshManager {
         }
 
         currentSongLi.classList.add("listening");
+    }
+
+    private refreshQueue(currentSong: Song | null): void {
+        const queue: Queue = this.main.getQueue();
+        const queueButton: HTMLElement = Elements.songControls.special.queueButton;
+
+        Functions.removeChildren(Elements.queue.currentSongContainer);
+        Functions.removeChildren(Elements.queue.nextSongsContainer);
+
+        const canOpenQueue: boolean = (queue.length != 0);
+        (canOpenQueue)
+            ? queueButton.classList.remove("disabled")
+            : queueButton.classList.add("disabled");
+
+        if (!canOpenQueue || currentSong == null) {
+            document.querySelector("queue-container")?.classList.add("hidden");
+            return;
+        }
+
+        const createSongContainer = (parent: HTMLElement, song: Song): void => {
+            const container: HTMLElement = document.createElement("li");
+            container.classList.add("queue-song");
+            parent.appendChild(container);
+
+            const titleElement: HTMLElement = document.createElement("h3");
+            titleElement.classList.add("text-overflow");
+            titleElement.textContent = song.title;
+            container.appendChild(titleElement);
+
+            const artistElement: HTMLElement = document.createElement("h4");
+            artistElement.classList.add("text-overflow");
+            artistElement.textContent = song.artist;
+            container.appendChild(artistElement);
+
+            const optionsButton: HTMLElement = document.createElement("button");
+            container.appendChild(optionsButton);
+
+            const optionsButtonImg: HTMLImageElement = document.createElement("img");
+            optionsButtonImg.src = "assets/ellipsis.svg";
+            optionsButton.appendChild(optionsButtonImg);
+
+            optionsButton.addEventListener("click", () => {
+                const optionsButtonRect: DOMRect = optionsButton.getBoundingClientRect();
+                this.app.contextmenuManager.createSongContextMenu({ x: optionsButtonRect.x, y: optionsButtonRect.y }, song, optionsButton);
+            });
+        };
+
+        createSongContainer(Elements.queue.currentSongContainer, currentSong);
+        queue.slice(0, 20).forEach((song: Song) => createSongContainer(Elements.queue.nextSongsContainer, song));
     }
 };

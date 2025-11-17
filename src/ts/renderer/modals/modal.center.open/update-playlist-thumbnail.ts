@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function updateThumbnailModalOnClick(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
     const removePlaylistThumbnailReqRes: any = await Requests.thumbnail.remove(app, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
     if (!removePlaylistThumbnailReqRes.success) {
         app.throwError(`Can't remove playlist thumbnail: ${removePlaylistThumbnailReqRes.error}`);
@@ -54,7 +54,7 @@ export default function openUpdateThumbnailModal(app: App): void {
     const data: CenterModalData = {
         title: `Set ${currentOpenedPlaylist.name}'s thumbnail`,
         content: content,
-        onConfirm: async (modal: CenterModal) => await updateThumbnailModalOnClick(app, modal, currentOpenedPlaylist),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal, currentOpenedPlaylist),
         cantClose: false,
     };
 

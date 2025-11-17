@@ -59,7 +59,7 @@ export default class PlaylistsRefreshCotnainerManager {
         containerElement.appendChild(detailsContainerElement);
 
         const titleElement: HTMLElement = document.createElement("h3");
-        titleElement.classList.add("extern-text");
+        titleElement.classList.add("text-overflow");
         titleElement.setAttribute("playlist-id", strPlaylistID);
         titleElement.textContent = playlist.name;
         detailsContainerElement.appendChild(titleElement);
@@ -101,7 +101,7 @@ export default class PlaylistsRefreshCotnainerManager {
         }
 
         const detailsElement: HTMLElement = document.createElement("span");
-        detailsElement.classList.add("extern-text");
+        detailsElement.classList.add("text-overflow");
         detailsElement.setAttribute("playlist-id", strPlaylistID);
         
         const isMergeContainer: boolean = (playlist.mergedPlaylist.length != 0);

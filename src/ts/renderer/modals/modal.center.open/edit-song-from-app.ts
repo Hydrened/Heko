@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import * as Requests from "./../../utils/utils.requests.js";
 
-async function editSongFromAppModalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
+async function modalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
     const songIndex: number | undefined = modal.getFieldValueIndex("Song to edit");
     if (songIndex == undefined) {
         return {
@@ -70,7 +70,7 @@ export default function openEditFromAppSongModal(app: App, userSongs: Song[]): v
     const data: CenterModalData = {
         title: "Edit song from Heko",
         content: content,
-        onConfirm: async (modal: CenterModal) => await editSongFromAppModalOnConfirm(app, modal, userSongs),
+        onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal, userSongs),
         cantClose: false,
     };
 
