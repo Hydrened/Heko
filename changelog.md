@@ -1,5 +1,6 @@
 ## HEKO-3.2.9
-
+#### ADDED
+- song speed
 
 ## HEKO-3.2.8
 #### ADDED
