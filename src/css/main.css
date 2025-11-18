@@ -20,8 +20,10 @@
 @import url("main-containers/settings/settings.section.css");
 @import url("main-containers/settings/settings.account.css");
 @import url("main-containers/settings/settings.apparence.css");
+@import url("main-containers/main-container.css");
 @import url("main-containers/maintenance.css");
 @import url("main-containers/loading-screen.css");
+@import url("main-containers/song-settings.css");
 @import url("main-containers/queue.css");
 
 @import url("tabs/tabs.css");

@@ -1,7 +1,8 @@
 import App from "./../app.js";
 import ListenerManager from "./listener.js";
+import * as Elements from "./../utils/utils.elements.js";
 
-export default class ListenerEditManager {
+export default class ListenerSettingsManager {
     private speed: number = 1;
 
     // INIT
@@ -12,14 +13,22 @@ export default class ListenerEditManager {
     private initEvents(): void {
         this.audioElement.addEventListener("playing", () => this.apply());
 
-        // slider event
+        Elements.songSettings.speedInput.addEventListener("input", () => {
+            const value: number = Number(Elements.songSettings.speedInput.value);
+            Elements.songSettings.speed.textContent = `${value.toFixed(2)}x`;
+            
+            this.speed = value;
+            this.apply();
+        });
     }
 
     public load(): void {
         const settings: Settings = this.app.settings.get();
         this.speed = settings.song.speed;
+        this.apply();
 
-        // set slider to this.speed
+        Elements.songSettings.speedInput.value = String(this.speed);
+        Elements.songSettings.speedInput.dispatchEvent(new Event("input"));
     }
 
     // EVENTS

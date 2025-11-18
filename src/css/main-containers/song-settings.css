@@ -1,0 +1,22 @@
+song-settings-container {
+    width: 20rem;
+
+    bottom: 7rem;
+    right: 1rem;
+}
+
+
+
+song-settings-container > .content {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    align-items: center;
+    gap: 1rem;
+}
+
+
+
+song-settings-container h2 {
+    font-size: 1rem;
+    font-weight: normal;
+}

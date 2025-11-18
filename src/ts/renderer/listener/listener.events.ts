@@ -5,7 +5,7 @@ import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class ListenerEventManager {
-    private queueCloseDuration: number = 0;
+    private closeDuration: number = 0;
 
     constructor(private app: App, private main: ListenerManager) {
         this.initEvents();
@@ -15,13 +15,13 @@ export default class ListenerEventManager {
 
     private initEvents(): void {
         this.initSongControlButtonEvent();
-        this.initQueueEvents();
+        this.initSpecialButtons();
         this.initSongProgressbarEvents();
         this.initShortcuts();
     }
 
     private loadCssVariables(): void {
-        this.queueCloseDuration = Functions.getCssVariable("queue-closing-duration", "MS_DURATION");
+        this.closeDuration = Functions.getCssVariable("queue-closing-duration", "MS_DURATION");
     }
 
     private initSongControlButtonEvent(): void {
@@ -43,33 +43,57 @@ export default class ListenerEventManager {
         Bridge.mainEvents.onNextButton(() => this.main.nextButton());
     }
 
-    private initQueueEvents(): void {
-        const closeQueueContainer = (): void => {
-            Elements.queue.container.classList.add("closing");
+    private initSpecialButtons(): void {
+        const closePopup = (popupElement: HTMLElement): void => {
+            popupElement.classList.add("closing");
 
             setTimeout(() => {
-                Elements.queue.container.classList.add("hidden");
-                Elements.queue.container.classList.remove("closing");
-            }, this.queueCloseDuration);
+                popupElement.classList.add("hidden");
+                popupElement.classList.remove("closing");
+            }, this.closeDuration);
         };
 
-        Elements.songControls.special.queueButton.addEventListener("click", () => {
-            const isClosed: boolean = Elements.queue.container.classList.contains("hidden");
+        interface Container {
+            popup: HTMLElement;
+            button: HTMLElement;
+        };
 
-            if (isClosed) {
-                Elements.queue.container.classList.remove("hidden");
+        const containers: Container[] = [
+            { popup: Elements.songSettings.popup, button: Elements.songSettings.button },
+            { popup: Elements.queue.popup, button: Elements.queue.button },
+        ];
+
+        containers.forEach((container: Container) => {
+            container.button.addEventListener("click", () => {
+                const isClosed: boolean = container.popup.classList.contains("hidden");
+
+                if (isClosed) {
+                    containers.forEach((c: Container) => c.popup.classList.add("hidden"));
+                    container.popup.classList.remove("hidden");
+                }
+                else {
+                    closePopup(container.popup);
+                }
+            });
+
+            const closeButtonElement: HTMLElement | null = container.popup.querySelector("button");
+            if (closeButtonElement == null) {
+                return this.app.throwError("Can't init popup events: Close button element is null.");
             }
-            else {
-                closeQueueContainer();
-            }
+
+            closeButtonElement.addEventListener("click", () => closePopup(container.popup));
         });
 
-        Elements.queue.closeButton.addEventListener("click", () => closeQueueContainer());
-
         document.addEventListener("keydown", (e: KeyboardEvent) => {
-            if (e.key == "Escape" && !Elements.queue.container.classList.contains("hidden")) {
-                closeQueueContainer();
+            if (e.key != "Escape") {
+                return;
             }
+
+            containers.forEach((container: Container) => {
+                if (!container.popup.classList.contains("hidden")) {
+                    closePopup(container.popup);
+                }
+            });
         });
     }
 

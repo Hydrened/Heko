@@ -1,2 +1,2 @@
-const AppPath: string = "https://killian-simon.fr/heko";
+const AppPath: string = "https://hekoplayer.app";
 export default AppPath;

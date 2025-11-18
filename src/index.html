@@ -118,9 +118,9 @@
                     </div>
                 </article>
                 <article class="secondary-controls-container">
-                    <!-- <button id="speed-button" tabindex="-1">
+                    <button id="song-settings-button" tabindex="-1">
                         <img src="assets/speed.svg">
-                    </button> -->
+                    </button>
                     <button id="queue-button" class="disabled" tabindex="-1">
                         <img src="assets/queue.svg">
                     </button>
@@ -135,10 +135,25 @@
                 </article>
             </footer>
         </main>
-        <queue-container class="main-container hidden">
+        <song-settings-container class="main-container hidden popup">
+            <header>
+                <h1>Song settings</h1>
+                <button tabindex="-1">
+                    <img src="assets/remove.svg">
+                </button>
+            </header>
+            <div class="content">
+                <h2>Speed: <span id="song-settings-speed"></span></h2>
+                <input type="range" id="song-settings-speed-input" min="0.5" max="1.5" step="0.05" list="song-settings-speed-input-datalist" tabindex="-1">
+                <datalist id="song-settings-speed-input-datalist">
+                    <option value="1"></option>
+                </datalist>
+            </div>
+        </song-settings-container>
+        <queue-container class="main-container hidden popup">
             <header>
                 <h1>Queue</h1>
-                <button id="queue-close-button">
+                <button tabindex="-1">
                     <img src="assets/remove.svg">
                 </button>
             </header>

@@ -74,20 +74,23 @@ export const songControls = {
         duration: (document.querySelector("#current-song-duration") as HTMLElement),
     },
 
-    special: {
-        pitchButton: (document.querySelector("#pitch-button") as HTMLButtonElement),
-        queueButton: (document.querySelector("#queue-button") as HTMLButtonElement),
-    },
-
     volume: {
         toggleButton: (document.querySelector("#toggle-song-volume-button") as HTMLButtonElement),
         slider: (document.querySelector("#volume-slider") as HTMLInputElement),
     },
 };
 
+export const songSettings = {
+    popup: (document.querySelector("song-settings-container") as HTMLElement),
+    button: (document.querySelector(".secondary-controls-container #song-settings-button") as HTMLButtonElement),
+
+    speed: (document.querySelector("#song-settings-speed") as HTMLElement),
+    speedInput: (document.querySelector("#song-settings-speed-input") as HTMLInputElement),
+};
+
 export const queue = {
-    container: (document.querySelector("queue-container") as HTMLElement),
-    closeButton: (document.querySelector("#queue-close-button") as HTMLElement),
+    popup: (document.querySelector("queue-container") as HTMLElement),
+    button: (document.querySelector("#queue-button") as HTMLButtonElement),
 
     currentSongContainer: (document.querySelector("#queue-current-song-container") as HTMLElement),
     nextSongsContainer: (document.querySelector("#queue-next-songs-container") as HTMLElement),

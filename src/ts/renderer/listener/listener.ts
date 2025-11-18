@@ -2,7 +2,7 @@ import App from "./../app.js";
 import ListenerRefreshManager from "./listener.refresh.js";
 import ListenerQueueManager from "./listener.queue.js";
 import ListenerVolumeManager from "./listener.volume.js";
-import ListenerEditManager from "./listener.edit.js";
+import ListenerSettingsManager from "./listener.settings.js";
 import ListenerEventManager from "./listener.events.js";
 
 export default class ListenerManager {
@@ -11,17 +11,18 @@ export default class ListenerManager {
     private readonly refreshManager: ListenerRefreshManager;
     private readonly queueManager: ListenerQueueManager;
     private readonly volumeManager: ListenerVolumeManager;
-    private readonly editManager: ListenerEditManager;
+    private readonly settingsManager: ListenerSettingsManager;
     private readonly eventManager: ListenerEventManager;
 
     // INIT
     constructor(private app: App) {
         this.audioElement = new Audio();
+        this.audioElement.preservesPitch = false;
 
         this.refreshManager = new ListenerRefreshManager(this.app, this);
         this.queueManager = new ListenerQueueManager(this.app, this, this.audioElement);
         this.volumeManager = new ListenerVolumeManager(this.app, this, this.audioElement);
-        this.editManager = new ListenerEditManager(this.app, this, this.audioElement);
+        this.settingsManager = new ListenerSettingsManager(this.app, this, this.audioElement);
         this.eventManager = new ListenerEventManager(this.app, this);
     }
 
@@ -37,7 +38,7 @@ export default class ListenerManager {
 
     public loggedIn(): void {
         this.queueManager.load();
-        this.editManager.load();
+        this.settingsManager.load();
         this.volumeManager.load();
     }
 
@@ -109,7 +110,7 @@ export default class ListenerManager {
     }
 
     public getSpeed(): number {
-        return this.editManager.getSpeed();
+        return this.settingsManager.getSpeed();
     }
 
     public getVolume(): number {

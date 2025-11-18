@@ -1,0 +1,66 @@
+.main-container.popup {
+    position: absolute;
+
+    display: grid;
+    grid-template-rows: auto 1fr;
+
+    border: var(--default-border);
+    border-radius: 1rem;
+
+    background: var(--gradient);
+    animation: fade-in var(--queue-closing-duration) forwards;
+    overflow: hidden;
+    z-index: 0;
+}
+
+
+
+.main-container.popup::before {
+    content: "";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    background-color: var(--bg-bo-5);
+    z-index: -1;
+}
+
+
+
+.main-container.popup.closing {
+    animation: fade-out var(--queue-closing-duration) forwards;
+}
+
+
+
+.main-container.hidden {
+    display: none;
+}
+
+
+
+.main-container.popup > * {
+    padding: 1rem;
+}
+.main-container.popup > header {
+    position: relative;
+
+    border: var(--default-border);
+}
+
+
+
+.main-container.popup > header > h1 {
+    padding-inline: 0.5rem;
+
+    font-size: 1.5rem;
+}
+.main-container.popup > header > button {
+    position: absolute;
+    top: 0.7rem;
+    right: 0.7rem;
+}

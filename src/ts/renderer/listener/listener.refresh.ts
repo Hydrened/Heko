@@ -43,7 +43,7 @@ export default class ListenerRefreshManager {
 
     private refreshQueue(currentSong: Song | null): void {
         const queue: Queue = this.main.getQueue();
-        const queueButton: HTMLElement = Elements.songControls.special.queueButton;
+        const queueButton: HTMLElement = Elements.queue.button;
 
         Functions.removeChildren(Elements.queue.currentSongContainer);
         Functions.removeChildren(Elements.queue.nextSongsContainer);
