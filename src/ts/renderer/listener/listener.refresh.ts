@@ -8,6 +8,20 @@ export default class ListenerRefreshManager {
 
     }
 
+    public songLoop(): void {
+        const currentSong: Song | null = this.main.getCurrentSong();
+        const audioElement: HTMLAudioElement = this.main.getAudioElement();
+
+        const positionText: string = ((currentSong == null) ? "\u00A0" : Functions.formatDuration(audioElement.currentTime));
+        Elements.songControls.progressBar.position.textContent = positionText;
+
+        const durationText: string = ((currentSong == null) ? "\u00A0" : Functions.formatDuration(currentSong!.duration));
+        Elements.songControls.progressBar.duration.textContent = durationText;
+
+        const sliderValue: string = ((currentSong == null) ? "0" : String(audioElement.currentTime / currentSong.duration * 100));
+        Elements.songControls.progressBar.slider.value = sliderValue;
+    }
+
     public refresh(currentSong: Song | null): void {
         this.refreshDetails(currentSong);
         this.refreshSongClasses(currentSong);

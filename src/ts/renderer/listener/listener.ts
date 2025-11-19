@@ -14,6 +14,8 @@ export default class ListenerManager {
     private readonly settingsManager: ListenerSettingsManager;
     private readonly eventManager: ListenerEventManager;
 
+    private lastUpdate: number = Date.now();
+
     // INIT
     constructor(private app: App) {
         this.audioElement = new Audio();
@@ -24,6 +26,16 @@ export default class ListenerManager {
         this.volumeManager = new ListenerVolumeManager(this.app, this, this.audioElement);
         this.settingsManager = new ListenerSettingsManager(this.app, this, this.audioElement);
         this.eventManager = new ListenerEventManager(this.app, this);
+
+        this.songLoop();
+    }
+
+    private songLoop(): void {
+        this.queueManager.songLoop();
+        this.refreshManager.songLoop();
+
+        this.lastUpdate = Date.now();
+        setTimeout(() => this.songLoop(), 100);
     }
 
     // EVENTS
@@ -42,10 +54,10 @@ export default class ListenerManager {
         this.volumeManager.load();
     }
 
-    public loggedOut(): void {
+    public async loggedOut(): Promise<void> {
+        await this.queueManager.loggedOut();
         this.audioElement.src = "";
         this.refreshManager.refresh(null);
-        this.queueManager.reset();
     }
 
     public initQueue(playlist: Playlist, firstSong: Song | null = null): void {
@@ -85,6 +97,10 @@ export default class ListenerManager {
     }
 
     // GETTERS
+    public getSongLoopLastUpdate(): number {
+        return this.lastUpdate;
+    }
+
     public getQueue(): Queue {
         return this.queueManager.getQueue();
     }

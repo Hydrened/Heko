@@ -2,6 +2,7 @@ import App from "./../app.js";
 import AppPath from "./../utils/utils.app-path.js";
 import ListenerManager from "./listener.js";
 import * as Bridge from "./../utils/utils.bridge.js";
+import * as Requests from "./../utils/utils.requests.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -12,6 +13,9 @@ export default class ListenerQueueManager {
 
     private currentListeningPlaylist: Playlist | null = null;
     private currentSongs: Song[] | null = null;
+
+    private listenedSongIdBuffer: ID[] = [];
+    private currentSongTotalElapsedTime: number = 0;
 
     private playing: boolean = false;
     private shuffle: boolean = false;
@@ -28,10 +32,26 @@ export default class ListenerQueueManager {
         });
     }
 
+    public async loggedOut(): Promise<void> {
+        await this.save();
+        this.reset();
+    }
+
     public load(): void {
         const settings: Settings = this.app.settings.get();
         this.setShuffle(settings.song.shuffle);
         this.setLoop(settings.song.loop);
+    }
+
+    private async save(): Promise<void> {
+        if (!this.app.account.isLoggedIn()) {
+            return;
+        }
+            
+        const addSongsInHitsoryReqRes: any = await Requests.user.saveSongsInHistory(this.app, this.listenedSongIdBuffer);
+        if (!addSongsInHitsoryReqRes.success) {
+            return this.app.throwError(`Can't add songs in history: ${addSongsInHitsoryReqRes.error}`);
+        }
     }
 
     public reset(): void {
@@ -44,6 +64,9 @@ export default class ListenerQueueManager {
 
         this.currentListeningPlaylist = null;
         this.currentSongs = null;
+
+        this.listenedSongIdBuffer = [];
+        this.currentSongTotalElapsedTime = 0;
 
         this.setPlaying(false);
         this.setShuffle(false);
@@ -60,6 +83,36 @@ export default class ListenerQueueManager {
         this.reset();
         this.main.refresh();
         this.recreate();
+    }
+
+    public songLoop(): void {
+        if (this.audioElement.paused) {
+            return;
+        }
+
+        const mainLoopRefreshDuration: number = this.main.getSongLoopLastUpdate();
+        const elapsedTime: number = (Date.now() - mainLoopRefreshDuration);
+
+        const currentSpeed: number = this.main.getSpeed();
+        const songElapsedTime: number = (elapsedTime * currentSpeed);
+        this.currentSongTotalElapsedTime += songElapsedTime;
+    }
+
+    private changeSong(): void {
+        const currentSong: Song | null = this.getCurrentSong();
+        if (currentSong == null) {
+            return;
+        }
+
+        const songListenedDuration: number = (this.currentSongTotalElapsedTime * 0.001);
+        const minimalListenedDuration: number = (currentSong.duration * 0.5);
+        const countSongAsListened: boolean = (songListenedDuration >= minimalListenedDuration);
+
+        if (countSongAsListened) {
+            this.listenedSongIdBuffer.push(currentSong.id);
+        }
+
+        this.currentSongTotalElapsedTime = 0;
     }
 
     // QUEUE EVENTS
@@ -174,6 +227,8 @@ export default class ListenerQueueManager {
             return;
         }
 
+        this.changeSong();
+
         this.currentQueueIndex = Math.max(0, this.currentQueueIndex - 1);
 
         const previousSong: Song | null = this.getCurrentSong();
@@ -194,6 +249,8 @@ export default class ListenerQueueManager {
             this.queue.splice(this.currentQueueIndex + 1, 0, this.manuallyAddedToQueue[0]);
             this.manuallyAddedToQueue.shift();
         }
+
+        this.changeSong();
 
         this.currentQueueIndex++;
 
@@ -262,6 +319,7 @@ export default class ListenerQueueManager {
     private setAudioSrc(song: Song): void {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
         this.audioElement.load();
+
         this.main.refresh();
         Bridge.win.setTitle(song.title);
     }

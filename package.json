@@ -1,6 +1,6 @@
 {
   "name": "heko",
-  "version": "3.2.9",
+  "version": "3.2.10",
   "description": "",
   "main": "src/js/main/index.js",
   "scripts": {

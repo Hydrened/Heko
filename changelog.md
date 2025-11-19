@@ -1,3 +1,7 @@
+## HEKO-3.2.10
+#### ADDED
+- song history saving
+
 ## HEKO-3.2.9
 #### ADDED
 - song speed

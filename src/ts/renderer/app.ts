@@ -91,6 +91,7 @@ export default class App {
 
     private async onClose(): Promise<void> {
         await this.settings.save();
+        await this.listenerManager.loggedOut();
     }
 
     // LOGIN EVENTS
@@ -112,8 +113,8 @@ export default class App {
 
     public async loggedOut(): Promise<void> {
         await this.settings.save();
+        await this.listenerManager.loggedOut();
         this.playlistManager.close();
         Functions.removeChildren(Elements.playlists.container);
-        this.listenerManager.loggedOut();
-    } 
+    }
 };

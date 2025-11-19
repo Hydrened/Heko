@@ -10,7 +10,6 @@ export default class ListenerEventManager {
     constructor(private app: App, private main: ListenerManager) {
         this.initEvents();
         this.loadCssVariables();
-        this.initRefreshLoop();
     }
 
     private initEvents(): void {
@@ -120,22 +119,6 @@ export default class ListenerEventManager {
 
             this.main.setVolume(this.main.getVolume());
         });
-    }
-
-    private initRefreshLoop(): void {
-        const currentSong: Song | null = this.main.getCurrentSong();
-        const audioElement: HTMLAudioElement = this.main.getAudioElement();
-
-        const positionText: string = ((currentSong == null) ? "\u00A0" : Functions.formatDuration(audioElement.currentTime));
-        Elements.songControls.progressBar.position.textContent = positionText;
-
-        const durationText: string = ((currentSong == null) ? "\u00A0" : Functions.formatDuration(currentSong!.duration));
-        Elements.songControls.progressBar.duration.textContent = durationText;
-
-        const sliderValue: string = ((currentSong == null) ? "0" : String(audioElement.currentTime / currentSong.duration * 100));
-        Elements.songControls.progressBar.slider.value = sliderValue;
-
-        setTimeout(() => this.initRefreshLoop(), 100);
     }
 
     private initShortcuts(): void {

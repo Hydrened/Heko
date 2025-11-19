@@ -19,6 +19,7 @@ async function request(phpFile: string, app: App | null = null, data: { [key: st
 
     const res: Response = await fetch(`${AppPath}/requests/${phpFile}`, {
         method: "POST",
+        credentials: "include",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
     });
@@ -83,6 +84,10 @@ export const user = {
     
     saveSettings: async (app: App, settings: Settings): Promise<any> => {
         return await request("user/save-settings.php", app, { settings: settings });
+    },
+
+    saveSongsInHistory: async (app: App, songIDs: ID[]): Promise<any> => {
+        return await request("user/save-songs-in-history.php", app, { songIDs: songIDs });
     },
 
     addDownload: async (app: App, videoID: string): Promise<any> => {
