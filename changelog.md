@@ -1,3 +1,10 @@
+## HEKO-3.2.11
+#### ADDED
+- new themes
+- arrow indicator on input select
+#### FIXED
+- toggled shuffle and loop buttons color
+
 ## HEKO-3.2.10
 #### ADDED
 - song history saving

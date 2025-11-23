@@ -23,13 +23,9 @@
     gap: 0.4rem;
 }
 
-#toggle-shuffle-button > img,
-#toggle-loop-button > img {
+#toggle-shuffle-button > svg,
+#toggle-loop-button > svg {
     width: 1.3rem;
-}
-#toggle-shuffle-button > img[shuffle="true"],
-#toggle-loop-button > img[loop="true"] {
-    opacity: 1;
 }
 #previous-song-button > img,
 #next-song-button > img {
@@ -40,10 +36,12 @@
     width: 2rem;
 }
 
-#toggle-shuffle-button[shuffle="false"] > [shuffle="true"],
-#toggle-shuffle-button[shuffle="true"] > [shuffle="false"],
-#toggle-loop-button[loop="false"] > [loop="true"],
-#toggle-loop-button[loop="true"] > [loop="false"],
+#toggle-shuffle-button[shuffle="true"] *,
+#toggle-loop-button[loop="true"] * {
+    stroke: var(--accent-color);
+    opacity: 1;
+}
+
 #toggle-play-button[playing="false"] > [playing="true"],
 #toggle-play-button[playing="true"] > [playing="false"] {
     display: none;

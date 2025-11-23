@@ -6,6 +6,17 @@ input-select > * {
     width: 100%;
 }
 
+input-select > .indicator {
+    width: 1rem;
+
+    position: absolute;
+    top: 50%;
+    right: 0.4rem;
+
+    transform: translateX(-60%);
+    rotate: 90deg;
+}
+
 input-select > ul {
     max-height: 20rem;
 

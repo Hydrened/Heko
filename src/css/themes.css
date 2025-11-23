@@ -16,7 +16,16 @@
 
     --accent-color-theme-5: rgb(151, 51, 96);
     --gradient-theme-5: linear-gradient(45deg, rgb(38, 22, 53) 0%, rgb(79, 24, 37) 100%);
+
+    --accent-color-theme-6: rgb(90, 209, 123);
+    --gradient-theme-6: linear-gradient(45deg, rgb(0, 81, 58) 0%, rgb(12, 15, 103) 100%);
+
+    --accent-color-theme-7: rgb(171, 40, 25);
+    --gradient-theme-7: linear-gradient(45deg, rgb(72, 0, 141) 0%, rgb(10, 23, 53) 100%);
 }
+
+
+
 
 html[theme="0"] {
     --accent-color: var(--accent-color-theme-0);
@@ -46,5 +55,26 @@ html[theme="4"] {
 html[theme="5"] {
     --accent-color: var(--accent-color-theme-5);
     --gradient: var(--gradient-theme-5);
+}
+
+html[theme="6"] {
+    --accent-color: var(--accent-color-theme-6);
+    --gradient: var(--gradient-theme-6);
+}
+
+html[theme="7"] {
+    --accent-color: var(--accent-color-theme-7);
+    --gradient: var(--gradient-theme-7);
+}
+
+
+
+
+html[theme="0"], html[theme="1"], html[theme="2"], html[theme="3"], html[theme="4"] {
+    --modal-gradient-top-color: var(--bg-bo-6);
+}
+
+html[theme="5"], html[theme="6"], html[theme="7"] {
     --border-col-1: rgb(0, 0, 0);
+    --modal-gradient-top-color: var(--bg-bo-8);
 }

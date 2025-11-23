@@ -56,7 +56,7 @@
 
     border-radius: inherit;
 
-    background-color: var(--bg-bo-6);
+    background-color: var(--modal-gradient-top-color);
     z-index: -1;
 }
 

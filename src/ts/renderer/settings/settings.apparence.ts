@@ -13,7 +13,7 @@ export default class ApparenceSettingsManager {
     }
 
     private initEvents(): void {
-        for (let i = 0; i < 6; i++) {
+        for (let i = 0; i < 8; i++) {
             const liElement: HTMLElement = document.createElement("li");
             Elements.settings.apparence.themesContainer.appendChild(liElement);
 

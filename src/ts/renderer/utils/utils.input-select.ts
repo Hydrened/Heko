@@ -48,6 +48,11 @@ export default class InputSelect {
         inputParent.appendChild(container);
         container.appendChild(this.input);
 
+        const arrowElement: HTMLImageElement = document.createElement("img");
+        arrowElement.classList.add("indicator");
+        arrowElement.src = "assets/indicator.svg";
+        container.appendChild(arrowElement);
+
         this.list = document.createElement("ul");
         container.appendChild(this.list);
 
