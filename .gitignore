@@ -3,3 +3,5 @@ dist/
 node_modules/
 src/js/
 todo.md
+
+src/ts/renderer/utils/utils.requests.ts
