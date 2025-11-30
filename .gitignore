@@ -3,5 +3,7 @@ dist/
 node_modules/
 src/js/
 todo.md
+Makefile
+tsconfig.*.json
 
 src/ts/renderer/utils/utils.requests.ts

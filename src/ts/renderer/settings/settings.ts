@@ -21,7 +21,7 @@ export default class SettingsManager {
         this.apparence = new ApparenceSettingsManager(this.app, this);
         this.preferences = new PreferencesSettingsManager(this.app, this);
 
-        Bridge.getVersion().then((version: string) => {
+        Bridge.main.getVersion().then((version: string) => {
             Elements.settings.version.textContent = `v${version}`;
         });
 

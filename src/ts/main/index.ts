@@ -1,5 +1,5 @@
 import { app, BrowserWindow, ipcMain, dialog , nativeImage, globalShortcut } from "electron";
-import { autoUpdater } from "electron-updater";
+import { autoUpdater, UpdateCheckResult } from "electron-updater";
 import { MainFolder, WindowSettings } from "./main-folder.js";
 import { downloadYoutubeSong, getYoutubeSongSrc } from "./song.js";
 import * as path from "path";
@@ -167,16 +167,16 @@ class Index {
     }
 
     private initRendererMainEvents(): void {
-        ipcMain.handle("main-throwError", (_event, message: string) => { 
+        ipcMain.handle("main-throwError", (_event, message: string): void => { 
             dialog.showErrorBox("Error", message);
             this.window?.close();
         });
 
-        ipcMain.handle("main-getVersion", (_event) => app.getVersion());
+        ipcMain.handle("main-getVersion", (_event): string => app.getVersion());
     }
 
     private initRendererYoutubeEvents(): void {
-        ipcMain.handle("youtube-downloadSong", async (_event, videoID: string) => {
+        ipcMain.handle("youtube-downloadSong", async (_event, videoID: string): Promise<any> => {
             if (this.window == null) {
                 throw new Error("Can't download youtube song: Window is null.");
             }
@@ -184,7 +184,7 @@ class Index {
             return await downloadYoutubeSong(this.window!, videoID);
         });
 
-        ipcMain.handle("youtube-getSongSrc", async (_event, videoID: string) => {
+        ipcMain.handle("youtube-getSongSrc", async (_event, videoID: string): Promise<any> => {
             if (this.window == null) {
                 throw new Error("Can't get youtube song src: Window is null.");
             }
@@ -200,21 +200,21 @@ class Index {
             }
         });
         
-        ipcMain.handle("win-minimize", (e: Electron.IpcMainInvokeEvent) => {
+        ipcMain.handle("win-minimize", (e: Electron.IpcMainInvokeEvent): void => {
             if (this.window == null) {
                 throw new Error("Can't minimize window: Window is null.");
             }
 
             this.window.minimize();
         });
-        ipcMain.handle("win-maximize", (e: Electron.IpcMainInvokeEvent) => {
+        ipcMain.handle("win-maximize", (e: Electron.IpcMainInvokeEvent): void => {
             if (this.window == null) {
                 throw new Error("Can't maximize window: Window is null.");
             }
 
             this.window.maximize();
         });
-        ipcMain.handle("win-close", (e: Electron.IpcMainInvokeEvent) => {
+        ipcMain.handle("win-close", (e: Electron.IpcMainInvokeEvent): void => {
             if (this.window == null) {
                 throw new Error("Can't close window: Window is null.");
             }
@@ -222,7 +222,7 @@ class Index {
             this.window.close();
         });
 
-        ipcMain.handle("win-set-thumbar-play-button", (e: Electron.IpcMainInvokeEvent, type: string) => {
+        ipcMain.handle("win-set-thumbar-play-button", (e: Electron.IpcMainInvokeEvent, type: string): void => {
             if (this.window == null) {
                 throw new Error("Can't set thumbar play button: Window is null.");
             }
@@ -232,7 +232,7 @@ class Index {
             this.window.setThumbarButtons(this.thumbarButtons);
         });
 
-        ipcMain.handle("win-set-title", (e: Electron.IpcMainInvokeEvent, title: string) => {
+        ipcMain.handle("win-set-title", (e: Electron.IpcMainInvokeEvent, title: string): void => {
             if (this.window == null) {
                 throw new Error("Can't set window title: Window is null.");
             }
@@ -242,24 +242,31 @@ class Index {
     }
 };  
 
-app.whenReady().then(() => {
-    if (app.isPackaged) {
-        autoUpdater.checkForUpdates();
+app.whenReady().then(async () => {
+    const startApp = () => new Index();
 
-        autoUpdater.on("update-downloaded", () => {
-            autoUpdater.quitAndInstall();
-        });
-
-        autoUpdater.on("update-not-available", () => {
-            new Index();
-        });
-
-        autoUpdater.on("error", (err) => {
-            new Index();
-        });
+    if (!app.isPackaged) {
+        startApp();
+        return;
     }
-    else {
-        new Index();
+
+    try {
+        const updateCheckRes: UpdateCheckResult | null = await autoUpdater.checkForUpdates();
+        if (updateCheckRes == null) {
+            startApp();
+            return;
+        }
+
+        if (!updateCheckRes.isUpdateAvailable) {
+            startApp();
+            return;
+        }
+
+        await updateCheckRes.downloadPromise;
+        autoUpdater.quitAndInstall();
+    } 
+    catch {
+        startApp();
     }
 });
 

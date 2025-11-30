@@ -1,12 +1,9 @@
 const w: any = (window as any);
 
-export async function throwError(message: string): Promise<void> {
-    await w.main.throwError(message);
-}
-
-export async function getVersion(): Promise<string> {
-    return await w.main.getVersion();
-}
+export const main = {
+    throwError: async (message: string): Promise<void> => await w.main.throwError(message),
+    getVersion: async (): Promise<string> => await w.main.getVersion(),
+};
 
 export const mainEvents = {
     onStart: async (callback: (data: any) => void): Promise<void> => await w.mainEvents.onStart(callback),

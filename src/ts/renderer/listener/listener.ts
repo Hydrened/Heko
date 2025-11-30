@@ -30,12 +30,12 @@ export default class ListenerManager {
         this.songLoop();
     }
 
-    private songLoop(): void {
+    private songLoop = (): void => {
         this.queueManager.songLoop();
         this.refreshManager.songLoop();
-
         this.lastUpdate = Date.now();
-        setTimeout(() => this.songLoop(), 100);
+
+        requestAnimationFrame(this.songLoop);
     }
 
     // EVENTS

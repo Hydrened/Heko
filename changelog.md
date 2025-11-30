@@ -1,3 +1,7 @@
+## HEKO-3.2.13
+#### CHANGED
+- server requirements compatibility
+
 ## HEKO-3.2.12
 #### CHANGED
 - server requirements compatibility

@@ -1,12 +1,16 @@
 import { contextBridge, ipcRenderer } from "electron";
 
 contextBridge.exposeInMainWorld("main", {
+    isAnUpdateAvailable: async (): Promise<boolean> => {
+        return (await ipcRenderer.invoke("main-isAnUpdateAvailable") as boolean);
+    },
+
     throwError: (message: string): void => {
         ipcRenderer.invoke("main-throwError", message);
     },
 
     getVersion: async (): Promise<string> => {
-        return await ipcRenderer.invoke("main-getVersion");
+        return (await ipcRenderer.invoke("main-getVersion") as string);
     },
 });
 
@@ -71,7 +75,7 @@ contextBridge.exposeInMainWorld("mainFolder", {
     },
 
     getToken: async (): Promise<string> => {
-        return await ipcRenderer.invoke("mainFolder-getToken");
+        return (await ipcRenderer.invoke("mainFolder-getToken") as string);
     },
 
     removeToken: (): void => {

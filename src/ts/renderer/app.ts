@@ -84,7 +84,7 @@ export default class App {
         }
 
         if (!this.threw) {
-            Bridge.throwError(message);
+            Bridge.main.throwError(message);
             this.threw = true;
         }
     }
