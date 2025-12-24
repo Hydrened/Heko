@@ -189,6 +189,11 @@ ul.search-result-container > li.checkbox-row {
     transition: 200ms;
     cursor: pointer;
 }
+ul.search-result-container > li.checkbox-row:has(.thumbnail) {
+    padding-inline: 0.2rem;
+
+    grid-template-columns: auto auto 1fr;
+}
 ul.search-result-container > li.checkbox-row.hidden {
     display: none;
 }
@@ -209,6 +214,19 @@ ul.search-result-container > li.checkbox-row > input {
 
     scale: 1.5;
     box-shadow: none;
+}
+ul.search-result-container > li.checkbox-row:has(.thumbnail) > input {
+    grid-row: 1;
+    grid-column: 2;
+}
+ul.search-result-container > li.checkbox-row > .thumbnail {
+    width: 2rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 0.4rem;
+
+    background-color: black;
+    pointer-events: none;
 }
 
 

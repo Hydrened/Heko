@@ -7,7 +7,7 @@ function modalOnCreate(app: App, playlistsLeft: Playlist[], container: HTMLEleme
 }
 
 function createPlaylistContainer(app: App, playlistLeft: Playlist, container: HTMLElement): void {
-    const liElement: HTMLElement = CenterSearchModal.createCheckboxRow(playlistLeft.name);
+    const liElement: HTMLElement = CenterSearchModal.createCheckboxRow(playlistLeft.name, playlistLeft.thumbnailFileName);
     liElement.setAttribute("playlist-id", String(playlistLeft.id));
     container.appendChild(liElement);
 

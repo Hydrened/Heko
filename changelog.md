@@ -1,3 +1,7 @@
+## HEKO-3.2.14
+#### ADDED
+- playlist thumbnails in "add song to playlists" modal
+
 ## HEKO-3.2.13
 #### CHANGED
 - server requirements compatibility

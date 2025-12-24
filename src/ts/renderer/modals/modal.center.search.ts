@@ -1,5 +1,6 @@
 import App from "./../app.js";
 import CenterModal from "./modal.center.js";
+import * as Functions from "./../utils/utils.functions.js";
 
 export default class CenterSearchModal extends CenterModal {
     private searchTimeout: NodeJS.Timeout | null = null;
@@ -72,9 +73,16 @@ export default class CenterSearchModal extends CenterModal {
         }, this.searchDelay);
     }
 
-    public static createCheckboxRow(title: string): HTMLElement {
+    public static createCheckboxRow(title: string, thumbnailFileName?: string): HTMLElement {
         const container: HTMLElement = document.createElement("li");
         container.classList.add("checkbox-row");
+
+        if (thumbnailFileName != undefined) {
+            const thumbnailElement: HTMLElement = document.createElement("div");
+            thumbnailElement.classList.add("thumbnail");
+            Functions.setThumbnail(thumbnailElement, thumbnailFileName);
+            container.appendChild(thumbnailElement);
+        }
 
         const titleElement: HTMLElement = document.createElement("h2");
         titleElement.classList.add("song-title-and-artist");

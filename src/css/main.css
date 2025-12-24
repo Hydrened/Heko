@@ -1,8 +1,9 @@
 @import url("variables.css");
 @import url("animations.css");
 @import url("base.css");
-@import url("themes.css");
 @import url("frame.css");
+
+@import url("themes.css");
 
 @import url("utils/utils.css");
 @import url("utils/input-select.css");
