@@ -44,4 +44,5 @@ top-modal-container.error {
 
 top-modal-container.closing {
     animation: fade-out var(--top-modal-closing-duration) forwards;
+    pointer-events: none;
 }

@@ -318,7 +318,6 @@ export default class ListenerQueueManager {
     // SETTERS
     private setAudioSrc(song: Song): void {
         this.audioElement.src = `${AppPath}/songs/${song.fileName}`;
-        this.audioElement.load();
 
         this.main.refresh();
         Bridge.win.setTitle(song.title);
@@ -327,7 +326,15 @@ export default class ListenerQueueManager {
     private setPlaying(state: boolean): void {
         this.playing = state;
         this.setButtonState(Elements.songControls.buttons.togglePlayButton, state, "playing");
-        (this.playing) ? this.audioElement.play().catch((err: any) => {}) : this.audioElement.pause();
+
+        if (this.playing) {
+            this.audioElement.oncanplay = () => {
+                this.audioElement.play().catch((err: any) => {});
+            };
+        }
+        else {
+            this.audioElement.pause();
+        }
 
         const prop: string = (state ? "pause" : "play");
         Bridge.win.setThumbarPlayButton(prop);
