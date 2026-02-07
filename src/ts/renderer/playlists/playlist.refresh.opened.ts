@@ -76,7 +76,8 @@ export default class PlaylistsRefreshOpenedManager {
 
         const playButton: HTMLElement = Elements.currentPlaylist.playButton;
 
-        const nbSongs: number = (currentOpenedPlaylist.mergedPlaylist.length == 0)
+        const isMergedContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
+        const nbSongs: number = (!isMergedContainer)
             ? currentOpenedPlaylist.songs.length
             : this.main.getMergedContainerSongs(currentOpenedPlaylist, true).length;
             
@@ -97,12 +98,20 @@ export default class PlaylistsRefreshOpenedManager {
             return;
         }
 
-        if (currentOpenedPlaylist.mergedPlaylist.length != 0) {
-            this.refreshMergedPlaylists(currentOpenedPlaylist);
-        }
-        else {
-            this.refreshPlaylistSongs(currentOpenedPlaylist);
-        }
+        const isMergedContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
+        (isMergedContainer)
+            ? this.refreshMergedPlaylists(currentOpenedPlaylist)
+            : this.refreshPlaylistSongs(currentOpenedPlaylist);
+
+        const sortButtons: HTMLButtonElement[] = Object.values(Elements.currentPlaylist.song.sort).concat(Object.values(Elements.currentPlaylist.merged.sort));
+        sortButtons.forEach((buttonElement: HTMLButtonElement) => {
+            buttonElement.classList.remove("sorted-by");
+            buttonElement.removeAttribute("order");
+        });
+
+        const idButton: HTMLButtonElement = (!isMergedContainer) ? Elements.currentPlaylist.song.sort.idButton : Elements.currentPlaylist.merged.sort.idButton;
+        idButton.classList.add("sorted-by");
+        idButton.setAttribute("order", "asc");
     }
 
     private static createRowContent(parent: HTMLElement, text: string): HTMLElement {
@@ -129,9 +138,7 @@ export default class PlaylistsRefreshOpenedManager {
             const rowElementTexts: string[] = [String(index + 1), song.title, song.artist, formatDuration];
             rowElementTexts.forEach((text: string) => PlaylistsRefreshOpenedManager.createRowContent(liElement, text));
 
-            liElement.addEventListener("click", () => {
-                this.app.listenerManager.initQueue(currentOpenedPlaylist, song);
-            });
+            liElement.addEventListener("click", () => this.app.listenerManager.initQueue(currentOpenedPlaylist, song));
             liElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createSongContextMenu((e as Position), song, liElement));
         });
     }

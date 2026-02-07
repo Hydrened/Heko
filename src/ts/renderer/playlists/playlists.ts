@@ -4,6 +4,7 @@ import PlaylistsRefreshContainerManager from "./playlist.refresh.container.js";
 import PlaylistsRefreshOpenedManager from "./playlist.refresh.opened.js";
 import PlaylistsOpenManager from "./playlists.open.js";
 import PlaylistsMoveManager from "./playlist.move.js";
+import PlaylistsSortManager from "./playlist.sort.js";
 import * as Requests from "./../utils/utils.requests.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -13,6 +14,7 @@ export default class PlaylistManager {
     private readonly refreshOpenedManager: PlaylistsRefreshOpenedManager;
     private readonly openManager: PlaylistsOpenManager;
     private readonly moveManager: PlaylistsMoveManager;
+    private readonly sortManager: PlaylistsSortManager;
 
     private playlistBuffer: Playlist[] = [];
     private songBuffer: Song[] = [];
@@ -26,6 +28,7 @@ export default class PlaylistManager {
         this.refreshOpenedManager = new PlaylistsRefreshOpenedManager(this.app, this);
         this.openManager = new PlaylistsOpenManager(this.app, this);
         this.moveManager = new PlaylistsMoveManager(this.app, this);
+        this.sortManager = new PlaylistsSortManager(this.app, this);
     }
 
     // EVENTS
@@ -42,6 +45,10 @@ export default class PlaylistManager {
 
     public refreshOpenedPlaylistTab(): void {
         this.refreshOpenedManager.refresh();
+    }
+
+    public sortOpenedPlaylist(buttonElement: HTMLButtonElement): void {
+        this.sortManager.sort(buttonElement);
     }
 
     public async refreshPlaylistBuffer(): Promise<void> {
@@ -260,7 +267,7 @@ export default class PlaylistManager {
 
             const playlist: Playlist | null = this.app.playlistManager.getPlaylistFromID(mp.id);
             if (playlist == null) {
-                this.app.throwError("Can't refresh current opened playlist details: A merged playlist is null.");
+                this.app.throwError("Can't get merged container songs: A merged playlist is null.");
                 return [];
             }
 

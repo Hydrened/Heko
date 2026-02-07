@@ -82,9 +82,13 @@ export default class PlaylistsEventManager {
             }
         });
 
+        const sortButtons: HTMLButtonElement[] = Object.values(Elements.currentPlaylist.song.sort).concat(Object.values(Elements.currentPlaylist.merged.sort));
+        sortButtons.forEach((buttonElement: HTMLButtonElement) => {
+            buttonElement.addEventListener("click", () => this.openedPlaylistSortOnClick(buttonElement));
+        });
+
         Elements.currentPlaylist.song.container.addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistSongContainerOnContextmenu(e));
         Elements.currentPlaylist.merged.container.addEventListener("contextmenu", async (e: PointerEvent) => this.openedPlaylistMergedContainerOnContextmenu(e));
-
     }
 
     // PLAYLIST CONTAINER EVENTS
@@ -201,6 +205,10 @@ export default class PlaylistsEventManager {
                 liElement.classList.add("hidden");
             }
         });
+    }
+
+    private openedPlaylistSortOnClick(buttonElement: HTMLButtonElement): void {
+        this.main.sortOpenedPlaylist(buttonElement);
     }
 
     private openedPlaylistSongContainerOnContextmenu(e: PointerEvent): void {

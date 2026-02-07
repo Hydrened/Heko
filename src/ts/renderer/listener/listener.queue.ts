@@ -326,15 +326,7 @@ export default class ListenerQueueManager {
     private setPlaying(state: boolean): void {
         this.playing = state;
         this.setButtonState(Elements.songControls.buttons.togglePlayButton, state, "playing");
-
-        if (this.playing) {
-            this.audioElement.oncanplay = () => {
-                this.audioElement.play().catch((err: any) => {});
-            };
-        }
-        else {
-            this.audioElement.pause();
-        }
+        (this.playing) ? this.audioElement.play().catch((err: any) => {}) : this.audioElement.pause();
 
         const prop: string = (state ? "pause" : "play");
         Bridge.win.setThumbarPlayButton(prop);

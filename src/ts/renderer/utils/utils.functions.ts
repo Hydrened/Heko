@@ -9,8 +9,16 @@ export function removeChildren(parent: HTMLElement | Element | null): void {
     [...parent.children].reverse().forEach((c: Element) => c.remove());
 }
 
+export function reverseChildren(parent: HTMLElement | Element | null): void {
+    if (parent == null) {
+        return;
+    }
+
+    [...parent.children].reverse().forEach((c: Element) => parent.appendChild(c));
+}
+
 export function pluralize(singularWord: string, n: number): string {
-    return singularWord + ((n > 1) ? "s" : "");
+    return singularWord + ((n != 1) ? "s" : "");
 }
 
 export function shortcutToString(shortcut: Shortcut): string {
@@ -130,8 +138,20 @@ export function isCenterModalAlreadyOpened(): boolean {
 }
 
 export function decodeNumericEntities(str: string): string {
-    str = str.replace(/&#(\d+);/g, (e: string, dec: any) => String.fromCharCode(Number(dec)));
-    str = str.replace(/&#x([0-9a-fA-F]+);/g, (e: string, hex: any) => String.fromCharCode(parseInt(hex, 16)));
+    str = str.replace(/&#(\d+);/g, (_, dec) => {
+        return String.fromCharCode(Number(dec));
+    });
+
+    str = str.replace(/&#x([0-9a-fA-F]+);/g, (_, hex) => {
+        return String.fromCharCode(parseInt(hex, 16));
+    });
+
+    str = str.replace(/&apos;/g, "'");
+    str = str.replace(/&quot;/g, '"');
+    str = str.replace(/&amp;/g, '&');
+    str = str.replace(/&lt;/g, '<');
+    str = str.replace(/&gt;/g, '>');
+
     return str;
 }
 

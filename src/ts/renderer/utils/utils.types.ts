@@ -1,6 +1,6 @@
 type AppResponse = 200 | 503;
 
-interface Position {
+type Position = {
     x: number;
     y: number;
 };
@@ -12,31 +12,31 @@ type CssVariableType = "PIXEL" | "MS_DURATION";
 type ID = number;
 type Token = string;
 
-interface UserData {
+type UserData = {
     readonly id: ID | null;
     readonly token: Token | null;
     readonly name: string | null;
     readonly email: string | null;
 };
 
-interface SongSettings {
+type SongSettings = {
     readonly shuffle: boolean;
     readonly loop: boolean;
     readonly speed: number;
     readonly volume: number;
 };
 
-interface ApparenceSettings {
+type ApparenceSettings = {
     theme: number;
     enableAnimations: boolean;
 };
 
-interface PreferencesSettings {
+type PreferencesSettings = {
     hideSuccessModals: boolean;
     volumeEasing: number;
 };
 
-interface Settings {
+type Settings = {
     readonly song: SongSettings;
     readonly apparence: ApparenceSettings;
     readonly preferences: PreferencesSettings;
@@ -44,7 +44,7 @@ interface Settings {
 
 
 
-interface Shortcut {
+type Shortcut = {
     readonly ctrl: boolean;
     readonly shift: boolean;
     readonly alt: boolean;
@@ -62,7 +62,7 @@ type TopModalType = "SUCCESS" | "ERROR";
 type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT";
 type ModalRowData = string[];
 
-interface ModalRow {
+type ModalRow = {
     readonly label: string;
     readonly type: ModalRowType;
     readonly maxLength?: number;
@@ -71,19 +71,19 @@ interface ModalRow {
     readonly data?: ModalRowData;
 };
 
-interface ModalButton {
+type ModalButton = {
     readonly title: string;
     readonly onClick: () => void;
 };
 
-interface ModalFieldError {
+type ModalFieldError = {
     readonly fieldName?: string;
     readonly error: string;
 };
 
 type ModalError = ModalFieldError | null;
 
-interface CenterModalData {
+type CenterModalData = {
     readonly title: string;
     readonly content?: ModalRow[];
     readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
@@ -92,7 +92,7 @@ interface CenterModalData {
     readonly cantClose: boolean;
 };
 
-interface CenterSearchModalData {
+type CenterSearchModalData = {
     readonly title: string;
     readonly onCreate?: (container: HTMLElement) => void;
     readonly onConfirm: (modal: CenterModal, container: HTMLElement) => Promise<ModalError>;
@@ -104,7 +104,7 @@ interface CenterSearchModalData {
 
 
 
-interface ContextmenuRow {
+type ContextmenuRow = {
     readonly title: string;
     readonly shortcut?: Shortcut;
     readonly onClick?: () => Promise<void>;
@@ -114,7 +114,7 @@ interface ContextmenuRow {
 
 
 
-interface Song {
+type Song = {
     readonly id: ID;
     readonly fileName: string;
     readonly title: string;
@@ -123,12 +123,12 @@ interface Song {
     readonly creationDate: string;
 };
 
-interface MergedPlaylist {
+type MergedPlaylist = {
     readonly id: ID;
     readonly toggled: boolean;
 };
 
-interface Playlist {
+type Playlist = {
     readonly id: ID;
     readonly parentID: ID;
     readonly name: string;
@@ -145,13 +145,13 @@ type Queue = Song[];
 
 
 
-interface VideoThumbnail {
+type VideoThumbnail = {
     width: number;
     height: number;
     url: string;
 };
 
-interface Video {
+type Video = {
     kind: "youtube#searchResult";
     etag: string;
     id: {
@@ -175,3 +175,9 @@ interface Video {
         liveBroadcastContent: "none" | "upcoming" | "live";
     };
 };
+
+
+
+type SongSortType = "id" | "title" | "artist" | "duration";
+
+type MergeSortType = "id" | "name" | "nb-songs" | "duration";

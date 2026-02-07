@@ -1,6 +1,10 @@
 ## HEKO-3.2.14
 #### ADDED
 - playlist thumbnails in "add song to playlists" modal
+- sort playlist by id, title, artist and duration (works also for merged playlists)
+#### FIXED
+- load & download song api outdated
+- youtube title characters not rendering properly
 
 ## HEKO-3.2.13
 #### CHANGED
