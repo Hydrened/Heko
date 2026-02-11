@@ -35,6 +35,7 @@ export default class PlaylistsRefreshCotnainerManager {
 
     private createPlaylist(playlist: Playlist): void {
         const strPlaylistID: string = String(playlist.id);
+        const isParentPlaylist: boolean = (playlist.children > 0);
 
         const liElement: HTMLElement = document.createElement("li");
         liElement.classList.add("playlist-wrapper");
@@ -47,10 +48,11 @@ export default class PlaylistsRefreshCotnainerManager {
 
         containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createPlaylistContextMenu((e as Position), playlist));
 
+        const thumbnail: string = (isParentPlaylist ? "" : playlist.thumbnailFileName);
         const thumbnailElement: HTMLElement = document.createElement("div");
         thumbnailElement.classList.add("thumbnail");
         thumbnailElement.setAttribute("playlist-id", strPlaylistID);
-        Functions.setThumbnail(thumbnailElement, playlist.thumbnailFileName);
+        Functions.setThumbnail(thumbnailElement, thumbnail);
         containerElement.appendChild(thumbnailElement);
 
         const detailsContainerElement: HTMLElement = document.createElement("div");
@@ -64,7 +66,7 @@ export default class PlaylistsRefreshCotnainerManager {
         titleElement.textContent = playlist.name;
         detailsContainerElement.appendChild(titleElement);
 
-        if (playlist.children > 0) {
+        if (isParentPlaylist) {
             const indicator: HTMLImageElement = document.createElement("img");
             indicator.classList.add("indicator");
             indicator.setAttribute("playlist-id", strPlaylistID);
