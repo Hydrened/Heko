@@ -46,7 +46,6 @@ function createMainContainers(app: App, elements: any, mainContainer: HTMLElemen
     elements.container = videoContainerElement;
 
     const thumbnailElement: HTMLElement = document.createElement("div");
-    thumbnailElement.classList.add("thumbnail");
     videoContainerElement.appendChild(thumbnailElement);
     elements.thumbnail = thumbnailElement;
 

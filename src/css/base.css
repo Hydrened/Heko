@@ -127,8 +127,3 @@ img, svg {
 svg.fill, svg.fill * {
     fill: var(--text-col-1);
 }
-.thumbnail {
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-position: center center;
-}

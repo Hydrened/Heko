@@ -153,8 +153,12 @@
     height: 3rem;
 
     border-radius: 0.5rem;
-    
-    background-color: var(--bg-bo-8);
+}
+.playlist-container > .thumbnail.parent {
+    opacity: var(--text-opacity);
+}
+.playlist-container > .thumbnail.null {
+    background-color: var(--bg-bo-6);
 }
 .playlist-container > .details-container {
     display: flex;

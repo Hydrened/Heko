@@ -1,3 +1,9 @@
+## HEKO-3.2.15
+#### ADDED
+- folder icon for parent playlist
+#### CHANGED
+- thumbnails can now be transparent
+
 ## HEKO-3.2.14
 #### ADDED
 - playlist thumbnails in "add song to playlists" modal

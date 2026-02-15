@@ -79,7 +79,6 @@ export default class CenterSearchModal extends CenterModal {
 
         if (thumbnailFileName != undefined) {
             const thumbnailElement: HTMLElement = document.createElement("div");
-            thumbnailElement.classList.add("thumbnail");
             Functions.setThumbnail(thumbnailElement, thumbnailFileName);
             container.appendChild(thumbnailElement);
         }

@@ -178,7 +178,6 @@ export default class PlaylistsRefreshOpenedManager {
 
             const thumbnailElementContainer: HTMLElement = PlaylistsRefreshOpenedManager.createRowContent(liElement, "");
             const thumbnailElement: HTMLElement = document.createElement("div");
-            thumbnailElement.classList.add("thumbnail");
             Functions.setThumbnail(thumbnailElement, playlist.thumbnailFileName);
             thumbnailElementContainer.appendChild(thumbnailElement);
 

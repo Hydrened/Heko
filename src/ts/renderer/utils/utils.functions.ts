@@ -81,7 +81,10 @@ export function getThumbnailPath(thumbnailFileName: string): string {
 }
 
 export function setThumbnail(element: HTMLElement, thumbnailFileName: string, isAbsolute: boolean = false): void {
+    element.classList.add("thumbnail");
+
     if (thumbnailFileName == "") {
+        element.classList.add("null");
         return;
     }
 

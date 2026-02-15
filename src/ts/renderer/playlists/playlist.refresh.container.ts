@@ -48,12 +48,15 @@ export default class PlaylistsRefreshCotnainerManager {
 
         containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.app.contextmenuManager.createPlaylistContextMenu((e as Position), playlist));
 
-        const thumbnail: string = (isParentPlaylist ? "" : playlist.thumbnailFileName);
+        const thumbnail: string = (isParentPlaylist ? "assets/folder.svg" : playlist.thumbnailFileName);
         const thumbnailElement: HTMLElement = document.createElement("div");
-        thumbnailElement.classList.add("thumbnail");
         thumbnailElement.setAttribute("playlist-id", strPlaylistID);
-        Functions.setThumbnail(thumbnailElement, thumbnail);
+        Functions.setThumbnail(thumbnailElement, thumbnail, isParentPlaylist);
         containerElement.appendChild(thumbnailElement);
+
+        if (isParentPlaylist) {
+            thumbnailElement.classList.add("parent");
+        }
 
         const detailsContainerElement: HTMLElement = document.createElement("div");
         detailsContainerElement.classList.add("details-container");

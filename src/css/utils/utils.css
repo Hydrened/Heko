@@ -2,6 +2,7 @@
     0% { left: -150%; }
     100% { left: 150%; }
 }
+
 .loading {
     position: relative;
 
@@ -34,4 +35,10 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+.thumbnail {
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center center;
 }

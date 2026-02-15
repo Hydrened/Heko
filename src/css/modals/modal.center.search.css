@@ -225,8 +225,10 @@ ul.search-result-container > li.checkbox-row > .thumbnail {
 
     border-radius: 0.4rem;
 
-    background-color: black;
     pointer-events: none;
+}
+ul.search-result-container > li.checkbox-row > .thumbnail.null {
+    background-color: black;
 }
 
 

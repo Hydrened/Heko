@@ -42,9 +42,10 @@
 
     border-radius: 1rem;
 
-    background-color: var(--bg-bo-6);
-
     cursor: pointer;
+}
+#current-playlist-thumbnail.null {
+    background-color: var(--bg-bo-6);
 }
 
 
@@ -243,9 +244,10 @@
 
     border-radius: 0.2rem;
 
-    background-color: var(--bg-bo-6);
-
     scale: 2.2;
+}
+.current-playlist-table-row > p > .thumbnail.null {
+    background-color: var(--bg-bo-5);
 }
 
 
