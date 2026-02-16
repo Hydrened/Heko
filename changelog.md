@@ -1,3 +1,8 @@
+## HEKO-3.2.16
+#### FIXED
+- edit username modal title
+- not transparent playlist thumbnails
+
 ## HEKO-3.2.15
 #### ADDED
 - folder icon for parent playlist

@@ -34,7 +34,7 @@ export default function openEditAccountNameModal(app: App): void {
     ];
 
     const data: CenterModalData = {
-        title: "Edit song from Heko",
+        title: "Change username",
         content: content,
         onConfirm: async (modal: CenterModal) => await modalOnConfirm(app, modal),
         cantClose: false,

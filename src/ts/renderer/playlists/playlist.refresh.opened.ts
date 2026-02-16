@@ -18,6 +18,7 @@ export default class PlaylistsRefreshOpenedManager {
 
     private refreshDetails(): void {
         const thumbnailElement: HTMLElement = (Elements.currentPlaylist.details.thumbnail as HTMLElement);
+        thumbnailElement.classList.remove("null");
         thumbnailElement.style.backgroundImage = "";
         Elements.currentPlaylist.details.title.textContent = "";
         Elements.currentPlaylist.details.songNumber.textContent = "";
