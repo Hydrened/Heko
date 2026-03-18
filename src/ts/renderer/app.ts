@@ -84,8 +84,11 @@ export default class App {
         }
 
         if (!this.threw) {
-            Bridge.main.throwError(message);
             this.threw = true;
+
+            this.onClose().then(() => {
+                Bridge.main.throwError(message);
+            });
         }
     }
 
