@@ -1,6 +1,6 @@
 import App from "./../../app.js";
 import CenterSearchModal from "./../modal.center.search.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
 function modalOnCreate(app: App, audioELement: HTMLAudioElement, songsLeft: Song[], container: HTMLElement): void {
@@ -87,7 +87,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, container: HTMLEleme
         };
     }
 
-    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, songIDsToAdd, [currentOpenedPlaylist.id]);
+    const addSongsToPlaylistReqRes: any = await Api.song.addToPlaylist(app, songIDsToAdd, [currentOpenedPlaylist.id]);
     if (!addSongsToPlaylistReqRes.success) {
         app.throwError(`Can't add ${songWord} to playlist: ${addSongsToPlaylistReqRes.error}`);
         return null;

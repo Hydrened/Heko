@@ -133,16 +133,16 @@ export default class PlaylistsEventManager {
                 return;
             }
 
-            const value: string = Elements.currentPlaylist.songFilterInput.value.toLowerCase();
+            const values: string[] = Elements.currentPlaylist.songFilterInput.value.toLowerCase().split(" ").filter((v: string) => (v != ""));
 
             const isMergeContainer: boolean = (currentOpenedPlaylist.mergedPlaylist.length != 0);
             (isMergeContainer)
-                ? this.openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist, value)
-                : this.openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist, value);
+                ? this.openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist, values)
+                : this.openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist, values);
         }, 300);
     }
 
-    private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, value: string): void {
+    private openedPlaylistInputFilterMergedOnInput(currentOpenedPlaylist: Playlist, values: string[]): void {
         currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist) => {
             const playlist: Playlist | null = this.main.getPlaylistFromID(mergedPlaylist.id);
             if (playlist == null) {
@@ -162,16 +162,17 @@ export default class PlaylistsEventManager {
                 return;
             }
 
-            const nameIncludes: boolean = playlist.name.toLowerCase().includes(value);
+            const songStrings: string[] = playlist.songs.reduce((acc: string[], song: Song) => {
+                const songStrings: string[] = [song.title.toLowerCase(), song.artist.toLowerCase()];
+                return acc.concat(songStrings);
+            }, []);
+            
+            const filter: string[] = [playlist.name.toLowerCase()].concat(songStrings)
+                .map((str: string) => str.split(" "))
+                .reduce((acc: string[], arr: string[]) => acc.concat(arr), []);
 
-            const songIncludes: boolean = playlist.songs.some((song: Song) => {
-                const titleIncludes: boolean = song.title.toLowerCase().includes(value);
-                const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
-
-                return (titleIncludes || artistIncludes);
-            });
-
-            if (nameIncludes || songIncludes) {
+            const includes: boolean = values.every((value: string) => filter.some((filterWord: string) => filterWord.includes(value)));
+            if (includes) {
                 liElement.classList.remove("hidden");
             }
             else {
@@ -180,7 +181,7 @@ export default class PlaylistsEventManager {
         });
     }
 
-    private openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist: Playlist, value: string): void {
+    private openedPlaylistInputFilterSongOnInput(currentOpenedPlaylist: Playlist, values: string[]): void {
         currentOpenedPlaylist.songs.forEach((song: Song) => {
             const liElement: Element | undefined = [...Elements.currentPlaylist.song.container.children].find((li: Element) => {
                 if (!li.hasAttribute("song-id")) {
@@ -195,10 +196,12 @@ export default class PlaylistsEventManager {
                 return;
             }
 
-            const titleIncludes: boolean = song.title.toLowerCase().includes(value);
-            const artistIncludes: boolean = song.artist.toLowerCase().includes(value);
+            const filter: string[] = [song.title.toLowerCase(), song.artist.toLowerCase()]
+                .map((str: string) => str.split(" "))
+                .reduce((acc: string[], arr: string[]) => acc.concat(arr), []);
 
-            if (titleIncludes || artistIncludes) {
+            const includes: boolean = values.every((value: string) => filter.some((filterWord: string) => filterWord.includes(value)));
+            if (includes) {
                 liElement.classList.remove("hidden");
             }
             else {

@@ -1,5 +1,5 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
 async function modalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): Promise<ModalError> {
@@ -57,13 +57,13 @@ async function modalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): 
         };
     }
 
-    const uploadSongReqRes: any = await app.modalManager.openLoadingModal("Uploading song", Requests.song.upload(app, file));
+    const uploadSongReqRes: any = await app.modalManager.openLoadingModal("Uploading song", Api.song.upload(app, file));
     if (!uploadSongReqRes.success) {
         app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`);
         return null;
     }
 
-    const addSongToAppReqRes: any = await Requests.song.addToApp(app, title, artist, uploadSongReqRes.fileName);
+    const addSongToAppReqRes: any = await Api.song.addToApp(app, title, artist, uploadSongReqRes.fileName);
     if (!addSongToAppReqRes.success) {
         app.throwError(`Can't add song to app: ${addSongToAppReqRes.error}`);
         return null;

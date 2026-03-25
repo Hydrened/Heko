@@ -1,12 +1,12 @@
 import App from "./../../app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const email: string = modal.getFieldValue("Email");
     const password: string = modal.getFieldValue("Password");
 
-    const loginReqRes: any = await Requests.user.login(email, password);
+    const loginReqRes: any = await Api.user.login(email, password);
     if (!loginReqRes.success) {
         return {
             fieldName: loginReqRes.fieldName,

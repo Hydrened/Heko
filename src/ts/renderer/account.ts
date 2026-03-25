@@ -2,7 +2,7 @@ import App from "./app.js";
 import openLoginModal from "./modals/modal.center.open/login.js";
 import openRegisterModal from "./modals/modal.center.open/register.js";
 import * as Bridge from "./utils/utils.bridge.js";
-import * as Requests from "./utils/utils.requests.js";
+import * as Api from "./utils/utils.api.js";
 import * as Elements from "./utils/utils.elements.js";
 
 export default class Account {
@@ -28,7 +28,7 @@ export default class Account {
     private async checkLoginState(): Promise<void> {
         const token: Token = await Bridge.token.get();
 
-        const validityReqRes: any = await Requests.user.isTokenValid(token);
+        const validityReqRes: any = await Api.user.isTokenValid(token);
         if (!validityReqRes.success) {
             if (validityReqRes.error == "Maintenance") {
                 this.app.throwError(validityReqRes.error);

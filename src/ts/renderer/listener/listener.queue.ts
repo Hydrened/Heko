@@ -2,7 +2,7 @@ import App from "./../app.js";
 import AppPath from "./../utils/utils.app-path.js";
 import ListenerManager from "./listener.js";
 import * as Bridge from "./../utils/utils.bridge.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -48,7 +48,7 @@ export default class ListenerQueueManager {
             return;
         }
             
-        const addSongsInHitsoryReqRes: any = await Requests.user.saveSongsInHistory(this.app, this.listenedSongIdBuffer);
+        const addSongsInHitsoryReqRes: any = await Api.user.saveSongsInHistory(this.app, this.listenedSongIdBuffer);
         if (!addSongsInHitsoryReqRes.success) {
             return this.app.throwError(`Can't add songs in history: ${addSongsInHitsoryReqRes.error}`);
         }

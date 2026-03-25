@@ -2,10 +2,10 @@ import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
 import openRemovePlaylistModal from "./../../modals/modal.center.open/remove.playlist.js";
 import openRenamePlaylistModal from "./../../modals/modal.center.open/rename-playlist.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function duplicatePlaylistOnClick(app: App, playlist: Playlist): Promise<void> {
-    const duplicatePlaylistReqRes: any = await Requests.playlist.duplicate(app, playlist.id);
+    const duplicatePlaylistReqRes: any = await Api.playlist.duplicate(app, playlist.id);
     if (!duplicatePlaylistReqRes.success) {
         return app.throwError(`Can't duplicate playlist: ${duplicatePlaylistReqRes.error}`);
     }
@@ -62,7 +62,7 @@ function getPlaylistMoveToRows(app: App, playlist: Playlist): ContextmenuRow[] {
 }
 
 async function playlistMoveToOnClick(app: App, parentPlaylist: Playlist, playlist: Playlist): Promise<void> {
-    const movePlaylistInPlaylistReqRes: any = await Requests.playlist.moveIn(app, parentPlaylist.id, playlist.id);
+    const movePlaylistInPlaylistReqRes: any = await Api.playlist.moveIn(app, parentPlaylist.id, playlist.id);
     if (!movePlaylistInPlaylistReqRes.success) {
         return app.throwError(`Can't move playlist: ${movePlaylistInPlaylistReqRes.error}`);
     }
@@ -97,7 +97,7 @@ function getPlaylistMergeInRows(app: App, playlist: Playlist): ContextmenuRow[] 
 }
 
 async function playlistMergeInOnClick(app: App, playlist: Playlist, mergedPlaylist: Playlist): Promise<void> {
-    const mergePlaylistInPlaylistReqRes: any = await Requests.playlist.mergeIn(app, playlist.id, mergedPlaylist.id);
+    const mergePlaylistInPlaylistReqRes: any = await Api.playlist.mergeIn(app, playlist.id, mergedPlaylist.id);
     if (!mergePlaylistInPlaylistReqRes.success) {
         return app.throwError(`Can't merge playlist: ${mergePlaylistInPlaylistReqRes.error}`);
     }

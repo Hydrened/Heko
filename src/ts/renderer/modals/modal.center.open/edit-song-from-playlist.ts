@@ -1,5 +1,5 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal, song: Song): Promise<ModalError> {
     const newTitle: string = modal.getFieldValue("New title");
@@ -18,7 +18,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, song: Song): Promise
         };
     }
 
-    const editSongReqRes: any = await Requests.song.edit(app, song.id, newTitle, newArtist);
+    const editSongReqRes: any = await Api.song.edit(app, song.id, newTitle, newArtist);
     if (!editSongReqRes.success) {
         app.throwError(`Can't edit song: ${editSongReqRes.error}`);
         return null;

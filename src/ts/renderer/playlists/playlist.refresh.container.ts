@@ -1,6 +1,6 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -85,7 +85,7 @@ export default class PlaylistsRefreshCotnainerManager {
 
                 const openedPlaylistIDs: number[] = this.main.getPlaylistOpenedStates();
 
-                const updatePlaylistOpenedStatesReqRes: any = await Requests.playlist.updateOpenedState(this.app, openedPlaylistIDs);
+                const updatePlaylistOpenedStatesReqRes: any = await Api.playlist.updateOpenedState(this.app, openedPlaylistIDs);
                 if (!updatePlaylistOpenedStatesReqRes.success) {
                     return this.app.throwError(`Can't update playlist opened states: ${updatePlaylistOpenedStatesReqRes.error}`);
                 }

@@ -1,5 +1,5 @@
 import App from "../../app.js";
-import * as Requests from "../../utils/utils.requests.js";
+import * as Api from "../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playlist[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
@@ -18,7 +18,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playl
 
     const playlist: Playlist = playlistsLeft[playlistIndex];
 
-    const mergePlaylistInReqRes: any = await Requests.playlist.mergeIn(app, currentOpenedPlaylist.id, playlist.id);
+    const mergePlaylistInReqRes: any = await Api.playlist.mergeIn(app, currentOpenedPlaylist.id, playlist.id);
     if (!mergePlaylistInReqRes.success) {
         app.throwError(`Can't add playlist to merge in playlist: ${mergePlaylistInReqRes.error}`);
         return null;

@@ -1,8 +1,8 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
-    const removePlaylistThumbnailReqRes: any = await Requests.thumbnail.remove(app, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
+    const removePlaylistThumbnailReqRes: any = await Api.thumbnail.remove(app, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
     if (!removePlaylistThumbnailReqRes.success) {
         app.throwError(`Can't remove playlist thumbnail: ${removePlaylistThumbnailReqRes.error}`);
         return null;
@@ -17,7 +17,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylis
 
     const file: File | null = curentCenterModal.getFileFromFileInput("Thumbnail");
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Requests.thumbnail.upload(app, file));
+        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Api.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't upload playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -25,7 +25,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylis
 
         const thumbnailFileName: string = uploadPlaylistThumbnailReqRes.fileName;
 
-        const updatePlaylistThumbnailReqRes: any = await Requests.thumbnail.update(app, currentOpenedPlaylist.id, thumbnailFileName);
+        const updatePlaylistThumbnailReqRes: any = await Api.thumbnail.update(app, currentOpenedPlaylist.id, thumbnailFileName);
         if (!updatePlaylistThumbnailReqRes.success) {
             app.throwError(`Can't update playlist thumbnail: ${updatePlaylistThumbnailReqRes.error}`);
             return null;

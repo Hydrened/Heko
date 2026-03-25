@@ -1,6 +1,6 @@
 import App from "./../../app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
     const name: string = modal.getFieldValue("Name");
@@ -8,7 +8,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
     const password: string = modal.getFieldValue("Password");
     const confirm: string = modal.getFieldValue("Confirm");
 
-    const registerReqRes: any = await Requests.user.register(name, email, password, confirm);
+    const registerReqRes: any = await Api.user.register(name, email, password, confirm);
     if (!registerReqRes.success) {
         return {
             fieldName: registerReqRes.fieldName,
@@ -16,7 +16,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
         };
     }
 
-    const loginReqRes: any = await Requests.user.login(email, password);
+    const loginReqRes: any = await Api.user.login(email, password);
     if (!loginReqRes.success) {
         return {
             fieldName: loginReqRes.fieldName,

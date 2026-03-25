@@ -3,7 +3,7 @@ import AccountSettingsManager from "./settings.account.js";
 import ApparenceSettingsManager from "./settings.apparence.js";
 import PreferencesSettingsManager from "./settings.preferences.js";
 import * as Bridge from "./../utils/utils.bridge.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 import { getAccountShortcuts, getAccountRows } from "../contextmenus/contextmenu.rows/account.js";
@@ -74,14 +74,14 @@ export default class SettingsManager {
             preferences: this.preferences.get(),
         };
 
-        const saveUserSettingsReqRes: any = await Requests.user.saveSettings(this.app, settings);
+        const saveUserSettingsReqRes: any = await Api.user.saveSettings(this.app, settings);
         if (!saveUserSettingsReqRes.success) {
             return this.app.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
         }
     }
 
     private async load(): Promise<void> {
-        const getUserSettingsReqRes: any = await Requests.user.getSettings(this.app);
+        const getUserSettingsReqRes: any = await Api.user.getSettings(this.app);
         if (!getUserSettingsReqRes.success) {
             return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`);
         }

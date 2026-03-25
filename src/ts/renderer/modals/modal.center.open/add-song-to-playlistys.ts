@@ -1,6 +1,6 @@
 import App from "./../../app.js";
 import CenterSearchModal from "./../modal.center.search.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 function modalOnCreate(app: App, playlistsLeft: Playlist[], container: HTMLElement): void {
     playlistsLeft.forEach((playlistLeft: Playlist) => createPlaylistContainer(app, playlistLeft, container));
@@ -19,7 +19,7 @@ async function modalOnConfirm(app: App, song: Song, modal: CenterModal, containe
         return (app.playlistManager.getPlaylistFromElement(li));
     }).filter((playlist: Playlist | null) => playlist != null).map((playlist: Playlist) => playlist.id);
 
-    const addSongsToPlaylistReqRes: any = await Requests.song.addToPlaylist(app, [song.id], playlistIDsToAdd);
+    const addSongsToPlaylistReqRes: any = await Api.song.addToPlaylist(app, [song.id], playlistIDsToAdd);
     if (!addSongsToPlaylistReqRes.success) {
         app.throwError(`Can't add "${song.title}" by "${song.artist}" to playlists: ${addSongsToPlaylistReqRes.error}`);
         return null;

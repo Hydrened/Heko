@@ -1,6 +1,6 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Functions from "./../utils/utils.functions.js";
 import * as Elements from "./../utils/utils.elements.js";
 
@@ -191,7 +191,7 @@ export default class PlaylistsRefreshOpenedManager {
             checkboxElement.addEventListener("change", async () => {
                 const chcked: boolean = checkboxElement.checked;
 
-                const updateMergeToggleReqRes: any = await Requests.playlist.updateMergeToggle(this.app, playlist.id, chcked);
+                const updateMergeToggleReqRes: any = await Api.playlist.updateMergeToggle(this.app, playlist.id, chcked);
                 if (!updateMergeToggleReqRes.success) {
                     return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`);
                 }

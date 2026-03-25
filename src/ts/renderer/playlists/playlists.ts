@@ -5,7 +5,7 @@ import PlaylistsRefreshOpenedManager from "./playlist.refresh.opened.js";
 import PlaylistsOpenManager from "./playlists.open.js";
 import PlaylistsMoveManager from "./playlist.move.js";
 import PlaylistsSortManager from "./playlist.sort.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistManager {
@@ -54,7 +54,7 @@ export default class PlaylistManager {
     public async refreshPlaylistBuffer(): Promise<void> {
         this.playlistBuffer = [];
 
-        const getPlaylistsReqRes: any = await Requests.playlist.get(this.app);
+        const getPlaylistsReqRes: any = await Api.playlist.get(this.app);
         if (!getPlaylistsReqRes.success) {
             this.app.throwError(`Can't get playlists from user: ${getPlaylistsReqRes.error}`);
             return;
@@ -111,7 +111,7 @@ export default class PlaylistManager {
     }
 
     public async refreshSongBuffer(): Promise<void> {
-        const getAllSongsFromUserReqRes: any = await Requests.song.get(this.app);
+        const getAllSongsFromUserReqRes: any = await Api.song.get(this.app);
         if (!getAllSongsFromUserReqRes.success) {
             this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
             this.songBuffer = [];

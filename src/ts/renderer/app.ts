@@ -6,7 +6,7 @@ import ContextmenuManager from "./contextmenus/contextmenus.js";
 import PlaylistManager from "./playlists/playlists.js";
 import ListenerManager from "./listener/listener.js";
 import * as Bridge from "./utils/utils.bridge.js";
-import * as Requests from "./utils/utils.requests.js";
+import * as Api from "./utils/utils.api.js";
 import * as Functions from "./utils/utils.functions.js";
 import * as Elements from "./utils/utils.elements.js";
 import "./utils/utils.types.js";
@@ -56,7 +56,7 @@ export default class App {
     }
 
     public async init(): Promise<void> {
-        const getResponseResRes: any = await Requests.app.getResponse();
+        const getResponseResRes: any = await Api.app.getResponse();
         if (!getResponseResRes.success) {
             return console.error("No internet connection.");
         }

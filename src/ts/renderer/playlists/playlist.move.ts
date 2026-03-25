@@ -1,6 +1,6 @@
 import App from "./../app.js";
 import PlaylistManager from "./playlists.js";
-import * as Requests from "./../utils/utils.requests.js";
+import * as Api from "./../utils/utils.api.js";
 import * as Elements from "./../utils/utils.elements.js";
 
 export default class PlaylistsMoveManager {
@@ -139,7 +139,7 @@ export default class PlaylistsMoveManager {
 
         this.updating = true;
 
-        const updatePlaylistPositionReqRes: any = await Requests.playlist.updatePosition(this.app, playlist.id, position);
+        const updatePlaylistPositionReqRes: any = await Api.playlist.updatePosition(this.app, playlist.id, position);
         if (!updatePlaylistPositionReqRes.success) {
             return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`);
         }

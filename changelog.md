@@ -1,3 +1,9 @@
+## HEKO-3.2.17
+#### ADDED
+- smart song filter in current opened playlist
+#### CHANGED
+- font
+
 ## HEKO-3.2.16
 #### FIXED
 - edit username modal title

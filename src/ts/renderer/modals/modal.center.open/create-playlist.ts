@@ -1,5 +1,5 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 import * as Functions from "./../../utils/utils.functions.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError> {
@@ -48,7 +48,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
 
     let thumbnailFileName: string = "";
     if (file != null) {
-        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Requests.thumbnail.upload(app, file));
+        const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Api.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
             app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
             return null;
@@ -57,7 +57,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
         thumbnailFileName = uploadPlaylistThumbnailReqRes.fileName;
     }
 
-    const addPlaylistReqRes: any = await Requests.playlist.add(app, newPlaylistName, thumbnailFileName);
+    const addPlaylistReqRes: any = await Api.playlist.add(app, newPlaylistName, thumbnailFileName);
     if (!addPlaylistReqRes.success) {
         app.throwError(`Can't add playlist: ${addPlaylistReqRes.error}`);
         return null;

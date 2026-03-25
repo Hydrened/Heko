@@ -1,5 +1,5 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): Promise<ModalError> {
     const songIndex: number | undefined = modal.getFieldValueIndex("Title");
@@ -12,7 +12,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): 
 
     const song: Song = userSongs[songIndex];
     
-    const removeSongFromAppReqRes: any = await Requests.song.removeFromApp(app, song.id, song.fileName);
+    const removeSongFromAppReqRes: any = await Api.song.removeFromApp(app, song.id, song.fileName);
     if (!removeSongFromAppReqRes.success) {
         app.throwError(`Can't remove song from app: ${removeSongFromAppReqRes.error}`);
         return null;

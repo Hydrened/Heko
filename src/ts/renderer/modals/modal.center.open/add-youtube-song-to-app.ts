@@ -1,7 +1,7 @@
 import App from "./../../app.js";
 import openAddSongFileToAppModal from "./add-song-file-to-app.js";
 import * as Bridge from "./../../utils/utils.bridge.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 import * as Functions from "./../../utils/utils.functions.js";
 import * as AntiSpam from "./../../utils/utils.anti-spam.js";
 
@@ -12,7 +12,7 @@ async function modalOnSearch(app: App, userSongs: Song[], container: HTMLElement
     Functions.removeChildren(container);
     container.classList.add("loading");
 
-    const searchReqRes: any = await Requests.youtube.search(app, encodedQuery);
+    const searchReqRes: any = await Api.youtube.search(app, encodedQuery);
     if (!searchReqRes.success) {
         return app.throwError(`Can't search on youtube: ${searchReqRes.error}`);
     }

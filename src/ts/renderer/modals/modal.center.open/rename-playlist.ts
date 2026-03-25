@@ -1,5 +1,5 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const newPlaylistName: string = modal.getFieldValue("New name");
@@ -19,7 +19,7 @@ async function modalOnConfirm(app: App, playlist: Playlist, modal: CenterModal):
         };
     }
 
-    const renamePlaylistReqRes: any = await Requests.playlist.rename(app, playlist.id, newPlaylistName);
+    const renamePlaylistReqRes: any = await Api.playlist.rename(app, playlist.id, newPlaylistName);
     if (!renamePlaylistReqRes.success) {
         app.throwError(`Can't rename playlist: ${renamePlaylistReqRes.error}`);
         return null;

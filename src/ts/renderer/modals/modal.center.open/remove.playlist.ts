@@ -1,6 +1,6 @@
 import App from "./../../app.js";
 import PlaylistManager from "./../../playlists/playlists.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Playlist, modal: CenterModal): Promise<ModalError> {
     const childrenIDs: ID[] = PlaylistManager.getPlaylistChildrenIDs(userPlaylists, playlist.id);
@@ -8,7 +8,7 @@ async function modalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Pla
     const playlists: Playlist[] = app.playlistManager.getPlaylistBuffer();
     const thumbnailFileNames: string[] = playlists.filter((p: Playlist) => (childrenIDs.includes(p.id) || p.id == playlist.id)).map((p: Playlist) => p.thumbnailFileName);
 
-    const removePlaylistReqRes: any = await Requests.playlist.remove(app, childrenIDs.concat(playlist.id), thumbnailFileNames);
+    const removePlaylistReqRes: any = await Api.playlist.remove(app, childrenIDs.concat(playlist.id), thumbnailFileNames);
     if (!removePlaylistReqRes.success) {
         app.throwError(`Can't remove playlist: ${removePlaylistReqRes.error}`);
         return null;

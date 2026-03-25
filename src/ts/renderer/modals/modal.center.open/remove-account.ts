@@ -1,10 +1,10 @@
 import App from "./../../app.js";
-import * as Requests from "./../../utils/utils.requests.js";
+import * as Api from "./../../utils/utils.api.js";
 
 async function modalOnConfirm(app: App): Promise<ModalError> {
     const email: string = app.account.getUserData().email!;
 
-    const sendDeleteAccountConfirmationReqRes: any = await Requests.user.sendDeleteConfirmation(app, email);
+    const sendDeleteAccountConfirmationReqRes: any = await Api.user.sendDeleteConfirmation(app, email);
     if (!sendDeleteAccountConfirmationReqRes.success) {
         app.throwError(`Can't send delete account confirmation mail: ${sendDeleteAccountConfirmationReqRes.error}`);
         return null;
