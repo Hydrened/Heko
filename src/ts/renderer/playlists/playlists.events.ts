@@ -146,7 +146,7 @@ export default class PlaylistsEventManager {
         currentOpenedPlaylist.mergedPlaylist.forEach((mergedPlaylist: MergedPlaylist) => {
             const playlist: Playlist | null = this.main.getPlaylistFromID(mergedPlaylist.id);
             if (playlist == null) {
-                return this.app.throwError("Can't filter merged playlists: A merged playlist is null.");
+                return this.app.throwError("Can't filter merged playlists: A merged playlist is null.", 73);
             }
 
             const liElement: Element | undefined = [...Elements.currentPlaylist.merged.container.children].find((li: Element) => {

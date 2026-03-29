@@ -77,7 +77,7 @@ export default class ListenerEventManager {
 
             const closeButtonElement: HTMLElement | null = container.popup.querySelector("button");
             if (closeButtonElement == null) {
-                return this.app.throwError("Can't init popup events: Close button element is null.");
+                return this.app.throwError("Can't init popup events: Close button element is null.", 11);
             }
 
             closeButtonElement.addEventListener("click", () => closePopup(container.popup));

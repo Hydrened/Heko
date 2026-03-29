@@ -78,7 +78,9 @@ export default class App {
         setTimeout(() => Elements.loadingScreen.classList.remove(), 250);
     }
 
-    public throwError(message: string): void {
+    public throwError(message: string, code: number): void {
+        message = `${message} - Error code: ${code}`;
+
         if (this.dev) {
             return console.error(message);
         }

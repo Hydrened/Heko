@@ -35,7 +35,7 @@ function createSongContainer(app: App, audioELement: HTMLAudioElement, container
 
 function togglePlayButtonOnClick(app: App, container: HTMLElement, audioELement: HTMLAudioElement, songContainer: HTMLElement, togglePlayButton: HTMLElement, song: Song): void {
     if (!togglePlayButton.hasAttribute("playing")) {
-        return app.throwError("Can't toggle play state: Play button element has no playing attribute.");
+        return app.throwError("Can't toggle play state: Play button element has no playing attribute.", 26);
     }
 
     const songSrc: string = Functions.getSongPath(song);
@@ -71,7 +71,7 @@ function resetEverySong(app: App, container: HTMLElement): void {
 async function modalOnConfirm(app: App, modal: CenterModal, container: HTMLElement, songsLeft: Song[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        app.throwError("Can't add songs to playlist: Current opened playlist is null.");
+        app.throwError("Can't add songs to playlist: Current opened playlist is null.", 27);
         return null;
     }
 
@@ -89,7 +89,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, container: HTMLEleme
 
     const addSongsToPlaylistReqRes: any = await Api.song.addToPlaylist(app, songIDsToAdd, [currentOpenedPlaylist.id]);
     if (!addSongsToPlaylistReqRes.success) {
-        app.throwError(`Can't add ${songWord} to playlist: ${addSongsToPlaylistReqRes.error}`);
+        app.throwError(`Can't add ${songWord} to playlist: ${addSongsToPlaylistReqRes.error}`, 28);
         return null;
     }
 
@@ -109,7 +109,7 @@ function modalOnSearch(app: App, audioELement: HTMLAudioElement, container: HTML
     songElements.forEach((songElement: HTMLElement) => {
         const song: Song | null = app.playlistManager.getSongFromElement(songElement);
         if (song == null) {
-            return app.throwError("Can't get song from element: Song is null.");
+            return app.throwError("Can't get song from element: Song is null.", 29);
         }
 
         const titleIncludes: boolean = song.title.toLowerCase().includes(query);
@@ -126,7 +126,7 @@ function modalOnSearch(app: App, audioELement: HTMLAudioElement, container: HTML
 export default function openAddSongsToPlaylistModal(app: App, songsLeft: Song[]): void {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        return app.throwError("Can't open add songs to playlist modal: Current opened playlist is null.");
+        return app.throwError("Can't open add songs to playlist modal: Current opened playlist is null.", 30);
     }
 
     const audioELement: HTMLAudioElement = new Audio();

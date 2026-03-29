@@ -4,7 +4,7 @@ import * as Api from "./../../utils/utils.api.js";
 async function modalOnConfirm(app: App, playlist: Playlist, mergedPlaylist: Playlist): Promise<ModalError> {
     const removePlaylistFromMergeContainerReqRes: any = await Api.playlist.removeFromMergeContainer(app, playlist.id, mergedPlaylist.id);
     if (!removePlaylistFromMergeContainerReqRes.success) {
-        app.throwError(`Can't remove playlist from merge container playlist: ${removePlaylistFromMergeContainerReqRes.error}`);
+        app.throwError(`Can't remove playlist from merge container playlist: ${removePlaylistFromMergeContainerReqRes.error}`, 43);
         return null;
     }
 

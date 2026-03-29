@@ -12,7 +12,7 @@ export default class Window {
 
     private initEvents(): void {
         if (this.minimizeWindowButton == null || this.maximizeWindowButton == null || this.closeWindowButton == null) {
-            return this.app.throwError("Can't initialize frame buttons.");
+            return this.app.throwError("Can't initialize frame buttons.", 0);
         }
 
         this.minimizeWindowButton.addEventListener("click", async () => await Bridge.win.minimize());

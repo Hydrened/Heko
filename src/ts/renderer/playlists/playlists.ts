@@ -56,7 +56,7 @@ export default class PlaylistManager {
 
         const getPlaylistsReqRes: any = await Api.playlist.get(this.app);
         if (!getPlaylistsReqRes.success) {
-            this.app.throwError(`Can't get playlists from user: ${getPlaylistsReqRes.error}`);
+            this.app.throwError(`Can't get playlists from user: ${getPlaylistsReqRes.error}`, 75);
             return;
         }
 
@@ -113,7 +113,7 @@ export default class PlaylistManager {
     public async refreshSongBuffer(): Promise<void> {
         const getAllSongsFromUserReqRes: any = await Api.song.get(this.app);
         if (!getAllSongsFromUserReqRes.success) {
-            this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`);
+            this.app.throwError(`Can't get songs from user: ${getAllSongsFromUserReqRes.error}`, 76);
             this.songBuffer = [];
             return;
         }
@@ -197,7 +197,7 @@ export default class PlaylistManager {
 
     public getPlaylistWhereSongIsNotIn(songID: ID): Playlist[] {
         if (this.songBuffer.find((song: Song) => song.id == songID) == undefined) {
-            this.app.throwError("Can't get playlist where song is not in: Song is undefined.");
+            this.app.throwError("Can't get playlist where song is not in: Song is undefined.", 77);
             return [];
         }
 
@@ -239,7 +239,7 @@ export default class PlaylistManager {
     public getSongsFromPlaylist(playlistID: ID): Song[] {
         const playlist: Playlist | null = this.getPlaylistFromID(playlistID);
         if (playlist == null) {
-            this.app.throwError("Can't get songs from playlist: Playlist is null.");
+            this.app.throwError("Can't get songs from playlist: Playlist is null.", 78);
             return [];
         }
 
@@ -267,7 +267,7 @@ export default class PlaylistManager {
 
             const playlist: Playlist | null = this.app.playlistManager.getPlaylistFromID(mp.id);
             if (playlist == null) {
-                this.app.throwError("Can't get merged container songs: A merged playlist is null.");
+                this.app.throwError("Can't get merged container songs: A merged playlist is null.", 79);
                 return [];
             }
 

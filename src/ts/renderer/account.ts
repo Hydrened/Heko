@@ -31,7 +31,7 @@ export default class Account {
         const validityReqRes: any = await Api.user.isTokenValid(token);
         if (!validityReqRes.success) {
             if (validityReqRes.error == "Maintenance") {
-                this.app.throwError(validityReqRes.error);
+                this.app.throwError(validityReqRes.error, 1);
                 return;
             }
             return this.openLoginModal();

@@ -4,12 +4,12 @@ import openRemoveMergedFromPlaylistModal from "./../../modals/modal.center.open/
 function toggleOnClick(app: App, mergedPlaylist: Playlist): void {
     const mergedPlaylistElement: Element | null = document.querySelector(`.current-playlist-table-row[playlist-id="${mergedPlaylist.id}"]`);
     if (mergedPlaylistElement == null) {
-        return app.throwError("Can't toggle playlist: Playlist element is null.");
+        return app.throwError("Can't toggle playlist: Playlist element is null.", 2);
     }
 
     const checkboxElement: Element | null = mergedPlaylistElement.querySelector("input[type='checkbox']");
     if (checkboxElement == null) {
-        return app.throwError("Can't toggle playlist: Checkbox element is null.");
+        return app.throwError("Can't toggle playlist: Checkbox element is null.", 3);
     }
 
     const realCheckboxElement: HTMLInputElement = (checkboxElement as HTMLInputElement);
@@ -20,7 +20,7 @@ function toggleOnClick(app: App, mergedPlaylist: Playlist): void {
 export function getMergedPlaylistRows(app: App, mergedPlaylist: Playlist): ContextmenuRow[] {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        app.throwError("Can't get merged playlist rows: Current opened playlist is null.");
+        app.throwError("Can't get merged playlist rows: Current opened playlist is null.", 4);
         return [];
     }
     

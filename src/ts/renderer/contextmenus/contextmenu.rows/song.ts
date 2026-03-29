@@ -8,7 +8,7 @@ export function getSongRows(app: App, song: Song): ContextmenuRow[] {
 
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        app.throwError(`${errorBase}: Current opened playlist is null.`);
+        app.throwError(`${errorBase}: Current opened playlist is null.`, 8);
         return [];
     }
 

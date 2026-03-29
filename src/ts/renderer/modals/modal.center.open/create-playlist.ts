@@ -50,7 +50,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
     if (file != null) {
         const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Api.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
-            app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
+            app.throwError(`Can't uplaod playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`, 37);
             return null;
         }
 
@@ -59,7 +59,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
 
     const addPlaylistReqRes: any = await Api.playlist.add(app, newPlaylistName, thumbnailFileName);
     if (!addPlaylistReqRes.success) {
-        app.throwError(`Can't add playlist: ${addPlaylistReqRes.error}`);
+        app.throwError(`Can't add playlist: ${addPlaylistReqRes.error}`, 38);
         return null;
     }
 

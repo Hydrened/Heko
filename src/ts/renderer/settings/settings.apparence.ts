@@ -45,12 +45,12 @@ export default class ApparenceSettingsManager {
 
         const liElement: HTMLInputElement | null = Elements.settings.apparence.themesContainer.querySelector(`li:nth-of-type(${settings.apparence.theme + 1})`);
         if (liElement == null) {
-            return this.app.throwError(error);
+            return this.app.throwError(error, 80);
         }
 
         const radioButtonElement: HTMLInputElement | null = liElement.querySelector("input");
         if (radioButtonElement == null) {
-            return this.app.throwError(error);
+            return this.app.throwError(error, 81);
         }
 
         radioButtonElement.checked = true;

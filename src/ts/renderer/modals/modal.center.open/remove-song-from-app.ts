@@ -14,7 +14,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, userSongs: Song[]): 
     
     const removeSongFromAppReqRes: any = await Api.song.removeFromApp(app, song.id, song.fileName);
     if (!removeSongFromAppReqRes.success) {
-        app.throwError(`Can't remove song from app: ${removeSongFromAppReqRes.error}`);
+        app.throwError(`Can't remove song from app: ${removeSongFromAppReqRes.error}`, 44);
         return null;
     }
 

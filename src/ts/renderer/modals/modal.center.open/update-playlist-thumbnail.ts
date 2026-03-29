@@ -4,7 +4,7 @@ import * as Api from "./../../utils/utils.api.js";
 async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylist: Playlist): Promise<ModalError> {
     const removePlaylistThumbnailReqRes: any = await Api.thumbnail.remove(app, currentOpenedPlaylist.id, currentOpenedPlaylist.thumbnailFileName);
     if (!removePlaylistThumbnailReqRes.success) {
-        app.throwError(`Can't remove playlist thumbnail: ${removePlaylistThumbnailReqRes.error}`);
+        app.throwError(`Can't remove playlist thumbnail: ${removePlaylistThumbnailReqRes.error}`, 48);
         return null;
     }
 
@@ -19,7 +19,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylis
     if (file != null) {
         const uploadPlaylistThumbnailReqRes: any = await app.modalManager.openLoadingModal("Uploading thumbnail", Api.thumbnail.upload(app, file));
         if (!uploadPlaylistThumbnailReqRes.success) {
-            app.throwError(`Can't upload playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`);
+            app.throwError(`Can't upload playlist thumbnail: ${uploadPlaylistThumbnailReqRes.error}`, 49);
             return null;
         }
 
@@ -27,7 +27,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylis
 
         const updatePlaylistThumbnailReqRes: any = await Api.thumbnail.update(app, currentOpenedPlaylist.id, thumbnailFileName);
         if (!updatePlaylistThumbnailReqRes.success) {
-            app.throwError(`Can't update playlist thumbnail: ${updatePlaylistThumbnailReqRes.error}`);
+            app.throwError(`Can't update playlist thumbnail: ${updatePlaylistThumbnailReqRes.error}`, 50);
             return null;
         }
     }
@@ -44,7 +44,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, currentOpenedPlaylis
 export default function openUpdateThumbnailModal(app: App): void {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        return app.throwError("Can't open update thumbnail modal: Current opened playlist is null.");
+        return app.throwError("Can't open update thumbnail modal: Current opened playlist is null.", 51);
     }
 
     const content: ModalRow[] = [

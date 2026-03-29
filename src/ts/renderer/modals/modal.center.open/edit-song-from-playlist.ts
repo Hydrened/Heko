@@ -20,7 +20,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, song: Song): Promise
 
     const editSongReqRes: any = await Api.song.edit(app, song.id, newTitle, newArtist);
     if (!editSongReqRes.success) {
-        app.throwError(`Can't edit song: ${editSongReqRes.error}`);
+        app.throwError(`Can't edit song: ${editSongReqRes.error}`, 41);
         return null;
     }
 

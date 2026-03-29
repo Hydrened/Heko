@@ -85,7 +85,7 @@ export default class ContextmenuManager {
 
     private createContextMenuRow(parent: HTMLElement | null, row: ContextmenuRow, level: number): void {
         if (parent == null) {
-            return this.app.throwError("Can't create contextmenu row: Row parent is null.");
+            return this.app.throwError("Can't create contextmenu row: Row parent is null.", 9);
         }
 
         const rowContainer: HTMLElement = document.createElement("li");
@@ -180,7 +180,7 @@ export default class ContextmenuManager {
     public createPlaylistContextMenu(position: Position, playlist: Playlist): void {
         const playlistElement: HTMLElement | null = document.querySelector(`li.playlist-wrapper[playlist-id="${String(playlist.id)}"]`);
         if (playlistElement == null) {
-            return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.");
+            return this.app.throwError("Can't create playlist contextmenu: Playlist element is null.", 10);
         }
 
         this.setElementToContextmenuParent(playlistElement);

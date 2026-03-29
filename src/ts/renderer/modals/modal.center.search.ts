@@ -35,7 +35,7 @@ export default class CenterSearchModal extends CenterModal {
 
     private createSearchBar(): void {
         if (this.container == null) {
-            return this.app.throwError("Can't create modal search bar: Container element is null.");
+            return this.app.throwError("Can't create modal search bar: Container element is null.", 52);
         }
 
         this.searchBarElement = document.createElement("input");
@@ -65,7 +65,7 @@ export default class CenterSearchModal extends CenterModal {
             }
 
             if (this.searchResultContainerElement == null || this.searchBarElement == null) {
-                return this.app.throwError("Can't search: Search bar or container elements is null.");
+                return this.app.throwError("Can't search: Search bar or container elements is null.", 53);
             }
 
             this.searchTimeout = null;

@@ -7,7 +7,7 @@ import * as Api from "./../../utils/utils.api.js";
 async function duplicatePlaylistOnClick(app: App, playlist: Playlist): Promise<void> {
     const duplicatePlaylistReqRes: any = await Api.playlist.duplicate(app, playlist.id);
     if (!duplicatePlaylistReqRes.success) {
-        return app.throwError(`Can't duplicate playlist: ${duplicatePlaylistReqRes.error}`);
+        return app.throwError(`Can't duplicate playlist: ${duplicatePlaylistReqRes.error}`, 5);
     }
     
     const newPlaylistID: number = (duplicatePlaylistReqRes.playlistID as number);
@@ -64,7 +64,7 @@ function getPlaylistMoveToRows(app: App, playlist: Playlist): ContextmenuRow[] {
 async function playlistMoveToOnClick(app: App, parentPlaylist: Playlist, playlist: Playlist): Promise<void> {
     const movePlaylistInPlaylistReqRes: any = await Api.playlist.moveIn(app, parentPlaylist.id, playlist.id);
     if (!movePlaylistInPlaylistReqRes.success) {
-        return app.throwError(`Can't move playlist: ${movePlaylistInPlaylistReqRes.error}`);
+        return app.throwError(`Can't move playlist: ${movePlaylistInPlaylistReqRes.error}`, 6);
     }
 
     app.playlistManager.refreshPlaylistBuffer().then(() => {
@@ -99,7 +99,7 @@ function getPlaylistMergeInRows(app: App, playlist: Playlist): ContextmenuRow[] 
 async function playlistMergeInOnClick(app: App, playlist: Playlist, mergedPlaylist: Playlist): Promise<void> {
     const mergePlaylistInPlaylistReqRes: any = await Api.playlist.mergeIn(app, playlist.id, mergedPlaylist.id);
     if (!mergePlaylistInPlaylistReqRes.success) {
-        return app.throwError(`Can't merge playlist: ${mergePlaylistInPlaylistReqRes.error}`);
+        return app.throwError(`Can't merge playlist: ${mergePlaylistInPlaylistReqRes.error}`, 7);
     }
 
     app.playlistManager.refreshPlaylistBuffer().then(() => {

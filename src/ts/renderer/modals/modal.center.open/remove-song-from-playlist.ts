@@ -4,7 +4,7 @@ import * as Api from "./../../utils/utils.api.js";
 async function modalOnConfirm(app: App, playlist: Playlist, song: Song): Promise<ModalError> {
     const removeSongFromPlaylistReqRes: any = await Api.song.removeFromPlaylist(app, playlist.id, song.id);
     if (!removeSongFromPlaylistReqRes.success) {
-        app.throwError(`Can't remove song from playlist: ${removeSongFromPlaylistReqRes.error}`);
+        app.throwError(`Can't remove song from playlist: ${removeSongFromPlaylistReqRes.error}`, 45);
         return null;
     }
 

@@ -10,7 +10,7 @@ async function modalOnConfirm(app: App, userPlaylists: Playlist[], playlist: Pla
 
     const removePlaylistReqRes: any = await Api.playlist.remove(app, childrenIDs.concat(playlist.id), thumbnailFileNames);
     if (!removePlaylistReqRes.success) {
-        app.throwError(`Can't remove playlist: ${removePlaylistReqRes.error}`);
+        app.throwError(`Can't remove playlist: ${removePlaylistReqRes.error}`, 46);
         return null;
     }
     

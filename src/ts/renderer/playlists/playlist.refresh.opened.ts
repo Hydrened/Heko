@@ -157,7 +157,7 @@ export default class PlaylistsRefreshOpenedManager {
 
             const mergedPlaylist: MergedPlaylist | undefined = currentOpenedPlaylist.mergedPlaylist.find((mp: MergedPlaylist) => mp.id == playlist.id);
             if (mergedPlaylist == undefined) {
-                return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.");
+                return this.app.throwError("Can't refresh merged playlist container: Merged playlist is undefined.", 71);
             }
 
             const toggled: boolean = mergedPlaylist.toggled;
@@ -193,7 +193,7 @@ export default class PlaylistsRefreshOpenedManager {
 
                 const updateMergeToggleReqRes: any = await Api.playlist.updateMergeToggle(this.app, playlist.id, chcked);
                 if (!updateMergeToggleReqRes.success) {
-                    return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`);
+                    return this.app.throwError(`Can't update merge toggle: ${updateMergeToggleReqRes.error}`, 72);
                 }
 
                 await this.main.refreshPlaylistBuffer();

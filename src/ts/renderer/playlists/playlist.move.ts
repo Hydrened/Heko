@@ -134,14 +134,14 @@ export default class PlaylistsMoveManager {
 
         const playlist: Playlist | null = this.main.getPlaylistFromElement(this.originalPlaylistElementBuffer);
         if (playlist == null) {
-            return this.app.throwError(`${errorBase}: Playlist is null.`);
+            return this.app.throwError(`${errorBase}: Playlist is null.`, 67);
         }
 
         this.updating = true;
 
         const updatePlaylistPositionReqRes: any = await Api.playlist.updatePosition(this.app, playlist.id, position);
         if (!updatePlaylistPositionReqRes.success) {
-            return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`);
+            return this.app.throwError(`${errorBase}: ${updatePlaylistPositionReqRes.error}`, 68);
         }
 
         this.main.refreshPlaylistBuffer().then(() => {

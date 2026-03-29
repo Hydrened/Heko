@@ -76,14 +76,14 @@ export default class SettingsManager {
 
         const saveUserSettingsReqRes: any = await Api.user.saveSettings(this.app, settings);
         if (!saveUserSettingsReqRes.success) {
-            return this.app.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`);
+            return this.app.throwError(`Can't save settings: ${saveUserSettingsReqRes.error}`, 83);
         }
     }
 
     private async load(): Promise<void> {
         const getUserSettingsReqRes: any = await Api.user.getSettings(this.app);
         if (!getUserSettingsReqRes.success) {
-            return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`);
+            return this.app.throwError(`Can't get user settings: ${getUserSettingsReqRes.error}`, 84);
         }
 
         this.data = {

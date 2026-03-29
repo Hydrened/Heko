@@ -50,7 +50,7 @@ export default class ListenerQueueManager {
             
         const addSongsInHitsoryReqRes: any = await Api.user.saveSongsInHistory(this.app, this.listenedSongIdBuffer);
         if (!addSongsInHitsoryReqRes.success) {
-            return this.app.throwError(`Can't add songs in history: ${addSongsInHitsoryReqRes.error}`);
+            return this.app.throwError(`Can't add songs in history: ${addSongsInHitsoryReqRes.error}`, 12);
         }
     }
 
@@ -133,7 +133,7 @@ export default class ListenerQueueManager {
 
         const currentSong: Song | null = this.getCurrentSong();
         if (currentSong == null) {
-            return this.app.throwError("Can't set audio src: Current song is null.");
+            return this.app.throwError("Can't set audio src: Current song is null.", 13);
         }
 
         this.setAudioSrc(currentSong);
@@ -182,7 +182,7 @@ export default class ListenerQueueManager {
 
         const songIndex: number = songs.findIndex((song: Song) => song.id == previousSong.id);
         if (songIndex == -1) {
-            return this.app.throwError("Can't fill queue: Can't find last song index.");
+            return this.app.throwError("Can't fill queue: Can't find last song index.", 14);
         }
 
         const nextIndex: number = ((songIndex + 1) % songs.length);
@@ -233,7 +233,7 @@ export default class ListenerQueueManager {
 
         const previousSong: Song | null = this.getCurrentSong();
         if (previousSong == null) {
-            return this.app.throwError("Can't go to previous song: Previous song is null");
+            return this.app.throwError("Can't go to previous song: Previous song is null", 15);
         }
 
         this.setAudioSrc(previousSong);
@@ -263,7 +263,7 @@ export default class ListenerQueueManager {
 
         const nextSong: Song | null = this.getCurrentSong();
         if (nextSong == null) {
-            return this.app.throwError("Can't go to next song: Next song is null");
+            return this.app.throwError("Can't go to next song: Next song is null", 16);
         }
 
         this.setAudioSrc(nextSong);
@@ -344,7 +344,7 @@ export default class ListenerQueueManager {
 
     private setButtonState(element: Element | null, state: boolean, prop: string): void {
         if (element == null) {
-            return this.app.throwError("Can't toggle button: Button element is null.");
+            return this.app.throwError("Can't toggle button: Button element is null.", 17);
         }
 
         element.setAttribute(prop, String(state));

@@ -59,13 +59,13 @@ async function modalOnConfirm(app: App, userSongs: Song[], modal: CenterModal): 
 
     const uploadSongReqRes: any = await app.modalManager.openLoadingModal("Uploading song", Api.song.upload(app, file));
     if (!uploadSongReqRes.success) {
-        app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`);
+        app.throwError(`Can't upload song on server: ${uploadSongReqRes.error}`, 21);
         return null;
     }
 
     const addSongToAppReqRes: any = await Api.song.addToApp(app, title, artist, uploadSongReqRes.fileName);
     if (!addSongToAppReqRes.success) {
-        app.throwError(`Can't add song to app: ${addSongToAppReqRes.error}`);
+        app.throwError(`Can't add song to app: ${addSongToAppReqRes.error}`, 22);
         return null;
     }
 

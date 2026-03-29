@@ -38,7 +38,7 @@ export default class PreferencesSettingsManager {
 
         const radioButtonElement: HTMLInputElement | undefined = Elements.settings.preferences.volumeEasingContainer.querySelectorAll<HTMLInputElement>("input")[settings.preferences.volumeEasing];
         if (radioButtonElement == undefined) {
-            return this.app.throwError("Can't load volume easing: Radio button element is undefined.");
+            return this.app.throwError("Can't load volume easing: Radio button element is undefined.", 82);
         }
 
         radioButtonElement.checked = true;

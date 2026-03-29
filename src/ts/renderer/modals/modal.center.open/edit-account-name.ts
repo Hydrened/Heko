@@ -12,7 +12,7 @@ async function modalOnConfirm(app: App, modal: CenterModal): Promise<ModalError>
 
     const editAccountNameReqRes: any = await Api.user.editName(app, newName);
     if (!editAccountNameReqRes.success) {
-        app.throwError(`Can't edit accout name: ${editAccountNameReqRes.error}`);
+        app.throwError(`Can't edit accout name: ${editAccountNameReqRes.error}`, 39);
         return null;
     }
 

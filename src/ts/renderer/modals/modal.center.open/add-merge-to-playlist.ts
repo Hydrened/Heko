@@ -4,7 +4,7 @@ import * as Api from "../../utils/utils.api.js";
 async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playlist[]): Promise<ModalError> {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        app.throwError("Can't add playlist to merge in playlist: Current opened playlist is null.");
+        app.throwError("Can't add playlist to merge in playlist: Current opened playlist is null.", 18);
         return null;
     }
 
@@ -20,7 +20,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playl
 
     const mergePlaylistInReqRes: any = await Api.playlist.mergeIn(app, currentOpenedPlaylist.id, playlist.id);
     if (!mergePlaylistInReqRes.success) {
-        app.throwError(`Can't add playlist to merge in playlist: ${mergePlaylistInReqRes.error}`);
+        app.throwError(`Can't add playlist to merge in playlist: ${mergePlaylistInReqRes.error}`, 19);
         return null;
     }
 
@@ -36,7 +36,7 @@ async function modalOnConfirm(app: App, modal: CenterModal, playlistsLeft: Playl
 export default function openAddMergeToPlaylistModal(app: App, playlistsLeft: Playlist[]): void {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        return app.throwError("Can't open add playlist to merge in playlist modal: Current opened playlist is null.");
+        return app.throwError("Can't open add playlist to merge in playlist modal: Current opened playlist is null.", 20);
     }
 
     const playlistNamesLeft: string[] = playlistsLeft.map((playlist: Playlist) => playlist.name);

@@ -21,7 +21,7 @@ async function modalOnConfirm(app: App, playlist: Playlist, modal: CenterModal):
 
     const renamePlaylistReqRes: any = await Api.playlist.rename(app, playlist.id, newPlaylistName);
     if (!renamePlaylistReqRes.success) {
-        app.throwError(`Can't rename playlist: ${renamePlaylistReqRes.error}`);
+        app.throwError(`Can't rename playlist: ${renamePlaylistReqRes.error}`, 47);
         return null;
     }
     

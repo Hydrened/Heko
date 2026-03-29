@@ -6,7 +6,7 @@ async function modalOnConfirm(app: App): Promise<ModalError> {
 
     const sendDeleteAccountConfirmationReqRes: any = await Api.user.sendDeleteConfirmation(app, email);
     if (!sendDeleteAccountConfirmationReqRes.success) {
-        app.throwError(`Can't send delete account confirmation mail: ${sendDeleteAccountConfirmationReqRes.error}`);
+        app.throwError(`Can't send delete account confirmation mail: ${sendDeleteAccountConfirmationReqRes.error}`, 42);
         return null;
     }
 

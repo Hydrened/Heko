@@ -87,7 +87,7 @@ export default class PlaylistsRefreshCotnainerManager {
 
                 const updatePlaylistOpenedStatesReqRes: any = await Api.playlist.updateOpenedState(this.app, openedPlaylistIDs);
                 if (!updatePlaylistOpenedStatesReqRes.success) {
-                    return this.app.throwError(`Can't update playlist opened states: ${updatePlaylistOpenedStatesReqRes.error}`);
+                    return this.app.throwError(`Can't update playlist opened states: ${updatePlaylistOpenedStatesReqRes.error}`, 69);
                 }
             });
             
@@ -133,7 +133,7 @@ export default class PlaylistsRefreshCotnainerManager {
 
         const parent: Element | null = this.getParentToAppend(playlist);
         if (parent == null) {
-            return this.app.throwError("Can't create playlist: Parent is null.");
+            return this.app.throwError("Can't create playlist: Parent is null.", 70);
         }
 
         parent.appendChild(liElement);

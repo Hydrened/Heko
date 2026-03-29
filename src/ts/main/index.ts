@@ -167,7 +167,16 @@ class Index {
     }
 
     private initRendererMainEvents(): void {
-        ipcMain.handle("main-throwError", (_event, message: string): void => { 
+        ipcMain.handle("main-throwError", async (_event, message: string): Promise<void> => { 
+            await fetch("https://hekoplayer.app/api/error.php", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-Auth-Client": "heko-app-00-SHIELD-98",
+                },
+                body: JSON.stringify({ message: message }),
+            });
+
             dialog.showErrorBox("Error", message);
             this.window?.close();
         });

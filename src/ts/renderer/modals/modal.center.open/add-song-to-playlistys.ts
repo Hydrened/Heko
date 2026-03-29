@@ -21,7 +21,7 @@ async function modalOnConfirm(app: App, song: Song, modal: CenterModal, containe
 
     const addSongsToPlaylistReqRes: any = await Api.song.addToPlaylist(app, [song.id], playlistIDsToAdd);
     if (!addSongsToPlaylistReqRes.success) {
-        app.throwError(`Can't add "${song.title}" by "${song.artist}" to playlists: ${addSongsToPlaylistReqRes.error}`);
+        app.throwError(`Can't add "${song.title}" by "${song.artist}" to playlists: ${addSongsToPlaylistReqRes.error}`, 23);
         return null;
     }
 
@@ -43,7 +43,7 @@ async function modalOnSearch(app: App, container: HTMLElement, query: string): P
     playlistElements.forEach((playlistElement: HTMLElement) => {
         const playlist: Playlist | null = app.playlistManager.getPlaylistFromElement(playlistElement);
         if (playlist == null) {
-            return app.throwError("Can't get playlist from element: Playlist is null.");
+            return app.throwError("Can't get playlist from element: Playlist is null.", 24);
         }
 
         const hidden: boolean = !playlist.name.toLowerCase().includes(query);
@@ -58,7 +58,7 @@ async function modalOnSearch(app: App, container: HTMLElement, query: string): P
 export default function openAddSongToPlaylistsModal(app: App, playlistsLeft: Playlist[], song: Song): void {
     const currentOpenedPlaylist: Playlist | null = app.playlistManager.getCurrentOpenedPlaylist();
     if (currentOpenedPlaylist == null) {
-        return app.throwError("Can't open add songs to playlist modal: Current opened playlist is null.");
+        return app.throwError("Can't open add songs to playlist modal: Current opened playlist is null.", 25);
     }
 
     const data: CenterSearchModalData = {

@@ -14,7 +14,7 @@ async function modalOnSearch(app: App, userSongs: Song[], container: HTMLElement
 
     const searchReqRes: any = await Api.youtube.search(app, encodedQuery);
     if (!searchReqRes.success) {
-        return app.throwError(`Can't search on youtube: ${searchReqRes.error}`);
+        return app.throwError(`Can't search on youtube: ${searchReqRes.error}`, 31);
     }
 
     container.classList.remove("loading");
@@ -156,7 +156,7 @@ async function downloadSongButtonOnClick(app: App, userSongs: Song[], video: Vid
 
     const downloadSongReqRes: any = await app.modalManager.openLoadingModal("", Bridge.youtube.downloadSong(video.id.videoId!, updateLoadingModalTitle));
     if (!downloadSongReqRes.success) {
-        return app.throwError(`Can't download song from youtube: ${downloadSongReqRes.error}`);
+        return app.throwError(`Can't download song from youtube: ${downloadSongReqRes.error}`, 32);
     }
 
     // const addUserDownloadReqRes: any = await Requests.user.addDownload(app, video.id.videoId!);
@@ -171,24 +171,24 @@ async function downloadSongButtonOnClick(app: App, userSongs: Song[], video: Vid
 
     const currentCenterModal: CenterModal | null = app.modalManager.getCurrentCenterModal();
     if (currentCenterModal == null) {
-        return app.throwError("Can't fill song details: Current center modal is null.");
+        return app.throwError("Can't fill song details: Current center modal is null.", 32);
     }
 
     const songTitleInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Title");
     if (songTitleInput == null) {
-        return app.throwError("Can't set song title: Input is null.");
+        return app.throwError("Can't set song title: Input is null.", 33);
     }
     songTitleInput.value = video.snippet.title!;
 
     const songArtistInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Artist");
     if (songArtistInput == null) {
-        return app.throwError("Can't set song artist: Input is null.");
+        return app.throwError("Can't set song artist: Input is null.", 34);
     }
     songArtistInput.value = video.snippet.channelTitle!;
 
     const songFileInput: HTMLInputElement | null = currentCenterModal.getFieldInput("Song file");
     if (songFileInput == null) {
-        return app.throwError("Can't set file in song file input: Input is null.");
+        return app.throwError("Can't set file in song file input: Input is null.", 35);
     }
 
     const dataTransfer: DataTransfer = new DataTransfer();
@@ -208,7 +208,7 @@ async function thumbnailOnClick(app: App, elements: any, video: Video): Promise<
     const getYoutubeSongSrcReqRes: any = await Bridge.youtube.getSongSrc(video.id.videoId!);
     if (!getYoutubeSongSrcReqRes.success) {
         mainContainer.classList.remove("loading");
-        return app.throwError(`Can't get youtube song src: ${getYoutubeSongSrcReqRes.error}`);
+        return app.throwError(`Can't get youtube song src: ${getYoutubeSongSrcReqRes.error}`, 36);
     }
 
     const src: string = (getYoutubeSongSrcReqRes.src as string);
