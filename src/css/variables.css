@@ -1,58 +1,84 @@
 :root {
-    /* SIZES */
-    --frame-height: 2rem;
-    --main-height: calc(100vh - var(--frame-height));
-    --scrollbar-width: 0.5rem;
-    --main-padding: 1.15rem;
-    --loading-modal-spinner-width: 4px;
-    --contextmenu-padding: 5px;
-    --contextmenu-width: 280px;
-    --contextmenu-row-height: 29px;
-
     /* BG COLORS */
-    --bg-bo-1: rgba(0,0,0,0.1);
-    --bg-bo-2: rgba(0,0,0,0.2);
-    --bg-bo-3: rgba(0,0,0,0.3);
-    --bg-bo-4: rgba(0,0,0,0.4);
-    --bg-bo-5: rgba(0,0,0,0.5);
-    --bg-bo-6: rgba(0,0,0,0.6);
-    --bg-bo-7: rgba(0,0,0,0.7);
-    --bg-bo-8: rgba(0,0,0,0.8);
-    --bg-bo-9: rgba(0,0,0,0.9);
+    --g1: rgba(255,255,255,0.01);
+    --g2: rgba(255,255,255,0.02);
+    --g3: rgba(255,255,255,0.03);
+    --g4: rgba(255,255,255,0.04);
+    --g5: rgba(255,255,255,0.05);
+    --g6: rgba(255,255,255,0.06);
+    --g7: rgba(255,255,255,0.07);
+    --g8: rgba(255,255,255,0.08);
+    --g9: rgba(255,255,255,0.09);
+    --g10: rgba(255,255,255,0.1);
+    --g20: rgba(255,255,255,0.2);
+    --g30: rgba(255,255,255,0.3);
 
-    --bg-wo-1: rgba(255,255,255,0.01);
-    --bg-wo-2: rgba(255,255,255,0.02);
-    --bg-wo-3: rgba(255,255,255,0.03);
-    --bg-wo-4: rgba(255,255,255,0.04);
-    --bg-wo-5: rgba(255,255,255,0.05);
-    --bg-wo-6: rgba(255,255,255,0.06);
-    --bg-wo-7: rgba(255,255,255,0.07);
-    --bg-wo-8: rgba(255,255,255,0.08);
-    --bg-wo-9: rgba(255,255,255,0.09);
-    --bg-wo-10: rgba(255,255,255,0.1);
-    --bg-wo-20: rgba(255,255,255,0.2);
-    --bg-wo-30: rgba(255,255,255,0.3);
+    --b1: rgba(0,0,0,0.1);
+    --b2: rgba(0,0,0,0.2);
+    --b3: rgba(0,0,0,0.3);
+    --b4: rgba(0,0,0,0.4);
+    --b5: rgba(0,0,0,0.5);
+    --b6: rgba(0,0,0,0.6);
+    --b7: rgba(0,0,0,0.7);
+    --b8: rgba(0,0,0,0.8);
+    --b9: rgba(0,0,0,0.9);
+
+    --bg-gradient: linear-gradient(45deg, rgb(11, 11, 15) 0%, rgb(21, 22, 40) 100%);
     
-    --bg-success-col: rgb(51,155,51);
+    --accent-color: rgb(66, 83, 179);
+
+    --bg-success-col: var(--accent-color);
     --bg-error-col: rgb(132,34,34);
 
+    --main-bg-col-1: black;
+
     /* TEXT COLORS */
-    --text-opacity: 0.6;
+    --text-2-opacity: 0.6;
     --text-col-1: rgb(180,180,180);
     --text-col-2: rgba(120,120,120);
     --text-error-col: rgb(187,53,53);
+
+    /* SIZES */
+    --main-padding-2: calc(var(--main-padding-1) * 2);
+    --main-padding-1-75: calc(var(--main-padding-1) * 1.75);
+    --main-padding-1-5: calc(var(--main-padding-1) * 1.5);
+    --main-padding-1-25: calc(var(--main-padding-1) * 1.25);
+    --main-padding-1: 1rem;
+    --main-padding-0-95: calc(var(--main-padding-1) * 0.95);
+    --main-padding-0-9: calc(var(--main-padding-1) * 0.9);
+    --main-padding-0-85: calc(var(--main-padding-1) * 0.85);
+    --main-padding-0-8: calc(var(--main-padding-1) * 0.8);
+    --main-padding-0-75: calc(var(--main-padding-1) * 0.75);
+    --main-padding-0-7: calc(var(--main-padding-1) * 0.7);
+    --main-padding-0-65: calc(var(--main-padding-1) * 0.65);
+    --main-padding-0-6: calc(var(--main-padding-1) * 0.6);
+    --main-padding-0-55: calc(var(--main-padding-1) * 0.55);
+    --main-padding-0-5: calc(var(--main-padding-1) * 0.5);
+    --main-padding-0-45: calc(var(--main-padding-1) * 0.45);
+    --main-padding-0-4: calc(var(--main-padding-1) * 0.4);
+    --main-padding-0-35: calc(var(--main-padding-1) * 0.35);
+    --main-padding-0-3: calc(var(--main-padding-1) * 0.3);
+    --main-padding-0-25: calc(var(--main-padding-1) * 0.25);
+    --main-padding-0-2: calc(var(--main-padding-1) * 0.2);
+    --main-padding-0-15: calc(var(--main-padding-1) * 0.15);
+    --main-padding-0-1: calc(var(--main-padding-1) * 0.1);
+
+    --frame-height: 2rem;
+    --main-height: calc(100vh - var(--frame-height));
+    --scrollbar-width: 0.5rem;
+    
+    --contextmenu-width: 290px;
+    --contextmenu-row-height: 30px;
+    --contextmenu-padding: 6px;
+
+    --read-medias-result-container-column-count: 7;
+    --read-medias-result-container-row-count: 7;
 
     /* BORDER */
     --border-col-1: rgb(47,47,47);
     --default-border: 1px solid var(--border-col-1);
 
     /* DURATIONS */
-    --center-modal-closing-duration: 500ms;
-    --top-modal-closing-duration: 500ms;
-    --loading-modal-closing-duration: 500ms;
-    --playlist-open-duration: 500ms;
-    --queue-closing-duration: 250ms;
-
-    /* INDEXES */
-    --main-modal-index: 10;
+    --modal-transition-duration: 300ms;
+    --notification-transition-duration: 500ms;
 }

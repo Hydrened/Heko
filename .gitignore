@@ -1,9 +1,10 @@
-bin/
-dist/
+.old/
 node_modules/
-src/js/
-todo.md
-Makefile
-tsconfig.*.json
+dist/
 
-src/ts/renderer/utils/utils.requests.ts
+src/js
+
+*.md
+!changelog.md
+*config*
+Makefile

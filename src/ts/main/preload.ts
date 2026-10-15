@@ -1,95 +1,66 @@
 import { contextBridge, ipcRenderer } from "electron";
+import * as Types from "./utils/utils.types.js";
 
-contextBridge.exposeInMainWorld("main", {
-    isAnUpdateAvailable: async (): Promise<boolean> => {
-        return (await ipcRenderer.invoke("main-isAnUpdateAvailable") as boolean);
+async function invoke(channel: string, ...args: any[]): Promise<any> {
+    return await ipcRenderer.invoke(channel, ...args);
+}
+
+contextBridge.exposeInMainWorld("win", {
+    minimize: async (): Promise<void> => {
+        await invoke("win-minimize");
     },
 
-    throwError: (message: string): void => {
-        ipcRenderer.invoke("main-throwError", message);
+    maximize: async (): Promise<void> => {
+        await invoke("win-maximize");
     },
 
-    getVersion: async (): Promise<string> => {
-        return (await ipcRenderer.invoke("main-getVersion") as string);
-    },
-});
-
-contextBridge.exposeInMainWorld("mainEvents", {
-    onStart: (callback: (data: any) => void): void => {
-        ipcRenderer.on("mainEvents-start", (e: Electron.IpcRendererEvent, data: any) => callback(data));
+    close: async (): Promise<void> => {
+        await invoke("win-close");
     },
 
-    onClose: (callback: () => Promise<void>): void => {
-        ipcRenderer.on("mainEvents-onClose", async () => {
+    setTitle: async (title: string): Promise<void> => {
+        await invoke("win-set-title", title);
+    },
+
+    onStart: async (callback: (args: Types.AppArgs) => void): Promise<void> => {
+        ipcRenderer.on("win-on-start", (e: Electron.IpcRendererEvent, args: Types.AppArgs) => callback(args));
+    },
+
+    onClose: async (callback: () => Promise<void>): Promise<void> => {
+        ipcRenderer.on("win-on-close", async () => {
             await callback();
-            ipcRenderer.send("mainEvents-onClose-done");
+            ipcRenderer.send("win-on-close-done");
         });
     },
 
-    onPreviousButton: (callback: () => void): void => {
-        ipcRenderer.on("mainEvents-previousButton", () => callback());
-    },
-
-    onPlayButton: (callback: () => void): void => {
-        ipcRenderer.on("mainEvents-playButton", () => callback());
-    },
-
-    onNextButton: (callback: () => void): void => {
-        ipcRenderer.on("mainEvents-nextButton", () => callback());
-    },
-
-    onVolumeUp: (callback: () => void): void => {
-        ipcRenderer.on("mainEvents-volumeUp", () => callback());
-    },
-
-    onVolumeDown: (callback: () => void): void => {
-        ipcRenderer.on("mainEvents-volumeDown", () => callback());
+    onClosed: async (callback: () => Promise<void>): Promise<void> => {
+        ipcRenderer.on("win-on-closed", async () => {
+            await callback();
+            ipcRenderer.send("win-on-closed-done");
+        });
     },
 });
 
-contextBridge.exposeInMainWorld("win", {
-    minimize: (): void => {
-        ipcRenderer.invoke("win-minimize");
+contextBridge.exposeInMainWorld("api", {
+    dialog: {
+        askForFile: async (title: string, name?: string, extensions?: string[]): Promise<Types.AskForFileApiResult> => {
+            return await invoke("api-dialog-ask-for-file", title, name, extensions);
+        },
     },
 
-    maximize: (): void => {
-        ipcRenderer.invoke("win-maximize");
+    files: {
+        read: async (path: string): Promise<Types.ReadFileApiResult> => {
+            return await invoke("api-files-read", path);
+        },
     },
 
-    close: (): void => {
-        ipcRenderer.invoke("win-close");
-    },
+    temp: {
+        clear: async (): Promise<Types.ClearTempApiResult> => {
+            return await invoke("api-temp-clear");
+        },
 
-    setThumbarPlayButton: (type: string): void => {
-        ipcRenderer.invoke("win-set-thumbar-play-button", type);
-    },
-
-    setTitle: (title: string): void => {
-        ipcRenderer.invoke("win-set-title", title);
-    },
-});
-
-contextBridge.exposeInMainWorld("mainFolder", {
-    saveToken: (token: string) => {
-        ipcRenderer.invoke("mainFolder-saveToken", token);
-    },
-
-    getToken: async (): Promise<string> => {
-        return (await ipcRenderer.invoke("mainFolder-getToken") as string);
-    },
-
-    removeToken: (): void => {
-        ipcRenderer.invoke("mainFolder-removeToken");
-    },
-});
-
-contextBridge.exposeInMainWorld("youtube", {
-    downloadSong: async (videoID: string, onUpdate: (data: string) => void): Promise<any> => {
-        ipcRenderer.on("youtube-downloadSongOnUpdate", (e, data: string) => onUpdate(data));
-        return await ipcRenderer.invoke("youtube-downloadSong", videoID);
-    },
-
-    getSongSrc: async (videoID: string): Promise<any> => {
-        return await ipcRenderer.invoke("youtube-getSongSrc", videoID);
+        pasteClipbordImage: async (): Promise<Types.PasteClipbordImageApiResult> => {
+            return await invoke("api-temp-paste-clipbord-image");
+        },
     },
 });

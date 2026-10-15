@@ -1,0 +1,173 @@
+section#current-playlist-container {
+    padding: var(--main-padding-1-25);
+
+    position: relative;
+    left: 100%;
+
+    display: grid;
+    grid-template-rows: repeat(2, auto) 1fr;
+    gap: var(--main-padding-1-5);
+
+    opacity: 0;
+    transition: opacity 750ms, left 750ms;
+}
+section#current-playlist-container.opened {
+    left: 0;
+    opacity: 1;
+}
+
+
+
+section#current-playlist-container > header.current-playlist-details-container {
+    height: 11rem;
+
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 11rem 1fr;
+    grid-template-rows: 1fr auto;
+    column-gap: var(--main-padding-2);
+}
+section#current-playlist-container > header.current-playlist-details-container > button#current-playlist-thumbnail {
+    width: 11rem;
+    aspect-ratio: 1 / 1;
+
+    grid-row: 1 / span 2;
+
+    border-radius: 1rem;
+
+    background-color: var(--b6);
+    transition: background-color 0ms;
+}
+section#current-playlist-container > header.current-playlist-details-container > h1#current-playlist-title {
+    padding-top: var(--main-padding-0-7);
+
+    font-size: 6rem;
+    text-transform: uppercase;
+}
+section#current-playlist-container > header.current-playlist-details-container > div.current-playlist-details-bottom-line-container {
+    padding-left: var(--main-padding-2);
+
+    display: flex;
+    align-items: center;
+    gap: var(--main-padding-2);
+}
+section#current-playlist-container > header.current-playlist-details-container > div.current-playlist-details-bottom-line-container > h2 {
+    font-size: 1rem;
+    color: var(--text-col-2);
+    font-weight: normal;
+}
+section#current-playlist-container > header.current-playlist-details-container > div.current-playlist-details-bottom-line-container > h2:empty {
+    display: none;
+}
+section#current-playlist-container > header.current-playlist-details-container > div.current-playlist-details-bottom-line-container > button#current-playlist-add-button > img {
+    width: 1.7rem;
+}
+section#current-playlist-container > header.current-playlist-details-container > button#settings-button {
+    position: absolute;
+    right: 0;
+}
+section#current-playlist-container > header.current-playlist-details-container > button#settings-button > img {
+    width: 1.7rem;
+}
+
+
+
+section#current-playlist-container > header.current-playlist-options-container {
+    padding-left: var(--main-padding-0-3);
+
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: var(--main-padding-1-25);
+}
+section#current-playlist-container > header.current-playlist-options-container > button#current-playlist-play-button > img {
+    width: 3.75rem;
+}
+section#current-playlist-container > header.current-playlist-options-container > input#current-playlist-filter-input {
+    padding: var(--main-padding-0-75) var(--main-padding-1);
+
+    align-self: center;
+
+    font-size: 1rem;
+    
+    border: none;
+    border-radius: 0.75rem;
+}
+
+
+
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table {
+    height: 100%;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--main-padding-0-4);
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header {
+    padding-right: var(--scrollbar-width);
+
+    display: grid;
+    grid-template-columns: 4.5rem 1fr 1fr 7rem;
+
+    border-bottom: 2px solid var(--g10);
+}
+section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header {
+    grid-template-columns: 4.5rem 4rem 4rem 1fr 6rem 7rem;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button {
+    padding: var(--main-padding-0-7) var(--main-padding-1);
+
+    font-size: 1rem;
+
+    transition: color 200ms;
+}
+section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button.merged-playlist-button,
+section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button.song-playlist-button {
+    display: none;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:nth-child(2), :nth-child(3)) {
+    text-align: left;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:hover, :focus-visible, .selected) {
+    color: var(--accent-color);
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container {
+    height: 100%;
+    overflow-y: scroll;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li {
+    display: grid;
+    grid-template-columns: 4.5rem 1fr 1fr 7rem;
+
+    border-radius: 0.7rem;
+
+    cursor: pointer;
+    transition: background-color 200ms;
+}
+section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li {
+    grid-template-columns: 4.5rem 4rem 4rem 1fr 6rem 7rem;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li:is(:hover, :focus-visible) {
+    background-color: var(--b2);
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p {
+    padding: var(--main-padding-0-7) var(--main-padding-1);
+
+    font-size: 0.9rem;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:is(:nth-child(1), :nth-child(4)) {
+    text-align: center;
+}
+
+
+
+@media screen and (width < 1000px) {
+    section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > ul#current-playlist-song-table-rows-container > li,
+    section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header {
+        grid-template-columns: 4.5rem 1fr 7rem;
+    }
+    section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > ul#current-playlist-song-table-rows-container > li > p:nth-child(3),
+    section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:nth-child(3) {
+        display: none;
+    }
+}

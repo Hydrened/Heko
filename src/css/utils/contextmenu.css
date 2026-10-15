@@ -1,0 +1,92 @@
+div.contextmenu-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    z-index: 500;
+}
+
+
+
+div.contextmenu-container ul.rows-container {
+    width: var(--contextmenu-width);
+
+    padding: var(--contextmenu-padding);
+
+    box-shadow: inset 0 0 0 1px var(--border-col-1);
+    border-radius: 0.6rem;
+
+    background-color: black;
+}
+
+
+
+div.contextmenu-container ul.rows-container > li.row-wrapper {
+    position: relative;
+
+    border-radius: 0.5rem;
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper.disabled {
+    pointer-events: none;
+    opacity: var(--text-2-opacity);
+}
+
+
+
+div.contextmenu-container ul.rows-container > li.row-wrapper > div.row-container {
+    height: var(--contextmenu-row-height);
+
+    padding-inline: var(--main-padding-2);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    cursor: pointer;
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper > div.row-container::before {
+    content: "";
+
+    width: calc(100% + var(--contextmenu-padding) * 2);
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: calc(var(--contextmenu-padding) * -1);
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper > div.row-container.has-sub-rows {
+    padding-right: var(--main-padding-1);
+}
+
+
+
+div.contextmenu-container ul.rows-container > li.row-wrapper:is(:hover, :focus-visible) {
+    background-color: var(--g5);
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper > div.row-container > p {
+    font-size: 0.8rem;
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper > div.row-container > p.shortcut {
+    color: var(--text-col-2);
+}
+
+
+
+div.contextmenu-container ul.rows-container > li.row-wrapper > ul.sub-rows-container {
+    position: absolute;
+    top: calc(var(--contextmenu-padding) * -1);
+    left: calc(var(--contextmenu-padding) + 100%);
+
+    display: none;
+}
+div.contextmenu-container.inverted-x ul.rows-container > li.row-wrapper > ul.sub-rows-container {
+    left: unset;
+    right: calc(var(--contextmenu-padding) + 100%);
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper > ul.sub-rows-container.inverted-y {
+    top: unset;
+    bottom: calc(var(--contextmenu-padding) * -1);
+}
+div.contextmenu-container ul.rows-container > li.row-wrapper:is(:hover, :focus-visible) > ul.sub-rows-container {
+    display: block;
+}

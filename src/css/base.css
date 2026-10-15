@@ -19,15 +19,19 @@
 
 
 html {
-    background: var(--gradient);
+    background: var(--bg-gradient);
     overflow: hidden;
-}
-[no-animations="true"] * {
-    animation-duration: 0ms !important;
-    transition: 0ms !important;
 }
 main {
     height: var(--main-height);
+
+    position: relative;
+
+    display: grid;
+    grid-template-columns: 19rem 1fr;
+    grid-template-rows: 1fr 100px;
+
+    overflow: hidden;
 }
 
 
@@ -66,36 +70,57 @@ a {
 
 
 
+button {
+    cursor: pointer;
+    transition: opacity 200ms, background-color 200ms;
+}
 button.disabled {
     opacity: 0.2;
     user-select: none;
     pointer-events: none;
 }
 button:has(:is(img, svg)) {
-    aspect-ratio: 1 / 1;
-
     display: flex;
     justify-content: center;
     align-items: center;
 
-    cursor: pointer;
+    opacity: var(--text-2-opacity);
 }
 button > :is(img, svg) {
-    position: relative;
-    
-    transition: 150ms;
+    width: 1rem;
+    aspect-ratio: 1 / 1;
 }
-button:hover > :is(img, svg) {
-    opacity: 1;
+button:has(:is(img, svg)):is(:hover, :focus-visible) {
+    opacity: 1 !important;
 }
 
 
 
-input {
+input, select, textarea {
+    padding: var(--main-padding-0-4) var(--main-padding-0-75);
+
+    border: var(--default-border);
+    border-radius: 0.6rem;
+
+    background-color: var(--g1);
     accent-color: var(--accent-color);
+    transition: border-color 200ms, background-color 200ms;
+}
+input.error, select.error, textarea.error {
+    border-color: var(--bg-error-col) !important;
+}
+input:focus-visible, select:focus-visible, textarea:focus-visible {
+    border-color: var(--accent-color);
+}
+input[type="checkbox"] {
+    cursor: pointer;
 }
 input[type="range"] {
     height: 6px;
+
+    padding: 0;
+
+    border: none;
 
     position: relative;
 }
@@ -103,10 +128,10 @@ input[type="range"]::after {
     content: "";
 
     width: 100%;
-    height: 500%;
+    height: 800%;
 
     position: absolute;
-    top: -200%;
+    top: -350%;
     left: 0;
 }
 input[type="range"]::-webkit-slider-runnable-track {
@@ -115,15 +140,34 @@ input[type="range"]::-webkit-slider-runnable-track {
 input[type="range"]::-webkit-slider-thumb {
     margin-top: -5px;
 }
+textarea {
+    min-height: 30px;
+    height: 90px;
+    max-height: 150px;
+
+    resize: vertical;
+
+    transition: height 0ms;
+}
+select > option {
+    color: black;
+}
 
 
 
 img, svg {
-    width: 2rem;
-
-    pointer-events: none;
-    opacity: var(--text-opacity);
+    -webkit-user-drag: none;
 }
 svg.fill, svg.fill * {
     fill: var(--text-col-1);
+}
+
+
+.thumbnail {
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+.thumbnail:not(.null-thumbnail) {
+    background-color: transparent !important;
 }

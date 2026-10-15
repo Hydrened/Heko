@@ -1,10 +1,11 @@
 <!DOCTYPE html>
-<html lang="en" theme="0">
+<html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Heko</title>
         <link rel="stylesheet" href="css/main.css">
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
         <script type="module" src="js/renderer/main.js"></script>
     </head>
     <body>
@@ -25,225 +26,82 @@
             </div>
         </header>
         <main>
-            <aside class="left-tab">
-                <header>
-                    <img src="assets/folder.svg" class="folder-img">
-                    <h2>Playlists</h2>
-                    <button id="add-playlist-button" tabindex="-1">
-                        <img src="assets/plus.svg">
-                    </button>
+            <aside class="aside-container">
+                <header class="aside-container-playlists-manager-container manager-container">
+                    <h1>Playlists</h1>
+                    <button id="aside-container-playlists-manager-add-button"><img src="assets/plus.svg" alt="add"></button>
                 </header>
-                <ul id="playlists-container"></ul>
-                <footer>
-                    <img src="assets/music-note.svg" class="music-note-img">
-                    <h2>Songs</h2>
-                    <button id="song-settings-button" tabindex="-1">
-                        <img src="assets/ellipsis.svg">
-                    </button>
+                <article class="aside-container-playlists-wrapper">
+                    <ul id="aside-container-playlists-container"></ul>
+                </article>
+                <footer class="aside-container-songs-manager-container manager-container">
+                    <h1>Songs</h1>
+                    <button id="aside-container-songs-manager-settings-button"><img src="assets/ellipsis.svg" alt="ellipsis.svg"></button>
+                </footer>
+                <footer class="aside-container-artists-manager-container manager-container">
+                    <h1>Artists</h1>
+                    <button id="aside-container-artists-manager-settings-button"><img src="assets/ellipsis.svg" alt="ellipsis.svg"></button>
                 </footer>
             </aside>
-            <section class="right-tab">
-                <article id="current-playlist-container" type="song-container">
-                    <header>
-                        <div id="current-playlist-thumbnail" class="thumbnail"></div>
-                        <div class="current-playlist-details-container">
-                            <h1 id="current-playlist-title" class="text-overflow"></h1>
-                            <div class="current-playlist-bottom-details-container">
-                                <h4 id="current-playlist-song-number"></h4>
-                                <h4 id="current-playlist-duration"><h4>
-                                <button id="add-songs-to-current-playlist-button" class="disabled" tabindex="-1">
-                                    <img src="assets/plus.svg">
-                                </button>
-                            </div>
-                        </div>
-                    </header>
-                    <div class="current-playlist-play-button-and-filter-container">
-                        <button id="current-playlist-play-button" class="disabled" tabindex="-1">
-                            <img src="assets/play.svg">
-                        </button>
-                        <input type="text" id="current-playlist-song-filter-input" placeholder="Filter ..." tabindex="-1">
+            <section id="current-playlist-container" class="song-playlist">
+                <header class="current-playlist-details-container">
+                    <button id="current-playlist-thumbnail" class="thumbnail null-thumbnail"></button>
+                    <h1 id="current-playlist-title" class="one-line-text"></h1>
+                    <button id="settings-button"><img src="assets/account.svg" alt="settings"></button>
+                    <div class="current-playlist-details-bottom-line-container">
+                        <h2 id="current-playlist-count" class="one-line-text"></h2>
+                        <h2 id="current-playlist-duration" class="one-line-text"></h2>
+                        <button id="current-playlist-add-button"><img src="assets/plus.svg" alt="add"></button>
                     </div>
-                    <div class="current-playlist-table-container">
-                        <div class="current-playlist-table-head-container" type="song-container">
-                            <button id="current-playlist-song-sort-by-id-button" sort="id" tabindex="-1">#</button>
-                            <button id="current-playlist-song-sort-by-title-button" sort="title" tabindex="-1">Title</button>
-                            <button id="current-playlist-song-sort-by-artist-button" sort="artist" tabindex="-1">Artist</button>
-                            <button id="current-playlist-song-sort-by-duration-button" sort="duration" tabindex="-1">Duration</button>
-                        </div>
-                        <ul id="current-playlist-song-container" type="song-container"></ul>
-                        <div class="current-playlist-table-head-container" type="merged-container">
-                            <button id="current-playlist-merged-sort-by-id-button" sort="id" tabindex="-1">#</button>
-                            <button tabindex="-1"></button>
-                            <button tabindex="-1"></button>
-                            <button id="current-playlist-merged-sort-by-name-button" sort="name" tabindex="-1">Name</button>
-                            <button id="current-playlist-merged-sort-by-nb-song-button" sort="nb-songs" tabindex="-1">Songs</button>
-                            <button id="current-playlist-merged-sort-by-duration-button" sort="duration" tabindex="-1">Duration</button>
-                        </div>
-                        <ul id="current-playlist-merged-container" type="merged-container"></ul>
+                </header>
+                <header class="current-playlist-options-container">
+                    <button id="current-playlist-play-button"><img src="assets/play.svg" alt="play"></button>
+                    <input type="text" name="current-playlist-filter-input" id="current-playlist-filter-input" placeholder="Filter …" autocomplete="off" autocapitalize="off" spellcheck="false" autocorrect="off">
+                </header>
+                <article class="current-playlist-song-table-container">
+                    <div class="current-playlist-song-table">
+                        <header class="current-playlist-song-table-header">
+                            <button id="current-playlist-header-id-button">#</button>
+                            <button id="current-playlist-header-title-button" class="song-playlist-button">Title</button>
+                            <button id="current-playlist-header-artist-button" class="song-playlist-button">Artist</button>
+                            <button class="current-playlist-header-empty-button merged-playlist-button"></button>
+                            <button class="current-playlist-header-empty-button merged-playlist-button"></button>
+                            <button id="current-playlist-header-name-button" class="merged-playlist-button">Name</button>
+                            <button id="current-playlist-header-songs-button" class="merged-playlist-button">Songs</button>
+                            <button id="current-playlist-header-duration-button">Duration</button>
+                        </header>
+                        <ul id="current-playlist-song-table-rows-container"></ul>
                     </div>
                 </article>
-                <button id="account-button" tabindex="-1">
-                    <img src="assets/account.svg">
-                </button>
             </section>
-            <footer class="bottom-tab">
+            <footer class="parameters-container">
                 <article class="current-song-details-container">
-                    <h3 id="current-song-title" class="text-overflow"></h3>
-                    <h4 id="current-song-artist" class="text-overflow"></h4>
+                    <h2 id="current-song-title" class="one-line-text"></h2>
+                    <h3 id="current-song-artist" class="one-line-text"></h3>
                 </article>
-                <article class="main-controls-container">
-                    <div class="main-control-buttons-container">
-                        <button id="toggle-shuffle-button" shuffle="false" tabindex="-1">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M18 4L21 7M21 7L18 10M21 7H17C16.0707 7 15.606 7 15.2196 7.07686C13.6329 7.39249 12.3925 8.63288 12.0769 10.2196C12 10.606 12 11.0707 12 12C12 12.9293 12 13.394 11.9231 13.7804C11.6075 15.3671 10.3671 16.6075 8.78036 16.9231C8.39397 17 7.92931 17 7 17H3M18 20L21 17M21 17L18 14M21 17H17C16.0707 17 15.606 17 15.2196 16.9231C15.1457 16.9084 15.0724 16.8917 15 16.873M3 7H7C7.92931 7 8.39397 7 8.78036 7.07686C8.85435 7.09158 8.92758 7.1083 9 7.12698" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                        </button>
-                        <button id="previous-song-button" tabindex="-1">
-                            <img src="assets/previous.svg">
-                        </button>
-                        <button id="toggle-play-button" playing="false" tabindex="-1">
-                            <img src="assets/play.svg" playing="false">
-                            <img src="assets/pause.svg" playing="true">
-                        </button>
-                        <button id="next-song-button" tabindex="-1">
-                            <img src="assets/next.svg">
-                        </button>
-                        <button id="toggle-loop-button" loop="false" tabindex="-1">
-                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#ffffff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M18 4L21 7M21 7L18 10M21 7H7C4.79086 7 3 8.79086 3 11M6 20L3 17M3 17L6 14M3 17H17C19.2091 17 21 15.2091 21 13" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></path> </g></svg>
-                        </button>
+                <article class="main-parameters-container">
+                    <div class="main-parameters-top-container">
+                        <button id="shuffle-playlist-button" class="false"><img src="assets/shuffle-false.svg" class="false" alt="shuffle"><img src="assets/shuffle-true.svg" class="true" alt="shuffle"></button>
+                        <button id="previous-song-button"><img src="assets/previous.svg" alt="previous"></button>
+                        <button id="play-song-button" class="paused"><img src="assets/play.svg" class="paused" alt="playing"><img src="assets/pause.svg" class="playing" alt="paused"></button>
+                        <button id="next-song-button"><img src="assets/next.svg" alt="next"></aside></button>
+                        <button id="loop-song-button" class="false"><img src="assets/loop-false.svg" class="false" alt="loop"><img src="assets/loop-true.svg" class="true" alt="loop"></button>
                     </div>
-                    <div class="song-slider-container">
-                        <p id="current-song-position">&nbsp;</p>
-                        <input id="song-position-slider" type="range" min="0" max="100", step="0.01" value="0" tabindex="-1">
-                        <p id="current-song-duration">&nbsp;</p>
+                    <div class="main-parameters-bottom-container">
+                        <p id="current-song-current-time" class="one-line-text">&nbsp;</p>
+                        <input type="range" name="current-song-slider" id="current-song-slider" value="0">
+                        <p id="current-song-duration" class="one-line-text">&nbsp;</p>
                     </div>
                 </article>
-                <article class="secondary-controls-container">
-                    <button id="song-settings-button" tabindex="-1">
-                        <img src="assets/speed.svg">
-                    </button>
-                    <button id="queue-button" class="disabled" tabindex="-1">
-                        <img src="assets/queue.svg">
-                    </button>
-                    <div class="volume-controls-container">
-                        <button id="toggle-song-volume-button" volume="0" tabindex="-1">
-                            <img src="assets/volume-muted.svg" volume="0">
-                            <img src="assets/volume-min.svg" volume="1">
-                            <img src="assets/volume-max.svg" volume="2">
-                        </button>
-                        <input id="volume-slider" type="range" min="0" max="100" step="0.01" value="0" tabindex="-1">
+                <article class="secondary-parameters-container">
+                    <button id="queue-button"><img src="assets/queue.svg" alt="queue"></button>
+                    <button id="audio-transform-button"><img src="assets/audio-transform.svg" alt="audio-transform"></button>
+                    <div class="volume-container">
+                        <button id="mute-button" class="muted"><img src="assets/muted.svg" class="muted" alt="muted"><img src="assets/low-volume.svg" class="low-volume" alt="low-volume"><img src="assets/high-volume.svg" class="high-volume" alt="high-volume"></button>
+                        <input type="range" name="volume-slider" id="volume-slider" value="0">
                     </div>
                 </article>
             </footer>
         </main>
-        <song-settings-container class="main-container hidden popup">
-            <header>
-                <h1>Song settings</h1>
-                <button tabindex="-1">
-                    <img src="assets/remove.svg">
-                </button>
-            </header>
-            <div class="content">
-                <h2>Speed: <span id="song-settings-speed"></span></h2>
-                <input type="range" id="song-settings-speed-input" min="0.5" max="1.5" step="0.05" list="song-settings-speed-input-datalist" tabindex="-1">
-                <datalist id="song-settings-speed-input-datalist">
-                    <option value="1"></option>
-                </datalist>
-            </div>
-        </song-settings-container>
-        <queue-container class="main-container hidden popup">
-            <header>
-                <h1>Queue</h1>
-                <button tabindex="-1">
-                    <img src="assets/remove.svg">
-                </button>
-            </header>
-            <div class="content">
-                <h2>Playing song</h2>
-                <ul id="queue-current-song-container"></ul>
-                <h2>Next songs</h2>
-                <ul id="queue-next-songs-container"></ul>
-            </div>
-        </queue-container>
-        <settings-container class="main-container hidden">
-            <div class="wrapper">
-                <aside>
-                    <h1>Settings</h1>
-                    <ul class="settings-menus-container">
-                        <li><a href="#account-settings" tabindex="-1">Account</a></li>
-                        <li><a href="#apparence-settings" tabindex="-1">Apparence</a></li>
-                        <li><a href="#preferences-settings" tabindex="-1">Preferences</a></li>
-                    </ul>
-                    <h3 id="app-version"></h3>
-                </aside>
-                <section id="settings-section-container">
-                    <article id="account-settings">
-                        <h1>Account</h1>
-                        <ul>
-                            <li class="edit dark-container">
-                                <p>Username</p>
-                                <p id="settings-user-name"></p>
-                                <button id="settings-edit-user-name" tabindex="-1">Edit</button>
-                            </li>
-                            <li class="dark-container col">
-                                <p>Email</p>
-                                <p id="settings-user-email"></p>
-                            </li>
-                            <li class="row">
-                                <button id="remove-account-button" tabindex="-1">Delete account</button>
-                            </li>
-                        </ul>
-                    </article>
-                    <article id="apparence-settings">
-                        <h1>Apparence</h1>
-                        <ul>
-                            <li class="settings-theme-container dark-container col">
-                                <h2>Themes</h2>
-                                <p class="description">Pick a visual template to change the app's overall look and feel.</p>
-                                <ul class="themes-container row" id="settings-themes-container"></ul>
-                            </li>
-                            <li class="input-row dark-container">
-                                <label for="settings-enable-animations">Enable animations</label>
-                                <p class="description">Toggle visual animations throughout the app.</p>
-                                <input type="checkbox" id="settings-enable-animations" tabindex="-1">
-                            </li>
-                        </ul>
-                    </article>
-                    <article id="preferences-settings">
-                        <h1>Preferences</h1>
-                        <ul>
-                            <li class="input-row dark-container">
-                                <label for="settings-hide-success-modals">Hide success modals</label>
-                                <p class="description">Hide success notifications that appear at the top of the screen.</p>
-                                <input type="checkbox" id="settings-hide-success-modals" tabindex="-1">
-                            </li>
-                            <li class="input-row dark-container" id="settings-volume-easing-container">
-                                <label>Volume easing</label>
-                                <p class="description">Defines the easing used for volume transitions.</p>
-                                <ul>
-                                    <li>
-                                        <input type="radio" name="volume-easing" id="volume-easing-linear" tabindex="-1">
-                                        <label for="volume-easing-linear">Linear</label>
-                                    </li>
-                                    <li>
-                                        <input type="radio" name="volume-easing" id="volume-easing-ease-in" tabindex="-1">
-                                        <label for="volume-easing-ease-in">Ease in</label>
-                                    </li>
-                                    <li>
-                                        <input type="radio" name="volume-easing" id="volume-easing-ease-out" tabindex="-1">
-                                        <label for="volume-easing-ease-out">Ease out</label>
-                                    </li>
-                                </ul>
-                            </li>
-                        </ul>
-                    </article>
-                </section>
-            </div>
-        </settings-container>
-        <maintenance-container class="main-container hidden">
-            <h1>Taking a Short Break</h1>
-            <p>We're tuning things up! Heko will be back in a few minutes. Thanks for your patience!</p>
-        </maintenance-container>
-        <loading-screen-container class="main-container">
-            Heko
-        </loading-screen-container>
     </body>
 </html>

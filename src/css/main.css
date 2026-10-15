@@ -1,34 +1,10 @@
 @import url("variables.css");
 @import url("animations.css");
-@import url("fonts.css");
 @import url("base.css");
 @import url("frame.css");
-
-@import url("themes.css");
-
+@import url("fonts.css");
 @import url("utils/utils.css");
-@import url("utils/input-select.css");
 
-@import url("contextmenus/contextmenu.css");
-@import url("contextmenus/contextmenu.parents.css");
-
-@import url("modals/modal.center.css");
-@import url("modals/modal.center.search.css");
-@import url("modals/modal.loading.css");
-@import url("modals/modal.top.css");
-
-@import url("main-containers/settings/settings.css");
-@import url("main-containers/settings/settings.aside.css");
-@import url("main-containers/settings/settings.section.css");
-@import url("main-containers/settings/settings.account.css");
-@import url("main-containers/settings/settings.apparence.css");
-@import url("main-containers/main-container.css");
-@import url("main-containers/maintenance.css");
-@import url("main-containers/loading-screen.css");
-@import url("main-containers/song-settings.css");
-@import url("main-containers/queue.css");
-
-@import url("tabs/tabs.css");
-@import url("tabs/left-tab.css");
-@import url("tabs/right-tab.css");
-@import url("tabs/bottom-tab.css");
+@import url("aside.css");
+@import url("current-playlist.css");
+@import url("parameters.css");

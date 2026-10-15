@@ -1,0 +1,324 @@
+.modal-wrapper {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background-color: rgba(0,0,0,0.5);
+    transition: opacity var(--modal-transition-duration);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 1000;
+}
+.modal-wrapper.no-animations {
+    transition: opacity 0ms;
+}
+.modal-wrapper.opened {
+    opacity: 1;
+    pointer-events: all;
+}
+
+
+
+.modal-wrapper > .modal-container {
+    width: 30rem;
+
+    padding: var(--main-padding-1);
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--main-padding-1);
+
+    border-radius: 1rem;
+    border: var(--default-border);
+
+    background-color: black;
+}
+.modal-wrapper > .modal-container.tab-modal {
+    padding: 0;
+}
+
+
+
+.modal-wrapper > .modal-container > h1.title {
+    font-size: 1rem;
+}
+.modal-wrapper > .modal-container.tab-modal > h1.title {
+    display: none;
+}
+
+
+
+.modal-wrapper > .modal-container > ul.fields-container {
+    display: flex;
+    flex-direction: column;
+    gap: var(--main-padding-1);
+}
+.modal-wrapper > .modal-container.tab-modal > ul.fields-container:not(.tab-modal) {
+    display: none;
+}
+.modal-wrapper > .modal-container.tab-modal > ul.fields-container.tab-modal {
+    padding-inline: var(--main-padding-1);
+}
+
+
+
+.modal-wrapper > .modal-container > header.tab-buttons-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+
+    border-top-left-radius: 1rem;
+    border-top-right-radius: 1rem;
+    border-bottom: var(--default-border);
+
+    overflow: hidden;
+}
+.modal-wrapper > .modal-container > header.tab-buttons-container > button {
+    padding: var(--main-padding-0-7);
+}
+.modal-wrapper > .modal-container > header.tab-buttons-container > button:is(:hover, :focus-visible, .selected) {
+    background-color: var(--accent-color);
+}
+
+
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container {
+    position: relative;
+
+    display: flex;
+    flex-direction: column;
+    gap: var(--main-padding-0-4);
+
+    font-size: 0.8rem;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > label {
+    padding-left: var(--main-padding-0-2);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > button.toggle-password-button {
+    width: 1.3rem;
+    aspect-ratio: 1 / 1;
+
+    position: absolute;
+    bottom: var(--main-padding-0-35);
+    right: var(--main-padding-0-35);
+
+    border-radius: 50%;
+
+    transition: box-shadow 200ms;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > button.toggle-password-button:hover {
+    background-color: var(--g10);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > button.toggle-password-button:focus-visible {
+    box-shadow: inset 0 0 0 1px var(--accent-color);
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container {
+    padding-inline: var(--main-padding-0-3);
+
+    display: flex;
+    gap: var(--main-padding-0-6);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container {
+    margin-block: var(--main-padding-0-4);
+
+    position: relative;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container > * {
+    cursor: pointer;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container > label {
+    padding: var(--main-padding-0-4) var(--main-padding-2);
+
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+
+    background-color: var(--g5);
+    transition: border-color 200ms, background-color 200ms;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container.error > li.radio-container > label {
+    border-color: var(--bg-error-col);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container:has(input:checked) > label {
+    background-color: var(--accent-color);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container:has(input:focus) > label {
+    border-color: var(--accent-color);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > ul.radios-container > li.radio-container > input {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    opacity: 0;
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container {
+    width: 1.7rem;
+    height: 1.7rem;
+
+    position: relative;
+
+    border: var(--default-border);
+    border-radius: 0.5rem;
+
+    background-color: var(--g3);
+    transition: background-color 200ms, border-color 200ms;
+    overflow: hidden;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container::before {
+    content: "✔";
+
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    font-size: 1rem;
+
+    transition: opacity 200ms;
+    opacity: 0;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container:has(input:checked) {
+    background-color: var(--accent-color);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container:has(input:focus) {
+    border-color: var(--accent-color);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container:has(input:checked)::before {
+    opacity: 1;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.checkbox-container > input {
+    width: 100%;
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    opacity: 0;
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container {
+    position: relative;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container > input {
+    width: 100%;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container > input[type="date"]::-webkit-calendar-picker-indicator {
+    display: none;
+    -webkit-appearance: none;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container > div.buttons-container {
+    height: 100%;
+
+    position: absolute;
+    top: 0;
+    right: var(--main-padding-0-5);
+
+    display: flex;
+    align-items: center;
+    gap: var(--main-padding-0-2);
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container > div.buttons-container > button {
+    width: 1.2rem;
+    aspect-ratio: 1 / 1;
+
+    background-color: transparent;
+    transition: color 200ms;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.date-container > div.buttons-container > button:focus {
+    color: var(--accent-color);
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.picture {
+    height: 5rem;
+
+    align-self: start;
+
+    padding: var(--main-padding-0-5);
+
+    border: var(--default-border);
+    border-radius: 0.6rem;
+
+    background-color: var(--g3);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center center;
+    transition: border-color 200ms, background-color 200ms;
+    cursor: pointer;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.picture.error {
+    border-color: var(--bg-error-col) !important;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.picture:is(:hover, :focus-visible) {
+    border-color: var(--accent-color);
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.file-input {
+    height: 5rem;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: var(--default-border);
+    border-style: dashed;
+    border-radius: 0.8rem;
+
+    background-color: var(--g1);
+    transition: border-color 200ms;
+    cursor: pointer;
+}
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > div.file-input:is(:hover, :focus-visible) {
+    border-color: var(--accent-color);
+}
+
+.modal-wrapper > .modal-container > ul.fields-container > li.field-container > p.error-message {
+    padding-left: var(--main-padding-0-3);
+
+    color: var(--text-error-col);
+}
+
+
+
+.modal-wrapper > .modal-container > .buttons-container {
+    margin-top: auto;
+
+    display: flex;
+    gap: var(--main-padding-0-6);
+}
+.modal-wrapper > .modal-container.tab-modal > .buttons-container {
+    padding: var(--main-padding-1);
+    padding-top: 0;
+}
+.modal-wrapper > .modal-container > .buttons-container > button {
+    padding: var(--main-padding-0-4) var(--main-padding-0-7);
+    border-radius: 0.5rem;
+
+    background-color: var(--g5);
+}
+.modal-wrapper > .modal-container > .buttons-container > button:is(:hover, :focus-visible) {
+    background-color: var(--g20);
+}
+.modal-wrapper > .modal-container > .buttons-container > button.confirm:is(:hover, :focus-visible) {
+    background-color: var(--bg-success-col);
+}
+.modal-wrapper > .modal-container > .buttons-container > button.cancel:is(:hover, :focus-visible) {
+    background-color: var(--bg-error-col);
+}

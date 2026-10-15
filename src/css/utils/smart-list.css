@@ -1,0 +1,65 @@
+smart-list {
+    display: block;
+}
+smart-list > div.input-container {
+    position: relative;
+}
+smart-list > div.input-container > button {
+    width: 1.5rem;
+    aspect-ratio: 1 / 1;
+
+    position: absolute;
+    top: 50%;
+    right: var(--main-padding-0-15);
+
+    border-radius: 0.5rem;
+
+    background-color: var(--accent-color);
+    transform: translateY(-50%);
+}
+smart-list > div.input-container > button.disabled {
+    background-color: var(--g20);
+}
+smart-list > ul.values-container {
+    max-height: 15rem;
+    margin-top: var(--main-padding-0-55);
+
+    overflow-y: auto;
+}
+smart-list > ul.values-container:empty {
+    display: none;
+}
+smart-list > ul.values-container > li.value-container {
+    padding-block: var(--main-padding-0-2);
+    padding-inline: var(--main-padding-0-7) var(--main-padding-0-2);
+
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: var(--main-padding-0-5);
+
+    font-size: 0.8rem;
+
+    border-radius: 0.7rem;
+
+    background-color: var(--g5);
+}
+smart-list > ul.values-container > li.value-container:not(:first-of-type) {
+    margin-top: var(--main-padding-0-4);
+}
+smart-list > ul.values-container > li.value-container > button.value-remove-button {
+    width: 1.4rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 50%;
+
+    background-color: var(--g5);
+}
+smart-list > ul.values-container > li.value-container > button.value-remove-button:is(:hover, :focus-visible) {
+    background-color: var(--g20);
+}
+smart-list > ul.values-container > li.value-container > p.value-name {
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
+}

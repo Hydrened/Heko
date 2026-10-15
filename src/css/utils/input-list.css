@@ -1,0 +1,53 @@
+input-list {
+    position: relative;
+
+    display: block;
+}
+
+input-list > * {
+    width: 100%;
+}
+
+input-list > ul {
+    max-height: 20rem;
+
+    padding: var(--main-padding-0-3);
+    padding-right: 0;
+
+    position: absolute;
+    top: 100%;
+    left: 0;
+
+    border: var(--default-border);
+    border-radius: 0.7rem;
+
+    background-color: black;
+
+    overflow-y: scroll;
+    z-index: 10;
+}
+input-list > ul:not(:has(li:not(.hidden))) {
+    display: none;
+}
+
+input-list > ul > li {
+    padding: var(--main-padding-0-4) var(--main-padding-0-6);
+
+    font-size: 0.8rem;
+
+    border: var(--default-border);
+    border-color: transparent;
+    border-radius: 0.5rem;
+
+    cursor: pointer;
+}
+input-list > ul > li.focused {
+    background-color: var(--g3);
+    border-color: var(--accent-color);
+}
+input-list > ul > li:hover {
+    background-color: var(--g5);
+}
+input-list > ul > li.hidden {
+    display: none;
+}

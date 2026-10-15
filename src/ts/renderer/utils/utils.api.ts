@@ -1,199 +1,147 @@
-import AppPath from "./../utils/utils.app-path.js";
 import "./utils.types.js";
 
-type App = import("../app.js").default;
+const w: any = (window as any);
 
-async function request(phpFile: string, app: App | null = null, data: { [key: string]: any } = {}): Promise<any> {
-    if (app != null) {
-        const userData: UserData = app.account.getUserData();
-        if (!app.account.isLoggedIn()) {
-            return {
-                success: false,
-                error: "User is not logged in.",
+namespace Api {
+    async function fileToBase64(file: File): Promise<string> {
+        return new Promise<string>((resolve: Resolve<string>, reject: Reject) => {
+            const reader: FileReader = new FileReader();
+            reader.onload = (): void => {
+                const result: string = reader.result as string;
+                resolve(result.split(",")[1]);
             };
+            reader.onerror = (): void => reject(reader.error);
+            reader.readAsDataURL(file);
+        });
+    }
+
+    async function request<T>(phpFile: string, data: Record<string, unknown> = {}): Promise<T> {
+        const payload: Record<string, unknown> = {};
+
+        for (const [key, value] of Object.entries(data)) {
+            payload[key] = (value instanceof File) ? await fileToBase64(value) : value ?? "";
         }
 
-        data["userID"] = userData.id!;
-        data["token"] = userData.token!;
+        const res: Response = await fetch(`https://hekoplayer.app/apiv2/${phpFile}`, {
+            method: "POST",
+            credentials: "include",
+            headers: {
+                "Content-Type": "application/json",
+                "X-Auth-Client": "heko-app-00-SHIELD-98",
+            },
+            body: JSON.stringify(payload),
+        });
+
+        try {
+            return await res.json() as T;
+        }
+        catch (err: unknown) {
+            console.error(err);
+            return null as T;
+        }
     }
 
-    const res: Response = await fetch(`${AppPath}/api/${phpFile}`, {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json",
-            "X-Auth-Client": "heko-app-00-SHIELD-98",
-        },
-        body: JSON.stringify(data),
-    });
+    export namespace Artist {
+        export async function create(name: string): Promise<CreateArtistApiResult> {
+            return await request("artist/create.php", { name: name });
+        }
+    };
 
-    return await res.json();
-}
+    export namespace Dialog {
+        export async function askForFile(title: string, name?: string, extenstions?: string[]): Promise<AskForFileApiResult> {
+            return await w.api.dialog.askForFile(title, name, extenstions);
+        }
+    };
 
-async function uploadFile(phpFile: string, app: App, file: File): Promise<any> {
-    const userData: UserData = app.account.getUserData();
-    if (!app.account.isLoggedIn()) {
-        return {
-            success: false,
-            error: "User is not logged in.",
-        };
-    }
+    export namespace Files {
+        export async function read(path: string): Promise<ReadFileApiResult> {
+            return await w.api.files.read(path);
+        }
+    };
 
-    const formData = new FormData();
-    formData.append("userID", String(userData.id!));
-    formData.append("token", userData.token!);
-    formData.append("file", file);
+    export namespace Playlists {
+        export async function create(name: string, thumbnail: File | null): Promise<CreatePlaylistApiResult> {
+            return await request("playlists/create.php", { name: name, thumbnail: thumbnail });
+        }
 
-    const res: Response = await fetch(`${AppPath}/api/${phpFile}`, {
-        method: "POST",
-        headers: {
-            "X-Auth-Client": "heko-app-00-SHIELD-98",
-        },
-        body: formData,
-    });
+        export async function edit(id: ID, name: string, thumbnail: File | null, thumbnailEditType: ThumbnailEditType): Promise<EditPlaylistApiResult> {
+            return await request("playlists/edit.php", { id: id, name: name, thumbnail: thumbnail, thumbnailEditType: thumbnailEditType });
+        }
 
-    return await res.json();
-}
+        export async function get(id: ID): Promise<GetUserPlaylistApiResult> {
+            return await request("playlists/get.php", { id: id });
+        }
 
-export const app = {
-    getResponse: async (): Promise<any> => {
-        return await request("app/get-response.php");
-    },
+        export async function getAll(): Promise<GetUserPlaylistsApiResult> {
+            return await request("playlists/get-all.php");
+        }
+
+        export async function mergeIn(mergeContainerId: ID, id: ID): Promise<MergePlaylistInApiResult> {
+            return await request("playlists/merge-in.php", { mergeContainerId: mergeContainerId, id: id });
+        }
+
+        export async function remove(id: ID): Promise<RemoveUserPlaylistApiResult> {
+            return await request("playlists/remove.php", { id: id });
+        }
+    };
+
+    export namespace Temp {
+        export async function clear(): Promise<ClearTempApiResult> {
+            return await w.api.temp.clear();
+        }
+
+        export async function pasteClipbordImage(): Promise<PasteClipbordImageApiResult> {
+            return await w.api.temp.pasteClipbordImage();
+        }
+    };
+
+    export namespace User {
+        export async function isLogged(): Promise<IsLoggedApiResult> {
+            return await request("user/is-logged.php");
+        }
+
+        export async function login(email: string, password: string): Promise<LoginApiResult> {
+            return await request("user/login.php", { email: email, password: password });
+        }
+
+        export async function logout(): Promise<LogoutApiResult> {
+            return await request("user/logout.php");
+        }
+
+        export async function register(name: string, email: string, password: string, confirm: string): Promise<RegisterApiResult> {
+            return await request("user/register.php", { name: name, email: email, password: password, confirm: confirm });
+        }
+    };
+
+    export namespace Window {
+        export async function minimize(): Promise<void> {
+            return await w.win.minimize();
+        }
+
+        export async function maximize(): Promise<void> {
+            return await w.win.maximize();
+        }
+
+        export async function close(): Promise<void> {
+            return await w.win.close();
+        }
+
+        export async function setTitle(title: string): Promise<void> {
+            return await w.win.setTitle(title);
+        }
+
+        export async function onStart(callback: (args: AppArgs) => void): Promise<void> {
+            return await w.win.onStart(callback);
+        }
+
+        export async function onClose(callback: () => Promise<void>): Promise<void> {
+            return await w.win.onClose(callback);
+        }
+
+        export async function onClosed(callback: () => Promise<void>): Promise<void> {
+            return await w.win.onClosed(callback);
+        }
+    };
 };
 
-export const youtube = {
-    search: async (app: App, query: string): Promise<any> => {
-        return await request("youtube/search.php", app, { query: query });
-    },
-};
-
-export const user = {
-    isTokenValid: async (token: Token): Promise<any> => {
-        return await request("user/is-token-valid.php", null, { token: token });
-    },
-
-    login: async (email: string, password: string): Promise<any> => {
-        return await request("user/login.php", null, { email: email, password: password, app: "heko" });
-    },
-
-    register: async (name: string, email: string, password: string, confirm: string): Promise<any> => {
-        return await request("user/register.php", null, { name: name, email: email, password: password, confirm: confirm });
-    },
-
-    editName: async (app: App, name: string): Promise<any> => {
-        return await request("user/edit-name.php", app, { name: name });
-    },
-
-    getSettings: async (app: App): Promise<any> => {
-        return await request("user/get-settings.php", app);
-    },
-    
-    saveSettings: async (app: App, settings: Settings): Promise<any> => {
-        return await request("user/save-settings.php", app, { settings: settings });
-    },
-
-    saveSongsInHistory: async (app: App, songIDs: ID[]): Promise<any> => {
-        return await request("user/save-songs-in-history.php", app, { songIDs: songIDs });
-    },
-
-    addDownload: async (app: App, videoID: string): Promise<any> => {
-        return await request("user/add-download.php", app, { videoID: videoID });
-    },
-
-    getDownloads: async (app: App): Promise<any> => {
-        return await request("user/get-downloads.php", app);
-    },
-
-    sendDeleteConfirmation: async (app: App, email: string): Promise<any> => {
-        return await request("user/send-remove-confirmation.php", app, { email: email });
-    },
-};
-
-export const playlist = {
-    add: async (app: App, name: string, thumbnailFileName: string): Promise<any> => {
-        return await request("playlist/add.php", app, { name: name, thumbnailFileName: thumbnailFileName });
-    },
-
-    updateOpenedState: async (app: App, openedPlaylistIDs: number[]): Promise<any> => {
-        return await request("playlist/update-opened-state.php", app, { openedPlaylistIDs: openedPlaylistIDs });
-    },
-
-    updatePosition: async (app: App, playlistID: ID, position: number): Promise<any> => {
-        return await request("playlist/update-position.php", app, { playlistID: playlistID, position: position });
-    },
-
-    updateMergeToggle: async (app: App, mergedPlaylistID: ID, toggled: boolean): Promise<any> => {
-        return await request("playlist/update-merge-toggle.php", app, { mergedPlaylistID: mergedPlaylistID, toggled: toggled });
-    },
-
-    remove: async (app: App, playlistIDs: ID[], thumbnailFileNames: string[]): Promise<any> => {
-        return await request("playlist/remove.php", app, { playlistIDs: playlistIDs, thumbnailFileNames: thumbnailFileNames });
-    },
-
-    removeFromMergeContainer: async (app: App, playlistID: ID, mergedPlaylistID: ID): Promise<any> => {
-        return await request("playlist/remove-from-merge-container.php", app, {playlistID: playlistID, mergedPlaylistID: mergedPlaylistID });
-    },
-
-    rename: async (app: App, playlistID: ID, newPlaylistName: string): Promise<any> => {
-        return await request("playlist/rename.php", app, { playlistID: playlistID, newPlaylistName: newPlaylistName });
-    },
-    
-    duplicate: async (app: App, playlistID: ID): Promise<any> => {
-        return await request("playlist/duplicate.php", app, { playlistID: playlistID });
-    },
-
-    moveIn: async (app: App, parentPlaylistID: ID, playlistID: ID): Promise<any> => {
-        return await request("playlist/move-in.php", app, { parentPlaylistID: parentPlaylistID, playlistID: playlistID });
-    },
-
-    mergeIn: async (app: App, playlistID: ID, mergedPlaylistID: ID): Promise<any> => {
-        return await request("playlist/merge-in.php", app, { playlistID: playlistID, mergedPlaylistID: mergedPlaylistID });
-    },
-
-    get: async (app: App): Promise<any> => {
-        return await request("playlist/get.php", app);
-    },
-};
-
-export const thumbnail = {
-    upload: async (app: App, thumbnailFile: File): Promise<any> => {
-        return await uploadFile("thumbnail/upload.php", app, thumbnailFile );
-    },
-
-    update: async (app: App, playlistID: ID, thumbnailFileName: string): Promise<any> => {
-        return await request("thumbnail/update.php", app, { playlistID: playlistID, thumbnailFileName: thumbnailFileName });
-    },
-
-    remove: async (app: App, playlistID: ID, thumbnailFileName: string): Promise<any> => {
-        return await request("thumbnail/remove.php", app, { playlistID: playlistID, thumbnailFileName: thumbnailFileName });
-    },
-} ;
-
-export const song = {
-    addToApp: async (app: App, title: string, artist: string, songFileName: string): Promise<any> => {
-        return await request("song/add-to-app.php", app, { title: title, artist: artist, songFileName: songFileName });
-    },
-
-    addToPlaylist: async (app: App, songIDs: ID[], playlistIDs: ID[]): Promise<any> => {
-        return await request("song/add-to-playlists.php", app, { songIDs: songIDs, playlistIDs: playlistIDs });
-    },
-
-    upload: async (app: App, songFile: File): Promise<any> => {
-        return await uploadFile("song/upload.php", app, songFile);
-    },
-
-    removeFromApp: async (app: App, songID: ID, songFileName: string): Promise<any> => {
-        return await request("song/remove-from-app.php", app, { songID: songID, songFileName: songFileName });
-    },
-
-    removeFromPlaylist: async (app: App, playlistID: ID, songID: ID): Promise<any> => {
-        return await request("song/remove-from-playlist.php", app, { playlistID: playlistID, songID: songID });
-    },
-
-    edit: async (app: App, songID: ID, title: string, artist: string): Promise<any> => {
-        return await request("song/edit.php", app, { songID: songID, title: title, artist: artist });
-    },
-
-    get: async (app: App): Promise<any> => {
-        return await request("song/get.php", app);
-    },
-};
+export default Api;

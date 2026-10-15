@@ -1,0 +1,41 @@
+.small-modal-container {
+    width: 100vw;
+    height: 100dvh;
+
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    opacity: 0;
+    transition: opacity var(--modal-transition-duration);
+    background-color: rgba(0,0,0,0.5);
+    z-index: 1000;
+}
+.small-modal-container.opened {
+    opacity: 1;
+}
+.small-modal-container > .small-modal-wrapper {
+    border-radius: 1rem;
+    border: var(--default-border);
+
+    background-color: var(--main-bg-col-1);
+}
+.small-modal-container .option-container {
+    padding: var(--main-padding-0-85) var(--main-padding-1);
+
+    font-size: 0.8rem;
+    text-align: center;
+}
+.small-modal-container .option-container:not(.information) {
+    cursor: pointer;
+}
+.small-modal-container .option-container:not(:first-of-type) {
+    border-top: 2px solid var(--g5);
+}
+.small-modal-container .option-container.information {
+    font-weight: bold;
+}

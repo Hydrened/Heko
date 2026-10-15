@@ -1,6 +1,3 @@
-import App from "./app.js";
+import { App } from "./app.js";
 
-window.addEventListener("DOMContentLoaded", () => {
-    const app: App = new App();
-    app.init();
-});
+window.addEventListener("DOMContentLoaded", () => new App());

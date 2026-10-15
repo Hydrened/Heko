@@ -1,0 +1,102 @@
+footer.parameters-container {
+    padding: var(--main-padding-1) var(--main-padding-1-5);
+
+    display: grid;
+    grid-template-columns: 2fr 3fr 2fr;
+    grid-column: 1 / span 2;
+    gap: var(--main-padding-1-5);
+
+    border-top: var(--default-border);
+
+    background-color: var(--b6);
+}
+
+
+
+footer.parameters-container > article.current-song-details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--main-padding-0-4);
+}
+footer.parameters-container > article.current-song-details-container > h2 {
+    font-size: 1.2rem;
+}
+footer.parameters-container > article.current-song-details-container > h3 {
+    font-size: 0.9rem;
+    font-weight: normal;
+
+    opacity: var(--text-2-opacity);
+}
+
+
+
+footer.parameters-container > article.main-parameters-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--main-padding-0-4);
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--main-padding-0-4);
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button:is(#shuffle-playlist-button, #loop-song-button) > img {
+    width: 1.3rem;
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button:is(#previous-song-button, #next-song-button) > img {
+    width: 1.8rem;
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#play-song-button > img {
+    width: 2rem;
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#play-song-button.paused > img.playing,
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#play-song-button.playing > img.paused,
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#shuffle-playlist-button.true > img.false,
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#shuffle-playlist-button.false > img.true,
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#loop-song-button.true > img.false,
+footer.parameters-container > article.main-parameters-container > div.main-parameters-top-container > button#loop-song-button.false > img.true {
+    display: none;
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-bottom-container {
+    display: grid;
+    align-items: center;
+    grid-template-columns: 2rem 1fr 2rem;
+    gap: var(--main-padding-0-5);
+}
+footer.parameters-container > article.main-parameters-container > div.main-parameters-bottom-container > p {
+    font-size: 0.87rem;
+    color: var(--text-col-2);
+    text-align: center;
+}
+
+
+
+footer.parameters-container > article.secondary-parameters-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: var(--main-padding-2);
+}
+footer.parameters-container > article.secondary-parameters-container > button#queue-button > img {
+    width: 1.5rem;
+}
+footer.parameters-container > article.secondary-parameters-container > button#audio-transform-button > img {
+    width: 1.6rem;
+
+    padding-top: 0.2rem;
+}
+footer.parameters-container > article.secondary-parameters-container > div.volume-container {
+    display: flex;
+    align-items: center;
+    gap: var(--main-padding-0-6);
+}
+footer.parameters-container > article.secondary-parameters-container > div.volume-container > button#mute-button > img {
+    width: 1.5rem;
+}
+footer.parameters-container > article.secondary-parameters-container > div.volume-container > button#mute-button.muted > :not(.muted),
+footer.parameters-container > article.secondary-parameters-container > div.volume-container > button#mute-button.low-volume > :not(.low-volume),
+footer.parameters-container > article.secondary-parameters-container > div.volume-container > button#mute-button.high-volume > :not(.high-volume) {
+    display: none;
+}

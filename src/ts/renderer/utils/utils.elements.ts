@@ -1,122 +1,92 @@
-export const loadingScreen: HTMLElement = document.querySelector("loading-screen-container")!;
+namespace Elements {
+    function get<T extends Element>(query: string): T {
+        const element: T | null = document.querySelector<T>(query);
+        if (element === null) {
+            throw new Error(`Could not get element: Element with query = "${query}" is null.`);
+        }
 
-export const maintenanceContainer: HTMLElement = document.querySelector("maintenance-container")!;
+        return element;
+    }
 
-export const playlists = {
-    addButton: (document.querySelector("#add-playlist-button") as HTMLButtonElement),
-    container: (document.querySelector("#playlists-container") as HTMLElement),
-};
+    export const main: HTMLElement = (document.querySelector("main") as HTMLElement);
 
-export const songs = {
-    settingsButton: (document.querySelector("#song-settings-button") as HTMLButtonElement),
-};
-
-export const currentPlaylist = {
-    container: (document.querySelector("#current-playlist-container") as HTMLElement),
-
-    details: {
-        thumbnail: (document.querySelector("#current-playlist-thumbnail") as HTMLElement),
-        title: (document.querySelector("#current-playlist-title") as HTMLElement),
-        songNumber: (document.querySelector("#current-playlist-song-number") as HTMLElement),
-        duration: (document.querySelector("#current-playlist-duration") as HTMLElement),
-    },
-
-    addSongsButton: (document.querySelector("#add-songs-to-current-playlist-button") as HTMLButtonElement),
-
-    playButton: (document.querySelector("#current-playlist-play-button") as HTMLElement),
-
-    songFilterInput: (document.querySelector("#current-playlist-song-filter-input") as HTMLInputElement),
-
-    song: {
-        sort: {
-            idButton: (document.querySelector("#current-playlist-song-sort-by-id-button") as HTMLButtonElement),
-            titleButton: (document.querySelector("#current-playlist-song-sort-by-title-button") as HTMLButtonElement),
-            artistButton: (document.querySelector("#current-playlist-song-sort-by-artist-button") as HTMLButtonElement),
-            durationButton: (document.querySelector("#current-playlist-song-sort-by-duration-button") as HTMLButtonElement),
+    export const aside = {
+        playlists: {
+            addButton: get<HTMLButtonElement>("#aside-container-playlists-manager-add-button"),
+            container: get<HTMLUListElement>("#aside-container-playlists-container"),
         },
 
-        container: (document.querySelector("#current-playlist-song-container") as HTMLElement),
-    },
-
-    merged: {
-        sort: {
-            idButton: (document.querySelector("#current-playlist-merged-sort-by-id-button") as HTMLButtonElement),
-            nameButton: (document.querySelector("#current-playlist-merged-sort-by-name-button") as HTMLButtonElement),
-            nbSongButton: (document.querySelector("#current-playlist-merged-sort-by-nb-song-button") as HTMLButtonElement),
-            durationButton: (document.querySelector("#current-playlist-merged-sort-by-duration-button") as HTMLButtonElement),
+        songs: {
+            settingsButton: get<HTMLButtonElement>("#aside-container-songs-manager-settings-button"),
         },
 
-        container: (document.querySelector("#current-playlist-merged-container") as HTMLElement),
-    },
-};
-
-export const account = {
-    accountButton: (document.querySelector("#account-button") as HTMLButtonElement),
-};
-
-export const currentSong = {
-    title: (document.querySelector("#current-song-title") as HTMLElement),
-    artist: (document.querySelector("#current-song-artist") as HTMLElement),
-};
-
-export const songControls = {
-    buttons: {
-        toggleShuffleButton: (document.querySelector("#toggle-shuffle-button") as HTMLButtonElement),
-        previousButton: (document.querySelector("#previous-song-button") as HTMLButtonElement),
-        togglePlayButton: (document.querySelector("#toggle-play-button") as HTMLButtonElement),
-        nextButton: (document.querySelector("#next-song-button") as HTMLButtonElement),
-        toggleLoopButton: (document.querySelector("#toggle-loop-button") as HTMLButtonElement),
-    },
-
-    progressBar: {
-        position: (document.querySelector("#current-song-position") as HTMLElement),
-        slider: (document.querySelector("#song-position-slider") as HTMLInputElement),
-        duration: (document.querySelector("#current-song-duration") as HTMLElement),
-    },
-
-    volume: {
-        toggleButton: (document.querySelector("#toggle-song-volume-button") as HTMLButtonElement),
-        slider: (document.querySelector("#volume-slider") as HTMLInputElement),
-    },
-};
-
-export const songSettings = {
-    popup: (document.querySelector("song-settings-container") as HTMLElement),
-    button: (document.querySelector(".secondary-controls-container #song-settings-button") as HTMLButtonElement),
-
-    speed: (document.querySelector("#song-settings-speed") as HTMLElement),
-    speedInput: (document.querySelector("#song-settings-speed-input") as HTMLInputElement),
-};
-
-export const queue = {
-    popup: (document.querySelector("queue-container") as HTMLElement),
-    button: (document.querySelector("#queue-button") as HTMLButtonElement),
-
-    currentSongContainer: (document.querySelector("#queue-current-song-container") as HTMLElement),
-    nextSongsContainer: (document.querySelector("#queue-next-songs-container") as HTMLElement),
-};
-
-export const settings = {
-    container: (document.querySelector("settings-container") as HTMLElement),
-    sectionContainer: (document.querySelector("#settings-section-container") as HTMLElement),
-    version: (document.querySelector("#app-version") as HTMLElement),
-
-    account: {
-        name: {
-            text: (document.querySelector("#settings-user-name") as HTMLElement),
-            editButton: (document.querySelector("#settings-edit-user-name") as HTMLButtonElement),
+        artists: {
+            settingsButton: get<HTMLButtonElement>("#aside-container-artists-manager-settings-button"),
         },
-        email: (document.querySelector("#settings-user-email") as HTMLElement),
-        removeButton: (document.querySelector("#remove-account-button") as HTMLButtonElement),
-    },
+    };
 
-    apparence: {
-        themesContainer: (document.querySelector("#settings-themes-container") as HTMLElement),
-        enableAnimations: (document.querySelector("#settings-enable-animations") as HTMLInputElement),
-    },
+    export const currentPlaylist = {
+        container: get<HTMLElement>("#current-playlist-container"),
 
-    preferences: {
-        hideSuccessModalCheckbox: (document.querySelector("#settings-hide-success-modals") as HTMLInputElement),
-        volumeEasingContainer: (document.querySelector("#settings-volume-easing-container") as HTMLElement),
-    },
+        details: {
+            thumbnail: get<HTMLButtonElement>("#current-playlist-thumbnail"),
+            title: get<HTMLHeadingElement>("#current-playlist-title"),
+            count: get<HTMLHeadingElement>("#current-playlist-count"),
+            duration: get<HTMLHeadingElement>("#current-playlist-duration"),
+            addButton: get<HTMLButtonElement>("#current-playlist-add-button"),
+        },
+
+        options: {
+            playButton: get<HTMLButtonElement>("#current-playlist-play-button"),
+            filterInput: get<HTMLInputElement>("#current-playlist-filter-input"),
+        },
+
+        table: {
+            headerButtons: {
+                id: get<HTMLButtonElement>("#current-playlist-header-id-button"),
+                title: get<HTMLButtonElement>("#current-playlist-header-title-button"),
+                artist: get<HTMLButtonElement>("#current-playlist-header-artist-button"),
+                name: get<HTMLButtonElement>("#current-playlist-header-name-button"),
+                songs: get<HTMLButtonElement>("#current-playlist-header-songs-button"),
+                duration: get<HTMLButtonElement>("#current-playlist-header-duration-button"),
+            },
+
+            rowsContainer: get<HTMLUListElement>("#current-playlist-song-table-rows-container"),
+        },
+    };
+
+    export const parameters = {
+        currentSongDetails: {
+            title: get<HTMLHeadingElement>("#current-song-title"),
+            artist: get<HTMLHeadingElement>("#current-song-artist"),
+        },
+
+        main: {
+            buttons: {
+                play: get<HTMLButtonElement>("#play-song-button"),
+                shufflePlaylist: get<HTMLButtonElement>("#shuffle-playlist-button"),
+                loopSong: get<HTMLButtonElement>("#loop-song-button"),
+                previousSong: get<HTMLButtonElement>("#previous-song-button"),
+                nextSong: get<HTMLButtonElement>("#next-song-button"),
+            },
+
+            currentSong: {
+                currentTime: get<HTMLParagraphElement>("#current-song-current-time"),
+                duration: get<HTMLParagraphElement>("#current-song-duration"),
+                slider: get<HTMLInputElement>("#current-song-slider"),
+            },
+        },
+
+        secondary: {
+            queueButton: get<HTMLButtonElement>("#queue-button"),
+            audioTransformButton: get<HTMLButtonElement>("#audio-transform-button"),
+
+            volume: {
+                muteButton: get<HTMLButtonElement>("#mute-button"),
+                slider: get<HTMLInputElement>("#volume-slider"),
+            },
+        },
+    };
 };
+
+export default Elements;

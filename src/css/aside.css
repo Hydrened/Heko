@@ -1,0 +1,101 @@
+aside.aside-container {
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+
+    border-right: var(--default-border);
+
+    background-color: var(--b2);
+}
+
+
+
+aside.aside-container > .manager-container {
+    padding: var(--main-padding-1) var(--main-padding-1-5);
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    background-color: var(--b3);
+}
+aside.aside-container > .manager-container > h1 {
+    font-size: 1.4rem;
+}
+aside.aside-container > .manager-container > button > img {
+    width: 1.5rem;
+}
+
+
+
+aside.aside-container > header.aside-container-playlists-manager-container {
+    border-bottom: var(--default-border);
+}
+
+
+
+aside.aside-container > article.aside-container-playlists-wrapper > ul#aside-container-playlists-container {
+    height: 100%;
+
+    padding: var(--main-padding-0-65);
+    padding-right: 0;
+
+    overflow-y: scroll;
+}
+li.playlist-wrapper {
+    transform: translateX(-100%);
+    transition: transform 500ms ease-in-out;
+}
+li.playlist-wrapper.visible {
+    transform: translateX(0%);
+}
+li.playlist-wrapper > div.playlist-container {
+    padding: var(--main-padding-0-5);
+    padding-right: var(--main-padding-1);
+
+    position: relative;
+
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: var(--main-padding-0-8);
+
+    border-top-left-radius: 0.7rem;
+    border-bottom-left-radius: 0.7rem;
+
+    transition: background-color 150ms;
+    cursor: pointer;
+}
+li.playlist-wrapper > div.playlist-container:is(:hover, :focus-visible, .contextmenu-focused) {
+    background-color: var(--g3);
+}
+li.playlist-wrapper > div.playlist-container > div.thumbnail {
+    width: 3rem;
+    height: 3rem;
+
+    border-radius: 0.5rem;
+
+    background-color: var(--b6);
+}
+li.playlist-wrapper > div.playlist-container > div.details-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--main-padding-0-2);
+}
+li.playlist-wrapper > div.playlist-container > div.details-container > h2.name {
+    font-size: 1.1rem;
+}
+li.playlist-wrapper > div.playlist-container > div.details-container > h3.children-count {
+    font-size: 0.8rem;
+    font-weight: normal;
+    color: var(--text-col-2);
+}
+li.playlist-wrapper > ul.playlist-children-container {
+    padding-left: var(--main-padding-1-25);
+}
+
+
+
+aside.aside-container > footer {
+    border-top: var(--default-border);
+}

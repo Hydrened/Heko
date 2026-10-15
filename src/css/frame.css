@@ -8,14 +8,12 @@
 
     border-bottom: var(--default-border);
     
-    background-color: var(--bg-bo-8);
-
-    z-index: 1000;
+    background-color: black;
+    z-index: 100000;
 }
 
 
 
-/* DRAG AREA */
 .frame > .drag-area {
     padding-inline: 1rem;
 
@@ -33,7 +31,6 @@
 
 
 
-/* BUTTONS */
 .frame > .button-container {
     display: flex;
 }
@@ -46,12 +43,15 @@
     display: flex;
     justify-content: center;
     align-items: center;
+
+    background-color: transparent;
 }
-.frame > .button-container > button:hover,
-.frame > .button-container > button:focus {
-    background-color: var(--bg-wo-10);
+.frame > .button-container > button:hover {
+    background-color: var(--g10);
 }
-.frame > .button-container > #close-window-button:hover,
-.frame > .button-container > #close-window-button:focus {
+.frame > .button-container > #close-window-button:hover {
     background-color: var(--bg-error-col);
+}
+.frame > .button-container > button > svg {
+    width: 2rem;
 }

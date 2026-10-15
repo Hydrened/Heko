@@ -1,183 +1,328 @@
-type AppResponse = 200 | 503;
+type Modal = import("./utils.create.js").Modal;
+
+type ID = number;
+
+type CssVariableType = "pixel" | "rem" | "ms-duration" | "hex-color";
 
 type Position = {
     x: number;
     y: number;
 };
 
-type CssVariableType = "PIXEL" | "MS_DURATION";
-
-
-
-type ID = number;
-type Token = string;
-
-type UserData = {
-    readonly id: ID | null;
-    readonly token: Token | null;
-    readonly name: string | null;
-    readonly email: string | null;
+type Size = {
+    w: number;
+    h: number;
 };
 
-type SongSettings = {
-    readonly shuffle: boolean;
-    readonly loop: boolean;
-    readonly speed: number;
-    readonly volume: number;
+type Rect = Position & Size;
+
+type ColorRGB = {
+    r: number;
+    g: number;
+    b: number;
+    a?: number;
 };
 
-type ApparenceSettings = {
-    theme: number;
-    enableAnimations: boolean;
+type Resolve<T> = (value: T | PromiseLike<T>) => void;
+type Reject = (reason?: any) => void;
+
+type Value<T> = {
+    readonly id: T;
+    readonly name: string;
 };
 
-type PreferencesSettings = {
-    hideSuccessModals: boolean;
-    volumeEasing: number;
+type ValueBase = {
+    readonly id: ID;
+    readonly name: string;
 };
 
-type Settings = {
-    readonly song: SongSettings;
-    readonly apparence: ApparenceSettings;
-    readonly preferences: PreferencesSettings;
+type InputListValue = Value<ID>;
+
+type ElementReference<T extends HTMLElement> = {
+    element?: T;
 };
 
+type AppArgs = {};
 
 
-type Shortcut = {
-    readonly ctrl: boolean;
-    readonly shift: boolean;
-    readonly alt: boolean;
-    readonly key: string;
+
+// API-RESULT
+type ApiResultSuccess<T = {}> = {
+    readonly success: true;
+} & T;
+
+type ApiResultError<T = {}> = {
+    readonly success: false;
+    readonly error: string;
+} & T;
+
+type ApiResultClientError = {
+    readonly clientError: string;
 };
 
-type ShortcutMap = { [name: string]: Shortcut };
-
-
-
-type CenterModal = import("./../modals/modal.center.js").default;
-
-type TopModalType = "SUCCESS" | "ERROR";
-
-type ModalRowType = "TEXT" | "NUMBER" | "EMAIL" | "PASSWORD" | "FILE" | "SELECT";
-type ModalRowData = string[];
-
-type ModalRow = {
-    readonly label: string;
-    readonly type: ModalRowType;
-    readonly maxLength?: number;
-    readonly defaultValue?: string;
-    readonly onChange?: (modal: CenterModal) => void;
-    readonly data?: ModalRowData;
-};
-
-type ModalButton = {
-    readonly title: string;
-    readonly onClick: () => void;
-};
-
-type ModalFieldError = {
-    readonly fieldName?: string;
+type ApiResultFieldClientError = {
+    readonly fieldId: string;
     readonly error: string;
 };
 
-type ModalError = ModalFieldError | null;
+type ApiResult<S = {}, E = {}> = ApiResultSuccess<S> | ApiResultError<E>;
 
-type CenterModalData = {
-    readonly title: string;
-    readonly content?: ModalRow[];
-    readonly onConfirm: (modal: CenterModal) => Promise<ModalError>;
-    readonly onCancel?: () => void;
-    readonly additionnalButtons?: ModalButton[];
-    readonly cantClose: boolean;
+// API-RESULT.ARTIST
+type CreateArtistApiResult = ApiResult<{ readonly artist: Artist }>;
+
+// API-RESULT.DIALOG
+type AskForFileApiResult = ApiResult<{ readonly path: string | null }>;
+
+// API-RESULT.FILE
+type ReadFileApiResult = ApiResult<{ readonly data: Uint8Array }>;
+
+// API-RESULT.PLAYLISTS
+type CreatePlaylistApiResult = ApiResult;
+type EditPlaylistApiResult = ApiResult;
+type GetUserPlaylistApiResult = ApiResult<{ readonly playlist: Playlist }, ApiResultClientError>;
+type GetUserPlaylistsApiResult = ApiResult<{ readonly playlists: Playlist[] }>;
+type MergePlaylistInApiResult = ApiResult;
+type RemoveUserPlaylistApiResult = ApiResult;
+
+// API-RESULT.TEMP
+type ClearTempApiResult = ApiResult;
+type PasteClipbordImageApiResult = ApiResult<{ readonly filePath: string }>;
+
+// API-RESULT.USER
+type IsLoggedApiResult = ApiResult;
+type LoginApiResult = ApiResult<{}, ApiResultClientError>;
+type LogoutApiResult = ApiResult;
+type RegisterApiResult = ApiResult<{}, ApiResultClientError>;
+
+// CONTEXTMENU
+type ContextmenuShortCut = {
+    readonly key: string;
+    readonly ctrl?: boolean;
+    readonly shift?: boolean;
+    readonly alt?: boolean;
 };
-
-type CenterSearchModalData = {
-    readonly title: string;
-    readonly onCreate?: (container: HTMLElement) => void;
-    readonly onConfirm: (modal: CenterModal, container: HTMLElement) => Promise<ModalError>;
-    readonly onClose?: () => void;
-    readonly onSearch: (container: HTMLElement, query: string) => Promise<void>;
-    readonly searchDelay: number;
-    readonly cantClose: boolean;
-};
-
-
 
 type ContextmenuRow = {
     readonly title: string;
-    readonly shortcut?: Shortcut;
-    readonly onClick?: () => Promise<void>;
+    readonly shortcut?: ContextmenuShortCut;
+    readonly onClick?: () => void;
     readonly rows?: ContextmenuRow[];
-    readonly disabled: boolean;
+    readonly disabled?: boolean;
 };
 
+// MODALS
+type TabModalTab = {
+    readonly title: string;
+    readonly id: string;
+};
 
+type ModalAdditionalButton = {
+    readonly text: string;
+    readonly onClick: (modal: Modal) => void;
+};
+
+type ModalOptions = {
+    readonly className?: string;
+    readonly errorMessageOnMandatoryEmptyFields?: boolean;
+    readonly additionalButtons?: ModalAdditionalButton[];
+    readonly confirmButtonText?: string;
+    readonly cancelButtonText?: string;
+    readonly animations?: boolean;
+    readonly mandatory?: boolean;
+};
+
+type TabModalOptions = {
+    readonly defaultTabId?: string;
+} & ModalOptions;
+
+type ModalFieldChildData<T> = {
+    readonly id: string;
+    readonly name?: string
+    readonly label?: string;
+    readonly errorMessage?: (modal: Modal, value: T | null) => string | null;
+    readonly isConditionValid?: (modal: Modal, value: T | null) => boolean | Promise<boolean>;
+};
+
+type ModalFieldData<T> = {
+    readonly id: string;
+    readonly name?: string
+    readonly label?: string;
+    readonly errorMessage?: (modal: Modal, value: T | null) => string | null;
+    readonly onChange?: (modal: Modal, value: T | null) => void;
+    readonly isConditionValid?: (modal: Modal, value: T | null) => boolean | Promise<boolean>;
+};
+
+type ModalFieldMandatoryData = {
+    readonly mandatory?: boolean;
+};
+
+type ModalFieldPlaceholderData = {
+    readonly placeholder?: string;
+};
+
+type ModalFieldLengthData = {
+    readonly minLength?: number;
+    readonly maxLength?: number;
+};
+
+type TabModalTabId = {
+    readonly tabId: string;
+};
+
+type ModalInputFieldData = {
+    readonly defaultValue?: string;
+    readonly type?: string;
+} & ModalFieldData<string> & ModalFieldMandatoryData & ModalFieldPlaceholderData & ModalFieldLengthData;
+
+type TabModalInputFieldData = ModalInputFieldData & TabModalTabId;
+
+type ModalInputListFieldData = {
+    readonly data: InputListValue[];
+    readonly defaultValue?: ID;
+} & ModalFieldData<InputListValue | null> & ModalFieldMandatoryData & ModalFieldPlaceholderData;
+
+type TabModalInputListFieldData = ModalInputListFieldData & TabModalTabId;
+
+type ModalSelectFieldData = {
+    readonly data: InputListValue[];
+    readonly defaultValue?: ID;
+} & ModalFieldData<InputListValue>;
+
+type TabModalSelectFieldData = ModalSelectFieldData & TabModalTabId;
+
+type ModalUnfilteredSmartListFieldData = {
+    readonly defaultValues?: string[];
+} & ModalFieldData<string[]> & ModalFieldMandatoryData & ModalFieldPlaceholderData;
+
+type TabModalUnfilteredSmartListFieldData = ModalUnfilteredSmartListFieldData & TabModalTabId;
+
+type ModalFilteredSmartListFieldData = {
+    readonly data: InputListValue[];
+    readonly defaultValues?: ID[];
+    readonly onInvalidAdd?: (query: string) => (InputListValue | null) | Promise<InputListValue | null>;
+} & ModalFieldData<InputListValue[]> & ModalFieldMandatoryData & ModalFieldPlaceholderData;
+
+type TabModalFilteredSmartListFieldData = ModalFilteredSmartListFieldData & TabModalTabId;
+
+type ModalRadioFieldData = {
+    readonly data: InputListValue[];
+    readonly defaultValue?: ID;
+} & ModalFieldData<InputListValue | null> & ModalFieldMandatoryData;
+
+type TabModalRadioFieldData = ModalRadioFieldData & TabModalTabId;
+
+type ModalMultiRadioFieldData = {
+    readonly data: InputListValue[];
+    readonly defaultValues?: ID[];
+} & ModalFieldData<InputListValue[]> & ModalFieldMandatoryData;
+
+type TabModalMultiRadioFieldData = ModalMultiRadioFieldData & TabModalTabId;
+
+type ModalTextareaFieldData = {
+    readonly defaultValue?: string;
+} & ModalFieldData<string> & ModalFieldMandatoryData & ModalFieldPlaceholderData & ModalFieldLengthData;
+
+type TabModalTextareaFieldData = ModalTextareaFieldData & TabModalTabId;
+
+type ModalCheckboxFieldData = {
+    readonly defaultValue?: boolean;
+} & ModalFieldData<boolean>;
+
+type TabModalCheckboxFieldData = ModalCheckboxFieldData & TabModalTabId;
+
+type ModalDateFieldData = {
+    readonly defaultValue?: string;
+} & ModalFieldData<string> & ModalFieldMandatoryData;
+
+type TabModalDateFieldData = ModalDateFieldData & TabModalTabId;
+
+type ModalPictureFieldData = {
+    readonly defaultValue?: string;
+    readonly aspectRatio: string;
+} & ModalFieldData<string> & ModalFieldMandatoryData;
+
+type TabModalPictureFieldData = ModalPictureFieldData & TabModalTabId;
+
+type ModalFileFieldData = {
+    readonly defaultValue?: string;
+    readonly fileZoneText: string;
+    readonly dialogTitle: string;
+    readonly fileTypeName?: string;
+    readonly extensions?: string[];
+} & ModalFieldData<string> & ModalFieldMandatoryData;
+
+type TabModalFileFieldData = ModalFileFieldData & TabModalTabId;
+
+type SmallModalOption<T> = {
+    readonly shortcut?: string;
+    readonly onClick?: () => void | Promise<void>;
+} & Value<T>;
+
+
+
+// HEKO
+type PlaylistElements = {
+    readonly wrapperElement: HTMLLIElement;
+    readonly containerElement: HTMLElement;
+    readonly childrenContainerELement: HTMLUListElement;
+    readonly nameElement: HTMLParagraphElement;
+    readonly childCountElement: HTMLParagraphElement;
+};
+
+type PlaylistWithElements = Playlist & {
+    elements?: PlaylistElements;
+};
+
+type PlaylistHierarchy = {
+    readonly playlist: PlaylistWithElements;
+    readonly children: PlaylistHierarchy[];
+};
+
+type Artist = {
+    readonly id: ID;
+    readonly name: string;
+};
 
 type Song = {
     readonly id: ID;
-    readonly fileName: string;
     readonly title: string;
-    readonly artist: string;
+    readonly artists: Artist[];
     readonly duration: number;
     readonly creationDate: string;
+    readonly fileName: string;
 };
 
-type MergedPlaylist = {
+type Merged = {
     readonly id: ID;
+    readonly name: string;
+    readonly position: number;
+    readonly thumbnailFileName: string;
+    readonly creationDate: string;
     readonly toggled: boolean;
 };
 
 type Playlist = {
     readonly id: ID;
-    readonly parentID: ID;
-    readonly name: string;
-    readonly position: number;
-    readonly thumbnailFileName: string;
-    readonly opened: boolean;
-    readonly mergedPlaylist: MergedPlaylist[];
-    readonly songs: Song[];
-    readonly children: number;
+    parentId: ID;
+    name: string;
+    position: number;
+    thumbnailFileName: string;
+    opened: boolean;
     readonly creationDate: string;
+    songIds: ID[];
+    mergedIds: ID[];
+    childIds: ID[];
 };
 
-type Queue = Song[];
-
-
-
-type VideoThumbnail = {
-    width: number;
-    height: number;
-    url: string;
+type ManagePlaylistModalDefaultValues = {
+    readonly name?: string;
+    readonly thumbnailFileName?: string;
 };
 
-type Video = {
-    kind: "youtube#searchResult";
-    etag: string;
-    id: {
-        kind: "youtube#video" | "youtube#channel" | "youtube#playlist";
-        videoId?: string;
-        channelId?: string;
-        playlistId?: string;
-    };
-    snippet: {
-        channelId: string;
-        channelTitle: string;
-        publishedAt: string;
-        publishTime?: string;
-        title: string;
-        description: string;
-        thumbnails: {
-            default?: VideoThumbnail;
-            medium?: VideoThumbnail;
-            high?: VideoThumbnail;
-        };
-        liveBroadcastContent: "none" | "upcoming" | "live";
-    };
+type ThumbnailEditType = "update" | "keep" | "remove";
+
+type ManagePlaylistModalReturntValues = {
+    readonly name: string;
+    readonly thumbnail: File | null;
+    readonly thumbnailEditType: ThumbnailEditType;
 };
-
-
-
-type SongSortType = "id" | "title" | "artist" | "duration";
-
-type MergeSortType = "id" | "name" | "nb-songs" | "duration";
