@@ -83,6 +83,14 @@ namespace Api {
         export async function remove(id: ID): Promise<RemoveUserPlaylistApiResult> {
             return await request("playlists/remove.php", { id: id });
         }
+
+        export async function removeFromMerge(mergeContainerId: ID, id: ID): Promise<RemovePlaylistFromMergedUserApiResult> {
+            return await request("playlists/remove-from-merge.php", { mergeContainerId: mergeContainerId, id: id });
+        }
+
+        export async function setOpened(id: ID, opened: boolean): Promise<SetUserPlaylistOpenedApiResult> {
+            return await request("playlists/set-opened.php", { id: id, opened: opened });
+        }
     };
 
     export namespace Temp {

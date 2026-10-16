@@ -569,6 +569,19 @@ namespace Functions {
         export function isPlaylistParent(playlists: Playlist[], parentPlaylistId: ID, playlistId: ID): boolean {
             return isPlaylistChild(playlists, parentPlaylistId, playlistId);
         }
+
+        export function getPosition<T extends { x: number, y: number }>(e: T): Position {
+            return { x: e.x, y: e.y };
+        }
+
+        export function getRect(rect: DOMRect): Rect {
+            return {
+                x: rect.x,
+                y: rect.y,
+                w: rect.width,
+                h: rect.height,
+            };
+        }
     };
 };
 

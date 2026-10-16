@@ -83,6 +83,8 @@ type GetUserPlaylistApiResult = ApiResult<{ readonly playlist: Playlist }, ApiRe
 type GetUserPlaylistsApiResult = ApiResult<{ readonly playlists: Playlist[] }>;
 type MergePlaylistInApiResult = ApiResult;
 type RemoveUserPlaylistApiResult = ApiResult;
+type RemovePlaylistFromMergedUserApiResult = ApiResult;
+type SetUserPlaylistOpenedApiResult = ApiResult;
 
 // API-RESULT.TEMP
 type ClearTempApiResult = ApiResult;
@@ -273,6 +275,10 @@ type PlaylistWithElements = Playlist & {
     elements?: PlaylistElements;
 };
 
+type PlaylistWithRect = Playlist & {
+    rect: Rect;
+};
+
 type PlaylistHierarchy = {
     readonly playlist: PlaylistWithElements;
     readonly children: PlaylistHierarchy[];
@@ -325,4 +331,12 @@ type ManagePlaylistModalReturntValues = {
     readonly name: string;
     readonly thumbnail: File | null;
     readonly thumbnailEditType: ThumbnailEditType;
+};
+
+type FocusedPlaylist = {
+    readonly id: ID;
+    readonly rect: Rect;
+    readonly startTime: number;
+    readonly timeout: ReturnType<typeof setTimeout>;
+    playlists?: PlaylistWithRect[];
 };

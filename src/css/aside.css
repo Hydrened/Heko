@@ -90,8 +90,20 @@ li.playlist-wrapper > div.playlist-container > div.details-container > h3.childr
     font-weight: normal;
     color: var(--text-col-2);
 }
+li.playlist-wrapper > div.playlist-container > div.systray {
+    transition: rotate 150ms;
+}
+li.playlist-wrapper.opened > div.playlist-container > div.systray {
+    rotate: 90deg;
+}
 li.playlist-wrapper > ul.playlist-children-container {
     padding-left: var(--main-padding-1-25);
+
+    overflow: hidden;
+    transition: 300ms;
+}
+li.playlist-wrapper:not(.opened) > ul.playlist-children-container {
+    max-height: 0;
 }
 
 
