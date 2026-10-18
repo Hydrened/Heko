@@ -45,13 +45,12 @@ export default class PlaylistManager {
         wrapperElement.classList.add("playlist-wrapper");
         parentElement.appendChild(wrapperElement);
 
-        wrapperElement.addEventListener("mousedown", (e: MouseEvent) => this.eventsManager.onPlaylistWrapperMouseDown(e, playlist));
-
         const containerElement: HTMLElement = document.createElement("div");
         containerElement.classList.add("playlist-container");
         wrapperElement.appendChild(containerElement);
 
         containerElement.addEventListener("click", () => this.eventsManager.onPlaylistContainerClick(playlist));
+        containerElement.addEventListener("mousedown", (e: MouseEvent) => this.eventsManager.onPlaylistContainerMouseDown(e, playlist));
         containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.eventsManager.onPlaylistContainerContextmenu({ x: e.x, y: e.y }, playlist, containerElement));
 
         const thumbnailElement: HTMLElement = document.createElement("div");
@@ -196,5 +195,9 @@ export default class PlaylistManager {
 
     public getPlaylists(): PlaylistWithElements[] {
         return this.playlists;
+    }
+
+    public getEventManager(): PlaylistEventsManager {
+        return this.eventsManager;
     }
 };

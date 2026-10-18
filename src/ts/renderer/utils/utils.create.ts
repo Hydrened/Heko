@@ -1051,14 +1051,14 @@ export class ContextmenuManager {
         const windowRect: Rect = ContextmenuManager.getWindowRect();
         const menuRect: Rect = ContextmenuManager.getMenuRect(position, rowsCount);
 
-        return Functions.Maths.isPointInRect(windowRect, { x: menuRect.x + menuRect.w, y: 0 });
+        return Functions.Geometry.isPointInRect(windowRect, { x: menuRect.x + menuRect.w, y: 0 });
     }
 
     private static hasEnoughtSpaceY(position: Position, rowsCount: number): boolean {
         const windowRect: Rect = ContextmenuManager.getWindowRect();
         const menuRect: Rect = ContextmenuManager.getMenuRect(position, rowsCount);
 
-        return Functions.Maths.isPointInRect(windowRect, { x: 0, y: menuRect.y + menuRect.h });
+        return Functions.Geometry.isPointInRect(windowRect, { x: 0, y: menuRect.y + menuRect.h });
     }
 };
 

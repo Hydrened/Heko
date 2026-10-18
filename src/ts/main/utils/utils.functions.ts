@@ -4,10 +4,10 @@ import fsp from "fs/promises";
 import path from "path";
 import Crypto from "crypto";
 import { spawn, ChildProcessWithoutNullStreams } from "child_process";
-import { ID, ValueBase, Size, Resolve, Reject, MoveFile, FileError, ColorRGB, ExecuteCommandEvents, ApiResultError } from "./utils.types.js";
+import { ID, ValueBase, Position, Size, Rect, Resolve, Reject, MoveFile, FileError, ColorRGB, ExecuteCommandEvents, ApiResultError } from "./utils.types.js";
 
 namespace Functions {
-    const version: number = 1.7;
+    const version: number = 1.11;
 
     export namespace Maths {
         export function clamp(value: number, min: number, max: number): number {
@@ -41,6 +41,49 @@ namespace Functions {
         }
     };
 
+    export namespace Geometry {
+        export function getPosition<T extends { x: number, y: number }>(e: T): Position {
+            return { x: e.x, y: e.y };
+        }
+
+        export function getRect(rect: DOMRect): Rect {
+            return {
+                x: rect.x,
+                y: rect.y,
+                w: rect.width,
+                h: rect.height,
+            };
+        }
+
+        export function getRectCenter(rect: Rect): Position {
+            const centerX: number = rect.x + rect.w * 0.5;
+            const centerY: number = rect.y + rect.h * 0.5;
+
+            return { x: centerX, y: centerY };
+        }
+
+        export function getRectCenterX(rect: Rect): number {
+            return getRectCenter(rect).x;
+        }
+
+        export function getRectCenterY(rect: Rect): number {
+            return getRectCenter(rect).y;
+        }
+
+        export function isPointInRect(rect: Rect, point: Position): boolean {
+            const minX: number = rect.x;
+            const maxX: number = rect.x + rect.w;
+
+            const minY: number = rect.y;
+            const maxY: number = rect.y + rect.h;
+
+            const isInX: boolean = (point.x >= minX && point.x <= maxX);
+            const isInY: boolean = (point.y >= minY && point.y <= maxY);
+
+            return isInX && isInY;
+        }
+    };
+
     export namespace Files {
         export function formatBytes(bytes: number): string {
             const units = ["B", "KB", "MB", "GB", "TB"];
@@ -68,13 +111,13 @@ namespace Functions {
 
                 img.onload = () => {
                     resolve({
-                        width: img.naturalWidth,
-                        height: img.naturalHeight
+                        w: img.naturalWidth,
+                        h: img.naturalHeight
                     });
                 };
 
                 img.onerror = () => {
-                    resolve({ width: 0, height: 0 });
+                    resolve({ w: 0, h: 0 });
                 };
 
                 img.src = imageFileName;
@@ -87,13 +130,13 @@ namespace Functions {
 
                 video.onloadedmetadata = () => {
                     resolve({
-                        width: video.videoWidth,
-                        height: video.videoHeight
+                        w: video.videoWidth,
+                        h: video.videoHeight
                     });
                 };
 
                 video.onerror = () => {
-                    resolve({ width: 0, height: 0 });
+                    resolve({ w: 0, h: 0 });
                 };
 
                 video.src = videoFileName;

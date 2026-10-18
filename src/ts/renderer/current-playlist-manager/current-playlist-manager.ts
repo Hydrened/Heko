@@ -60,15 +60,15 @@ export default class CurrentPlaylistManager {
 
     // PUBLIC
     public async open(id: ID): Promise<void> {
-        await this.close();
+        // await this.close();
 
-        const getPlaylistReqRes: GetUserPlaylistApiResult = await Api.Playlists.get(id);
-        if (!getPlaylistReqRes.success) {
-            throw new Error(getPlaylistReqRes.error);
-        }
+        // const getPlaylistReqRes: GetUserPlaylistApiResult = await Api.Playlists.get(id);
+        // if (!getPlaylistReqRes.success) {
+        //     throw new Error(getPlaylistReqRes.error);
+        // }
 
-        this._playlist = getPlaylistReqRes.playlist;
-        this.load();
+        // this._playlist = getPlaylistReqRes.playlist;
+        // this.load();
     }
 
     public async close(): Promise<void> {

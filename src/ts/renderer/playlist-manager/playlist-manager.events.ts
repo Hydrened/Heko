@@ -1,4 +1,5 @@
 import PlaylistManager from "./playlist-manager.js";
+import PlaylistOrderingManager from "./playlist-manager.ordering.js";
 import Api from "./../utils/utils.api.js";
 import Elements from "../utils/utils.elements.js";
 import Functions from "./../utils/utils.functions.js";
@@ -6,19 +7,19 @@ import { App } from "./../app.js";
 import * as Create from "../utils/utils.create.js";
 
 export default class PlaylistEventsManager {
-    private static readonly movePlaylistModeHoldDuration: number = 750;
     private static readonly openedPlaylistParentClassName: string = "opened";
 
-    private focusedPlaylist: FocusedPlaylist | null = null;
+    private readonly orderingManager: PlaylistOrderingManager;
 
     // INIT
     public constructor(private readonly app: App, private readonly main: PlaylistManager) {
+        this.orderingManager = new PlaylistOrderingManager(this.app, this.main);
         this.initEvents();
     }
 
     private initEvents(): void {
-        window.addEventListener("mousemove", (e: MouseEvent) => this.onWindowMouseMove(e));
-        window.addEventListener("mouseup", (e: MouseEvent) => this.onWindowMouseUp(e));
+        window.addEventListener("mousemove", (e: MouseEvent) => this.orderingManager.onWindowMouseMove(e));
+        window.addEventListener("mouseup", (e: MouseEvent) => this.orderingManager.onWindowMouseUp(e));
 
         Elements.aside.playlists.addButton.addEventListener("click", () => Functions.Elements.antiSpam<void>(Elements.aside.playlists.addButton, async () => {
             await this.onAddPlaylistButtonClick();
@@ -56,6 +57,11 @@ export default class PlaylistEventsManager {
 
             const opened: boolean = playlist.elements.wrapperElement.classList.toggle(PlaylistEventsManager.openedPlaylistParentClassName);
 
+            const sourcePlaylist = this.playlists.find((p: PlaylistWithElements) => p.id === playlist.id);
+            if (sourcePlaylist) {
+                sourcePlaylist.opened = opened;
+            }
+
             const setPlaylistOpenedReqRes: SetUserPlaylistOpenedApiResult = await Api.Playlists.setOpened(playlist.id, opened);
             if (!setPlaylistOpenedReqRes.success) {
                 throw new Error(setPlaylistOpenedReqRes.error);
@@ -64,6 +70,10 @@ export default class PlaylistEventsManager {
         else {
             this.app.currentPlaylistManager.open(playlist.id);
         }
+    }
+
+    public onPlaylistContainerMouseDown(e: MouseEvent, playlist: PlaylistWithElements): void {
+        this.orderingManager.onPlaylistContainerMouseDown(e, playlist);
     }
 
     private async onPlaylistEdit(playlist: Playlist): Promise<void> {
@@ -111,84 +121,7 @@ export default class PlaylistEventsManager {
         await this.refresh();
     }
 
-    public onPlaylistWrapperMouseDown(e: MouseEvent, playlist: PlaylistWithElements): void {
-        const wrapperElement: HTMLElement | null = playlist.elements?.wrapperElement ?? null;
-        if (wrapperElement === null) {
-            return;
-        }
 
-        this.focusedPlaylist = {
-            id: playlist.id,
-            rect: Functions.Heko.getRect(wrapperElement.getBoundingClientRect()),
-            startTime: performance.now(),
-            timeout: setTimeout(() => this.onCanMoveFocusedPlaylist(playlist), PlaylistEventsManager.movePlaylistModeHoldDuration),
-        };
-    }
-
-    private onCanMoveFocusedPlaylist(playlist: PlaylistWithElements): void {
-        if (this.focusedPlaylist === null) {
-            return;
-        }
-
-        console.log(this.playlists.filter((p: PlaylistWithElements) => p.id !== playlist.id));
-
-        this.focusedPlaylist.playlists = this.playlists.filter((p: PlaylistWithElements) => p.id !== playlist.id).map<PlaylistWithRect>((p: PlaylistWithElements) => {
-            if (p.elements === undefined) {
-                throw new Error(`Could not get playlist rect: Playlist with id = "${p.id}" has no elements.`);
-            }
-
-            return {
-                ...p,
-                rect: Functions.Heko.getRect(p.elements.wrapperElement.getBoundingClientRect()),
-            };
-        });
-
-        // design
-    }
-
-    private onWindowMouseMove(e: MouseEvent): void {
-        if (this.focusedPlaylist === null) {
-            return;
-        }
-     
-        const mousePosition: Position = Functions.Heko.getPosition(e);
-
-        const isOnSamePlaylist: boolean = Functions.Maths.isPointInRect(this.focusedPlaylist.rect, mousePosition);
-        const hasMovedTooSoon: boolean = (performance.now() - this.focusedPlaylist.startTime) < PlaylistEventsManager.movePlaylistModeHoldDuration;
-
-        if (!isOnSamePlaylist && hasMovedTooSoon) {
-            clearTimeout(this.focusedPlaylist.timeout);
-            this.focusedPlaylist = null;
-            return;
-        }
-
-        if (this.focusedPlaylist.playlists === undefined) {
-            return;
-        }
-
-        // const index: number = this.focusedPlaylist.playlists.filter((playlist: PlaylistWithRect) => playlist.id !== this.focusedPlaylist?.id && (playlist.rect.y + playlist.rect.h * 0.5) < mousePosition.y).length;
-
-
-        // reorder les playlists et les envoyer au update position, le update position va update la position de toutes les playlists par leur index
-    }
-
-    private async onWindowMouseUp(e: MouseEvent): Promise<void> {
-        if (this.focusedPlaylist == null) {
-            return;
-        }
-
-        const hasReleasedTooSoon: boolean = (performance.now() - this.focusedPlaylist.startTime) < PlaylistEventsManager.movePlaylistModeHoldDuration;
-        if (hasReleasedTooSoon) {
-            clearTimeout(this.focusedPlaylist.timeout);
-            this.focusedPlaylist = null;
-            return;
-        }
-
-        // 1. récupérer la position et update la position de la plylist
-        // 2. await this.refresh();
-
-        this.focusedPlaylist = null;
-    }
 
     // CONTEXTMENU
     private onPlaylistsContainerContextmenu(position: Position): void {

@@ -1,7 +1,7 @@
 import "./utils.types.js";
 
 namespace Functions {
-    const version: number = 1.9;
+    const version: number = 1.11;
 
     export namespace Maths {
         export function clamp(value: number, min: number, max: number): number {
@@ -32,6 +32,36 @@ namespace Functions {
             }
 
             return res;
+        }
+    };
+
+    export namespace Geometry {
+        export function getPosition<T extends { x: number, y: number }>(e: T): Position {
+            return { x: e.x, y: e.y };
+        }
+
+        export function getRect(rect: DOMRect): Rect {
+            return {
+                x: rect.x,
+                y: rect.y,
+                w: rect.width,
+                h: rect.height,
+            };
+        }
+
+        export function getRectCenter(rect: Rect): Position {
+            const centerX: number = rect.x + rect.w * 0.5;
+            const centerY: number = rect.y + rect.h * 0.5;
+
+            return { x: centerX, y: centerY };
+        }
+
+        export function getRectCenterX(rect: Rect): number {
+            return getRectCenter(rect).x;
+        }
+
+        export function getRectCenterY(rect: Rect): number {
+            return getRectCenter(rect).y;
         }
 
         export function isPointInRect(rect: Rect, point: Position): boolean {
@@ -568,19 +598,6 @@ namespace Functions {
 
         export function isPlaylistParent(playlists: Playlist[], parentPlaylistId: ID, playlistId: ID): boolean {
             return isPlaylistChild(playlists, parentPlaylistId, playlistId);
-        }
-
-        export function getPosition<T extends { x: number, y: number }>(e: T): Position {
-            return { x: e.x, y: e.y };
-        }
-
-        export function getRect(rect: DOMRect): Rect {
-            return {
-                x: rect.x,
-                y: rect.y,
-                w: rect.width,
-                h: rect.height,
-            };
         }
     };
 };

@@ -275,8 +275,8 @@ type PlaylistWithElements = Playlist & {
     elements?: PlaylistElements;
 };
 
-type PlaylistWithRect = Playlist & {
-    rect: Rect;
+type PlaylistWithRect = PlaylistWithElements & {
+    readonly rect: Rect;
 };
 
 type PlaylistHierarchy = {
@@ -309,15 +309,15 @@ type Merged = {
 
 type Playlist = {
     readonly id: ID;
-    parentId: ID;
-    name: string;
-    position: number;
-    thumbnailFileName: string;
+    readonly parentId: ID;
+    readonly name: string;
+    readonly position: number;
+    readonly thumbnailFileName: string;
     opened: boolean;
     readonly creationDate: string;
-    songIds: ID[];
-    mergedIds: ID[];
-    childIds: ID[];
+    readonly songIds: ID[];
+    readonly mergedIds: ID[];
+    readonly childIds: ID[];
 };
 
 type ManagePlaylistModalDefaultValues = {
@@ -335,8 +335,19 @@ type ManagePlaylistModalReturntValues = {
 
 type FocusedPlaylist = {
     readonly id: ID;
+    readonly defaultElement: HTMLElement;
+    readonly movingElement: HTMLElement;
+    readonly rect: Rect;
+    readonly offset: Position;
+    readonly startTime: number;
+    startTimeout: ReturnType<typeof setTimeout> | null;
+    playlistRects?: PlaylistWithRect[];
+};
+
+type ClosedParentPlaylistHover = {
+    readonly id: ID;
+    readonly element: HTMLElement;
     readonly rect: Rect;
     readonly startTime: number;
-    readonly timeout: ReturnType<typeof setTimeout>;
-    playlists?: PlaylistWithRect[];
+    readonly startTimeout: ReturnType<typeof setTimeout>;
 };

@@ -2,10 +2,17 @@ import { ChildProcessWithoutNullStreams } from "child_process";
 
 export type ID = number;
 
-export type Size = {
-    width: number;
-    height: number;
+export type Position = {
+    x: number;
+    y: number;
 };
+
+export type Size = {
+    w: number;
+    h: number;
+};
+
+export type Rect = Position & Size;
 
 export type ColorRGB = {
     r: number;
