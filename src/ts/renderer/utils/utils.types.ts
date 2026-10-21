@@ -85,6 +85,7 @@ type MergePlaylistInApiResult = ApiResult;
 type RemoveUserPlaylistApiResult = ApiResult;
 type RemovePlaylistFromMergedUserApiResult = ApiResult;
 type SetUserPlaylistOpenedApiResult = ApiResult;
+type SetUserPlaylistPositionApiResult = ApiResult;
 
 // API-RESULT.TEMP
 type ClearTempApiResult = ApiResult;
@@ -266,9 +267,10 @@ type SmallModalOption<T> = {
 type PlaylistElements = {
     readonly wrapperElement: HTMLLIElement;
     readonly containerElement: HTMLElement;
-    readonly childrenContainerELement: HTMLUListElement;
+    readonly childrenContainerElement: HTMLUListElement;
     readonly nameElement: HTMLParagraphElement;
     readonly childCountElement: HTMLParagraphElement;
+    readonly moveInZoneElement?: HTMLElement;
 };
 
 type PlaylistWithElements = Playlist & {
@@ -276,12 +278,13 @@ type PlaylistWithElements = Playlist & {
 };
 
 type PlaylistWithRect = PlaylistWithElements & {
-    readonly rect: Rect;
+    readonly containerRect: Rect;
+    readonly moveInZoneRect?: Rect;
 };
 
-type PlaylistHierarchy = {
-    readonly playlist: PlaylistWithElements;
-    readonly children: PlaylistHierarchy[];
+type PlaylistHierarchy<T extends Playlist> = {
+    readonly playlist: T;
+    readonly children: PlaylistHierarchy<T>[];
 };
 
 type Artist = {
@@ -333,21 +336,30 @@ type ManagePlaylistModalReturntValues = {
     readonly thumbnailEditType: ThumbnailEditType;
 };
 
+type TempFocusedPlaylist = {
+    readonly playlist: PlaylistWithElements;
+    readonly mousePositionStart: Position;
+};
+
 type FocusedPlaylist = {
     readonly id: ID;
     readonly defaultElement: HTMLElement;
     readonly movingElement: HTMLElement;
     readonly rect: Rect;
     readonly offset: Position;
-    readonly startTime: number;
-    startTimeout: ReturnType<typeof setTimeout> | null;
-    playlistRects?: PlaylistWithRect[];
+    playlistRects: PlaylistWithRect[];
 };
 
-type ClosedParentPlaylistHover = {
+type PlaylistHoverHandler = {
     readonly id: ID;
     readonly element: HTMLElement;
     readonly rect: Rect;
     readonly startTime: number;
     readonly startTimeout: ReturnType<typeof setTimeout>;
+};
+
+type MovePlaylistPositionData = {
+    readonly id: ID;
+    readonly parentId: ID;
+    readonly position: number;
 };

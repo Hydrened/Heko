@@ -1,18 +1,40 @@
 import PlaylistManager from "./playlist-manager.js";
+import Api from "./../utils/utils.api.js";
+import Elements from "./../utils/utils.elements.js";
 import Functions from "./../utils/utils.functions.js";
 import { App } from "./../app.js";
 
 export default class PlaylistOrderingManager {
+    private static readonly moveingMoveClassName: string = "moving-mode";
+    
     private static readonly movingPlaylistClassName: string = "moving";
+    private static readonly movingPlaylistWillMoveInClassName: string = "will-move-in";
+
     private static readonly hoveredPlaylistTopIndicationClassName: string = "move-top-indication";
     private static readonly hoveredPlaylistBottomIndicationClassName: string = "move-bottom-indication";
     private static readonly hoveredClosedParentClassName: string = "move-hover-opening";
-    private static readonly holdDuration: number = 750;
 
+    private static readonly focusedPlaylistMinMoveDistance: number = 30;
+    private static readonly playlistHoldDuration: number = 750;
+
+    private readonly elements = Elements.aside;
+
+    private tempFocusedPlaylist: TempFocusedPlaylist | null = null;
     private focusedPlaylist: FocusedPlaylist | null = null;
-    private closedParentPlaylistHover: ClosedParentPlaylistHover | null = null;
+
+    private closedParentPlaylistHover: PlaylistHoverHandler | null = null;
 
     public constructor(private readonly app: App, private readonly main: PlaylistManager) {}  
+
+    public onWindowKeydown(e: KeyboardEvent): void {
+        if (e.key !== "Escape" || this.focusedPlaylist === null) {
+            return;
+        }
+
+        this.cancelFocusedPlaylist();
+        this.cancelClosedParentPlaylistHover();
+        this.removeMoveIndications();
+    }
 
     public onPlaylistContainerMouseDown(e: MouseEvent, playlist: PlaylistWithElements): void {
         const containerElement: HTMLElement | null = playlist.elements?.containerElement ?? null;
@@ -20,9 +42,90 @@ export default class PlaylistOrderingManager {
             return;
         }
 
+        this.tempFocusedPlaylist = {
+            playlist: playlist,
+            mousePositionStart: Functions.Geometry.getPosition(e),
+        };
+    }
+
+    public onWindowMouseMove(e: MouseEvent): void {
         const mousePosition: Position = Functions.Geometry.getPosition(e);
-        const rect: Rect = Functions.Geometry.getRect(containerElement.getBoundingClientRect());
-        const offset: Position = { x: mousePosition.x - rect.x, y: mousePosition.y - rect.y - (mousePosition.y - rect.y) * 1 / 3 };
+
+        if (this.tempFocusedPlaylist !== null) {
+            this.initFocusedPlaylist(mousePosition);
+        }
+
+        if (this.focusedPlaylist === null) {
+            return;
+        }
+
+        this.refreshFocusedPlaylistPosition(mousePosition);
+        this.cancelClosedParentHoverIfLeft(mousePosition);
+
+        this.initClosedParentPlaylistHoverIfNeeded(mousePosition);
+        this.setMoveIndications(mousePosition);
+    }
+
+    public async onWindowMouseUp(e: MouseEvent): Promise<void> {
+        this.removeMoveIndications();
+
+        if (this.closedParentPlaylistHover !== null) {
+            this.cancelClosedParentPlaylistHover();
+        }
+
+        if (this.focusedPlaylist === null && this.tempFocusedPlaylist !== null) {
+            this.tempFocusedPlaylist = null;
+            return;
+        }
+
+        if (this.focusedPlaylist == null) {
+            return;
+        }
+        
+        const mousePosition: Position = Functions.Geometry.getPosition(e);
+        const hoveredPlaylist: PlaylistWithRect | null = this.getHoveredPlaylist(mousePosition);
+        if (hoveredPlaylist === null) {
+            this.cancelFocusedPlaylist();
+            return;
+        }
+        
+        if (hoveredPlaylist.id === this.focusedPlaylist.id) {
+            this.cancelFocusedPlaylist();
+            return;
+        }
+
+        const moveData: MovePlaylistPositionData = this.getMovePlaylistPositionData(mousePosition, hoveredPlaylist);
+        this.cancelFocusedPlaylist();
+        
+        const updatePlaylistPositionReqRes: SetUserPlaylistPositionApiResult = await Api.Playlists.setPosition(moveData.id, moveData.parentId, moveData.position);
+        if (!updatePlaylistPositionReqRes.success) {
+            throw new Error(updatePlaylistPositionReqRes.error);
+        }
+
+        await this.refresh();
+    }
+
+    // INIT
+    private initFocusedPlaylist(mousePosition: Position): void {
+        if (this.tempFocusedPlaylist === null) {
+            return;
+        }
+
+        const distance: number = Functions.Geometry.getDistance(this.tempFocusedPlaylist.mousePositionStart, mousePosition);
+        if (distance < PlaylistOrderingManager.focusedPlaylistMinMoveDistance) {
+            return;
+        }
+
+        const playlist: PlaylistWithElements = this.tempFocusedPlaylist.playlist;
+
+        if (playlist.elements === undefined) {
+            throw new Error(`Could not init focused playlist: Playlist with id = "${playlist.id}" has no elements.`);
+        }
+
+        this.elements.playlists.container.classList.add(PlaylistOrderingManager.moveingMoveClassName);
+
+        const rect: Rect = Functions.Geometry.getRect(playlist.elements.containerElement.getBoundingClientRect());
+        const offset: Position = { x: this.tempFocusedPlaylist.mousePositionStart.x - rect.x, y: this.tempFocusedPlaylist.mousePositionStart.y - rect.y - (this.tempFocusedPlaylist.mousePositionStart.y - rect.y) * 1 / 3 };
 
         const playlistContainerElement: HTMLElement = document.createElement("div");
         playlistContainerElement.classList.add("moving-playlist-container");
@@ -40,167 +143,30 @@ export default class PlaylistOrderingManager {
 
         this.focusedPlaylist = {
             id: playlist.id,
-            defaultElement: containerElement,
+            defaultElement: playlist.elements.wrapperElement,
             movingElement: playlistContainerElement,
             rect: rect,
             offset: offset,
-            startTime: performance.now(),
-            startTimeout: setTimeout(() => {
-                containerElement.classList.add(PlaylistOrderingManager.movingPlaylistClassName);
-                this.refreshFocusedPlaylistRects();
-                this.refreshFocusedPlaylistPosition(mousePosition);
-            }, PlaylistOrderingManager.holdDuration),
+            playlistRects: [],
         };
-    }
 
-    public onWindowMouseMove(e: MouseEvent): void {
-        if (this.focusedPlaylist === null) {
-            return;
+        if (playlist.childIds.length > 0 && playlist.opened) {
+            this.main.getEventManager().onPlaylistContainerClick(playlist);
         }
 
-        const mousePosition: Position = Functions.Geometry.getPosition(e);
-
+        playlist.elements.wrapperElement.classList.add(PlaylistOrderingManager.movingPlaylistClassName);
+        this.refreshFocusedPlaylistRects();
         this.refreshFocusedPlaylistPosition(mousePosition);
-        this.cancelClosedParentHoverIfLeft(mousePosition);
 
-        if (!this.isFocusedPlaylistHoldValid(mousePosition)) {
-            this.cancelFocusedPlaylist();
-            return;
-        }
-
-        this.startClosedParentHoverIfNeeded(mousePosition);
-        this.setMoveIndications(mousePosition);
+        this.tempFocusedPlaylist = null;
     }
 
-    public async onWindowMouseUp(e: MouseEvent): Promise<void> {
-        if (this.closedParentPlaylistHover !== null) {
-            this.cancelClosedParentHover();
-        }
-
-        if (this.focusedPlaylist == null) {
-            return;
-        }
-
-        const hasReleasedTooSoon: boolean = (performance.now() - this.focusedPlaylist.startTime) < PlaylistOrderingManager.holdDuration;
-        if (hasReleasedTooSoon) {
-            this.cancelFocusedPlaylist();
-            return;
-        }
-
-        if (this.focusedPlaylist.playlistRects === undefined) {
-            return;
-        }
-
-        const mousePosition: Position = Functions.Geometry.getPosition(e);
-        this.removeMoveIndications();
-
-        const hoveredPlaylist: PlaylistWithRect | null = this.getHoveredPlaylist(mousePosition);
-        if (hoveredPlaylist === null) {
-            return;
-        }
-
-        const visiblePlaylists: PlaylistWithRect[] = this.getVisiblePlaylists();
-
-        const hoveredPlaylistIndex: number = visiblePlaylists.findIndex((p: PlaylistWithRect) => p.id === hoveredPlaylist.id);
-        if (hoveredPlaylistIndex === -1) {
-            throw new Error(`Could not update playlist position: Playlist with id = "${hoveredPlaylist.id}" is null.`);
-        }
-        
-        // const hoveredOnTop: boolean = Functions.Geometry.getRectCenterY(hoveredPlaylist.rect) > mousePosition.y;
-        // const isParentPlaylist: boolean = (hoveredPlaylist.childIds.length > 0);
-
-        // const siblingPlaylistIndex: number = (isParentPlaylist && !hoveredOnTop) ? hoveredPlaylistIndex + 1 : (hoveredOnTop) ? hoveredPlaylistIndex - 1 : hoveredPlaylistIndex + 1;
-        // const siblingPlaylist: PlaylistWithRect | null = visiblePlaylists.find((p: PlaylistWithRect, index: number) => index === siblingPlaylistIndex) ?? null;
-
-        // const haveDifferentParent: boolean = (hoveredPlaylist.parentId !== siblingPlaylist?.parentId);
-        // const parentId: ID = (haveDifferentParent ? ((isParentPlaylist) ? (siblingPlaylist?.parentId ?? -1) : hoveredPlaylist.parentId) : hoveredPlaylist.parentId);
-
-        // const hoveredPosition: number = hoveredPlaylist.position;
-        // const siblingPosition: number = (haveDifferentParent) ? (isParentPlaylist ? 0 : 2147483647) : siblingPlaylist?.position ?? (hoveredOnTop ? 0 : 2147483647);
-
-        // const position: number = ((hoveredPosition + siblingPosition) * 0.5);
-        // // console.log(position, parentId);
-
-        // console.log(siblingPosition);
-        
-
-
-
-        this.cancelFocusedPlaylist();
-        // await this.refresh();
-    }
-
-    // OTHER
-    private static isStillInsideRect(mousePosition: Position, rect: Rect, startTime: number): boolean {
-        const isOnSameRect: boolean = Functions.Geometry.isPointInRect(rect, mousePosition);
-        const hasMovedTooSoon: boolean = ((performance.now() - startTime) < PlaylistOrderingManager.holdDuration);
-
-        if (!isOnSameRect && hasMovedTooSoon) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private isFocusedPlaylistHoldValid(mousePosition: Position): boolean {
-        if (this.focusedPlaylist === null) {
-            return false;
-        }
-
-        const isStillInsideRect: boolean = !PlaylistOrderingManager.isStillInsideRect(mousePosition, this.focusedPlaylist.rect, this.focusedPlaylist.startTime);
-        if (this.focusedPlaylist.startTimeout !== null && isStillInsideRect) {
-            return false;
-        }
-
-        return true;
-    }
-
-    private cancelClosedParentHoverIfLeft(mousePosition: Position): void {
-        if (this.closedParentPlaylistHover === null) {
-            return;
-        }
-
-        const isStillInsideRect: boolean = PlaylistOrderingManager.isStillInsideRect(mousePosition, this.closedParentPlaylistHover.rect, this.closedParentPlaylistHover.startTime);
-        if (!isStillInsideRect) {
-            this.cancelClosedParentHover();
-        }
-    }
-
-    private refreshFocusedPlaylistRects(): void {
+    private initClosedParentPlaylistHoverIfNeeded(mousePosition: Position): void {
         if (this.focusedPlaylist === null) {
             return;
         }
 
-        this.focusedPlaylist.startTimeout = null;
-        this.cancelClosedParentHover();
-
-        this.focusedPlaylist.playlistRects = this.getVisiblePlaylists();
-    }
-
-    private refreshFocusedPlaylistPosition(mousePosition: Position): void {
-        if (this.focusedPlaylist === null) {
-            return;
-        }
-
-        if (this.focusedPlaylist.startTimeout !== null) {
-            return;
-        }
-
-        const focusedPlaylistElementPosition: Position = {
-            x: mousePosition.x - this.focusedPlaylist.offset.x,
-            y: mousePosition.y - this.focusedPlaylist.offset.y,
-        };
-
-        this.focusedPlaylist.movingElement.style.left = `${focusedPlaylistElementPosition.x}px`;
-        this.focusedPlaylist.movingElement.style.top = `${focusedPlaylistElementPosition.y}px`;
-    }
-
-    private startClosedParentHoverIfNeeded(mousePosition: Position): void {
-        if (this.focusedPlaylist === null) {
-            return;
-        }
-
-        const hoveredPlaylist: PlaylistWithRect | null = this.focusedPlaylist.playlistRects?.find((p: PlaylistWithRect) => Functions.Geometry.isPointInRect(p.rect, mousePosition)) ?? null;
+        const hoveredPlaylist: PlaylistWithRect | null = this.focusedPlaylist.playlistRects.find((p: PlaylistWithRect) => Functions.Geometry.isPointInRect(p.containerRect, mousePosition)) ?? null;
         if (hoveredPlaylist === null) {
             return;
         }
@@ -225,80 +191,49 @@ export default class PlaylistOrderingManager {
         this.closedParentPlaylistHover = {
             id: hoveredPlaylist.id,
             element: hoveredPlaylist.elements.containerElement,
-            rect: hoveredPlaylist.rect,
+            rect: hoveredPlaylist.containerRect,
             startTime: performance.now(),
             startTimeout: setTimeout(() => {
                 this.main.getEventManager().onPlaylistContainerClick(hoveredPlaylist);
                 this.refreshFocusedPlaylistRects();
-            }, PlaylistOrderingManager.holdDuration),
+            }, PlaylistOrderingManager.playlistHoldDuration),
         };
     }
 
-    private getVisiblePlaylists(): PlaylistWithRect[] {
-        console.log(this.playlists);
-
-        const playlistsById: Map<number, PlaylistWithElements> = new Map(this.playlists.map((p: PlaylistWithElements): [number, PlaylistWithElements] => [p.id, p]));
-
-        return this.playlists.filter((playlist: PlaylistWithElements): boolean => {
-            let current: PlaylistWithElements = playlist;
-
-            while (current.parentId !== -1) {
-                const parent: PlaylistWithElements | undefined = playlistsById.get(current.parentId);
-
-                if (parent === undefined || !parent.opened) {
-                    return false;
-                }
-
-                current = parent;
-            }
-
-            return true;
-        }).map<PlaylistWithRect>((p: PlaylistWithElements) => {
-            if (p.elements === undefined) {
-                throw new Error(`Could not get playlists rectangles: Playlist with id = "${p.id}" has no elements.`);
-            }
-
-            return { ...p, rect: Functions.Geometry.getRect(p.elements.containerElement.getBoundingClientRect()) };
-        }).sort((a: PlaylistWithRect, b: PlaylistWithRect) => a.rect.y - b.rect.y);
-    }
-
-    private getHoveredPlaylist(mousePosition: Position): PlaylistWithRect | null {
+    // REFRESH
+    private refreshFocusedPlaylistRects(): void {
         if (this.focusedPlaylist === null) {
-            return null;
-        }
-
-        return (this.focusedPlaylist.playlistRects ?? []).reduce((acc: PlaylistWithRect | null, p: PlaylistWithRect) => {
-            if (acc === null) {
-                return p;
-            }
-
-            const accDistance: number = Math.abs(Functions.Geometry.getRectCenterY(acc.rect) - mousePosition.y);
-            const pDistance: number = Math.abs(Functions.Geometry.getRectCenterY(p.rect) - mousePosition.y);
-
-            return (accDistance < pDistance) ? acc : p;
-        }, null);
-    }
-
-    private setMoveIndications(mousePosition: Position): void {
-        this.removeMoveIndications();
-
-        const hoveredPlaylist: PlaylistWithRect | null = this.getHoveredPlaylist(mousePosition);
-        if (hoveredPlaylist === null) {
             return;
         }
 
-        const onTop: boolean = Functions.Geometry.getRectCenterY(hoveredPlaylist.rect) > mousePosition.y;
-
-        if (hoveredPlaylist.elements === undefined) {
-            throw new Error(`Could not set move indications: Hovered playlist with id = "${hoveredPlaylist.id}" has no elements.`);
-        }
-        
-        const className: string = (onTop) ? PlaylistOrderingManager.hoveredPlaylistTopIndicationClassName : PlaylistOrderingManager.hoveredPlaylistBottomIndicationClassName;
-        hoveredPlaylist.elements.containerElement.classList.add(className);
+        this.cancelClosedParentPlaylistHover();
+        this.focusedPlaylist.playlistRects = this.getVisiblePlaylists();
     }
 
-    private removeMoveIndications(): void {
-        this.playlists.forEach((p: PlaylistWithElements) => p.elements?.containerElement.classList.remove(PlaylistOrderingManager.hoveredPlaylistTopIndicationClassName, PlaylistOrderingManager.hoveredPlaylistBottomIndicationClassName));
+    private refreshFocusedPlaylistPosition(mousePosition: Position): void {
+        if (this.focusedPlaylist === null) {
+            return;
+        }
+
+        const focusedPlaylistElementPosition: Position = {
+            x: mousePosition.x - this.focusedPlaylist.offset.x,
+            y: mousePosition.y - this.focusedPlaylist.offset.y,
+        };
+
+        this.focusedPlaylist.movingElement.style.left = `${focusedPlaylistElementPosition.x}px`;
+        this.focusedPlaylist.movingElement.style.top = `${focusedPlaylistElementPosition.y}px`;
+    }
+
+    // CANCEL
+    private cancelClosedParentHoverIfLeft(mousePosition: Position): void {
+        if (this.closedParentPlaylistHover === null) {
+            return;
+        }
+
+        const isStillInsideRect: boolean = PlaylistOrderingManager.isStillInsideRect(mousePosition, this.closedParentPlaylistHover.rect, this.closedParentPlaylistHover.startTime);
+        if (!isStillInsideRect) {
+            this.cancelClosedParentPlaylistHover();
+        }
     }
 
     private cancelFocusedPlaylist(): void {
@@ -306,17 +241,14 @@ export default class PlaylistOrderingManager {
             return;
         }
 
-        if (this.focusedPlaylist.startTimeout !== null) {
-            clearTimeout(this.focusedPlaylist.startTimeout);
-        }
+        this.elements.playlists.container.classList.remove(PlaylistOrderingManager.moveingMoveClassName);
 
         this.focusedPlaylist.defaultElement.classList.remove(PlaylistOrderingManager.movingPlaylistClassName);
         this.focusedPlaylist.movingElement.remove();
-        this.focusedPlaylist.startTimeout = null;
         this.focusedPlaylist = null;
     }
 
-    private cancelClosedParentHover(): void {
+    private cancelClosedParentPlaylistHover(): void {
         if (this.closedParentPlaylistHover === null) {
             return;
         }
@@ -326,9 +258,160 @@ export default class PlaylistOrderingManager {
         this.closedParentPlaylistHover = null;
     }
 
+    // OTHER
+    private static isStillInsideRect(mousePosition: Position, rect: Rect, startTime: number): boolean {
+        const isOnSameRect: boolean = Functions.Geometry.isPointInRect(rect, mousePosition);
+        const hasMovedTooSoon: boolean = ((performance.now() - startTime) < PlaylistOrderingManager.playlistHoldDuration);
+
+        if (!isOnSameRect && hasMovedTooSoon) {
+            return false;
+        }
+
+        return true;
+    }
+
+    private getVisiblePlaylists(): PlaylistWithRect[] {
+        const getFilteredPlaylists = (acc: PlaylistWithElements[], hierarchy: PlaylistHierarchy<PlaylistWithElements>[]): PlaylistWithElements[] => {
+            hierarchy.forEach((h: PlaylistHierarchy<PlaylistWithElements>) => {
+                acc.push(h.playlist);
+
+                if (h.playlist.opened) {
+                    acc = getFilteredPlaylists(acc, h.children);
+                }
+            });
+
+            return acc;
+        };
+
+        return getFilteredPlaylists([], this.playlistHierarchy).map<PlaylistWithRect>((p: PlaylistWithElements) => {
+            if (p.elements === undefined) {
+                throw new Error(`Could not get playlists rectangles: Playlist with id = "${p.id}" has no elements.`);
+            }
+
+            let moveInZoneRect: Rect | undefined = undefined;
+            if (p.elements.moveInZoneElement !== undefined) {
+                moveInZoneRect = Functions.Geometry.getRect(p.elements.moveInZoneElement.getBoundingClientRect());
+            }
+
+            return { 
+                ...p,
+                containerRect: Functions.Geometry.getRect(p.elements.containerElement.getBoundingClientRect()),
+                moveInZoneRect: moveInZoneRect,
+            };
+        }).sort((a: PlaylistWithRect, b: PlaylistWithRect) => a.containerRect.y - b.containerRect.y);
+    }
+
+    private getHoveredPlaylist(mousePosition: Position): PlaylistWithRect | null {
+        if (this.focusedPlaylist === null) {
+            return null;
+        }
+
+        return this.focusedPlaylist.playlistRects.reduce((acc: PlaylistWithRect | null, p: PlaylistWithRect) => {
+            if (acc === null) {
+                return p;
+            }
+
+            const accDistance: number = Math.abs(Functions.Geometry.getRectCenterY(acc.containerRect) - mousePosition.y);
+            const pDistance: number = Math.abs(Functions.Geometry.getRectCenterY(p.containerRect) - mousePosition.y);
+
+            return (accDistance < pDistance) ? acc : p;
+        }, null);
+    }
+
+    private getMovePlaylistPositionData(mousePosition: Position, hoveredPlaylist: PlaylistWithRect): MovePlaylistPositionData {
+        const errorBase: string = "Could not get move playlist position data";
+
+        if (this.focusedPlaylist === null) {
+            throw new Error(`${errorBase}: Focused playlist is null.`);
+        }
+
+        if (hoveredPlaylist.elements === undefined) {
+            throw new Error(`${errorBase}: Hovered playlist with id = "${hoveredPlaylist.id}" has no elements.`);
+        }
+
+        const playlistId: ID = this.focusedPlaylist.id;
+        const moveIn: boolean = (hoveredPlaylist.moveInZoneRect === undefined) ? false : (hoveredPlaylist.id === playlistId) ? false : Functions.Geometry.isPointInRect(hoveredPlaylist.moveInZoneRect, mousePosition);
+
+        let parentId: number = -1;
+        let position: number = -1;
+
+        if (!moveIn) {
+            const hoveredOnTop: boolean = Functions.Geometry.getRectCenterY(hoveredPlaylist.containerRect) > mousePosition.y;
+            const isOpenedParentPlaylist: boolean = (hoveredPlaylist.childIds.length > 0 && hoveredPlaylist.opened && !hoveredOnTop);
+
+            parentId = (isOpenedParentPlaylist ? hoveredPlaylist.id : hoveredPlaylist.parentId);
+
+            const hoveredScopePlaylists: Playlist[] = this.playlists.filter((p: Playlist) => p.parentId === parentId && p.id !== playlistId).sort((a: Playlist, b: Playlist) => a.position - b.position);
+            
+            const hoveredPlaylistIndex: number = hoveredScopePlaylists.findIndex((p: Playlist) => p.id === hoveredPlaylist.id);
+            const siblingPlaylistIndex: number = (hoveredPlaylistIndex === -1) ? 0 : (hoveredOnTop ? hoveredPlaylistIndex - 1 : hoveredPlaylistIndex + 1);
+
+            const firstIndex: number = Math.min(hoveredPlaylistIndex, siblingPlaylistIndex);
+            const secondIndex: number = Math.max(hoveredPlaylistIndex, siblingPlaylistIndex);
+
+            const firstPlaylist: Playlist | null = hoveredScopePlaylists[firstIndex] ?? null;
+            const secondPlaylist: Playlist | null = hoveredScopePlaylists[secondIndex] ?? null;
+
+            const firstPosition: number = firstPlaylist?.position ?? 0;
+            const secondPosition: number = secondPlaylist?.position ?? 2_147_483_647;
+
+            position = (firstPosition + secondPosition) * 0.5;
+        }
+        else {
+            parentId = hoveredPlaylist.id;
+            position = 1;
+        }
+
+        return { 
+            id: playlistId,
+            parentId: parentId,
+            position: position,
+        };
+    }
+
+    private setMoveIndications(mousePosition: Position): void {
+        this.removeMoveIndications();
+
+        if (this.focusedPlaylist === null) {
+            return;
+        }
+
+        const hoveredPlaylist: PlaylistWithRect | null = this.getHoveredPlaylist(mousePosition);
+        if (hoveredPlaylist === null) {
+            return;
+        }
+
+        if (hoveredPlaylist.elements === undefined) {
+            throw new Error(`Could not set move indications: Hovered playlist with id = "${hoveredPlaylist.id}" has no elements.`);
+        }
+
+        const isInMoveInZone: boolean = (hoveredPlaylist.moveInZoneRect == undefined) ? false : Functions.Geometry.isPointInRect(hoveredPlaylist.moveInZoneRect, mousePosition);
+        if (isInMoveInZone) {
+            this.focusedPlaylist.movingElement.classList.add(PlaylistOrderingManager.movingPlaylistWillMoveInClassName);
+            return;
+        }
+        
+        const onTop: boolean = Functions.Geometry.getRectCenterY(hoveredPlaylist.containerRect) > mousePosition.y;
+        const className: string = (onTop) ? PlaylistOrderingManager.hoveredPlaylistTopIndicationClassName : PlaylistOrderingManager.hoveredPlaylistBottomIndicationClassName;
+        hoveredPlaylist.elements.containerElement.classList.add(className);
+    }
+
+    private removeMoveIndications(): void {
+        this.focusedPlaylist?.movingElement.classList.remove(PlaylistOrderingManager.movingPlaylistWillMoveInClassName);
+
+        this.playlists.forEach((p: PlaylistWithElements) => p.elements?.containerElement.classList.remove(
+            PlaylistOrderingManager.hoveredPlaylistTopIndicationClassName,
+            PlaylistOrderingManager.hoveredPlaylistBottomIndicationClassName,
+        ));
+    }
+
     // MAIN SHORTCUTS
     private get playlists(): PlaylistWithElements[] {
         return this.main.getPlaylists();
+    }
+
+    private get playlistHierarchy(): PlaylistHierarchy<PlaylistWithElements>[] {
+        return this.main.getPlaylistHierarchy();
     }
 
     private async refresh(): Promise<void> {

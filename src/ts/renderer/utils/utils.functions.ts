@@ -1,7 +1,7 @@
 import "./utils.types.js";
 
 namespace Functions {
-    const version: number = 1.11;
+    const version: number = 1.12;
 
     export namespace Maths {
         export function clamp(value: number, min: number, max: number): number {
@@ -62,6 +62,10 @@ namespace Functions {
 
         export function getRectCenterY(rect: Rect): number {
             return getRectCenter(rect).y;
+        }
+
+        export function getDistance(a: Position, b: Position): number {
+            return Math.hypot(b.x - a.x, b.y - a.y);
         }
 
         export function isPointInRect(rect: Rect, point: Position): boolean {

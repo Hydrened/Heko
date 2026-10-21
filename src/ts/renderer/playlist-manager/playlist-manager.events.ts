@@ -18,6 +18,7 @@ export default class PlaylistEventsManager {
     }
 
     private initEvents(): void {
+        window.addEventListener("keydown", (e: KeyboardEvent) => this.orderingManager.onWindowKeydown(e));
         window.addEventListener("mousemove", (e: MouseEvent) => this.orderingManager.onWindowMouseMove(e));
         window.addEventListener("mouseup", (e: MouseEvent) => this.orderingManager.onWindowMouseUp(e));
 

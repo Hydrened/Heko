@@ -31,14 +31,18 @@ export default class PlaylistManager {
         this.playlists = getUserPlaylistsReqRes.playlists;
     }
 
-    private createPlaylists(parentElement: HTMLUListElement, hierarchies: PlaylistHierarchy[], parentIndex: number = 0): void {
-        hierarchies.forEach((hierarchy: PlaylistHierarchy) => parentIndex = this.createPlaylist(parentElement, hierarchy, parentIndex));
+    private createPlaylists(parentElement: HTMLUListElement, hierarchies: PlaylistHierarchy<PlaylistWithElements>[], parentIndex: number = 0): void {
+        hierarchies.forEach((hierarchy: PlaylistHierarchy<PlaylistWithElements>) => parentIndex = this.createPlaylist(parentElement, hierarchy, parentIndex));
     }
 
-    private createPlaylist(parentElement: HTMLUListElement, hierarchy: PlaylistHierarchy, index: number): number {
+    private createPlaylist(parentElement: HTMLUListElement, hierarchy: PlaylistHierarchy<PlaylistWithElements>, index: number): number {
         const playlist: PlaylistWithElements = hierarchy.playlist;
 
         const hasChildren: boolean = (hierarchy.children.length !== 0);
+        const isMergeContainer: boolean = (playlist.mergedIds.length !== 0);
+        const isSongContainer: boolean = (playlist.songIds.length !== 0);
+        const isEmpty: boolean = (!hasChildren && !isMergeContainer && !isSongContainer);
+
         const hasToBeAnimated: boolean = (playlist.elements === undefined);
 
         const wrapperElement: HTMLLIElement = document.createElement("li");
@@ -77,12 +81,29 @@ export default class PlaylistManager {
         childrenContainerElement.classList.add("playlist-children-container");
         wrapperElement.appendChild(childrenContainerElement);
 
+        let moveInZoneElement: HTMLElement | undefined = undefined;
+        if (hasChildren) {
+            const systrayElement: HTMLElement = document.createElement("div");
+            systrayElement.classList.add("systray");
+            systrayElement.textContent = "❯";
+            containerElement.appendChild(systrayElement);
+
+            this.createPlaylists(childrenContainerElement, hierarchy.children, -1);
+        }
+        else if (isEmpty) {
+            moveInZoneElement = document.createElement("div");
+            moveInZoneElement.classList.add("move-in-zone");
+            moveInZoneElement.textContent = "Move in";
+            containerElement.appendChild(moveInZoneElement);
+        }
+
         playlist.elements = {
             wrapperElement: wrapperElement,
             containerElement: containerElement,
-            childrenContainerELement: childrenContainerElement,
+            childrenContainerElement: childrenContainerElement,
             nameElement: nameElement,
             childCountElement: childrenCountElement,
+            moveInZoneElement: moveInZoneElement,
         };
 
         if (playlist.opened) {
@@ -90,7 +111,7 @@ export default class PlaylistManager {
         }
 
         if (hasToBeAnimated) {
-            index++;
+            index = (index < 0) ? index : index + 1;
             
             const animationDelay: number = index * PlaylistManager.defaultAnimationDelay;
             setTimeout(() => wrapperElement.classList.add(PlaylistManager.visibleClassName), animationDelay);
@@ -99,56 +120,10 @@ export default class PlaylistManager {
             wrapperElement.classList.add(PlaylistManager.visibleClassName);
         }
 
-        if (hasChildren) {
-            const systrayElement: HTMLElement = document.createElement("div");
-            systrayElement.classList.add("systray");
-            systrayElement.textContent = "❯";
-            containerElement.appendChild(systrayElement);
-
-            this.createPlaylists(playlist.elements.childrenContainerELement, hierarchy.children, index);
-        }
-
         return index;
     }
 
     // OTHER
-    private static getSortedPlaylists(playlists: Playlist[]): PlaylistHierarchy[] {
-        const hierarchyMap: Map<ID, PlaylistHierarchy> = new Map();
-        const roots: PlaylistHierarchy[] = [];
-
-        for (const playlist of playlists) {
-            hierarchyMap.set(playlist.id, { playlist: playlist, children: [] });
-        }
-
-        for (const playlist of playlists) {
-            const node: PlaylistHierarchy = hierarchyMap.get(playlist.id)!;
-
-            if (playlist.parentId === null) {
-                roots.push(node);
-                continue;
-            }
-
-            const parent: PlaylistHierarchy | null = hierarchyMap.get(playlist.parentId) ?? null;
-            if (parent === null) {
-                roots.push(node);
-                continue;
-            }
-
-            parent.children.push(node);
-        }
-
-        const sort = (nodes: PlaylistHierarchy[]): void => {
-            nodes.sort((a: PlaylistHierarchy, b: PlaylistHierarchy) => a.playlist.position - b.playlist.position);
-
-            for (const node of nodes) {
-                sort(node.children);
-            }
-        };
-
-        sort(roots);
-        return roots;
-    }
-
     private static getChildrenCountText(playlist: Playlist): string {
         const childCount: number = playlist.childIds.length;
         const mergeCount: number = playlist.mergedIds.length;
@@ -189,12 +164,49 @@ export default class PlaylistManager {
         });
 
         Functions.Elements.removeChildren(Elements.aside.playlists.container);
-        const sortedPlaylists: PlaylistHierarchy[] = PlaylistManager.getSortedPlaylists(this.playlists);
-        this.createPlaylists(Elements.aside.playlists.container, sortedPlaylists);
+        const playlistHierarchy: PlaylistHierarchy<PlaylistWithElements>[] = this.getPlaylistHierarchy();
+        this.createPlaylists(Elements.aside.playlists.container, playlistHierarchy);
     }
 
     public getPlaylists(): PlaylistWithElements[] {
         return this.playlists;
+    }
+
+    public getPlaylistHierarchy(): PlaylistHierarchy<PlaylistWithElements>[] {
+        const hierarchyMap: Map<ID, PlaylistHierarchy<PlaylistWithElements>> = new Map();
+        const roots: PlaylistHierarchy<PlaylistWithElements>[] = [];
+
+        for (const playlist of this.playlists) {
+            hierarchyMap.set(playlist.id, { playlist: playlist, children: [] });
+        }
+
+        for (const playlist of this.playlists) {
+            const node: PlaylistHierarchy<PlaylistWithElements> = hierarchyMap.get(playlist.id)!;
+
+            if (playlist.parentId === null) {
+                roots.push(node);
+                continue;
+            }
+
+            const parent: PlaylistHierarchy<PlaylistWithElements> | null = hierarchyMap.get(playlist.parentId) ?? null;
+            if (parent === null) {
+                roots.push(node);
+                continue;
+            }
+
+            parent.children.push(node);
+        }
+
+        const sort = (nodes: PlaylistHierarchy<PlaylistWithElements>[]): void => {
+            nodes.sort((a: PlaylistHierarchy<PlaylistWithElements>, b: PlaylistHierarchy<PlaylistWithElements>) => a.playlist.position - b.playlist.position);
+
+            for (const node of nodes) {
+                sort(node.children);
+            }
+        };
+
+        sort(roots);
+        return roots;
     }
 
     public getEventManager(): PlaylistEventsManager {

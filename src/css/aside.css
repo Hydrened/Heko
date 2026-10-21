@@ -48,6 +48,9 @@ ul#aside-container-playlists-container li.playlist-wrapper {
 ul#aside-container-playlists-container li.playlist-wrapper.visible {
     transform: translateX(0%);
 }
+
+
+
 ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container {
     padding: var(--main-padding-0-5);
     padding-right: var(--main-padding-1);
@@ -65,34 +68,38 @@ ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-contai
     transition: background-color 150ms, opacity 200ms;
     cursor: pointer;
 }
-ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container.moving {
+ul#aside-container-playlists-container li.playlist-wrapper.moving div.playlist-container {
+    pointer-events: none;
     opacity: 0.5;
 }
-ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:not(.move-hover-opening):is(.move-top-indication, .move-bottom-indication)::after {
+ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:not(:is(.move-hover-opening, .moving)):is(.move-top-indication, .move-bottom-indication)::after {
     content: "";
 
     width: 100%;
-    height: calc(100% + 2px);
+    height: calc(100% + 4px);
 
     position: absolute;
     top: -1px;
     left: 0;
 
-    border-top: 2px solid white;
+    border-top: 4px solid white;
     border-bottom: none;
 }
-ul#aside-container-playlists-container li.playlist-wrapper.opened > div.playlist-container:not(.move-hover-opening).move-bottom-indication::after {
+ul#aside-container-playlists-container li.playlist-wrapper.opened > div.playlist-container:not(:is(.move-hover-opening, .moving)).move-bottom-indication::after {
     width: calc(100% - var(--main-padding-1-25));
 
     left: var(--main-padding-1-25);
 }
-ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:not(.move-hover-opening).move-bottom-indication::after {
+ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:not(:is(.move-hover-opening, .moving)).move-bottom-indication::after {
     border-top: none;
-    border-bottom: 2px solid white;
+    border-bottom: 4px solid white;
 }
 ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:is(:hover, :focus-visible, .contextmenu-focused) {
     background-color: var(--g3);
 }
+
+
+
 ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container > div.thumbnail {
     width: 3rem;
     height: 3rem;
@@ -115,17 +122,51 @@ ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-contai
     font-weight: normal;
     color: var(--text-col-2);
 }
+ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container > div.move-in-zone {
+    height: 100%;
+
+    padding-inline: var(--main-padding-1);
+
+    display: flex;
+    align-items: center;
+
+    font-size: 0.7rem;
+
+    border: 2px dashed var(--accent-color);
+    border-radius: 0.6rem;
+
+    opacity: 0;
+    transition: border 200ms, opacity 200ms, background-color 200ms;
+}
+ul#aside-container-playlists-container li.playlist-wrapper.moving > div.playlist-container > div.move-in-zone {
+    display: none;
+}
+ul#aside-container-playlists-container.moving-mode li.playlist-wrapper > div.playlist-container > div.move-in-zone {
+    opacity: 0.3;
+}
+ul#aside-container-playlists-container.moving-mode li.playlist-wrapper > div.playlist-container:hover > div.move-in-zone {
+    opacity: 1;
+}
+ul#aside-container-playlists-container.moving-mode li.playlist-wrapper > div.playlist-container:hover > div.move-in-zone:hover {
+    border-style: solid;
+
+    background-color: var(--accent-color);
+}
 ul#aside-container-playlists-container li.playlist-wrapper.opened > div.playlist-container > div.systray {
     rotate: 90deg;
 }
+
+
+
 ul#aside-container-playlists-container li.playlist-wrapper > ul.playlist-children-container {
     padding-left: var(--main-padding-1-25);
 
-    overflow: hidden;
     transition: 300ms;
 }
 ul#aside-container-playlists-container li.playlist-wrapper:not(.opened) > ul.playlist-children-container {
     max-height: 0;
+    
+    overflow: hidden;
 }
 
 
@@ -152,8 +193,16 @@ div.moving-playlist-container {
     border: var(--default-border);
     border-radius: 0.5rem;
 
+    opacity: 0.95;
+    pointer-events: none;
+    transition: border 200ms, opacity 200ms;
     background: var(--bg-gradient);
     cursor: grabbing;
+}
+div.moving-playlist-container.will-move-in {
+    border-color: var(--accent-color);
+
+    opacity: 0.5;
 }
 div.moving-playlist-container > div.thumbnail {
     width: 2.4rem;

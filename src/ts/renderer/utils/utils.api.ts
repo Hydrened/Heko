@@ -91,6 +91,10 @@ namespace Api {
         export async function setOpened(id: ID, opened: boolean): Promise<SetUserPlaylistOpenedApiResult> {
             return await request("playlists/set-opened.php", { id: id, opened: opened });
         }
+
+        export async function setPosition(id: ID, parentId: ID, position: number): Promise<SetUserPlaylistPositionApiResult> {
+            return await request("playlists/set-position.php", { id: id, parentId: parentId, position: position });
+        }
     };
 
     export namespace Temp {
