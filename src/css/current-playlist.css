@@ -9,7 +9,7 @@ section#current-playlist-container {
     gap: var(--main-padding-1-5);
 
     opacity: 0;
-    transition: opacity 750ms, left 750ms;
+    transition: opacity var(--current-playlist-transition-duration), left var(--current-playlist-transition-duration);
 }
 section#current-playlist-container.opened {
     left: 0;
@@ -125,7 +125,8 @@ section#current-playlist-container.song-playlist > article.current-playlist-song
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button.song-playlist-button {
     display: none;
 }
-section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:nth-child(2), :nth-child(3)) {
+section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:nth-child(2), :nth-child(3)),
+section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > header.current-playlist-song-table-header > button:nth-child(6) {
     text-align: left;
 }
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:hover, :focus-visible, .selected) {
@@ -154,9 +155,11 @@ section#current-playlist-container > article.current-playlist-song-table-contain
     padding: var(--main-padding-0-7) var(--main-padding-1);
 
     font-size: 0.9rem;
-}
-section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:is(:nth-child(1), :nth-child(4)) {
     text-align: center;
+}
+section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:is(:nth-child(2), :nth-child(3)),
+section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:nth-child(4) {
+    text-align: left;
 }
 
 

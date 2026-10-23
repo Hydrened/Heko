@@ -567,6 +567,10 @@ namespace Functions {
             thumbnailELement.style.backgroundImage = `url(${fullThumbnailPath})`;
         }
 
+        export function unsetThumbnail(thumbnailELement: HTMLElement): void {
+            setThumbnail(thumbnailELement);
+        }
+
         export function getThumbnailPath(thumbnailFileName: string): string {
             return `${thumbnailPath}/${thumbnailFileName}`;
         }
@@ -603,6 +607,47 @@ namespace Functions {
         export function isPlaylistParent(playlists: Playlist[], parentPlaylistId: ID, playlistId: ID): boolean {
             return isPlaylistChild(playlists, parentPlaylistId, playlistId);
         }
+
+        export function sortPlaylistsByDisplayOrder<T extends Playlist>(playlists: T[], onlyVisible: boolean = false, rootParentId: ID = -1): T[] {
+            const childrenByParentId: Map<ID, T[]> = new Map<ID, T[]>();
+
+            playlists.forEach((playlist: T) => {
+                const siblings: T[] | undefined = childrenByParentId.get(playlist.parentId);
+
+                if (siblings === undefined) {
+                    childrenByParentId.set(playlist.parentId, [playlist]);
+                }
+                else {
+                    siblings.push(playlist);
+                }
+            });
+
+            childrenByParentId.forEach((siblings: T[]) => siblings.sort((a: T, b: T) => a.position - b.position));
+
+            const result: T[] = [];
+            const visitedIds: Set<ID> = new Set<ID>();
+
+            const visit = (parentId: ID): void => {
+                const children: T[] = childrenByParentId.get(parentId) ?? [];
+
+                children.forEach((playlist: T) => {
+                    if (visitedIds.has(playlist.id)) {
+                        return;
+                    }
+
+                    visitedIds.add(playlist.id);
+                    result.push(playlist);
+
+                    if (!onlyVisible || playlist.opened) {
+                        visit(playlist.id);
+                    }
+                });
+            };
+
+            visit(rootParentId);
+
+            return result;
+        };
     };
 };
 

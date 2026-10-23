@@ -79,13 +79,15 @@ type ReadFileApiResult = ApiResult<{ readonly data: Uint8Array }>;
 // API-RESULT.PLAYLISTS
 type CreatePlaylistApiResult = ApiResult;
 type EditPlaylistApiResult = ApiResult;
-type GetUserPlaylistApiResult = ApiResult<{ readonly playlist: Playlist }, ApiResultClientError>;
-type GetUserPlaylistsApiResult = ApiResult<{ readonly playlists: Playlist[] }>;
+type    GetUserPlaylistsApiResult = ApiResult<{ readonly playlists: Playlist[] }>;
 type MergePlaylistInApiResult = ApiResult;
 type RemoveUserPlaylistApiResult = ApiResult;
 type RemovePlaylistFromMergedUserApiResult = ApiResult;
 type SetUserPlaylistOpenedApiResult = ApiResult;
 type SetUserPlaylistPositionApiResult = ApiResult;
+
+// API-RESULT.SONGS
+type GetUserSongsApiResult = ApiResult<{ readonly songs: Song[] }>;
 
 // API-RESULT.TEMP
 type ClearTempApiResult = ApiResult;
@@ -309,6 +311,10 @@ type Merged = {
     readonly creationDate: string;
     readonly toggled: boolean;
 };
+
+type PlaylistType = "merged-playlist" | "song-playlist";
+
+type PlaylistSortType = "id" | "playlist-name" | "playlist-song-count" | "song-title" | "song-artist" | "duration";
 
 type Playlist = {
     readonly id: ID;

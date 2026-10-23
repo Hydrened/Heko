@@ -81,4 +81,6 @@
     /* DURATIONS */
     --modal-transition-duration: 300ms;
     --notification-transition-duration: 500ms;
+    --playlist-wrapper-transition-duration: 500ms;
+    --current-playlist-transition-duration: 600ms;
 }

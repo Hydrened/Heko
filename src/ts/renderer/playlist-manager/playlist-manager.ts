@@ -6,7 +6,9 @@ import { App } from "./../app.js";
 
 export default class PlaylistManager {
     private static readonly visibleClassName: string = "visible";
+    private static readonly fullyVisibleClassName: string = "fully-visible";
     private static readonly defaultAnimationDelay: number = 50;
+    private static readonly playlistWrapperVisibleTransitionDuration: number = Functions.Css.get("playlist-wrapper-transition-duration", "ms-duration");
 
     private eventsManager: PlaylistEventsManager;
     private playlists: PlaylistWithElements[] = [];
@@ -20,6 +22,7 @@ export default class PlaylistManager {
         this.reset();
         await this.loadData();
         this.refresh();
+        this.openFirstPlaylist();
     }
 
     private async loadData(): Promise<void> {
@@ -105,19 +108,29 @@ export default class PlaylistManager {
             childCountElement: childrenCountElement,
             moveInZoneElement: moveInZoneElement,
         };
-
-        if (playlist.opened) {
+        
+        if (playlist.opened && hasChildren) {
             this.eventsManager.onPlaylistContainerClick(playlist);
         }
+        
+        const currentPlaylistId: ID = this.app.currentPlaylistManager.getCurrentId() ?? -1;
+        if (currentPlaylistId === playlist.id) {
+            containerElement.classList.add(PlaylistEventsManager.focusedPlaylistParentClassName);
+        }
+
+        const setVisible = (): void => {
+            wrapperElement.classList.add(PlaylistManager.visibleClassName);
+            setTimeout(() => wrapperElement.classList.add(PlaylistManager.fullyVisibleClassName), PlaylistManager.playlistWrapperVisibleTransitionDuration);
+        };
 
         if (hasToBeAnimated) {
             index = (index < 0) ? index : index + 1;
             
             const animationDelay: number = index * PlaylistManager.defaultAnimationDelay;
-            setTimeout(() => wrapperElement.classList.add(PlaylistManager.visibleClassName), animationDelay);
+            setTimeout(() => setVisible(), animationDelay);
         }
         else {
-            wrapperElement.classList.add(PlaylistManager.visibleClassName);
+            setVisible();
         }
 
         return index;
@@ -143,6 +156,17 @@ export default class PlaylistManager {
     private reset(): void {
         this.playlists = [];
         // remove playlists with animation
+    }
+
+    private openFirstPlaylist(): void {
+        const sortedPlaylists: PlaylistWithElements[] = Functions.Heko.sortPlaylistsByDisplayOrder(this.playlists);
+
+        const firstValidPlaylist: PlaylistWithElements | null = sortedPlaylists.find((p: PlaylistWithElements) => p.childIds.length === 0) ?? null;
+        if (firstValidPlaylist === null) {
+            return;
+        }
+
+        this.eventsManager.onPlaylistContainerClick(firstValidPlaylist);
     }
 
     // PUBLIC

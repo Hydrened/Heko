@@ -7,6 +7,7 @@ import { App } from "./../app.js";
 import * as Create from "../utils/utils.create.js";
 
 export default class PlaylistEventsManager {
+    public static readonly focusedPlaylistParentClassName: string = "focused";
     private static readonly openedPlaylistParentClassName: string = "opened";
 
     private readonly orderingManager: PlaylistOrderingManager;
@@ -69,6 +70,11 @@ export default class PlaylistEventsManager {
             }
         }
         else {
+            this.playlists.forEach((p: PlaylistWithElements) => (p.id === playlist.id)
+                ? p.elements?.containerElement.classList.add(PlaylistEventsManager.focusedPlaylistParentClassName)
+                : p.elements?.containerElement.classList.remove(PlaylistEventsManager.focusedPlaylistParentClassName)
+            );
+
             this.app.currentPlaylistManager.open(playlist.id);
         }
     }
@@ -121,9 +127,7 @@ export default class PlaylistEventsManager {
 
         await this.refresh();
     }
-
-
-
+    
     // CONTEXTMENU
     private onPlaylistsContainerContextmenu(position: Position): void {
         const createPlaylistRow: ContextmenuRow = {

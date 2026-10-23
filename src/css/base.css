@@ -102,7 +102,7 @@ input, select, textarea {
     border: var(--default-border);
     border-radius: 0.6rem;
 
-    background-color: var(--g1);
+    background-color: var(--b3);
     accent-color: var(--accent-color);
     transition: border-color 200ms, background-color 200ms;
 }

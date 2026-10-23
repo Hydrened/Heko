@@ -68,10 +68,6 @@ namespace Api {
             return await request("playlists/edit.php", { id: id, name: name, thumbnail: thumbnail, thumbnailEditType: thumbnailEditType });
         }
 
-        export async function get(id: ID): Promise<GetUserPlaylistApiResult> {
-            return await request("playlists/get.php", { id: id });
-        }
-
         export async function getAll(): Promise<GetUserPlaylistsApiResult> {
             return await request("playlists/get-all.php");
         }
@@ -94,6 +90,12 @@ namespace Api {
 
         export async function setPosition(id: ID, parentId: ID, position: number): Promise<SetUserPlaylistPositionApiResult> {
             return await request("playlists/set-position.php", { id: id, parentId: parentId, position: position });
+        }
+    };
+
+    export namespace Songs {
+        export async function getAll(): Promise<GetUserSongsApiResult> {
+            return await request("songs/get-all.php");
         }
     };
 

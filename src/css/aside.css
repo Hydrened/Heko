@@ -43,7 +43,7 @@ ul#aside-container-playlists-container {
 }
 ul#aside-container-playlists-container li.playlist-wrapper {
     transform: translateX(-100%);
-    transition: transform 500ms ease-in-out;
+    transition: transform var(--playlist-wrapper-transition-duration) ease-in-out;
 }
 ul#aside-container-playlists-container li.playlist-wrapper.visible {
     transform: translateX(0%);
@@ -94,7 +94,8 @@ ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-contai
     border-top: none;
     border-bottom: 4px solid white;
 }
-ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:is(:hover, :focus-visible, .contextmenu-focused) {
+ul#aside-container-playlists-container li.playlist-wrapper > div.playlist-container:is(:hover, :focus-visible, .contextmenu-focused),
+ul#aside-container-playlists-container li.playlist-wrapper.fully-visible > div.playlist-container.focused {
     background-color: var(--g3);
 }
 
