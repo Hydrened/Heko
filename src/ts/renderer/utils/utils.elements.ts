@@ -29,7 +29,7 @@ namespace Elements {
         container: get<HTMLElement>("#current-playlist-container"),
 
         details: {
-            thumbnail: get<HTMLButtonElement>("#current-playlist-thumbnail"),
+            thumbnail: get<HTMLElement>("#current-playlist-thumbnail"),
             title: get<HTMLHeadingElement>("#current-playlist-title"),
             count: get<HTMLHeadingElement>("#current-playlist-count"),
             duration: get<HTMLHeadingElement>("#current-playlist-duration"),
@@ -44,10 +44,10 @@ namespace Elements {
         table: {
             headerButtons: {
                 id: get<HTMLButtonElement>("#current-playlist-header-id-button"),
-                title: get<HTMLButtonElement>("#current-playlist-header-title-button"),
-                artist: get<HTMLButtonElement>("#current-playlist-header-artist-button"),
-                name: get<HTMLButtonElement>("#current-playlist-header-name-button"),
-                songs: get<HTMLButtonElement>("#current-playlist-header-songs-button"),
+                songTitle: get<HTMLButtonElement>("#current-playlist-header-title-button"),
+                songArtist: get<HTMLButtonElement>("#current-playlist-header-artist-button"),
+                playlistName: get<HTMLButtonElement>("#current-playlist-header-name-button"),
+                playlistSongCount: get<HTMLButtonElement>("#current-playlist-header-songs-button"),
                 duration: get<HTMLButtonElement>("#current-playlist-header-duration-button"),
             },
 

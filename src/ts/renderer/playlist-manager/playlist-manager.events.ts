@@ -45,8 +45,7 @@ export default class PlaylistEventsManager {
             return;
         }
 
-        const position: Position = { x: e.x, y: e.y };
-        this.onPlaylistsContainerContextmenu(position);
+        this.onPlaylistsContainerContextmenu(Functions.Geometry.getPosition(e));
     }
 
     public async onPlaylistContainerClick(playlist: PlaylistWithElements): Promise<void> {
@@ -128,7 +127,6 @@ export default class PlaylistEventsManager {
         await this.refresh();
     }
     
-    // CONTEXTMENU
     private onPlaylistsContainerContextmenu(position: Position): void {
         const createPlaylistRow: ContextmenuRow = {
             title: "Create playlist",

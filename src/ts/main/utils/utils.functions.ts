@@ -7,7 +7,7 @@ import { spawn, ChildProcessWithoutNullStreams } from "child_process";
 import { ID, ValueBase, Position, Size, Rect, Resolve, Reject, MoveFile, FileError, ColorRGB, ExecuteCommandEvents, ApiResultError } from "./utils.types.js";
 
 namespace Functions {
-    const version: number = 1.12;
+    const version: number = 1.13;
 
     export namespace Maths {
         export function clamp(value: number, min: number, max: number): number {
@@ -446,6 +446,29 @@ namespace Functions {
 
         export function formatHours(hours: number, fixedSize: number = 2, withSpace: boolean = false, fullUnit: boolean = false): string {
             return formatMilliseconds(hours * 3600000, fixedSize, withSpace, fullUnit);
+        }
+
+        export function formatMillisecondsToClock(milliseconds: number): string {
+            const totalSeconds: number = Math.floor(Math.max(0, milliseconds) / 1000);
+
+            const hours: number = Math.floor(totalSeconds / 3600);
+            const minutes: number = Math.floor((totalSeconds % 3600) / 60);
+            const seconds: number = totalSeconds % 60;
+
+            const pad = (value: number): string => String(value).padStart(2, "0");
+            return (hours > 0) ? `${pad(hours)}:${pad(minutes)}:${pad(seconds)}` : `${minutes}:${pad(seconds)}`;
+        }
+
+        export function formatSecondsToClock(seconds: number): string {
+            return formatMillisecondsToClock(seconds * 1000);
+        }
+
+        export function formatMinutesToClock(minutes: number): string {
+            return formatMillisecondsToClock(minutes * 60000);
+        }
+
+        export function formatHoursToClock(hours: number): string {
+            return formatMillisecondsToClock(hours * 3600000);
         }
     };
 

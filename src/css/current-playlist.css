@@ -28,7 +28,7 @@ section#current-playlist-container > header.current-playlist-details-container {
     grid-template-rows: 1fr auto;
     column-gap: var(--main-padding-2);
 }
-section#current-playlist-container > header.current-playlist-details-container > button#current-playlist-thumbnail {
+section#current-playlist-container > header.current-playlist-details-container > div#current-playlist-thumbnail {
     width: 11rem;
     aspect-ratio: 1 / 1;
 
@@ -139,6 +139,7 @@ section#current-playlist-container > article.current-playlist-song-table-contain
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li {
     display: grid;
     grid-template-columns: 4.5rem 1fr 1fr 7rem;
+    align-items: center;
 
     border-radius: 0.7rem;
 
@@ -156,6 +157,33 @@ section#current-playlist-container > article.current-playlist-song-table-contain
 
     font-size: 0.9rem;
     text-align: center;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.thumbnail {
+    width: 2.3rem;
+    aspect-ratio: 1 / 1;
+
+    border-radius: 0.4rem;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.null-thumbnail {
+    background-color: var(--b6);
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.checkbox-container {
+    height: 1.7rem;
+    aspect-ratio: 1 / 1;
+
+    position: relative;
+
+    border-radius: 0.4rem;
+
+    overflow: hidden;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.checkbox-container input[type="checkbox"] {
+    width: 104%;
+    height: 104%;
+
+    position: absolute;
+    top: -2%;
+    left: -2%;
 }
 section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:is(:nth-child(2), :nth-child(3)),
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:nth-child(4) {

@@ -1,3 +1,4 @@
+import CurrentPlaylistEventsManager from "./current-playlist-manager.events.js";
 import Api from "./../utils/utils.api.js";
 import Elements from "./../utils/utils.elements.js";
 import Functions from "./../utils/utils.functions.js";
@@ -8,6 +9,7 @@ export default class CurrentPlaylistManager {
     private static readonly openedClassName: string = "opened";
 
     private readonly elements = Elements.currentPlaylist;
+    private readonly eventsManager: CurrentPlaylistEventsManager;
 
     private _playlists: Playlist[] | null = null;
     private _songs: Song[] | null = null;
@@ -15,11 +17,12 @@ export default class CurrentPlaylistManager {
     private _currentPlaylist: Playlist | null = null;
     private _currentPlaylistId: ID | null = null;
     private _currentPlaylistType: PlaylistType | null = null;
-    private _currentPlaylistSongs: Song[] | null = null;
     private _currentPlaylistMerged: Playlist[] | null = null;
     
     // INIT
-    public constructor(private readonly app: App) {}
+    public constructor(private readonly app: App) {
+        this.eventsManager = new CurrentPlaylistEventsManager(this.app, this);
+    }
 
     // LOAD
     private load(): void {
@@ -63,8 +66,9 @@ export default class CurrentPlaylistManager {
         this._currentPlaylist = null;
         this._currentPlaylistId = null;
         this._currentPlaylistType = null;
-        this._currentPlaylistSongs = null;
         this._currentPlaylistMerged = null;
+
+        this.eventsManager.unload();
     }
 
     private unloadHeader(): void {
@@ -85,10 +89,30 @@ export default class CurrentPlaylistManager {
     }
 
     // CREATE
-    private static createTextRowElement(parentElement: HTMLLIElement, text: string): void {
-        const containerElement: HTMLParagraphElement = document.createElement("p");
-        containerElement.textContent = text;
-        parentElement.appendChild(containerElement);
+    private static createTextRowElement(parentElement: HTMLLIElement, text: string): HTMLParagraphElement {
+        const textElement: HTMLParagraphElement = document.createElement("p");
+        textElement.textContent = text;
+        parentElement.appendChild(textElement);
+        return textElement;
+    }
+
+    private static createCheckboxRowElement(parentElement: HTMLLIElement, checked: boolean): HTMLInputElement {
+        const checkboxContainerElement: HTMLElement = document.createElement("div");
+        checkboxContainerElement.classList.add("checkbox-container");
+        parentElement.appendChild(checkboxContainerElement);
+
+        const checkboxElement: HTMLInputElement = document.createElement("input");
+        checkboxElement.type = "checkbox";
+        checkboxElement.checked = checked;
+        checkboxContainerElement.appendChild(checkboxElement);
+        return checkboxElement;
+    }
+
+    private static createThumbnailRowElement(parentElement: HTMLLIElement, thumbnailFileName?: string): HTMLElement {
+        const thumbnailElement: HTMLElement = document.createElement("div");
+        Functions.Heko.setThumbnail(thumbnailElement, thumbnailFileName);
+        parentElement.appendChild(thumbnailElement);
+        return thumbnailElement;
     }
 
     private createMerged(playlist: Playlist, index: number): void {
@@ -97,22 +121,40 @@ export default class CurrentPlaylistManager {
 
         CurrentPlaylistManager.createTextRowElement(containerElement, String(index + 1));
 
-        CurrentPlaylistManager.createTextRowElement(containerElement, ""); // checkbox
-        CurrentPlaylistManager.createTextRowElement(containerElement, ""); // thumbnail
+        CurrentPlaylistManager.createCheckboxRowElement(containerElement, playlist.toggled);
+        CurrentPlaylistManager.createThumbnailRowElement(containerElement, playlist.thumbnailFileName);
 
         CurrentPlaylistManager.createTextRowElement(containerElement, playlist.name);
         CurrentPlaylistManager.createTextRowElement(containerElement, String(playlist.songIds.length));
         CurrentPlaylistManager.createTextRowElement(containerElement, this.getMergedRowDurationText(playlist));
-    }
 
-    // OTHER
-    private sortBy(type: PlaylistSortType, asc: boolean): void {
-        console.log(type, asc);
+        containerElement.addEventListener("click", () => Functions.Elements.antiSpam<void>(containerElement, async () => {
+            await this.eventsManager.onPlaylistRowClick(playlist);
+        }));
+
+        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.eventsManager.onPlaylistRowContextmenu(Functions.Geometry.getPosition(e), playlist));
     }
 
     // GETTERS
+    private getPlaylistsFromMergePlaylist(playlist: Playlist): Playlist[] {
+        return playlist.mergedIds.map<Playlist>((mergedPlaylistId: ID) => {
+            const playlist: Playlist | null = this.playlists.find((s: Playlist) => s.id === mergedPlaylistId) ?? null;
+            if (playlist === null) {
+                throw new Error(`Could not get playlists from merge playlist: Playlist with id = "${mergedPlaylistId}" is null.`);
+            }
+
+            return playlist;
+        });
+    }
+
     private getSongsFromPlaylist(playlist: Playlist): Song[] {
-        return playlist.songIds.map<Song>((songId: ID) => {
+        const type: PlaylistType = (playlist.mergedIds.length > 0) ? "merged-playlist" : "song-playlist";
+
+        const songIds: ID[] = [... new Set((type === "merged-playlist")
+            ? this.getPlaylistsFromMergePlaylist(playlist).reduce((acc: ID[], p: Playlist) => acc.concat(p.songIds), [])
+            : playlist.songIds)];
+
+        return songIds.map<Song>((songId: ID) => {
             const song: Song | null = this.songs.find((s: Song) => s.id === songId) ?? null;
             if (song === null) {
                 throw new Error(`Could not get songs from playlist: Song with id = "${songId}" is null.`);
@@ -154,14 +196,6 @@ export default class CurrentPlaylistManager {
         return this._currentPlaylistType;
     }
 
-    private get currentPlaylistSongs(): Song[] {
-        if (this._currentPlaylistSongs === null) {
-            throw new Error(`Could not get current playlist songs: Current playlist songs are null.`);
-        }
-
-        return this._currentPlaylistSongs;
-    }
-
     private get currentPlaylistMerged(): Playlist[] {
         if (this._currentPlaylistMerged === null) {
             throw new Error(`Could not get current playlist merged: Current playlist merged are null.`);
@@ -171,7 +205,7 @@ export default class CurrentPlaylistManager {
     }
 
     private getHeaderCountText(): string {
-        const songCount: number = this.currentPlaylistSongs.length;
+        const songCount: number = this.getSongsFromPlaylist(this.currentPlaylist).length;
         const songCountText = `${songCount} ${Functions.Strings.pluralize("song", "songs", songCount)}`;
 
         if (this.currentPlaylistType === "song-playlist") {
@@ -183,13 +217,13 @@ export default class CurrentPlaylistManager {
     }
 
     private getHeaderDurationText(): string {
-        const duration: number = this.currentPlaylistSongs.reduce((acc: number, song: Song) => acc + song.duration, 0);
-        return (duration !== 0) ? Functions.Time.formatSeconds(duration, 0, false, true) : "";
+        const duration: number = this.getSongsFromPlaylist(this.currentPlaylist).reduce((acc: number, song: Song) => acc + song.duration, 0);
+        return (duration !== 0) ? Functions.Time.formatSeconds(duration, 0, true, true) : "";
     }
 
     private getMergedRowDurationText(playlist: Playlist): string {
         const totalDuration: number = this.getSongsFromPlaylist(playlist).reduce((acc: number, song: Song) => acc + song.duration, 0);
-        return (totalDuration !== 0) ? Functions.Time.formatSeconds(totalDuration, 0, false, true) : "0s";
+        return Functions.Time.formatSecondsToClock(totalDuration);
     }
 
     // PUBLIC
@@ -231,10 +265,11 @@ export default class CurrentPlaylistManager {
         }
         
         this._songs = getSongsReqRes.songs;
-        this._currentPlaylistSongs = this.getSongsFromPlaylist(this.currentPlaylist);
 
         this.load();
-        this.sortBy("id", true);
+
+        this.eventsManager.onSort("id");
+        this.eventsManager.onFilter();
     }
 
     public async close(): Promise<void> {
@@ -249,5 +284,9 @@ export default class CurrentPlaylistManager {
 
     public getCurrentId(): ID | null {
         return this._currentPlaylistId;
+    }
+
+    public getCurrentType(): PlaylistType {
+        return this.currentPlaylistType;
     }
 };

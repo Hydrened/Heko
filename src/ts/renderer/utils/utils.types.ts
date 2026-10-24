@@ -323,10 +323,11 @@ type Playlist = {
     readonly position: number;
     readonly thumbnailFileName: string;
     opened: boolean;
+    toggled: boolean;
     readonly creationDate: string;
     readonly songIds: ID[];
-    readonly mergedIds: ID[];
     readonly childIds: ID[];
+    readonly mergedIds: ID[];
 };
 
 type ManagePlaylistModalDefaultValues = {
