@@ -115,6 +115,34 @@ type ContextmenuRow = {
     readonly disabled?: boolean;
 };
 
+type ContextmenuData = {
+    readonly position: Position;
+    readonly focusedElement?: HTMLElement;
+};
+
+// CONTEXTMENU.HEKO
+type PlaylistsContainerContextmenuData = {
+    readonly onAddPlaylistButtonClick: () => void;
+} & ContextmenuData;
+
+type PlaylistContainerContextmenuData = {
+    readonly playlists: Playlist[];
+    readonly playlist: Playlist;
+    readonly onPlaylistEdit: (playlist: Playlist) => void;
+    readonly onPlaylistRemove: (playlist: Playlist) => void;
+    readonly onPlaylistDuplicate: (playlist: Playlist) => void;
+    readonly onPlaylistMergeIn: (mergeContainerPlaylist: Playlist, playlist: Playlist) => void;
+    readonly onPlaylistRemoveFromMerge: (mergeContainerPlaylist: Playlist, playlist: Playlist) => void;
+} & ContextmenuData;
+
+type PlaylistRowContextmenuData = {
+    readonly playlist: Playlist;
+    readonly onRowClick: (playlist: Playlist) => void;
+    readonly onEdit: (playlist: Playlist) => void;
+    readonly onToggle: (playlist: Playlist) => void;
+    readonly onRemoveFrom: (playlist: Playlist) => void;
+} & ContextmenuData;
+
 // MODALS
 type TabModalTab = {
     readonly title: string;

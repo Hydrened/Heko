@@ -65,7 +65,7 @@ export default class CurrentPlaylistEventsManager {
 
     }
 
-    public async onPlaylistRowClick(playlist: Playlist): Promise<void> {
+    public onPlaylistRowClick = async (playlist: Playlist): Promise<void> => {
         await this.main.open(playlist.id);
     }
 
@@ -73,28 +73,18 @@ export default class CurrentPlaylistEventsManager {
 
     }
 
-    public onPlaylistRowContextmenu(position: Position, playlist: Playlist): void {
-        const openRow: ContextmenuRow = {
-            title: "Open",
-            onClick: () => this.onPlaylistRowClick(playlist),
-        };
+    public onPlaylistRowContextmenu(position: Position, rowElement: HTMLLIElement, playlist: Playlist): void {
+        Create.playlistRowContextmenu({
+            position: position,
+            focusedElement: rowElement,
 
-        const editRow: ContextmenuRow = {
-            title: "Edit",
-            onClick: () => {}, // todo
-        };
+            playlist: playlist,
 
-        const toggleRow: ContextmenuRow = {
-            title: "Toggle",
-            onClick: () => {},
-        };
-
-        const removeFromPlaylistRow: ContextmenuRow = {
-            title: "Remove from playlist",
-            onClick: () => {},
-        };
-
-        Create.ContextmenuManager.create([openRow, editRow, toggleRow, removeFromPlaylistRow], position);
+            onRowClick: this.onPlaylistRowClick,
+            onEdit: () => {},
+            onToggle: () => {},
+            onRemoveFrom: () => {},
+        });
     }
 
     // OTHER

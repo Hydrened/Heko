@@ -1064,6 +1064,161 @@ export class ContextmenuManager {
 
 new ContextmenuManager();
 
+abstract class ContextmenuTemplate<T extends ContextmenuData> {
+    public constructor(protected readonly data: T) {
+        ContextmenuManager.create(this.initRows(), this.data.position, this.data.focusedElement);
+    }
+
+    protected abstract initRows(): ContextmenuRow[];
+};
+
+// CONTEXTMENU.HEKO
+class PlaylistsContainerContextmenu extends ContextmenuTemplate<PlaylistsContainerContextmenuData> {
+    public constructor(data: PlaylistsContainerContextmenuData) {
+        super(data);
+    }
+
+    protected initRows(): ContextmenuRow[] {
+        const createPlaylistRow: ContextmenuRow = {
+            title: "Create playlist",
+            shortcut: {
+                key: "n",
+                ctrl: true,
+            },
+            onClick: this.data.onAddPlaylistButtonClick,
+        };
+
+        return [createPlaylistRow];
+    }
+};
+
+class PlaylistContainerContextmenu extends ContextmenuTemplate<PlaylistContainerContextmenuData> {
+    public constructor(data: PlaylistContainerContextmenuData) {
+        super(data);
+    }
+
+    protected initRows(): ContextmenuRow[] {
+        const isPlaylistMergeContainer: boolean = (this.data.playlist.mergedIds.length > 0);
+        const mergeInRows: ContextmenuRow[] = this.getPlaylistContextmenuMergeInRows();
+
+        const editRow: ContextmenuRow = {
+            title: "Edit",
+            shortcut: {
+                key: "f2",
+            },
+            onClick: () => this.data.onPlaylistEdit(this.data.playlist),
+        };
+
+        const removeRow: ContextmenuRow = {
+            title: "Remove",
+            shortcut: {
+                key: "delete",
+            },
+            onClick: () => this.data.onPlaylistRemove(this.data.playlist),
+        };
+
+        const duplicateRow: ContextmenuRow = {
+            title: "Duplicate",
+            shortcut: {
+                key: "d",
+                ctrl: true,
+            },
+            onClick: () => this.data.onPlaylistDuplicate(this.data.playlist),
+            disabled: true,
+        };
+
+        const mergeInRow: ContextmenuRow = {
+            title: "Merge in",
+            rows: mergeInRows,
+            disabled: isPlaylistMergeContainer,
+        };
+        
+        const removeFromMergeRow: ContextmenuRow = {
+            title: "Remove from merge",
+            rows: this.getPlaylistContextmenuRemoveFromMergeRows(),
+        };
+
+        const res: ContextmenuRow[] = [editRow, removeRow, duplicateRow, mergeInRow];
+        if (removeFromMergeRow.rows?.length ?? 0 > 0) {
+            res.push(removeFromMergeRow);
+        }
+        
+        return res;
+    }
+
+    private getPlaylistContextmenuMergeInRows(): ContextmenuRow[] {
+        const filteredPlaylists: Playlist[] = this.data.playlists.filter((p: Playlist) => {
+            const isCurrentPlaylist: boolean = (p.id === this.data.playlist.id);
+            const isChild: boolean = Functions.Heko.isPlaylistChild(this.data.playlists, this.data.playlist.id, p.id);
+            const isParent: boolean = Functions.Heko.isPlaylistParent(this.data.playlists, p.id, this.data.playlist.id);
+            const isSongContainer: boolean = (p.songIds.length > 0);
+            const isPlaylistContainer: boolean = (p.childIds.length > 0);
+            const isAlreadyMergedIn: boolean = p.mergedIds.includes(this.data.playlist.id);
+            const isInMergeContainer: boolean = this.data.playlists.some((p2: Playlist) => p2.mergedIds.includes(p.id));
+
+            return !isCurrentPlaylist && !isChild && !isParent && !isSongContainer && !isPlaylistContainer && !isAlreadyMergedIn && !isInMergeContainer;
+        });
+        
+        return filteredPlaylists.map<ContextmenuRow>((p: Playlist) => ({
+            title: p.name,
+            onClick: () => this.data.onPlaylistMergeIn(p, this.data.playlist),
+        }));
+    }
+
+    private getPlaylistContextmenuRemoveFromMergeRows(): ContextmenuRow[] {
+        const filteredPlaylists: Playlist[] = this.data.playlists.filter((p: Playlist) => p.mergedIds.includes(this.data.playlist.id));
+
+        return filteredPlaylists.map<ContextmenuRow>((p: Playlist) => ({
+            title: p.name,
+            onClick: () => this.data.onPlaylistRemoveFromMerge(p, this.data.playlist),
+        }));
+    }
+}
+
+class PlaylistRowContextmenu extends ContextmenuTemplate<PlaylistRowContextmenuData> {
+    public constructor(data: PlaylistRowContextmenuData) {
+        super(data);
+    }
+
+    protected initRows(): ContextmenuRow[] {
+        const openRow: ContextmenuRow = {
+            title: "Open",
+            onClick: () => this.data.onRowClick(this.data.playlist),
+        };
+
+        const editRow: ContextmenuRow = {
+            title: "Edit",
+            onClick: () => this.data.onEdit(this.data.playlist),
+        };
+
+        const toggleRow: ContextmenuRow = {
+            title: "Toggle",
+            onClick: () => this.data.onToggle(this.data.playlist),
+        };
+
+        const removeFromPlaylistRow: ContextmenuRow = {
+            title: "Remove from playlist",
+            onClick: () => this.data.onRemoveFrom(this.data.playlist),
+        };
+
+        return [openRow, editRow, toggleRow, removeFromPlaylistRow];
+    }
+}
+
+
+
+export function playlistsContainerContextmenu(data: PlaylistsContainerContextmenuData): void {
+    new PlaylistsContainerContextmenu(data);
+}
+
+export function playlistContainerContextmenu(data: PlaylistContainerContextmenuData): void {
+    new PlaylistContainerContextmenu(data);
+}
+
+export function playlistRowContextmenu(data: PlaylistRowContextmenuData): void {
+    new PlaylistRowContextmenu(data);
+}
+
 
 
 // MODAL

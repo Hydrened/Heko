@@ -128,11 +128,15 @@ export default class CurrentPlaylistManager {
         CurrentPlaylistManager.createTextRowElement(containerElement, String(playlist.songIds.length));
         CurrentPlaylistManager.createTextRowElement(containerElement, this.getMergedRowDurationText(playlist));
 
-        containerElement.addEventListener("click", () => Functions.Elements.antiSpam<void>(containerElement, async () => {
+        containerElement.addEventListener("click", (e: PointerEvent) => Functions.Elements.antiSpam<void>(containerElement, async () => {
+            if ((e.target as HTMLElement).tagName === "INPUT") {
+                return;
+            }
+
             await this.eventsManager.onPlaylistRowClick(playlist);
         }));
 
-        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.eventsManager.onPlaylistRowContextmenu(Functions.Geometry.getPosition(e), playlist));
+        containerElement.addEventListener("contextmenu", (e: PointerEvent) => this.eventsManager.onPlaylistRowContextmenu(Functions.Geometry.getPosition(e), playlist, containerElement));
     }
 
     // GETTERS

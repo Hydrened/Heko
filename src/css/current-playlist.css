@@ -103,6 +103,9 @@ section#current-playlist-container > article.current-playlist-song-table-contain
     flex-direction: column;
     gap: var(--main-padding-0-4);
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header {
     padding-right: var(--scrollbar-width);
 
@@ -114,12 +117,18 @@ section#current-playlist-container > article.current-playlist-song-table-contain
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header {
     grid-template-columns: 4.5rem 4rem 4rem 1fr 6rem 7rem;
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button {
     padding: var(--main-padding-0-7) var(--main-padding-1);
 
     font-size: 1rem;
 
     transition: color 200ms;
+}
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:empty {
+    cursor: default;
 }
 section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button.merged-playlist-button,
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button.song-playlist-button {
@@ -132,10 +141,16 @@ section#current-playlist-container.merged-playlist > article.current-playlist-so
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table > header.current-playlist-song-table-header > button:is(:hover, :focus-visible, .selected) {
     color: var(--accent-color);
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container {
     height: 100%;
     overflow-y: scroll;
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li {
     display: grid;
     grid-template-columns: 4.5rem 1fr 1fr 7rem;
@@ -149,15 +164,21 @@ section#current-playlist-container > article.current-playlist-song-table-contain
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li {
     grid-template-columns: 4.5rem 4rem 4rem 1fr 6rem 7rem;
 }
-section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li:is(:hover, :focus-visible) {
+section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li:is(:hover, :focus-visible, .contextmenu-focused) {
     background-color: var(--b2);
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p {
     padding: var(--main-padding-0-7) var(--main-padding-1);
 
     font-size: 0.9rem;
     text-align: center;
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.thumbnail {
     width: 2.3rem;
     aspect-ratio: 1 / 1;
@@ -167,6 +188,9 @@ section#current-playlist-container > article.current-playlist-song-table-contain
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.null-thumbnail {
     background-color: var(--b6);
 }
+
+
+
 section#current-playlist-container > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > div.checkbox-container {
     height: 1.7rem;
     aspect-ratio: 1 / 1;
@@ -185,6 +209,9 @@ section#current-playlist-container > article.current-playlist-song-table-contain
     top: -2%;
     left: -2%;
 }
+
+
+
 section#current-playlist-container.song-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:is(:nth-child(2), :nth-child(3)),
 section#current-playlist-container.merged-playlist > article.current-playlist-song-table-container > div.current-playlist-song-table  > ul#current-playlist-song-table-rows-container > li > p:nth-child(4) {
     text-align: left;

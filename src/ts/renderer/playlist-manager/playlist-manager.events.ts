@@ -82,7 +82,7 @@ export default class PlaylistEventsManager {
         this.orderingManager.onPlaylistContainerMouseDown(e, playlist);
     }
 
-    private async onPlaylistEdit(playlist: Playlist): Promise<void> {
+    private onPlaylistEdit = async (playlist: Playlist): Promise<void> => {
         const res: void | null = await Create.ManagePlaylistModal.edit(this.playlists, playlist);
         if (res === null) {
             return;
@@ -91,7 +91,7 @@ export default class PlaylistEventsManager {
         await this.refresh();
     }
 
-    private async onPlaylistRemove(playlist: Playlist): Promise<void> {
+    private onPlaylistRemove = async (playlist: Playlist): Promise<void> => {
         const isSure: boolean = await Create.confirmModal(`Are you sure you want to remove playlist named ${playlist.name}?`);
         if (!isSure) {
             return;
@@ -105,11 +105,11 @@ export default class PlaylistEventsManager {
         await this.refresh();
     }
 
-    private async onPlaylistDuplicate(playlist: Playlist): Promise<void> {
+    private onPlaylistDuplicate = async (playlist: Playlist): Promise<void> => {
 
     }
 
-    private async onPlaylistMergeIn(mergeContainerPlaylist: Playlist, playlist: Playlist): Promise<void> {
+    private onPlaylistMergeIn = async (mergeContainerPlaylist: Playlist, playlist: Playlist): Promise<void> => {
         const mergePlaylistInReqRes: MergePlaylistInApiResult = await Api.Playlists.mergeIn(mergeContainerPlaylist.id, playlist.id);
         if (!mergePlaylistInReqRes.success) {
             throw new Error(mergePlaylistInReqRes.error);
@@ -118,7 +118,7 @@ export default class PlaylistEventsManager {
         await this.refresh();
     }
 
-    private async onPlaylistRemoveFromMerge(mergeContainerPlaylist: Playlist, playlist: Playlist): Promise<void> {
+    private onPlaylistRemoveFromMerge = async (mergeContainerPlaylist: Playlist, playlist: Playlist): Promise<void> => {
         const removePlaylistFromMergeReqRes: RemovePlaylistFromMergedUserApiResult = await Api.Playlists.removeFromMerge(mergeContainerPlaylist.id, playlist.id);
         if (!removePlaylistFromMergeReqRes.success) {
             throw new Error(removePlaylistFromMergeReqRes.error);
@@ -128,94 +128,26 @@ export default class PlaylistEventsManager {
     }
     
     private onPlaylistsContainerContextmenu(position: Position): void {
-        const createPlaylistRow: ContextmenuRow = {
-            title: "Create playlist",
-            shortcut: {
-                key: "n",
-                ctrl: true,
-            },
-            onClick: () => this.onAddPlaylistButtonClick(),
-        };
-
-        Create.ContextmenuManager.create([createPlaylistRow], position);
+        Create.playlistsContainerContextmenu({
+            position: position,
+            onAddPlaylistButtonClick: this.onAddPlaylistButtonClick,
+        });
     }
 
     public onPlaylistContainerContextmenu(position: Position, playlist: Playlist, focusedElement: HTMLElement): void {
-        const isPlaylistMergeContainer: boolean = (playlist.mergedIds.length > 0);
-        const mergeInRows: ContextmenuRow[] = this.getPlaylistContextmenuMergeInRows(playlist);
+        Create.playlistContainerContextmenu({
+            position: position,
+            focusedElement: focusedElement,
 
-        const editRow: ContextmenuRow = {
-            title: "Edit",
-            shortcut: {
-                key: "f2",
-            },
-            onClick: () => this.onPlaylistEdit(playlist),
-        };
-    
-        const removeRow: ContextmenuRow = {
-            title: "Remove",
-            shortcut: {
-                key: "delete",
-            },
-            onClick: () => this.onPlaylistRemove(playlist),
-        };
-    
-        const duplicateRow: ContextmenuRow = {
-            title: "Duplicate",
-            shortcut: {
-                key: "d",
-                ctrl: true,
-            },
-            onClick: () => this.onPlaylistDuplicate(playlist),
-            disabled: true,
-        };
-    
-        const mergeInRow: ContextmenuRow = {
-            title: "Merge in",
-            rows: mergeInRows,
-            disabled: isPlaylistMergeContainer,
-        };
-        
-        const removeFromMergeRow: ContextmenuRow = {
-            title: "Remove from merge",
-            rows: this.getPlaylistContextmenuRemoveFromMergeRows(playlist),
-        };
+            playlists: this.playlists,
+            playlist: playlist,
 
-        const rows: ContextmenuRow[] = [editRow, removeRow, duplicateRow, mergeInRow];
-        if (removeFromMergeRow.rows?.length ?? 0 > 0) {
-            rows.push(removeFromMergeRow);
-        }
-    
-        Create.ContextmenuManager.create(rows, position, focusedElement);
-    }
-
-    // OTHER
-    private getPlaylistContextmenuMergeInRows(playlist: Playlist): ContextmenuRow[] {
-        const filteredPlaylists: Playlist[] = this.playlists.filter((p: Playlist) => {
-            const isCurrentPlaylist: boolean = (p.id === playlist.id);
-            const isChild: boolean = Functions.Heko.isPlaylistChild(this.playlists, playlist.id, p.id);
-            const isParent: boolean = Functions.Heko.isPlaylistParent(this.playlists, p.id, playlist.id);
-            const isSongContainer: boolean = (p.songIds.length > 0);
-            const isPlaylistContainer: boolean = (p.childIds.length > 0);
-            const isAlreadyMergedIn: boolean = p.mergedIds.includes(playlist.id);
-            const isInMergeContainer: boolean = this.playlists.some((p2: Playlist) => p2.mergedIds.includes(p.id));
-
-            return !isCurrentPlaylist && !isChild && !isParent && !isSongContainer && !isPlaylistContainer && !isAlreadyMergedIn && !isInMergeContainer;
+            onPlaylistEdit: this.onPlaylistEdit,
+            onPlaylistRemove: this.onPlaylistRemove,
+            onPlaylistDuplicate: this.onPlaylistDuplicate,
+            onPlaylistMergeIn: this.onPlaylistMergeIn,
+            onPlaylistRemoveFromMerge: this.onPlaylistRemoveFromMerge,
         });
-        
-        return filteredPlaylists.map<ContextmenuRow>((p: Playlist) => ({
-            title: p.name,
-            onClick: () => this.onPlaylistMergeIn(p, playlist),
-        }));
-    }
-
-    private getPlaylistContextmenuRemoveFromMergeRows(playlist: Playlist): ContextmenuRow[] {
-        const filteredPlaylists: Playlist[] = this.playlists.filter((p: Playlist) => p.mergedIds.includes(playlist.id));
-
-        return filteredPlaylists.map<ContextmenuRow>((p: Playlist) => ({
-            title: p.name,
-            onClick: () => this.onPlaylistRemoveFromMerge(p, playlist),
-        }));
     }
 
     // MAIN SHORTCUTS
